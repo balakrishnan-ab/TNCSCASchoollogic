@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ta">
 <head>
@@ -8,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
+    <!-- Google Fonts Inter & Fira Code -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -24,191 +25,244 @@
             background-color: rgba(99, 102, 241, 0.25);
             border-left: 4px solid #6366f1;
         }
+        /* Custom scrollbars for tidy presentation */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
 
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 py-4 px-4 sm:px-8">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 py-3.5 px-4 sm:px-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
-                    <i class="fa-solid fa-[#00d2ff] fa-magnifying-glass-chart text-xl"></i>
+                    <i class="fa-solid fa-magnifying-glass-chart text-xl"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold text-white tracking-tight">Binary Search Visualizer</h1>
-                    <p class="text-xs text-slate-400">பைனரி சர்ச் காட்சிப்படுத்தல் & செய்முறை குறியீடு</p>
+                    <p class="text-xs text-slate-400">இடதுபுறம் நிரல் &bull; வலதுபுறம் நேரலைக் காட்சிப்படுத்தல்</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3 text-xs bg-slate-800/80 p-1.5 rounded-lg border border-slate-700">
-                <span class="px-2 py-1 rounded bg-slate-700 text-slate-300">வரிசைப்படுத்தப்பட்ட தரவு (Sorted Array Required)</span>
-                <span class="px-2 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Time: O(log n)</span>
+            <div class="flex items-center gap-2.5 text-xs bg-slate-800/80 p-1.5 rounded-lg border border-slate-700">
+                <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-300 font-medium">வரிசைப்படுத்தப்பட்ட தரவு (Sorted Array)</span>
+                <span class="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">Time: O(log n)</span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex-grow space-y-8">
-        
-        <!-- TOP SECTION: VISUALIZER -->
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden">
-            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between border-b border-slate-800 pb-4 mb-6 gap-4">
-                <div>
-                    <h2 class="text-lg font-semibold text-indigo-300 flex items-center gap-2">
-                        <i class="fa-solid fa-eye text-indigo-400"></i> காட்சிப்படுத்தல் (Visualization)
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-1">குறைந்த (Low), நடு (Mid), மற்றும் உயர் (High) சுட்டிகளின் நகர்வை நேரலையில் காண்க</p>
-                </div>
-
-                <!-- CONTROLS PANEL -->
-                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                    <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800 flex-1 sm:flex-initial">
-                        <label for="targetInput" class="text-xs font-medium text-slate-400 pl-1">தேடும் எண்:</label>
-                        <input type="number" id="targetInput" value="38" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-center text-sm font-bold text-indigo-300 focus:outline-none focus:border-indigo-500">
-                    </div>
-
-                    <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800 flex-1 sm:flex-initial">
-                        <label for="speedSlider" class="text-xs font-medium text-slate-400 pl-1">வேகம்:</label>
-                        <input type="range" id="speedSlider" min="300" max="2000" step="100" value="1000" class="w-20 accent-indigo-500 cursor-pointer">
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <button id="btnPlay" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-lg shadow-indigo-600/30">
-                            <i class="fa-solid fa-play" id="playIcon"></i> <span id="playText">தொடங்கு</span>
-                        </button>
-                        <button id="btnStep" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95">
-                            <i class="fa-solid fa-forward-step"></i> அடுத்த படி
-                        </button>
-                        <button id="btnReset" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95">
-                            <i class="fa-solid fa-rotate-right"></i> ரீசெட்
-                        </button>
-                        <button id="btnNewArray" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95">
-                            <i class="fa-solid fa-shuffle"></i> புதிய எண்கள்
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STATS AND CURRENT STEP LOG -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                    <div class="text-xs text-slate-400">Low Pointer (குறைந்த எல்)</div>
-                    <div id="statLow" class="text-lg font-bold text-sky-400 mt-0.5">-</div>
-                </div>
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                    <div class="text-xs text-slate-400">Mid Pointer (நடு நிலை)</div>
-                    <div id="statMid" class="text-lg font-bold text-amber-400 mt-0.5">-</div>
-                </div>
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                    <div class="text-xs text-slate-400">High Pointer (உயர் எல்)</div>
-                    <div id="statHigh" class="text-lg font-bold text-rose-400 mt-0.5">-</div>
-                </div>
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800/80">
-                    <div class="text-xs text-slate-400">ஒப்பீடுகள் (Comparisons)</div>
-                    <div id="statComparisons" class="text-lg font-bold text-emerald-400 mt-0.5">0</div>
-                </div>
-            </div>
-
-            <!-- VISUAL ARRAY DISPLAY CANVAS -->
-            <div class="min-h-[220px] flex flex-col justify-center items-center py-6 bg-slate-950/50 rounded-xl border border-slate-800/50 relative overflow-x-auto px-4">
-                <div id="arrayContainer" class="flex items-center justify-center gap-2 sm:gap-3 my-auto min-w-max">
-                    <!-- Dynamic Array Nodes generated by JS -->
-                </div>
-            </div>
-
-            <!-- STEP EXPLANATION BOX (TAMIL & ENGLISH) -->
-            <div id="explanationBox" class="mt-6 p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/40 text-slate-200 text-sm flex items-start gap-3">
-                <div class="p-2 bg-indigo-600/30 text-indigo-300 rounded-lg mt-0.5">
-                    <i class="fa-solid fa-lightbulb"></i>
-                </div>
-                <div>
-                    <span class="font-semibold text-indigo-300 block mb-0.5">தற்போதைய நிலை (Current Step):</span>
-                    <span id="explanationText" class="text-slate-300">தேடலைத் தொடங்க 'தொடங்கு' (Play) பட்டனை அழுத்தவும்.</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- BOTTOM SECTION: CODE & LOGIC -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <main class="max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex-grow">
+        <!-- 
+          Desktop (lg+): 
+            - Left column (lg:col-span-5 or lg:col-span-6): Python Code + Algorithm Explanations
+            - Right column (lg:col-span-7 or lg:col-span-6): Controls + Stats + Visualizer Nodes + Status Log
+          Mobile:
+            - Order reversed or standard single-column flow
+        -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- CODE DISPLAY WITH LIVE LINE HIGHLIGHTING -->
-            <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between">
-                <div>
+            <!-- LEFT COLUMN (DESKTOP): CODE & ALGORITHM EXPLANATION -->
+            <div class="lg:col-span-5 order-2 lg:order-1 flex flex-col gap-6">
+                
+                <!-- PYTHON CODE DISPLAY WITH LIVE LINE HIGHLIGHTING -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
                     <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
                         <div class="flex items-center gap-2">
                             <i class="fa-brands fa-python text-yellow-400 text-lg"></i>
-                            <h3 class="font-semibold text-white text-base">Python கோடிங் (Source Code)</h3>
+                            <h3 class="font-semibold text-white text-base">Python நிரல் (Source Code)</h3>
                         </div>
-                        <span class="text-xs bg-slate-800 px-2.5 py-1 rounded-full text-slate-400 border border-slate-700">Live Tracker</span>
+                        <span class="text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            நேரலைக் கண்காணிப்பு
+                        </span>
                     </div>
 
-                    <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 text-xs sm:text-sm overflow-x-auto font-mono text-slate-300 leading-relaxed">
-                        <div id="codeLine1" class="px-2 py-1 rounded transition-colors">def binary_search(arr, target):</div>
-                        <div id="codeLine2" class="px-2 py-1 rounded transition-colors pl-6">low = 0</div>
-                        <div id="codeLine3" class="px-2 py-1 rounded transition-colors pl-6">high = len(arr) - 1</div>
-                        <div id="codeLine4" class="px-2 py-1 rounded transition-colors pl-6">while low <= high:</div>
-                        <div id="codeLine5" class="px-2 py-1 rounded transition-colors pl-10">mid = (low + high) // 2</div>
-                        <div id="codeLine6" class="px-2 py-1 rounded transition-colors pl-10">if arr[mid] == target:</div>
-                        <div id="codeLine7" class="px-2 py-1 rounded transition-colors pl-14">return mid  <span class="text-slate-500"># எண்கள் பொருந்தியதால் index திருப்பப்படும்</span></div>
-                        <div id="codeLine8" class="px-2 py-1 rounded transition-colors pl-10">elif arr[mid] < target:</div>
-                        <div id="codeLine9" class="px-2 py-1 rounded transition-colors pl-14">low = mid + 1  <span class="text-slate-500"># வலது பக்கத்தில் தேடுதல்</span></div>
-                        <div id="codeLine10" class="px-2 py-1 rounded transition-colors pl-10">else:</div>
-                        <div id="codeLine11" class="px-2 py-1 rounded transition-colors pl-14">high = mid - 1  <span class="text-slate-500"># இடது பக்கத்தில் தேடுதல்</span></div>
-                        <div id="codeLine12" class="px-2 py-1 rounded transition-colors pl-6">return -1  <span class="text-slate-500"># எண் கண்டுபிடிக்கப்படவில்லை</span></div>
+                    <div class="bg-slate-950 rounded-xl p-3 sm:p-4 border border-slate-800 text-xs sm:text-sm overflow-x-auto font-mono text-slate-300 leading-relaxed shadow-inner">
+                        <div id="codeLine1" class="px-2 py-1 rounded transition-all duration-200">def binary_search(arr, target):</div>
+                        <div id="codeLine2" class="px-2 py-1 rounded transition-all duration-200 pl-6">low = 0</div>
+                        <div id="codeLine3" class="px-2 py-1 rounded transition-all duration-200 pl-6">high = len(arr) - 1</div>
+                        <div id="codeLine4" class="px-2 py-1 rounded transition-all duration-200 pl-6">while low &lt;= high:</div>
+                        <div id="codeLine5" class="px-2 py-1 rounded transition-all duration-200 pl-10">mid = (low + high) // 2</div>
+                        <div id="codeLine6" class="px-2 py-1 rounded transition-all duration-200 pl-10">if arr[mid] == target:</div>
+                        <div id="codeLine7" class="px-2 py-1 rounded transition-all duration-200 pl-14">return mid  <span class="text-slate-500"># எண்கள் பொருந்தியதால் index திருப்பப்படும்</span></div>
+                        <div id="codeLine8" class="px-2 py-1 rounded transition-all duration-200 pl-10">elif arr[mid] &lt; target:</div>
+                        <div id="codeLine9" class="px-2 py-1 rounded transition-all duration-200 pl-14">low = mid + 1  <span class="text-slate-500"># வலது பாதியில் தேடுதல்</span></div>
+                        <div id="codeLine10" class="px-2 py-1 rounded transition-all duration-200 pl-10">else:</div>
+                        <div id="codeLine11" class="px-2 py-1 rounded transition-all duration-200 pl-14">high = mid - 1  <span class="text-slate-500"># இடது பாதியில் தேடுதல்</span></div>
+                        <div id="codeLine12" class="px-2 py-1 rounded transition-all duration-200 pl-6">return -1  <span class="text-slate-500"># எண் கண்டுபிடிக்கப்படவில்லை</span></div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-right text-indigo-400"></i>
+                            இயங்கும் வரி தானாக ஹைலைட் செய்யப்படும்.
+                        </span>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-4 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
-                    <span><i class="fa-solid fa-code-commit text-indigo-400"></i> இயங்கும் போது எந்த வரி செயலில் உள்ளது என்பது சிறப்பித்துக் காட்டப்படும்.</span>
+                <!-- ALGORITHM BREAKDOWN & EXPLANATION IN TAMIL -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-4">
+                            <i class="fa-solid fa-book-open text-emerald-400 text-lg"></i>
+                            <h3 class="font-semibold text-white text-base">பைனரி சர்ச் எப்படி வேலை செய்கிறது?</h3>
+                        </div>
+
+                        <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">1</span>
+                                <p><strong class="text-indigo-300">வரிசைப்படுத்துதல்:</strong> கொடுக்கப்பட்ட எண்கள் அனைத்தும் ஏற்கனவே ஏறுவரிசையில் (Sorted Order) அமைய வேண்டும்.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">2</span>
+                                <p><strong class="text-indigo-300">நடு எண்ணைக் கண்டறிதல்:</strong> ஆரம்ப சுட்டி <code class="bg-slate-950 px-1.5 py-0.5 rounded text-sky-300 border border-slate-800">low</code> மற்றும் இறுதி சுட்டி <code class="bg-slate-950 px-1.5 py-0.5 rounded text-rose-300 border border-slate-800">high</code> கூட்டி, சராசரியாக நடு இடத்தை (<code class="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 border border-slate-800">mid</code>) தேர்வு செய்யும்.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">3</span>
+                                <div>
+                                    <strong class="text-indigo-300">ஒப்பீடு & சுருங்குதல்:</strong> 
+                                    <ul class="list-disc list-inside ml-1 mt-1 space-y-1 text-slate-400 text-xs">
+                                        <li>நடு எண் == தேடும் எண் எனில், உடனே வெற்றி!</li>
+                                        <li>தேடும் எண் &gt; நடு எண் எனில் வலது பகுதி (<code class="text-sky-300">low = mid + 1</code>).</li>
+                                        <li>தேடும் எண் &lt; நடு எண் எனில் இடது பகுதி (<code class="text-rose-300">high = mid - 1</code>).</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">4</span>
+                                <p><strong class="text-indigo-300">நேர செயல்திறன்:</strong> ஒவ்வொரு அடியிலும் பரிசீலனைக்குரிய பாதியளவு எண்கள் நீக்கப்படுவதால் இதன் வேகம் <strong>O(log n)</strong> ஆகும்.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl text-xs text-emerald-300 flex items-center gap-2.5">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base flex-shrink-0"></i>
+                        <span>நேரியல் தேடலை (Linear Search) விட பைனரி சர்ச் மிகக் குறைந்த படிகளில் முடிவுகளைத் தரும்.</span>
+                    </div>
                 </div>
+
             </div>
 
-            <!-- ALGORITHM BREAKDOWN & EXPLANATION IN TAMIL -->
-            <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-4">
-                        <i class="fa-solid fa-book-open text-emerald-400 text-lg"></i>
-                        <h3 class="font-semibold text-white text-base">பைனரி சர்ச் எப்படி வேலை செய்கிறது?</h3>
+            <!-- RIGHT COLUMN (DESKTOP): VISUALIZER & CONTROLS -->
+            <div class="lg:col-span-7 order-1 lg:order-2 flex flex-col gap-6">
+                
+                <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col gap-6">
+                    
+                    <!-- TOP BAR: HEADER & CONTROL ACTIONS -->
+                    <div class="flex flex-col xl:flex-row xl:items-center justify-between border-b border-slate-800 pb-5 gap-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-indigo-400"></i> நேரலைக் காட்சிப்படுத்தல் (Live Visualization)
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Low, Mid மற்றும் High சுட்டிகளின் நேரலை இயக்கம்</p>
+                        </div>
+
+                        <!-- CONTROLS -->
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                                <label for="targetInput" class="text-xs font-medium text-slate-400">தேடும் எண்:</label>
+                                <input type="number" id="targetInput" value="38" class="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-center text-sm font-bold text-indigo-300 focus:outline-none focus:border-indigo-500">
+                            </div>
+
+                            <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                                <label for="speedSlider" class="text-xs font-medium text-slate-400">வேகம்:</label>
+                                <input type="range" id="speedSlider" min="300" max="2000" step="100" value="1000" class="w-16 sm:w-20 accent-indigo-500 cursor-pointer">
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button id="btnPlay" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-lg shadow-indigo-600/30">
+                                    <i class="fa-solid fa-play" id="playIcon"></i> <span id="playText">தொடங்கு</span>
+                                </button>
+                                <button id="btnStep" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="அடுத்த படி">
+                                    <i class="fa-solid fa-forward-step"></i> <span class="hidden sm:inline">அடுத்த படி</span>
+                                </button>
+                                <button id="btnReset" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="ரீசெட்">
+                                    <i class="fa-solid fa-rotate-right"></i> <span class="hidden sm:inline">ரீசெட்</span>
+                                </button>
+                                <button id="btnNewArray" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="புதிய எண்கள்">
+                                    <i class="fa-solid fa-shuffle"></i> <span class="hidden sm:inline">புதிய எண்கள்</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                        <div class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">1</span>
-                            <p><strong class="text-indigo-300">வரிசைப்படுத்துதல்:</strong> கொடுக்கப்பட்ட எண்கள் அனைத்தும் ஏறுவரிசையில் (Sorted Order) இருக்க வேண்டும்.</p>
+                    <!-- STATS POINTER CARDS -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">Low (குறைந்த எல்)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                            </div>
+                            <div id="statLow" class="text-base sm:text-lg font-bold text-sky-400 mt-1">-</div>
                         </div>
-                        <div class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">2</span>
-                            <p><strong class="text-indigo-300">நடு எண்ணைக் கண்டறிதல்:</strong> ஆரம்ப எல்லை <code class="bg-slate-950 px-1 py-0.5 rounded text-sky-300">low</code> மற்றும் முடிவு எல்லை <code class="bg-slate-950 px-1 py-0.5 rounded text-rose-300">high</code> கணக்கிட்டு, நடு எண்ணை (<code class="bg-slate-950 px-1 py-0.5 rounded text-amber-300">mid</code>) தேர்வு செய்யும்.</p>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">Mid (நடு நிலை)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                            </div>
+                            <div id="statMid" class="text-base sm:text-lg font-bold text-amber-400 mt-1">-</div>
                         </div>
-                        <div class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">3</span>
-                            <p><strong class="text-indigo-300">ஒப்பிடுதல்:</strong> 
-                               <ul class="list-disc list-inside ml-2 mt-1 space-y-1 text-slate-400 text-xs">
-                                   <li>நடு எண் == தேடும் எண் எனில், வெற்றி!</li>
-                                   <li>தேடும் எண் > நடு எண் எனில், இடது பாதியைத் தவிர்த்து வலது பாதியில் தேடும் (<code class="text-sky-300">low = mid + 1</code>).</li>
-                                   <li>தேடும் எண் < நடு எண் எனில், வலது பாதியைத் தவிர்த்து இடது பாதியில் தேடும் (<code class="text-rose-300">high = mid - 1</code>).</li>
-                               </ul>
-                            </p>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">High (உயர் எல்)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                            </div>
+                            <div id="statHigh" class="text-base sm:text-lg font-bold text-rose-400 mt-1">-</div>
                         </div>
-                        <div class="flex gap-3">
-                            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">4</span>
-                            <p><strong class="text-indigo-300">வேகம் (Efficiency):</strong> ஒவ்வொரு அடியிலும் தரவு பாதி பாதியாக குறைக்கப்படுவதால், பெரிய தரவுகளுக்கு இது மிக வேகமானது (O(log n)).</p>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">ஒப்பீடுகள் (Checks)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            </div>
+                            <div id="statComparisons" class="text-base sm:text-lg font-bold text-emerald-400 mt-1">0</div>
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-6 p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl text-xs text-emerald-300 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
-                    <span>Linear Search-ஐ விட Binary Search மிகக் குறைந்த படிகளில் தேடலை முடிக்கும்!</span>
-                </div>
+                    <!-- VISUAL ARRAY DISPLAY CANVAS -->
+                    <div class="min-h-[250px] flex flex-col justify-center items-center py-8 bg-slate-950/70 rounded-2xl border border-slate-800/80 relative overflow-x-auto px-4 shadow-inner">
+                        <div id="arrayContainer" class="flex items-center justify-center gap-2 sm:gap-3 my-auto min-w-max pb-3">
+                            <!-- Array elements will be injected here via JavaScript -->
+                        </div>
+                        <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-[11px] text-slate-400">
+                            <div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-sky-500 text-slate-950 font-bold">L</span> Low குறியீடு</div>
+                            <div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-bold">M</span> Mid நடு மதிப்பு</div>
+                            <div class="flex items-center gap-1.5"><span class="px-1.5 py-0.5 rounded bg-rose-500 text-slate-950 font-bold">H</span> High குறியீடு</div>
+                        </div>
+                    </div>
+
+                    <!-- STEP EXPLANATION STATUS BOX -->
+                    <div id="explanationBox" class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/40 text-slate-200 text-sm flex items-start gap-3">
+                        <div class="p-2.5 bg-indigo-600/30 text-indigo-300 rounded-xl mt-0.5 flex-shrink-0">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-indigo-300 block mb-0.5 text-xs uppercase tracking-wider">தற்போதைய படிநிலை (Current Step):</span>
+                            <span id="explanationText" class="text-slate-300 text-sm">தேடலைத் தொடங்க 'தொடங்கு' (Play) பொத்தானை அழுத்தவும்.</span>
+                        </div>
+                    </div>
+
+                </section>
             </div>
-        </section>
+
+        </div>
     </main>
 
     <!-- FOOTER -->
-    <footer class="border-t border-slate-800 bg-slate-900/50 py-4 px-4 text-center text-xs text-slate-500 mt-8">
-        Binary Search Interactive Visualizer • Created with HTML, Tailwind CSS & JavaScript
+    <footer class="border-t border-slate-800 bg-slate-900/50 py-4 px-4 text-center text-xs text-slate-500 mt-6">
+        பைனரி சர்ச் காட்சிப்படுத்தல் • Binary Search Interactive Visualizer • Responsive Web Layout
     </footer>
 
-    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
     <script>
         let array = [4, 9, 15, 23, 28, 38, 45, 52, 67, 74, 83, 91];
         let steps = [];
@@ -217,7 +271,7 @@
         let timer = null;
         let animationSpeed = 1000;
 
-        // DOM elements
+        // DOM Elements
         const arrayContainer = document.getElementById('arrayContainer');
         const targetInput = document.getElementById('targetInput');
         const speedSlider = document.getElementById('speedSlider');
@@ -234,6 +288,7 @@
         const statComparisons = document.getElementById('statComparisons');
         const explanationText = document.getElementById('explanationText');
 
+        // Generate binary search execution steps
         function generateBinarySearchSteps(arr, target) {
             const stepsList = [];
             let low = 0;
@@ -249,14 +304,14 @@
                 status: 'init',
                 line: 2,
                 comparisons: 0,
-                text: `தேடல் தொடங்கியது. Low = 0, High = ${high}. Target = ${target}`
+                text: `தேடல் தொடங்கியது. ஆரம்ப எல்லைகள்: Low = 0, High = ${high}. இலக்கு எண் = ${target}`
             });
 
             while (low <= high) {
                 const mid = Math.floor((low + high) / 2);
                 comparisons++;
 
-                // Step: Calculating mid
+                // Step: Calculating Mid
                 stepsList.push({
                     low,
                     high,
@@ -265,7 +320,7 @@
                     status: 'calc_mid',
                     line: 5,
                     comparisons,
-                    text: `நடு சுட்டி (Mid) கணக்கிடப்படுகிறது: (${low} + ${high}) // 2 = ${mid}. நடு மதிப்பு = ${arr[mid]}`
+                    text: `நடு சுட்டி (Mid) கணக்கீடு: (${low} + ${high}) // 2 = ${mid}. நடுவில் உள்ள எண் = ${arr[mid]}`
                 });
 
                 // Step: Comparison check
@@ -277,7 +332,7 @@
                     status: 'compare',
                     line: 6,
                     comparisons,
-                    text: `நடு மதிப்பு (${arr[mid]}) தேடும் எண்ணுடன் (${target}) ஒப்பிடப்படுகிறது...`
+                    text: `நடு எண் (${arr[mid]}) தேடும் எண்ணுடன் (${target}) ஒப்பிடப்படுகிறது...`
                 });
 
                 if (arr[mid] === target) {
@@ -289,7 +344,7 @@
                         status: 'found',
                         line: 7,
                         comparisons,
-                        text: `வெற்றி! தேடப்பட்ட எண் ${target} Index [${mid}]-இல் கண்டறியப்பட்டது!`
+                        text: `வெற்றி! தேடப்பட்ட எண் ${target} வரிசையின் Index [${mid}]-இல் கண்டறியப்பட்டது!`
                     });
                     return stepsList;
                 } else if (arr[mid] < target) {
@@ -301,7 +356,7 @@
                         status: 'go_right',
                         line: 8,
                         comparisons,
-                        text: `நடு மதிப்பு (${arr[mid]}) < ${target}. எனவே வலது பக்கத்தில் தேடப்படுகிறது. (low = ${mid + 1})`
+                        text: `நடு மதிப்பு (${arr[mid]}) &lt; ${target}. எனவே இடது பகுதி நிராகரிக்கப்பட்டு வலது பகுதிக்கு நகர்கிறது (low = ${mid + 1}).`
                     });
                     low = mid + 1;
                 } else {
@@ -313,13 +368,13 @@
                         status: 'go_left',
                         line: 10,
                         comparisons,
-                        text: `நடு மதிப்பு (${arr[mid]}) > ${target}. எனவே இடது பக்கத்தில் தேடப்படுகிறது. (high = ${mid - 1})`
+                        text: `நடு மதிப்பு (${arr[mid]}) &gt; ${target}. எனவே வலது பகுதி நிராகரிக்கப்பட்டு இடது பகுதிக்கு நகர்கிறது (high = ${mid - 1}).`
                     });
                     high = mid - 1;
                 }
             }
 
-            // Not found step
+            // Not found
             stepsList.push({
                 low,
                 high,
@@ -328,18 +383,19 @@
                 status: 'not_found',
                 line: 12,
                 comparisons,
-                text: `தேடப்பட்ட எண் ${target} இந்த வரிசையில் இல்லை! (return -1)`
+                text: `தேடப்பட்ட எண் ${target} இந்த வரிசையில் இல்லை! முடிவாக -1 திரும்ப அனுப்பப்படுகிறது.`
             });
 
             return stepsList;
         }
 
+        // Render DOM boxes for the array
         function renderArray() {
             arrayContainer.innerHTML = '';
             array.forEach((val, idx) => {
                 const elDiv = document.createElement('div');
                 elDiv.id = `element-${idx}`;
-                elDiv.className = `element-box relative flex flex-col items-center justify-center w-12 h-16 sm:w-14 sm:h-20 rounded-xl bg-slate-900 border-2 border-slate-800 text-slate-200 font-bold text-sm sm:text-base shadow-md`;
+                elDiv.className = `element-box relative flex flex-col items-center justify-center w-11 h-16 sm:w-14 sm:h-20 rounded-xl bg-slate-900 border-2 border-slate-800 text-slate-200 font-bold text-sm sm:text-base shadow-md`;
                 
                 elDiv.innerHTML = `
                     <span>${val}</span>
@@ -350,79 +406,83 @@
             });
         }
 
+        // Update UI states for a step
         function updateUIForStep(stepIndex) {
             if (stepIndex < 0 || stepIndex >= steps.length) return;
             const step = steps[stepIndex];
 
-            // Reset code highlighting
+            // Reset python line highlights
             for (let i = 1; i <= 12; i++) {
                 const line = document.getElementById(`codeLine${i}`);
                 if (line) line.classList.remove('code-highlight', 'text-white', 'font-semibold');
             }
 
-            // Highlight current code line
+            // Highlight active python line
             if (step.line) {
                 const curLine = document.getElementById(`codeLine${step.line}`);
                 if (curLine) curLine.classList.add('code-highlight', 'text-white', 'font-semibold');
             }
 
-            // Stats
-            statLow.textContent = step.low !== null && step.low >= 0 && step.low < array.length ? `${step.low} (val: ${array[step.low]})` : (step.low ?? '-');
-            statMid.textContent = step.mid !== null && step.mid >= 0 ? `${step.mid} (val: ${array[step.mid]})` : '-';
-            statHigh.textContent = step.high !== null && step.high >= 0 && step.high < array.length ? `${step.high} (val: ${array[step.high]})` : (step.high ?? '-');
+            // Stats Update
+            statLow.textContent = (step.low !== null && step.low >= 0 && step.low < array.length) ? `${step.low} (மதிப்பு: ${array[step.low]})` : (step.low ?? '-');
+            statMid.textContent = (step.mid !== null && step.mid >= 0) ? `${step.mid} (மதிப்பு: ${array[step.mid]})` : '-';
+            statHigh.textContent = (step.high !== null && step.high >= 0 && step.high < array.length) ? `${step.high} (மதிப்பு: ${array[step.high]})` : (step.high ?? '-');
             statComparisons.textContent = step.comparisons;
-            explanationText.textContent = step.text;
+            explanationText.innerHTML = step.text;
 
-            // Render array nodes styling
+            // Render array nodes visual styles
             array.forEach((_, idx) => {
                 const elNode = document.getElementById(`element-${idx}`);
                 const ptrContainer = document.getElementById(`pointer-container-${idx}`);
+                if (!elNode || !ptrContainer) return;
+                
                 ptrContainer.innerHTML = '';
 
-                // Reset styles
-                elNode.className = `element-box relative flex flex-col items-center justify-center w-12 h-16 sm:w-14 sm:h-20 rounded-xl border-2 font-bold text-sm sm:text-base shadow-md transition-all duration-300`;
+                // Reset standard styles
+                elNode.className = `element-box relative flex flex-col items-center justify-center w-11 h-16 sm:w-14 sm:h-20 rounded-xl border-2 font-bold text-sm sm:text-base shadow-md transition-all duration-300`;
 
                 const isDimmed = (step.low !== null && step.high !== null && (idx < step.low || idx > step.high));
 
                 if (isDimmed) {
-                    elNode.classList.add('bg-slate-950', 'border-slate-800/40', 'text-slate-600', 'opacity-40');
+                    elNode.classList.add('bg-slate-950', 'border-slate-800/40', 'text-slate-600', 'opacity-30', 'scale-95');
                 } else {
                     elNode.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-100');
                 }
 
-                // Highlighting Mid / Found
+                // Highlighting Mid / Found state
                 if (idx === step.mid) {
                     if (step.status === 'found') {
                         elNode.classList.remove('bg-slate-800', 'border-slate-700');
                         elNode.classList.add('bg-emerald-600', 'border-emerald-400', 'text-white', 'scale-110', 'shadow-emerald-500/50', 'shadow-lg');
                     } else {
                         elNode.classList.remove('bg-slate-800', 'border-slate-700');
-                        elNode.classList.add('bg-amber-600/30', 'border-amber-400', 'text-amber-200', 'scale-105');
+                        elNode.classList.add('bg-amber-500/30', 'border-amber-400', 'text-amber-200', 'scale-105');
                     }
                 }
 
-                // Add Pointers
+                // Add pointer tags (L, M, H)
                 if (idx === step.low && step.low <= step.high) {
                     const lowTag = document.createElement('span');
-                    lowTag.className = 'px-1 rounded bg-sky-500 text-slate-950';
+                    lowTag.className = 'px-1 rounded bg-sky-500 text-slate-950 font-bold';
                     lowTag.textContent = 'L';
                     ptrContainer.appendChild(lowTag);
                 }
                 if (idx === step.mid) {
                     const midTag = document.createElement('span');
-                    midTag.className = 'px-1 rounded bg-amber-400 text-slate-950';
+                    midTag.className = 'px-1 rounded bg-amber-400 text-slate-950 font-bold';
                     midTag.textContent = 'M';
                     ptrContainer.appendChild(midTag);
                 }
                 if (idx === step.high && step.low <= step.high) {
                     const highTag = document.createElement('span');
-                    highTag.className = 'px-1 rounded bg-rose-500 text-slate-950';
+                    highTag.className = 'px-1 rounded bg-rose-500 text-slate-950 font-bold';
                     highTag.textContent = 'H';
                     ptrContainer.appendChild(highTag);
                 }
             });
         }
 
+        // Step forward in execution
         function stepForward() {
             if (currentStepIndex < steps.length - 1) {
                 currentStepIndex++;
@@ -432,6 +492,7 @@
             }
         }
 
+        // Play/Pause handling
         function playAnimation() {
             if (currentStepIndex >= steps.length - 1) {
                 currentStepIndex = -1;
@@ -456,6 +517,7 @@
             if (timer) clearInterval(timer);
         }
 
+        // Recompute steps and reset pointers
         function prepareSteps() {
             pauseAnimation();
             const target = parseInt(targetInput.value) || 0;
@@ -464,6 +526,7 @@
             updateUIForStep(currentStepIndex);
         }
 
+        // Event Listeners
         btnPlay.addEventListener('click', () => {
             if (isPlaying) {
                 pauseAnimation();
@@ -489,7 +552,6 @@
         });
 
         btnNewArray.addEventListener('click', () => {
-            // Generate sorted random array
             const set = new Set();
             while (set.size < 12) {
                 set.add(Math.floor(Math.random() * 95) + 5);
@@ -497,7 +559,6 @@
             array = Array.from(set).sort((a, b) => a - b);
             renderArray();
             
-            // Randomly select one existing or non-existing element as target
             if (Math.random() > 0.3) {
                 targetInput.value = array[Math.floor(Math.random() * array.length)];
             } else {
@@ -511,13 +572,14 @@
         });
 
         speedSlider.addEventListener('input', (e) => {
-            animationSpeed = 2300 - parseInt(e.target.value); // Reverse scale for user intuition
+            animationSpeed = 2300 - parseInt(e.target.value);
             if (isPlaying) {
                 pauseAnimation();
                 playAnimation();
             }
         });
 
+        // Initialize on load
         window.onload = function() {
             renderArray();
             prepareSteps();
