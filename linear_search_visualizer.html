@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>நேரியல் தேடல் - Linear Search Visualizer & Code</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        code, pre {
+            font-family: 'Fira Code', monospace;
+        }
+        .code-highlight {
+            background-color: rgba(99, 102, 241, 0.28);
+            border-left: 4px solid #6366f1;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .element-box {
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 py-3.5 px-4 sm:px-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                    <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white tracking-tight">Linear Search Visualizer</h1>
+                    <p class="text-xs text-slate-400">நேரியல் தேடல் &bull; இடதுபுறம் நிரல், வலதுபுறம் நேரலைக் காட்சிப்படுத்தல்</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5 text-xs bg-slate-800/80 p-1.5 rounded-lg border border-slate-700">
+                <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-300 font-medium">வரிசைப்படுத்தல் அவசியமில்லை (Unsorted Allowed)</span>
+                <span class="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">Time: O(n)</span>
+                <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">Space: O(1)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT COLUMN (DESKTOP): PYTHON SOURCE CODE & ALGORITHM EXPLANATION -->
+            <div class="lg:col-span-5 order-2 lg:order-1 flex flex-col gap-6">
+                
+                <!-- PYTHON SOURCE CODE TRACKER -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-python text-yellow-400 text-lg"></i>
+                            <h3 class="font-semibold text-white text-base">Python நிரல் (Source Code)</h3>
+                        </div>
+                        <span class="text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            நேரலை வரி கண்காணிப்பான்
+                        </span>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-xl p-3 sm:p-4 border border-slate-800 text-xs sm:text-sm overflow-x-auto font-mono text-slate-300 leading-relaxed shadow-inner">
+                        <div id="codeLine1" class="px-2 py-1 rounded transition-all duration-150">def linear_search(arr, target):</div>
+                        <div id="codeLine2" class="px-2 py-1 rounded transition-all duration-150 pl-6">for i in range(len(arr)):</div>
+                        <div id="codeLine3" class="px-2 py-1 rounded transition-all duration-150 pl-10">if arr[i] == target:</div>
+                        <div id="codeLine4" class="px-2 py-1 rounded transition-all duration-150 pl-14">return i  <span class="text-slate-500"># எண் கண்டறியப்பட்டது! சுட்டி (Index) திருப்பப்படும்</span></div>
+                        <div id="codeLine5" class="px-2 py-1 rounded transition-all duration-150 pl-6">return -1  <span class="text-slate-500"># பட்டியல் முழுவதும் தேடியும் கிடைக்கவில்லை</span></div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-code-commit text-indigo-400"></i>
+                            இயங்கும் வரி தானாகவே சிறப்பித்துக் (Highlight) காட்டப்படும்.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ALGORITHM EXPLANATION IN TAMIL -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-4">
+                            <i class="fa-solid fa-book-open text-emerald-400 text-lg"></i>
+                            <h3 class="font-semibold text-white text-base">நேரியல் தேடல் எப்படி இயங்குகிறது?</h3>
+                        </div>
+
+                        <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">1</span>
+                                <p><strong class="text-indigo-300">வரிசைப்படுத்தல் தேவையில்லை:</strong> எண்கள் ஏறுவரிசையிலோ, இறங்குவரிசையிலோ அல்லது எவ்வித வரிசையுமின்றியோ (Unsorted) இருக்கலாம்.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">2</span>
+                                <p><strong class="text-indigo-300">முதல் எண்ணில் தொடங்குதல்:</strong> சுட்டி <code class="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 border border-slate-800">i = 0</code> முதல் தொடங்கி, ஒவ்வொரு உறுப்பாக நேரியல் வரிசையில் (ஒன்றன் பின் ஒன்றாக) பரிசோதிக்கிறது.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">3</span>
+                                <p><strong class="text-indigo-300">இலக்கு எண்ணுடன் ஒப்பீடு:</strong> நடப்பு எண் தேடும் எண்ணுடன் (<code class="bg-slate-950 px-1.5 py-0.5 rounded text-sky-300 border border-slate-800">target</code>) பொருந்தினால் உடனே அதன் Index [i] திரும்ப அனுப்பப்பட்டு தேடல் நிறைவடையும்.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">4</span>
+                                <p><strong class="text-indigo-300">கடைசி வரை தேடல்:</strong> இறுதி உறுப்பு வரை சென்றும் எண் கிடைக்கவில்லை என்றால், <code class="bg-slate-950 px-1.5 py-0.5 rounded text-rose-300 border border-slate-800">-1</code> வழங்கப்பட்டு எண் இல்லை என அறியப்படும் (Time: <strong class="text-indigo-300">O(n)</strong>).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl text-xs text-emerald-300 flex items-center gap-2.5">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base flex-shrink-0"></i>
+                        <span>குறைந்த எண்ணிக்கையிலான அல்லது வரிசைப்படுத்தப்படாத தரவுகளுக்கு எளிய நேரடி வழிமுறை இதுவாகும்!</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN (DESKTOP): VISUALIZER, INPUT CONTROLS & STATS -->
+            <div class="lg:col-span-7 order-1 lg:order-2 flex flex-col gap-6">
+                
+                <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col gap-6">
+                    
+                    <!-- USER INPUT PANEL (CUSTOM ARRAY & TARGET INPUT) -->
+                    <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <label for="customArrayInput" class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                                <i class="fa-solid fa-keyboard text-indigo-400"></i> உங்கள் எண்களை உள்ளிடுக (காற்புள்ளி மூலம் பிரிக்கவும்):
+                            </label>
+                            <span id="inputError" class="text-xs text-rose-400 font-medium hidden"></span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <input 
+                                type="text" 
+                                id="customArrayInput" 
+                                value="45, 12, 89, 23, 67, 34, 91, 56" 
+                                placeholder="எ.கா: 10, 45, 23, 78, 56"
+                                class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-indigo-200 font-mono focus:outline-none focus:border-indigo-500 transition shadow-inner"
+                            >
+                            <div class="flex items-center gap-2">
+                                <button id="btnSetArray" class="flex-1 sm:flex-initial px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-indigo-600/30">
+                                    <i class="fa-solid fa-check"></i> அமை (Apply)
+                                </button>
+                                <button id="btnRandomArray" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 border border-slate-700 transition active:scale-95">
+                                    <i class="fa-solid fa-shuffle"></i> புதிய எண்கள்
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- TARGET ELEMENT INPUT ROW -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+                            <div class="flex items-center gap-2">
+                                <label for="targetInput" class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bullseye text-rose-400"></i> தேட வேண்டிய எண் (Target):
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="targetInput" 
+                                    value="67" 
+                                    class="w-20 bg-slate-900 border border-slate-700 rounded-xl px-2 py-1.5 text-center text-sm font-bold text-sky-400 focus:outline-none focus:border-indigo-500"
+                                >
+                            </div>
+                            <span class="text-[11px] text-slate-400">
+                                <i class="fa-solid fa-info-circle text-slate-500"></i> உள்ளிட்டுப் பின் 'தொடங்கு' அழுத்தவும்
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- CONTROL ACTIONS BAR -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-5">
+                        <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                            <label for="speedSlider" class="text-xs font-medium text-slate-400">வேகம்:</label>
+                            <input type="range" id="speedSlider" min="200" max="1800" step="50" value="900" class="w-20 accent-indigo-500 cursor-pointer">
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btnPlay" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-lg shadow-indigo-600/30">
+                                <i class="fa-solid fa-play" id="playIcon"></i> <span id="playText">தொடங்கு</span>
+                            </button>
+                            <button id="btnStep" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="அடுத்த படி">
+                                <i class="fa-solid fa-forward-step"></i> <span>அடுத்த படி</span>
+                            </button>
+                            <button id="btnReset" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="மீட்டமை">
+                                <i class="fa-solid fa-rotate-right"></i> <span>மீட்டமை</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LIVE METRIC COUNTERS -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">நடப்பு சுட்டி (i)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                            </div>
+                            <div id="statIndex" class="text-base sm:text-lg font-bold text-amber-400 mt-1">-</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">நடப்பு மதிப்பு (arr[i])</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                            </div>
+                            <div id="statCurrentVal" class="text-base sm:text-lg font-bold text-sky-400 mt-1">-</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">தேடும் எண் (Target)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                            </div>
+                            <div id="statTarget" class="text-base sm:text-lg font-bold text-rose-400 mt-1">67</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">ஒப்பீடுகள் (Checks)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            </div>
+                            <div id="statComparisons" class="text-base sm:text-lg font-bold text-emerald-400 mt-1">0</div>
+                        </div>
+                    </div>
+
+                    <!-- VISUAL ARRAY DISPLAY CANVAS -->
+                    <div class="min-h-[260px] flex flex-col justify-center items-center py-6 bg-slate-950/70 rounded-2xl border border-slate-800/80 relative overflow-x-auto px-4 shadow-inner">
+                        <div id="arrayContainer" class="flex items-center justify-center gap-2 sm:gap-3 my-auto min-w-max pb-4">
+                            <!-- Array elements will be injected here via JavaScript -->
+                        </div>
+                        
+                        <!-- LEGEND BADGES -->
+                        <div class="mt-4 pt-3 border-t border-slate-800/60 w-full flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] text-slate-400">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-md bg-slate-800 border border-slate-600 inline-block"></span>
+                                <span>இன்னும் பரிசோதிக்காதவை</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-md bg-amber-500/50 border border-amber-400 inline-block"></span>
+                                <span>பரிசோதிக்கப்படும் எண் (i)</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-md bg-slate-950/80 border border-rose-900/60 inline-block"></span>
+                                <span>பொருந்தவில்லை (✕)</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-md bg-emerald-600 border border-emerald-400 inline-block"></span>
+                                <span>வெற்றி! எண் கிடைத்தது (✓)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP EXPLANATION STATUS LOG IN TAMIL -->
+                    <div id="explanationBox" class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/40 text-slate-200 text-sm flex items-start gap-3">
+                        <div class="p-2.5 bg-indigo-600/30 text-indigo-300 rounded-xl mt-0.5 flex-shrink-0">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-indigo-300 block mb-0.5 text-xs uppercase tracking-wider">தற்போதைய படிநிலை (Current Step):</span>
+                            <span id="explanationText" class="text-slate-300 text-sm">நேரியல் தேடலைத் தொடங்க 'தொடங்கு' (Play) அல்லது 'அடுத்த படி' (Step) பொத்தானை அழுத்தவும்.</span>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-900/50 py-4 px-4 text-center text-xs text-slate-500 mt-6">
+        நேரியல் தேடல் காட்சிப்படுத்தல் • Linear Search Interactive Visualizer • HTML, Tailwind CSS & JavaScript
+    </footer>
+
+    <script>
+        let array = [45, 12, 89, 23, 67, 34, 91, 56];
+        let steps = [];
+        let currentStepIndex = -1;
+        let isPlaying = false;
+        let timer = null;
+        let animationSpeed = 900;
+
+        // DOM Element references
+        const arrayContainer = document.getElementById('arrayContainer');
+        const customArrayInput = document.getElementById('customArrayInput');
+        const targetInput = document.getElementById('targetInput');
+        const inputError = document.getElementById('inputError');
+        const btnSetArray = document.getElementById('btnSetArray');
+        const btnRandomArray = document.getElementById('btnRandomArray');
+        const speedSlider = document.getElementById('speedSlider');
+
+        const btnPlay = document.getElementById('btnPlay');
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+        const btnStep = document.getElementById('btnStep');
+        const btnReset = document.getElementById('btnReset');
+
+        const statIndex = document.getElementById('statIndex');
+        const statCurrentVal = document.getElementById('statCurrentVal');
+        const statTarget = document.getElementById('statTarget');
+        const statComparisons = document.getElementById('statComparisons');
+        const explanationText = document.getElementById('explanationText');
+
+        // Generate discrete execution steps for Linear Search
+        function generateLinearSearchSteps(arr, target) {
+            const stepsList = [];
+            const n = arr.length;
+            let comparisons = 0;
+            const checkedIndices = [];
+
+            // Initial step
+            stepsList.push({
+                currentIndex: null,
+                target: target,
+                status: 'init',
+                comparisons: 0,
+                checked: [],
+                foundIndex: null,
+                line: 1,
+                text: `தேடல் ஆரம்பம்: வரிசையில் மொத்தம் ${n} எண்கள் உள்ளன. தேடப்படும் எண்: <strong>${target}</strong>.`
+            });
+
+            for (let i = 0; i < n; i++) {
+                comparisons++;
+
+                // Step: Pointing to current index
+                stepsList.push({
+                    currentIndex: i,
+                    target: target,
+                    status: 'checking',
+                    comparisons: comparisons,
+                    checked: [...checkedIndices],
+                    foundIndex: null,
+                    line: 2,
+                    text: `சுழற்சி (Loop): Index [${i}]-ஐ அணுகுகிறோம். நடப்பு எண்: <strong>${arr[i]}</strong>.`
+                });
+
+                // Step: Comparing arr[i] with target
+                stepsList.push({
+                    currentIndex: i,
+                    target: target,
+                    status: 'comparing',
+                    comparisons: comparisons,
+                    checked: [...checkedIndices],
+                    foundIndex: null,
+                    line: 3,
+                    text: `ஒப்பீடு: <strong>arr[${i}] (${arr[i]}) == ${target}</strong> என சோதிக்கப்படுகிறது...`
+                });
+
+                if (arr[i] === target) {
+                    // Match found
+                    stepsList.push({
+                        currentIndex: i,
+                        target: target,
+                        status: 'found',
+                        comparisons: comparisons,
+                        checked: [...checkedIndices],
+                        foundIndex: i,
+                        line: 4,
+                        text: `வெற்றி! தேடப்பட்ட எண் <strong>${target}</strong> Index [${i}]-இல் கண்டறியப்பட்டது! (return ${i})`
+                    });
+                    return stepsList;
+                } else {
+                    // Not matched at this index
+                    checkedIndices.push(i);
+                    stepsList.push({
+                        currentIndex: i,
+                        target: target,
+                        status: 'not_matched',
+                        comparisons: comparisons,
+                        checked: [...checkedIndices],
+                        foundIndex: null,
+                        line: 2,
+                        text: `${arr[i]} &ne; ${target}. எண் பொருந்தவில்லை. எனவே அடுத்த எண்ணிற்கு (Index [${i + 1}]) செல்கிறது.`
+                    });
+                }
+            }
+
+            // Target not found after exhausting the array
+            stepsList.push({
+                currentIndex: null,
+                target: target,
+                status: 'not_found',
+                comparisons: comparisons,
+                checked: [...checkedIndices],
+                foundIndex: null,
+                line: 5,
+                text: `முழு வரிசையிலும் தேடிய பின்னும் எண் <strong>${target}</strong> கிடைக்கவில்லை! முடிவாக -1 திருப்பப்படுகிறது (return -1).`
+            });
+
+            return stepsList;
+        }
+
+        // Render DOM boxes for the array
+        function renderArray() {
+            arrayContainer.innerHTML = '';
+            array.forEach((val, idx) => {
+                const elDiv = document.createElement('div');
+                elDiv.id = `element-${idx}`;
+                elDiv.className = `element-box relative flex flex-col items-center justify-center w-12 h-16 sm:w-14 sm:h-20 rounded-xl bg-slate-900 border-2 border-slate-800 text-slate-200 font-bold text-sm sm:text-base shadow-md`;
+                
+                elDiv.innerHTML = `
+                    <div id="pointer-container-${idx}" class="absolute -top-7 flex gap-0.5 text-[10px] font-bold"></div>
+                    <span id="value-${idx}">${val}</span>
+                    <span class="absolute -bottom-6 text-[10px] font-normal text-slate-500">idx ${idx}</span>
+                    <div id="status-icon-${idx}" class="absolute -bottom-2 right-1 text-[11px] hidden"></div>
+                `;
+                arrayContainer.appendChild(elDiv);
+            });
+        }
+
+        // Update UI states for a step
+        function updateUIForStep(stepIndex) {
+            if (stepIndex < 0 || stepIndex >= steps.length) return;
+            const step = steps[stepIndex];
+
+            // 1. Reset & Highlight Python code line
+            for (let i = 1; i <= 5; i++) {
+                const line = document.getElementById(`codeLine${i}`);
+                if (line) line.classList.remove('code-highlight');
+            }
+            if (step.line) {
+                const curLine = document.getElementById(`codeLine${step.line}`);
+                if (curLine) curLine.classList.add('code-highlight');
+            }
+
+            // 2. Metrics & Status Updates
+            statIndex.textContent = step.currentIndex !== null ? `i = ${step.currentIndex}` : '-';
+            statCurrentVal.textContent = step.currentIndex !== null ? array[step.currentIndex] : '-';
+            statTarget.textContent = step.target;
+            statComparisons.textContent = step.comparisons;
+            explanationText.innerHTML = step.text;
+
+            // 3. Update Elements styling
+            array.forEach((val, idx) => {
+                const elNode = document.getElementById(`element-${idx}`);
+                const ptrContainer = document.getElementById(`pointer-container-${idx}`);
+                const statusIcon = document.getElementById(`status-icon-${idx}`);
+
+                if (!elNode || !ptrContainer || !statusIcon) return;
+
+                ptrContainer.innerHTML = '';
+                statusIcon.innerHTML = '';
+                statusIcon.classList.add('hidden');
+
+                // Default standard style
+                elNode.className = `element-box relative flex flex-col items-center justify-center w-12 h-16 sm:w-14 sm:h-20 rounded-xl border-2 font-bold text-sm sm:text-base shadow-md transition-all duration-300 `;
+
+                if (step.foundIndex === idx) {
+                    // Success / Found
+                    elNode.classList.add('bg-emerald-600', 'border-emerald-400', 'text-white', 'scale-110', 'shadow-emerald-500/50', 'shadow-lg');
+                    ptrContainer.innerHTML = '<span class="px-1.5 py-0.5 rounded bg-emerald-400 text-slate-950 font-bold shadow">✓ Found</span>';
+                    statusIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-300"></i>';
+                    statusIcon.classList.remove('hidden');
+                } else if (step.currentIndex === idx) {
+                    // Currently inspecting / checking
+                    elNode.classList.add('bg-amber-500/30', 'border-amber-400', 'text-amber-200', 'scale-105', 'shadow-amber-500/30', 'shadow-md');
+                    ptrContainer.innerHTML = '<span class="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-bold shadow">i</span>';
+                } else if (step.checked.includes(idx)) {
+                    // Checked and didn't match (grayed out with cross)
+                    elNode.classList.add('bg-slate-950', 'border-slate-800/60', 'text-slate-500', 'opacity-40');
+                    statusIcon.innerHTML = '<i class="fa-solid fa-xmark text-rose-400 text-xs"></i>';
+                    statusIcon.classList.remove('hidden');
+                } else {
+                    // Unvisited element
+                    elNode.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-100');
+                }
+            });
+        }
+
+        // Step forward in execution
+        function stepForward() {
+            if (currentStepIndex < steps.length - 1) {
+                currentStepIndex++;
+                updateUIForStep(currentStepIndex);
+            } else {
+                pauseAnimation();
+            }
+        }
+
+        // Play/Pause execution
+        function playAnimation() {
+            if (currentStepIndex >= steps.length - 1) {
+                currentStepIndex = -1;
+            }
+            isPlaying = true;
+            playIcon.className = 'fa-solid fa-pause';
+            playText.textContent = 'நிறுத்து';
+
+            timer = setInterval(() => {
+                if (currentStepIndex < steps.length - 1) {
+                    stepForward();
+                } else {
+                    pauseAnimation();
+                }
+            }, animationSpeed);
+        }
+
+        function pauseAnimation() {
+            isPlaying = false;
+            playIcon.className = 'fa-solid fa-play';
+            playText.textContent = 'தொடங்கு';
+            if (timer) clearInterval(timer);
+        }
+
+        // Recompute steps and re-initialize
+        function prepareSteps() {
+            pauseAnimation();
+            const target = parseInt(targetInput.value) || 0;
+            steps = generateLinearSearchSteps(array, target);
+            currentStepIndex = 0;
+            renderArray();
+            updateUIForStep(currentStepIndex);
+        }
+
+        // User Input Parser & Validator
+        function parseAndApplyInput() {
+            const rawText = customArrayInput.value.trim();
+            inputError.classList.add('hidden');
+            inputError.textContent = '';
+
+            if (!rawText) {
+                showInputError('தயவுசெய்து எண்களை உள்ளிடவும்.');
+                return;
+            }
+
+            const parts = rawText.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            const parsedNumbers = [];
+
+            for (const part of parts) {
+                const num = Number(part);
+                if (isNaN(num) || !Number.isInteger(num)) {
+                    showInputError(`'${part}' செல்லுபடியாகாத எண்! முழு எண்களை மட்டுமே உள்ளிடவும்.`);
+                    return;
+                }
+                if (num < -999 || num > 999) {
+                    showInputError('எண்கள் -999 முதல் 999-க்குள் இருக்க வேண்டும்.');
+                    return;
+                }
+                parsedNumbers.push(num);
+            }
+
+            if (parsedNumbers.length < 2) {
+                showInputError('குறைந்தது 2 எண்களாவது உள்ளிடவும்.');
+                return;
+            }
+            if (parsedNumbers.length > 14) {
+                showInputError('திரை காட்சிக்கு உகந்ததாக அதிகபட்சம் 14 எண்களை மட்டும் உள்ளிடவும்.');
+                return;
+            }
+
+            array = parsedNumbers;
+            prepareSteps();
+        }
+
+        function showInputError(msg) {
+            inputError.textContent = msg;
+            inputError.classList.remove('hidden');
+        }
+
+        // Event Listeners
+        btnSetArray.addEventListener('click', parseAndApplyInput);
+        customArrayInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                parseAndApplyInput();
+            }
+        });
+
+        targetInput.addEventListener('change', () => {
+            prepareSteps();
+        });
+        targetInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                prepareSteps();
+            }
+        });
+
+        btnPlay.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                if (currentStepIndex === -1 || currentStepIndex >= steps.length - 1) {
+                    prepareSteps();
+                }
+                playAnimation();
+            }
+        });
+
+        btnStep.addEventListener('click', () => {
+            pauseAnimation();
+            if (currentStepIndex === -1) {
+                prepareSteps();
+            } else {
+                stepForward();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            prepareSteps();
+        });
+
+        btnRandomArray.addEventListener('click', () => {
+            const count = Math.floor(Math.random() * 4) + 7; // 7 to 10 numbers
+            const randomList = [];
+            for (let i = 0; i < count; i++) {
+                randomList.push(Math.floor(Math.random() * 95) + 5);
+            }
+            array = randomList;
+            customArrayInput.value = array.join(', ');
+
+            // Randomly choose an existing element or a non-existing element as target
+            if (Math.random() > 0.3) {
+                targetInput.value = array[Math.floor(Math.random() * array.length)];
+            } else {
+                targetInput.value = Math.floor(Math.random() * 95) + 5;
+            }
+
+            inputError.classList.add('hidden');
+            prepareSteps();
+        });
+
+        speedSlider.addEventListener('input', (e) => {
+            animationSpeed = 2000 - parseInt(e.target.value);
+            if (isPlaying) {
+                pauseAnimation();
+                playAnimation();
+            }
+        });
+
+        // Initialize on page load
+        window.onload = function() {
+            prepareSteps();
+        };
+    </script>
+</body>
+</html>
