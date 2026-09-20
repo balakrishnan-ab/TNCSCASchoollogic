@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>செருகு வரிசையாக்கம் - Insertion Sort Visualizer & Code</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        code, pre {
+            font-family: 'Fira Code', monospace;
+        }
+        .code-highlight {
+            background-color: rgba(99, 102, 241, 0.28);
+            border-left: 4px solid #6366f1;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .bar-transition {
+            transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background-color 0.25s ease, 
+                        border-color 0.25s ease, 
+                        transform 0.25s ease;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 py-3.5 px-4 sm:px-8">
+        <div class="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+                    <i class="fa-solid fa-arrow-down-short-wide text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white tracking-tight">Insertion Sort Visualizer</h1>
+                    <p class="text-xs text-slate-400">செருகு வரிசையாக்கம் &bull; இடதுபுறம் நிரல், வலதுபுறம் நேரலைக் காட்சி</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5 text-xs bg-slate-800/80 p-1.5 rounded-lg border border-slate-700">
+                <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-300 font-medium">செருகு வரிசையாக்கம் (Insertion Sort)</span>
+                <span class="px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">Worst: O(n²)</span>
+                <span class="px-2.5 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-semibold">Best: O(n)</span>
+                <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold">Space: O(1)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-[1600px] w-full mx-auto p-4 sm:p-6 flex-grow">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT COLUMN (DESKTOP): PYTHON SOURCE CODE & ALGORITHM EXPLANATION -->
+            <div class="lg:col-span-5 order-2 lg:order-1 flex flex-col gap-6">
+                
+                <!-- PYTHON SOURCE CODE TRACKER -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-brands fa-python text-yellow-400 text-lg"></i>
+                            <h3 class="font-semibold text-white text-base">Python நிரல் (Source Code)</h3>
+                        </div>
+                        <span class="text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            நேரலை வரி கண்காணிப்பான்
+                        </span>
+                    </div>
+
+                    <div class="bg-slate-950 rounded-xl p-3 sm:p-4 border border-slate-800 text-xs sm:text-sm overflow-x-auto font-mono text-slate-300 leading-relaxed shadow-inner">
+                        <div id="codeLine1" class="px-2 py-1 rounded transition-all duration-150">def insertion_sort(arr):</div>
+                        <div id="codeLine2" class="px-2 py-1 rounded transition-all duration-150 pl-6">for i in range(1, len(arr)):</div>
+                        <div id="codeLine3" class="px-2 py-1 rounded transition-all duration-150 pl-10">key = arr[i]  <span class="text-slate-500"># செருக வேண்டிய முக்கிய எண்</span></div>
+                        <div id="codeLine4" class="px-2 py-1 rounded transition-all duration-150 pl-10">j = i - 1</div>
+                        <div id="codeLine5" class="px-2 py-1 rounded transition-all duration-150 pl-10">while j &gt;= 0 and arr[j] &gt; key:</div>
+                        <div id="codeLine6" class="px-2 py-1 rounded transition-all duration-150 pl-14">arr[j + 1] = arr[j]  <span class="text-slate-500"># வலதுபுறம் நகர்த்துதல்</span></div>
+                        <div id="codeLine7" class="px-2 py-1 rounded transition-all duration-150 pl-14">j -= 1</div>
+                        <div id="codeLine8" class="px-2 py-1 rounded transition-all duration-150 pl-10">arr[j + 1] = key  <span class="text-slate-500"># சரியான இடத்தில் செருகுதல்</span></div>
+                        <div id="codeLine9" class="px-2 py-1 rounded transition-all duration-150 pl-6">return arr</div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 text-xs text-slate-400 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-code-commit text-indigo-400"></i>
+                            இயங்கும் வரி தானாகவே சிறப்பித்துக் (Highlight) காட்டப்படும்.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ALGORITHM EXPLANATION IN TAMIL -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 border-b border-slate-800 pb-3 mb-4">
+                            <i class="fa-solid fa-book-open text-emerald-400 text-lg"></i>
+                            <h3 class="font-semibold text-white text-base">செருகு வரிசையாக்கம் எப்படி இயங்குகிறது?</h3>
+                        </div>
+
+                        <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">1</span>
+                                <p><strong class="text-indigo-300">சீட்டுக்கட்டு உதாரணம் (Playing Cards Analogy):</strong> கையில் உள்ள சீட்டுகளை வரிசைப்படுத்துவது போல, வரிசையின் முதல் உறுப்பு (<code class="bg-slate-950 px-1.5 py-0.5 rounded text-emerald-300 border border-slate-800">arr[0]</code>) ஏற்கனவே வரிசைப்படுத்தப்பட்டதாகக் கருதப்படுகிறது.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">2</span>
+                                <p><strong class="text-indigo-300">முக்கிய எண் (Key Element):</strong> சுட்டி <code class="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 border border-slate-800">i = 1</code> முதல் தொடங்கி, நடப்பு எண்ணை <code class="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 border border-slate-800">key</code> ஆக எடுத்துக்கொண்டு தனியே சேமித்து வைக்கிறது.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">3</span>
+                                <p><strong class="text-indigo-300">வலதுபுறம் நகர்த்துதல் (Shifting Elements):</strong> முந்தைய வரிசைப்படுத்தப்பட்ட பகுதியில் உள்ள எண்கள் <code class="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 border border-slate-800">key</code>-ஐ விட பெரியதாக இருக்கும் வரை, அவை ஒரு இடம் வலதுபுறமாக நகர்த்தப்பட்டு இடம் ஏற்படுத்தப்படும்.</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs border border-indigo-500/30">4</span>
+                                <p><strong class="text-indigo-300">சரியான இடத்தில் செருகுதல் (Insertion):</strong> தகுதியான இடம் கிடைத்ததும், <code class="bg-slate-950 px-1.5 py-0.5 rounded text-amber-300 border border-slate-800">key</code> எண் <code class="bg-slate-950 px-1.5 py-0.5 rounded text-emerald-300 border border-slate-800">arr[j + 1]</code>-இல் செருகப்பட்டு அந்தப் பகுதி வரிசையாக்கப்படும்.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 p-3 bg-emerald-950/30 border border-emerald-800/40 rounded-xl text-xs text-emerald-300 flex items-center gap-2.5">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base flex-shrink-0"></i>
+                        <span>ஏற்கனவே பெரும்பாலும் வரிசைப்படுத்தப்பட்ட தரவுகளுக்கு இது மிக வேகமானது (Best Case: O(n))!</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN (DESKTOP): VISUALIZER, INPUT CONTROLS & STATS -->
+            <div class="lg:col-span-7 order-1 lg:order-2 flex flex-col gap-6">
+                
+                <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl flex flex-col gap-6">
+                    
+                    <!-- USER INPUT PANEL (CUSTOM ARRAY & PRESETS) -->
+                    <div class="bg-slate-950/90 p-4 rounded-xl border border-slate-800 flex flex-col gap-3">
+                        <div class="flex items-center justify-between">
+                            <label for="customArrayInput" class="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                                <i class="fa-solid fa-keyboard text-indigo-400"></i> உங்கள் எண்களை உள்ளிடுக (காற்புள்ளி மூலம் பிரிக்கவும்):
+                            </label>
+                            <span id="inputError" class="text-xs text-rose-400 font-medium hidden"></span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <input 
+                                type="text" 
+                                id="customArrayInput" 
+                                value="45, 12, 89, 23, 67, 34, 11" 
+                                placeholder="எ.கா: 50, 20, 40, 10, 30"
+                                class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-indigo-200 font-mono focus:outline-none focus:border-indigo-500 transition shadow-inner"
+                            >
+                            <div class="flex items-center gap-2">
+                                <button id="btnSetArray" class="flex-1 sm:flex-initial px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-indigo-600/30">
+                                    <i class="fa-solid fa-check"></i> அமை (Apply)
+                                </button>
+                                <button id="btnRandomArray" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 border border-slate-700 transition active:scale-95">
+                                    <i class="fa-solid fa-shuffle"></i> புதிய எண்கள்
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CONTROL ACTIONS BAR -->
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-5">
+                        <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                            <label for="speedSlider" class="text-xs font-medium text-slate-400">வேகம்:</label>
+                            <input type="range" id="speedSlider" min="200" max="1800" step="50" value="900" class="w-20 accent-indigo-500 cursor-pointer">
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btnPlay" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-lg shadow-indigo-600/30">
+                                <i class="fa-solid fa-play" id="playIcon"></i> <span id="playText">தொடங்கு</span>
+                            </button>
+                            <button id="btnStep" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="அடுத்த படி">
+                                <i class="fa-solid fa-forward-step"></i> <span>அடுத்த படி</span>
+                            </button>
+                            <button id="btnReset" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-medium flex items-center gap-1.5 border border-slate-700 transition active:scale-95" title="மீட்டமை">
+                                <i class="fa-solid fa-rotate-right"></i> <span>மீட்டமை</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LIVE METRIC COUNTERS -->
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">சுழற்சி (i)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                            </div>
+                            <div id="statI" class="text-base sm:text-lg font-bold text-sky-400 mt-1">i = 1</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">முக்கிய எண் (Key)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                            </div>
+                            <div id="statKey" class="text-base sm:text-lg font-bold text-amber-400 mt-1">-</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">உள் சுட்டி (j)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+                            </div>
+                            <div id="statJ" class="text-base sm:text-lg font-bold text-indigo-400 mt-1">-</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">ஒப்பீடுகள்</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            </div>
+                            <div id="statComparisons" class="text-base sm:text-lg font-bold text-emerald-400 mt-1">0</div>
+                        </div>
+                        <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 col-span-2 sm:col-span-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-400">நகர்வுகள் (Shifts)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+                            </div>
+                            <div id="statShifts" class="text-base sm:text-lg font-bold text-rose-400 mt-1">0</div>
+                        </div>
+                    </div>
+
+                    <!-- VISUAL ARRAY DISPLAY CANVAS (BARS & BADGES) -->
+                    <div class="min-h-[290px] flex flex-col justify-end items-center py-6 bg-slate-950/70 rounded-2xl border border-slate-800/80 relative overflow-x-auto px-4 shadow-inner">
+                        <div id="arrayContainer" class="flex items-end justify-center gap-2 sm:gap-3 w-full max-w-full min-w-max pb-3 h-52">
+                            <!-- Bars injected dynamically by JS -->
+                        </div>
+                        
+                        <!-- LEGEND BADGES -->
+                        <div class="mt-4 pt-3 border-t border-slate-800/60 w-full flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-[11px] text-slate-400">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-sm bg-slate-800 border border-slate-600 inline-block"></span>
+                                <span>வரிசைப்படுத்தப்படாதவை</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-sm bg-amber-500/80 border border-amber-400 inline-block"></span>
+                                <span>செருகப்படும் எண் (Key)</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-sm bg-indigo-500/50 border border-indigo-400 inline-block"></span>
+                                <span>ஒப்பிடப்படும் எண் (j)</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-sm bg-rose-600/70 border border-rose-400 inline-block"></span>
+                                <span>வலதுபுறம் நகர்த்தப்பட்டது</span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-3 h-3 rounded-sm bg-emerald-600/50 border border-emerald-500 inline-block"></span>
+                                <span>வரிசைப்படுத்தப்பட்ட பகுதி (Sorted)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP EXPLANATION STATUS LOG IN TAMIL -->
+                    <div id="explanationBox" class="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/40 text-slate-200 text-sm flex items-start gap-3">
+                        <div class="p-2.5 bg-indigo-600/30 text-indigo-300 rounded-xl mt-0.5 flex-shrink-0">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-indigo-300 block mb-0.5 text-xs uppercase tracking-wider">தற்போதைய படிநிலை (Current Step):</span>
+                            <span id="explanationText" class="text-slate-300 text-sm">வரிசையாக்கத்தைத் தொடங்க 'தொடங்கு' (Play) அல்லது 'அடுத்த படி' (Step) பொத்தானை அழுத்தவும்.</span>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-900/50 py-4 px-4 text-center text-xs text-slate-500 mt-6">
+        செருகு வரிசையாக்கம் நேரலைக் காட்சிப்படுத்துதல் • Insertion Sort Interactive Visualizer • HTML, Tailwind CSS & JavaScript
+    </footer>
+
+    <script>
+        let array = [45, 12, 89, 23, 67, 34, 11];
+        let steps = [];
+        let currentStepIndex = -1;
+        let isPlaying = false;
+        let timer = null;
+        let animationSpeed = 900;
+
+        // DOM Element references
+        const arrayContainer = document.getElementById('arrayContainer');
+        const customArrayInput = document.getElementById('customArrayInput');
+        const inputError = document.getElementById('inputError');
+        const btnSetArray = document.getElementById('btnSetArray');
+        const btnRandomArray = document.getElementById('btnRandomArray');
+        const speedSlider = document.getElementById('speedSlider');
+
+        const btnPlay = document.getElementById('btnPlay');
+        const playIcon = document.getElementById('playIcon');
+        const playText = document.getElementById('playText');
+        const btnStep = document.getElementById('btnStep');
+        const btnReset = document.getElementById('btnReset');
+
+        const statI = document.getElementById('statI');
+        const statKey = document.getElementById('statKey');
+        const statJ = document.getElementById('statJ');
+        const statComparisons = document.getElementById('statComparisons');
+        const statShifts = document.getElementById('statShifts');
+        const explanationText = document.getElementById('explanationText');
+
+        // Generate discrete execution steps for Insertion Sort
+        function generateInsertionSortSteps(initialArr) {
+            const arr = [...initialArr];
+            const n = arr.length;
+            const stepsList = [];
+            let totalComparisons = 0;
+            let totalShifts = 0;
+
+            // Initial State: arr[0] is considered sorted
+            stepsList.push({
+                arrayState: [...arr],
+                i: 1,
+                key: null,
+                keyIndex: null,
+                j: null,
+                shiftedIndex: null,
+                sortedBoundary: 0,
+                comparisons: totalComparisons,
+                shifts: totalShifts,
+                line: 2,
+                text: `வரிசையாக்கம் ஆரம்பம்: முதல் உறுப்பு <strong>${arr[0]}</strong> (Index [0]) ஏற்கனவே வரிசைப்படுத்தப்பட்டதாகக் கருதப்படுகிறது.`
+            });
+
+            for (let i = 1; i < n; i++) {
+                const key = arr[i];
+                let j = i - 1;
+
+                // Step: Pick key element
+                stepsList.push({
+                    arrayState: [...arr],
+                    i: i,
+                    key: key,
+                    keyIndex: i,
+                    j: null,
+                    shiftedIndex: null,
+                    sortedBoundary: i - 1,
+                    comparisons: totalComparisons,
+                    shifts: totalShifts,
+                    line: 3,
+                    text: `சுற்று ${i}: Index [${i}]-இல் உள்ள <strong>${key}</strong> முக்கிய எண்ணாக (Key) தேர்ந்தெடுக்கப்பட்டது.`
+                });
+
+                // Step: Set j = i - 1
+                stepsList.push({
+                    arrayState: [...arr],
+                    i: i,
+                    key: key,
+                    keyIndex: i,
+                    j: j,
+                    shiftedIndex: null,
+                    sortedBoundary: i - 1,
+                    comparisons: totalComparisons,
+                    shifts: totalShifts,
+                    line: 4,
+                    text: `சுட்டி <strong>j = ${j}</strong> என அமைக்கப்பட்டு முந்தைய வரிசைப்படுத்தப்பட்ட பகுதியுடன் ஒப்பிடத் தயாராகிறது.`
+                });
+
+                // While loop check
+                while (j >= 0) {
+                    totalComparisons++;
+
+                    // Comparison Step
+                    stepsList.push({
+                        arrayState: [...arr],
+                        i: i,
+                        key: key,
+                        keyIndex: i,
+                        j: j,
+                        shiftedIndex: null,
+                        sortedBoundary: i - 1,
+                        comparisons: totalComparisons,
+                        shifts: totalShifts,
+                        line: 5,
+                        text: `ஒப்பீடு: Index [${j}] (${arr[j]}) &gt; Key (${key}) என சோதிக்கப்படுகிறது...`
+                    });
+
+                    if (arr[j] > key) {
+                        // Shift element right
+                        arr[j + 1] = arr[j];
+                        totalShifts++;
+
+                        stepsList.push({
+                            arrayState: [...arr],
+                            i: i,
+                            key: key,
+                            keyIndex: null,
+                            j: j,
+                            shiftedIndex: j + 1,
+                            sortedBoundary: i - 1,
+                            comparisons: totalComparisons,
+                            shifts: totalShifts,
+                            line: 6,
+                            text: `${arr[j]} &gt; ${key} என்பதால், ${arr[j]} ஒரு இடம் வலதுபுறமாக (Index [${j + 1}]-க்கு) நகர்த்தப்பட்டது!`
+                        });
+
+                        j = j - 1;
+
+                        stepsList.push({
+                            arrayState: [...arr],
+                            i: i,
+                            key: key,
+                            keyIndex: null,
+                            j: j,
+                            shiftedIndex: null,
+                            sortedBoundary: i - 1,
+                            comparisons: totalComparisons,
+                            shifts: totalShifts,
+                            line: 7,
+                            text: `சுட்டி இடதுபுறம் நகர்ந்தது (j = ${j}). அடுத்த எண்ணுடன் ஒப்பிடப்படும்.`
+                        });
+                    } else {
+                        // Stop shifting because arr[j] <= key
+                        stepsList.push({
+                            arrayState: [...arr],
+                            i: i,
+                            key: key,
+                            keyIndex: null,
+                            j: j,
+                            shiftedIndex: null,
+                            sortedBoundary: i - 1,
+                            comparisons: totalComparisons,
+                            shifts: totalShifts,
+                            line: 5,
+                            text: `${arr[j]} &le; ${key} என்பதால் மேலும் நகர்த்த வேண்டியதில்லை. தகுதியான இடம் கிடைத்துவிட்டது!`
+                        });
+                        break;
+                    }
+                }
+
+                // Insert the key into its correct position: arr[j + 1] = key
+                arr[j + 1] = key;
+
+                stepsList.push({
+                    arrayState: [...arr],
+                    i: i,
+                    key: key,
+                    keyIndex: j + 1,
+                    j: null,
+                    shiftedIndex: null,
+                    sortedBoundary: i,
+                    comparisons: totalComparisons,
+                    shifts: totalShifts,
+                    line: 8,
+                    text: `முக்கிய எண் <strong>${key}</strong> சரியான இடத்தில் (Index [${j + 1}]-இல்) செருகப்பட்டது! இப்போது Index 0 முதல் ${i} வரை வரிசைப்படுத்தப்பட்டது.`
+                });
+            }
+
+            // Completed final step
+            stepsList.push({
+                arrayState: [...arr],
+                i: n,
+                key: null,
+                keyIndex: null,
+                j: null,
+                shiftedIndex: null,
+                sortedBoundary: n - 1,
+                comparisons: totalComparisons,
+                shifts: totalShifts,
+                line: 9,
+                text: `வெற்றி! அனைத்து எண்களும் வெற்றிகரமாக செருகு வரிசையாக்கம் (Insertion Sort) செய்யப்பட்டன!`
+            });
+
+            return stepsList;
+        }
+
+        function renderInitialArrayStructure() {
+            arrayContainer.innerHTML = '';
+            const maxVal = Math.max(...array, 1);
+
+            array.forEach((val, idx) => {
+                const barWrapper = document.createElement('div');
+                barWrapper.id = `bar-wrapper-${idx}`;
+                barWrapper.className = 'flex flex-col items-center justify-end h-full flex-1 max-w-[56px] min-w-[34px]';
+
+                const heightPx = Math.max(38, Math.round((val / maxVal) * 160));
+
+                barWrapper.innerHTML = `
+                    <div id="pointer-badge-${idx}" class="h-6 flex items-center justify-center text-[10px] font-bold mb-1"></div>
+                    <div id="bar-${idx}" 
+                         style="height: ${heightPx}px" 
+                         class="bar-transition w-full bg-slate-800 border-2 border-slate-700 rounded-xl flex flex-col items-center justify-between py-1.5 shadow-md">
+                        <span id="bar-val-${idx}" class="text-xs sm:text-sm font-bold text-slate-100">${val}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 font-mono mt-1.5">idx ${idx}</span>
+                `;
+                arrayContainer.appendChild(barWrapper);
+            });
+        }
+
+        function updateUIForStep(stepIndex) {
+            if (stepIndex < 0 || stepIndex >= steps.length) return;
+            const step = steps[stepIndex];
+            const maxVal = Math.max(...step.arrayState, 1);
+
+            // 1. Python Code Line Highlighting
+            for (let k = 1; k <= 9; k++) {
+                const line = document.getElementById(`codeLine${k}`);
+                if (line) line.classList.remove('code-highlight');
+            }
+            if (step.line) {
+                const activeLine = document.getElementById(`codeLine${step.line}`);
+                if (activeLine) activeLine.classList.add('code-highlight');
+            }
+
+            // 2. Metrics & Status Updates
+            statI.textContent = (step.i !== null && step.i < array.length) ? `i = ${step.i}` : (step.i >= array.length ? 'முடிந்தது' : '-');
+            statKey.textContent = step.key !== null ? step.key : '-';
+            statJ.textContent = (step.j !== null && step.j >= 0) ? `j = ${step.j}` : (step.j !== null && step.j < 0 ? 'j = -1' : '-');
+            statComparisons.textContent = step.comparisons;
+            statShifts.textContent = step.shifts;
+            explanationText.innerHTML = step.text;
+
+            // 3. Update Elements in DOM
+            step.arrayState.forEach((val, idx) => {
+                const barNode = document.getElementById(`bar-${idx}`);
+                const valNode = document.getElementById(`bar-val-${idx}`);
+                const ptrNode = document.getElementById(`pointer-badge-${idx}`);
+
+                if (!barNode || !valNode || !ptrNode) return;
+
+                const heightPx = Math.max(38, Math.round((val / maxVal) * 160));
+                barNode.style.height = `${heightPx}px`;
+                valNode.textContent = val;
+                ptrNode.innerHTML = '';
+
+                // Reset base styling
+                barNode.className = 'bar-transition w-full rounded-xl flex flex-col items-center justify-between py-1.5 shadow-md border-2 ';
+
+                if (idx === step.shiftedIndex) {
+                    // Shifted right (Rose)
+                    barNode.classList.add('bg-rose-600/70', 'border-rose-400', 'scale-105', 'shadow-rose-500/40', 'shadow-lg');
+                } else if (idx === step.keyIndex) {
+                    // Active Key being inserted (Amber)
+                    barNode.classList.add('bg-amber-500/80', 'border-amber-400', 'scale-105', 'text-amber-100', 'shadow-amber-500/30', 'shadow-md');
+                } else if (idx === step.j) {
+                    // Comparing with arr[j] (Indigo)
+                    barNode.classList.add('bg-indigo-500/50', 'border-indigo-400', 'scale-105', 'text-indigo-200');
+                } else if (idx <= step.sortedBoundary) {
+                    // Sorted subarray portion (Emerald)
+                    barNode.classList.add('bg-emerald-600/30', 'border-emerald-500', 'text-emerald-200');
+                } else {
+                    // Unsorted standard portion
+                    barNode.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-100');
+                }
+
+                // Add pointer badges
+                const badges = [];
+                if (idx === step.i && step.i < array.length) {
+                    badges.push('<span class="px-1.5 py-0.5 rounded bg-sky-500 text-slate-950 font-bold">i</span>');
+                }
+                if (idx === step.keyIndex && step.key !== null) {
+                    badges.push('<span class="px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-bold">Key</span>');
+                }
+                if (idx === step.j) {
+                    badges.push('<span class="px-1.5 py-0.5 rounded bg-indigo-400 text-slate-950 font-bold">j</span>');
+                }
+                if (badges.length > 0) {
+                    ptrNode.innerHTML = `<div class="flex gap-1">${badges.join('')}</div>`;
+                }
+            });
+        }
+
+        function stepForward() {
+            if (currentStepIndex < steps.length - 1) {
+                currentStepIndex++;
+                updateUIForStep(currentStepIndex);
+            } else {
+                pauseAnimation();
+            }
+        }
+
+        function playAnimation() {
+            if (currentStepIndex >= steps.length - 1) {
+                currentStepIndex = -1;
+            }
+            isPlaying = true;
+            playIcon.className = 'fa-solid fa-pause';
+            playText.textContent = 'நிறுத்து';
+
+            timer = setInterval(() => {
+                if (currentStepIndex < steps.length - 1) {
+                    stepForward();
+                } else {
+                    pauseAnimation();
+                }
+            }, animationSpeed);
+        }
+
+        function pauseAnimation() {
+            isPlaying = false;
+            playIcon.className = 'fa-solid fa-play';
+            playText.textContent = 'தொடங்கு';
+            if (timer) clearInterval(timer);
+        }
+
+        function prepareSteps() {
+            pauseAnimation();
+            steps = generateInsertionSortSteps(array);
+            currentStepIndex = 0;
+            renderInitialArrayStructure();
+            updateUIForStep(currentStepIndex);
+        }
+
+        function parseAndApplyInput() {
+            const rawText = customArrayInput.value.trim();
+            inputError.classList.add('hidden');
+            inputError.textContent = '';
+
+            if (!rawText) {
+                showInputError('தயவுசெய்து எண்களை உள்ளிடவும்.');
+                return;
+            }
+
+            const parts = rawText.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            const parsedNumbers = [];
+
+            for (const part of parts) {
+                const num = Number(part);
+                if (isNaN(num) || !Number.isInteger(num)) {
+                    showInputError(`'${part}' செல்லுபடியாகாத எண்! முழு எண்களை மட்டுமே உள்ளிடவும்.`);
+                    return;
+                }
+                if (num < 1 || num > 999) {
+                    showInputError('எண்கள் 1 முதல் 999-க்குள் இருக்க வேண்டும்.');
+                    return;
+                }
+                parsedNumbers.push(num);
+            }
+
+            if (parsedNumbers.length < 3) {
+                showInputError('குறைந்தது 3 எண்களாவது உள்ளிடவும்.');
+                return;
+            }
+            if (parsedNumbers.length > 14) {
+                showInputError('திரை காட்சிக்கு உகந்ததாக அதிகபட்சம் 14 எண்களை மட்டும் உள்ளிடவும்.');
+                return;
+            }
+
+            array = parsedNumbers;
+            prepareSteps();
+        }
+
+        function showInputError(msg) {
+            inputError.textContent = msg;
+            inputError.classList.remove('hidden');
+        }
+
+        // Event bindings
+        btnSetArray.addEventListener('click', parseAndApplyInput);
+        customArrayInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                parseAndApplyInput();
+            }
+        });
+
+        btnPlay.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                if (currentStepIndex === -1 || currentStepIndex >= steps.length - 1) {
+                    prepareSteps();
+                }
+                playAnimation();
+            }
+        });
+
+        btnStep.addEventListener('click', () => {
+            pauseAnimation();
+            if (currentStepIndex === -1) {
+                prepareSteps();
+            } else {
+                stepForward();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            prepareSteps();
+        });
+
+        btnRandomArray.addEventListener('click', () => {
+            const count = Math.floor(Math.random() * 4) + 7; // 7 to 10 numbers
+            const randomList = [];
+            for (let i = 0; i < count; i++) {
+                randomList.push(Math.floor(Math.random() * 90) + 10);
+            }
+            array = randomList;
+            customArrayInput.value = array.join(', ');
+            inputError.classList.add('hidden');
+            prepareSteps();
+        });
+
+        speedSlider.addEventListener('input', (e) => {
+            animationSpeed = 2000 - parseInt(e.target.value);
+            if (isPlaying) {
+                pauseAnimation();
+                playAnimation();
+            }
+        });
+
+        // Initialize on page load
+        window.onload = function() {
+            prepareSteps();
+        };
+    </script>
+</body>
+</html>
