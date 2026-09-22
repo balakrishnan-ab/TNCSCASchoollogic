@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>12-ஆம் வகுப்பு கணினி அறிவியல் - மெமரி கார்டு சேலஞ்ச் (10 வினாக்கள்)</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tamil: ['"Mukta Malar"', 'Latha', 'Vijaya', 'system-ui', 'sans-serif'],
+            display: ['"Outfit"', '"Mukta Malar"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Mukta Malar', 'Latha', 'Vijaya', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: #080c14;
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 3D Perspective Card Flip */
+    .perspective-container {
+      perspective: 1000px;
+    }
+    .card-flip-inner {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .card-flip-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face-front, .card-face-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .card-face-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Exploding and disappearing card animation */
+    @keyframes cardBurstDisappear {
+      0% {
+        transform: rotateY(180deg) scale(1);
+        filter: brightness(1);
+        opacity: 1;
+      }
+      30% {
+        transform: rotateY(180deg) scale(1.15);
+        filter: brightness(1.6) drop-shadow(0 0 25px rgba(52, 211, 153, 0.9));
+      }
+      100% {
+        transform: rotateY(180deg) scale(0.05);
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+    .card-exploded {
+      animation: cardBurstDisappear 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      pointer-events: none !important;
+    }
+    .card-vacant-slot {
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+
+    /* Hint Highlight Glow */
+    @keyframes hintPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.8); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+    }
+    .hint-highlight {
+      animation: hintPulse 0.5s ease-in-out 3;
+      border-color: #fbbf24 !important;
+      z-index: 25;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col justify-between min-h-screen">
+
+  <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-3 py-2 sm:px-5 sm:py-2.5 shadow-xl w-full">
+    <div class="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2.5">
+      
+      <!-- Brand Details -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-lg shadow-lg shadow-cyan-500/25 border border-cyan-400/30">
+            💻
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="font-extrabold text-base sm:text-lg text-white tracking-wide">12-ஆம் வகுப்பு கணினி அறிவியல் மெமரி சேலஞ்ச்</h1>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                10 வினாக்கள் பயிற்சி
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile toolbar -->
+        <div class="md:hidden flex items-center gap-1.5">
+          <button onclick="toggleInstructionsModal()" title="விளையாடும் முறை" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 text-xs">ℹ️</button>
+          <button onclick="toggleFullscreen()" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 text-xs">⛶</button>
+          <button onclick="downloadSelfHtml()" title="பதிவிறக்கு" class="p-2 rounded-lg bg-emerald-700 text-white font-bold text-xs">📥</button>
+        </div>
+      </div>
+
+      <div class="flex items-center flex-wrap gap-2">
+        <!-- Level Dropdown Selector (4 Levels) -->
+        <div class="relative flex-1 sm:flex-none">
+          <select id="levelSelect" onchange="changeLevel(parseInt(this.value))" 
+                  class="w-full sm:w-auto bg-slate-800 text-cyan-300 border border-cyan-500/50 rounded-lg px-2.5 py-1.5 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer shadow-inner">
+            <option value="1">படிநிலை 1: 1-மதிப்பெண் (10 வினாக்கள்)</option>
+            <option value="2">படிநிலை 2: 2-மதிப்பெண் (10 வினாக்கள்)</option>
+            <option value="3">படிநிலை 3: 3-மதிப்பெண் (10 வினாக்கள்)</option>
+            <option value="4">படிநிலை 4: 5-மதிப்பெண் (10 வினாக்கள்)</option>
+          </select>
+        </div>
+
+        <!-- Hint Button -->
+        <button id="hintBtn" onclick="triggerHint()" title="ஒரு ஜோடியை ஒளிரச் செய்"
+                class="flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 shadow-sm">
+          <span>💡 உதவி</span>
+          <span id="hintCountBadge" class="bg-amber-400 text-slate-950 text-[11px] font-black rounded-full w-4 h-4 flex items-center justify-center">3</span>
+        </button>
+
+        <!-- Revision Sheet Modal Toggle -->
+        <button onclick="openStudyModal()" title="இந்த படிநிலையின் 10 வினா-விடைகளையும் விரைவாகப் படிக்க"
+                class="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+          📖 வினாக்குறிப்புகள்
+        </button>
+
+        <!-- Sound Toggle -->
+        <button id="soundToggle" onclick="toggleSound()" title="ஒலியை இயக்கு / நிறுத்து"
+                class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+          <span id="soundIcon">🔊 ஒலி: ஆன்</span>
+        </button>
+
+        <!-- Fullscreen Button -->
+        <button onclick="toggleFullscreen()" title="முழுத்திரை"
+                class="hidden md:inline-flex bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">
+          ⛶ முழுத்திரை
+        </button>
+
+        <!-- Direct Save HTML Button -->
+        <button onclick="downloadSelfHtml()" title="இக்கோப்பை ஆஃப்லைனில் சேமிக்க"
+                class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 px-3 py-1.5 rounded-lg text-xs font-extrabold shadow-md transition active:scale-95 flex items-center gap-1">
+          <span>📥 பதிவிறக்கு</span>
+        </button>
+
+        <!-- Restart Button -->
+        <button onclick="restartGame()" title="சுற்றை மீண்டும் தொடங்கு"
+                class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-md transition active:scale-95">
+          🔄 ரீசெட்
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-around sm:justify-end gap-3 sm:gap-6 text-xs sm:text-sm">
+      <div class="flex items-center gap-1 text-slate-400">
+        <span>⏱️ நேரம்:</span>
+        <span id="timerDisplay" class="font-mono font-bold text-cyan-300">00:00</span>
+      </div>
+      <div class="flex items-center gap-1 text-slate-400">
+        <span>🎯 நகர்வுகள்:</span>
+        <span id="movesDisplay" class="font-bold text-white">0</span>
+      </div>
+      <div class="flex items-center gap-1 text-slate-400">
+        <span>✅ பொருத்தங்கள்:</span>
+        <span id="matchesDisplay" class="font-bold text-emerald-400">0 / 10</span>
+      </div>
+      <div class="flex items-center gap-1 text-slate-400">
+        <span>⭐ மதிப்பெண்:</span>
+        <span id="scoreDisplay" class="font-bold text-amber-300">0 புள்ளிகள்</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full px-2 sm:px-4 py-3 flex-1 flex flex-col lg:flex-row gap-3 sm:gap-4 items-start">
+    
+    <!-- LEFT SIDE: 20-CARDS GRID (4 ROWS × 5 COLUMNS) -->
+    <section class="w-full lg:w-5/12 xl:w-[45%] bg-slate-900/80 p-2 sm:p-3 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-start">
+      <div class="flex items-center justify-between mb-2 px-1">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span id="gridTitle" class="font-bold text-xs text-slate-300">அட்டைகள் பலகை (4 × 5 = 20 அட்டைகள்)</span>
+        </div>
+        <span class="text-[11px] font-bold text-cyan-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">10 ஜோடிகள்</span>
+      </div>
+
+      <!-- 20 Cards Dynamic Grid -->
+      <div id="cardsGrid" 
+           class="grid grid-cols-4 sm:grid-cols-5 gap-1.5 sm:gap-2 select-none w-full">
+        <!-- Cards injected dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE: FULL QUESTION & ANSWER READING PANELS -->
+    <aside class="w-full lg:w-7/12 xl:w-[55%] flex flex-col gap-3 flex-1">
+
+      <!-- QUESTION DISPLAY CONTAINER -->
+      <div id="qCardContentBox" class="w-full h-auto min-h-[120px] bg-gradient-to-br from-slate-900/95 to-indigo-950/40 rounded-2xl border-2 border-indigo-500/50 p-4 sm:p-5 shadow-xl transition-all duration-200">
+        <div class="flex items-start gap-3">
+          <span class="text-xl sm:text-2xl select-none mt-0.5">❓</span>
+          <div>
+            <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">வினா விவரம் (Question)</span>
+            <p id="qCardText" class="text-slate-400 text-sm sm:text-base md:text-lg font-medium leading-relaxed break-words">
+              இடது பலகையிலுள்ள ஏதேனும் ஓர் அட்டையைத் திருப்புக...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANSWER DISPLAY CONTAINER -->
+      <div id="aCardContentBox" class="w-full h-auto min-h-[120px] bg-gradient-to-br from-slate-900/95 to-emerald-950/40 rounded-2xl border-2 border-emerald-500/50 p-4 sm:p-5 shadow-xl transition-all duration-200">
+        <div class="flex items-start gap-3">
+          <span class="text-xl sm:text-2xl select-none mt-0.5">💡</span>
+          <div>
+            <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">பொருத்தமான விடை (Answer)</span>
+            <p id="aCardText" class="text-slate-400 text-sm sm:text-base md:text-lg font-medium leading-relaxed break-words">
+              அதற்குப் பொருத்தமான மற்றொரு விடை அட்டையைத் திருப்புக...
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIPS BANNER -->
+      <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+        <span>🎯 அட்டைகளைச் சரியாக இணைத்தால், அவை மெதுவாக மலர் தூவலுடன் மறைந்துவிடும்!</span>
+        <span class="text-cyan-400 font-bold hidden sm:inline">10 / 10 இலக்கு</span>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- INSTRUCTIONS MODAL -->
+  <div id="instructionModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-cyan-500/60 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🎮</span>
+          <h3 class="font-extrabold text-lg text-cyan-300">விளையாடும் முறை</h3>
+        </div>
+        <button onclick="toggleInstructionsModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+      </div>
+      <ul class="text-xs sm:text-sm text-slate-300 space-y-2.5 leading-relaxed">
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-400 font-bold">1.</span>
+          <span>ஒவ்வொரு நிலையிலும் 10 வினாக்களும் 10 விடைகளும் கலந்து மொத்தம் <strong>20 அட்டைகளாக</strong> இருக்கும்.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-indigo-400 font-bold">2.</span>
+          <span>பலகையிலுள்ள ஏதேனும் இரு அட்டைகளைக் கிளிக் செய்து திருப்புக. வலதுபுறம் வினாவும் விடையும் தெளிவாகத் தோன்றும்.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-emerald-400 font-bold">3.</span>
+          <span>சரியான ஜோடி அமைந்தால், மலர் தூவல் அனிமேஷனுடன் அவ்விரு அட்டைகளும் மறைந்துவிடும்.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-amber-400 font-bold">4.</span>
+          <span>சிரமம் ஏற்படும் போது <strong>'💡 உதவி'</strong> பொத்தானைப் பயன்படுத்தி சரியான ஜோடியைக் கண்டறியலாம்.</span>
+        </li>
+      </ul>
+      <div class="mt-5 pt-3 border-t border-slate-800 flex justify-end">
+        <button onclick="toggleInstructionsModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold py-2 px-4 rounded-xl text-sm transition shadow-lg shadow-cyan-600/30">
+          விளையாட்டைத் தொடங்கு!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VICTORY MODAL -->
+  <div id="winModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-amber-400 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl relative overflow-hidden">
+      <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-amber-400/30">
+        🏆
+      </div>
+      
+      <h3 class="text-xl sm:text-2xl font-black text-white" id="modalTitle">அற்புதம்! முழு வெற்றி!</h3>
+      <p class="text-sm text-cyan-300 mt-1 font-bold" id="modalLevelName">படிநிலை 1 நிறைவுற்றது</p>
+      
+      <div class="grid grid-cols-3 gap-2 my-5 bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <div>
+          <span class="block text-xs text-slate-400">நேரம்</span>
+          <span id="modalTime" class="font-mono font-bold text-white text-base">00:00</span>
+        </div>
+        <div>
+          <span class="block text-xs text-slate-400">நகர்வுகள்</span>
+          <span id="modalMoves" class="font-bold text-cyan-400 text-base">0</span>
+        </div>
+        <div>
+          <span class="block text-xs text-slate-400">மதிப்பெண்</span>
+          <span id="modalScore" class="font-bold text-amber-400 text-base">0</span>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-300 mb-5 leading-relaxed">
+        அனைத்து 10 வினா-விடைகளையும் மிகச் சரியாகப் பொருத்தி சாதனை படைத்துவிட்டீர்கள்!
+      </p>
+
+      <div class="flex items-center justify-center gap-3">
+        <button onclick="restartGame()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition">
+          மீண்டும் ஆட 🔄
+        </button>
+        <button id="nextLevelBtn" onclick="goToNextLevel()" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold py-2.5 px-4 rounded-xl text-sm shadow-lg shadow-emerald-500/30 transition">
+          அடுத்த படிநிலை ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVISION STUDY SHEET MODAL -->
+  <div id="studyModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <div>
+          <h3 id="studyModalTitle" class="font-bold text-base sm:text-lg text-cyan-300">வினா-விடை விரைவுப் பார்வை</h3>
+          <p class="text-xs text-slate-400">தேர்வுக்கு முன் விரைவாக வாசித்து மனனம் செய்ய</p>
+        </div>
+        <button onclick="closeStudyModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-lg flex items-center justify-center">
+          ✕
+        </button>
+      </div>
+
+      <div id="studyModalBody" class="p-4 overflow-y-auto space-y-3 flex-1">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="p-3 border-t border-slate-800 bg-slate-950/90 flex justify-end gap-2">
+        <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200">
+          🖨️ அச்சிடு (Print)
+        </button>
+        <button onclick="closeStudyModal()" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-extrabold text-white">
+          விளையாட்டிற்கு திரும்பு
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 border-t border-slate-900 py-2.5 px-4 text-center text-[11px] text-slate-400">
+    <p>12-ஆம் வகுப்பு கணினி அறிவியல் • தமிழ்நாடு அரசுப் பாடத்திட்டம் (தமிழ் வழி) • 4 படிநிலைகள் (10 வினாக்கள் வீதம்)</p>
+  </footer>
+
+  <script>
+    const LEVELS_DATA = {
+      1: {
+        name: "படிநிலை 1: 1 மதிப்பெண் வினாக்கள் (10 வினாக்கள்)",
+        pairs: [
+          { id: 1, q: "ஒரு குறிப்பிட்ட செயலைச் செய்வதற்காக வடிவமைக்கப்பட்ட நிரலின் சிறிய பகுதி எது?", a: "துணை நிரல்கள் (Subroutines)" },
+          { id: 2, q: "மாறியின் பெயரை ஒரு பொருளுடன் இணைக்கும் செயல்முறை எவ்வாறு அழைக்கப்படும்?", a: "மேப்பிங் (Mapping)" },
+          { id: 3, q: "பைத்தானில் அடுக்குச் செயல்பாட்டிற்கான (Exponentiation) செயற்குறி எது?", a: "** (இரு பெருக்கல் குறியீடு)" },
+          { id: 4, q: "லீனியர் சர்ச் (Linear Search) நெறிமுறையின் மிகச்சிறந்த நேரச் சிக்கல் என்ன?", a: "O(1)" },
+          { id: 5, q: "பைத்தானில் பயனர் வரையறுக்கும் செயற்கூறை உருவாக்கப் பயன்படும் சிறப்புச் சொல் எது?", a: "def" },
+          { id: 6, q: "சரம் ஒன்று தனக்குள் மற்றொரு சரத்தைக் கொண்டுள்ளதா எனப் பார்க்க உதவும் செயற்குறி எது?", a: "in / not in (உறுப்பினர் செயற்குறி)" },
+          { id: 7, q: "range(2, 10, 2) என்பதன் சரியான பட்டியல் வெளியீடு எது?", a: "[2, 4, 6, 8]" },
+          { id: 8, q: "பைத்தானில் மாற்றியமைக்க முடியாத (Immutable) அடைப்புக் குறியீட்டுத் தொடர் தரவுவகை எது?", a: "Tuple (டியூப்பிள்)" },
+          { id: 9, q: "இனக்குழுவின் பொருளை உருவாக்கும்போது தானாகவே இயக்கப்படும் சிறப்புக் கன்ஸ்ட்ரக்டர் முறை எது?", a: "__init__()" },
+          { id: 10, q: "மடக்கின் தற்போதைய சுழற்சியை மட்டும் தவிர்த்துவிட்டு அடுத்த சுழற்சிக்குச் செல்லும் தாவல் கூற்று எது?", a: "continue" }
+        ]
+      },
+      2: {
+        name: "படிநிலை 2: 2 மதிப்பெண் வினாக்கள் (10 வினாக்கள்)",
+        pairs: [
+          { id: 1, q: "இடைமுகம் (Interface) மற்றும் செயல்படுத்துதல் (Implementation) - வேறுபடுத்துக.", a: "இடைமுகம்: என்ன செய்ய வேண்டும் என்பதை அறிவிக்கும். செயல்படுத்துதல்: எவ்வாறு நிறைவேற்ற வேண்டும் என்ற நிரலைக் கொண்டிருக்கும்." },
+          { id: 2, q: "சுழற்சி (Recursion) என்றால் என்ன?", a: "ஒரு செயற்கூறு தனக்குத்தானே மீண்டும் மீண்டும் அழைத்துக் கொள்ளும் நிரலாக்க முறை. இதற்கு அடிப்படை நிபந்தனை அவசியம்." },
+          { id: 3, q: "தரவு அருவமாக்கம் (Data Abstraction) என்றால் என்ன?", a: "செயல்படுத்தும் நுணுக்கங்களை மறைத்து, பயனருக்குத் தேவையான இன்றியமையாத தகவல்களை மட்டும் வழங்கும் முறை." },
+          { id: 4, q: "ஆக்கி (Constructor) மற்றும் செலக்டார் (Selector) - குறிப்பு வரைக.", a: "ஆக்கி: அருவத் தரவு வகையை (ADT) உருவாக்கப் பயன்படும். செலக்டார்: அத்தரவிலிருந்து தகவல்களைப் பிரித்தெடுக்க உதவும்." },
+          { id: 5, q: "உள்ளூர் எல்லை (Local Scope) என்றால் என்ன?", a: "ஒரு செயற்கூறின் எல்லைக்குள் வரையறுக்கப்பட்டு, அச்செயற்கூறுக்குள் மட்டுமே அணுக முடிகின்ற மாறிகள் ஆகும்." },
+          { id: 6, q: "நெறிமுறை (Algorithm) என்றால் என்ன?", a: "ஒரு குறிப்பிட்ட சிக்கலைத் தீர்ப்பதற்காக வரையறுக்கப்பட்ட, வரிசைப்படியான படிநிலைக் கட்டளைகளின் தொகுப்பு." },
+          { id: 7, q: "நேரச் சிக்கல் (Time Complexity) என்றால் என்ன?", a: "ஒரு நெறிமுறையை முழுமையாகச் செயல்படுத்தி முடிக்க அது எடுத்துக்கொள்ளும் மொத்தச் செயல்பாடுகளின் கால அளவு." },
+          { id: 8, q: "பைத்தானில் உள்ள வரம்புகாட்டிகள் (Delimiters) இரண்டினை எழுதுக.", a: "அடைப்புக்குறிகள் ( ), [ ], { }, காற்புள்ளி (,), முக்காற்புள்ளி (:) போன்றவை." },
+          { id: 9, q: "pass கூற்றின் முதன்மைப் பயன்பாடு என்ன?", a: "இது ஒரு வெற்றுச் செயல் கூற்றாகும் (Null Statement); நிரல் அமைப்பில் எதுவும் செய்யாமல் இருக்க உதவும்." },
+          { id: 10, q: "List மற்றும் Tuple - இரண்டு முக்கிய வேறுபாடுகள் யாவை?", a: "பட்டியல் (List): சதுர அடைப்புக்குறி [ ], மாற்றக்கூடியது. டியூப்பிள் (Tuple): பிறை அடைப்புக்குறி ( ), மாற்ற முடியாதது." }
+        ]
+      },
+      3: {
+        name: "படிநிலை 3: 3 மதிப்பெண் வினாக்கள் (10 வினாக்கள்)",
+        pairs: [
+          { id: 1, q: "தூய செயற்கூறு (Pure Function) என்றால் என்ன? எ.கா தருக.", a: "ஒரே உள்ளீட்டிற்கு எப்போதும் ஒரே வெளியீட்டைத் தரும், பக்கவிளைவுகள் (Side effects) இல்லாத செயற்கூறு. எ.கா: strlen(), square(x)." },
+          { id: 2, q: "நிரலில் ஜோடி (Pair) என்றால் என்ன? எ.கா தருக.", a: "இரண்டு உருப்படிகளை ஒன்றாக இணைத்துச் சேமிக்கும் கலப்புத் தரவு வடிவம். எ.கா: pair = [10, 20]." },
+          { id: 3, q: "நெறிமுறையின் முக்கியப் பண்பியல்புகள் மூன்றை விளக்குக.", a: "1. Finiteness (முடிவுறு தன்மை) 2. Definiteness (தெளிவுத்தன்மை) 3. Input (பூஜ்ஜியம் அல்லது மேற்பட்ட உள்ளீடுகள்)." },
+          { id: 4, q: "நெறிமுறை மற்றும் நிரல் (Algorithm vs Program) - வேறுபடுத்துக.", a: "நெறிமுறை: சிக்கலைத் தீர்க்கும் தர்க்க வழிமுறை (நேரடியாக இயங்காது). நிரல்: கணினி மொழியில் எழுதப்பட்டு நேரடியாக இயங்குவது." },
+          { id: 5, q: "டைனமிக் புரோகிராமிங் (Dynamic Programming) என்றால் என்ன?", a: "சிக்கலை சிறிய துணைச் சிக்கல்களாகப் பிரித்து, அவற்றின் தீர்வுகளை சேமித்து வைத்து (Memoization) மீண்டும் பயன்படுத்தும் உத்தி." },
+          { id: 6, q: "பைத்தானில் பயன்படும் தர்க்க செயற்குறிகளை (Logical Operators) விளக்குக.", a: "and (இரண்டும் மெய்), or (ஏதேனும் ஒன்று மெய்), not (மெய்யை பொய்யாகவும் பொய்யை மெய்யாகவும் மாற்றும்)." },
+          { id: 7, q: "அநாமதேய அல்லது லேம்ப்டா (Lambda) செயற்கூறு என்றால் என்ன?", a: "def என்ற சொல் இல்லாமல், lambda என்ற சிறப்புச் சொல்லைப் பயன்படுத்தி ஒற்றை வரியில் உருவாக்கப்படும் பெயரில்லா செயற்கூறு." },
+          { id: 8, q: "மாறிகளின் உலகளாவிய எல்லை (Global Scope) பற்றி குறிப்பு வரைக.", a: "செயற்கூறுகளுக்கு வெளியே அறிவிக்கப்படும் மாறிகள்; நிரலின் எந்தப் பகுதியிலிருந்தும் இந்த மாறிகளை அணுக முடியும்." },
+          { id: 9, q: "append() மற்றும் extend() பட்டியலின் செயற்கூறுகளை வேறுபடுத்துக.", a: "append(): பட்டியலின் இறுதியில் ஒரே ஒரு புதிய உறுப்பை சேர்க்கும். extend(): மற்றொரு முழுப் பட்டியலை அல்லது பல உறுப்புகளை இணைக்கும்." },
+          { id: 10, q: "பைத்தானில் உள்ள Set (கணம்) தரவு வகையின் முக்கியப் பண்புகள் யாவை?", a: "வரிசைப்படுத்தப்படாத, மாற்றக்கூடிய மற்றும் நகல் உறுப்புகள் இல்லாத (No duplicates) நெளிவு அடைப்புக்குள் { } எழுதப்படும் தொகுப்பு." }
+        ]
+      },
+      4: {
+        name: "படிநிலை 4: 5 மதிப்பெண் வினாக்கள் (10 வினாக்கள்)",
+        pairs: [
+          { id: 1, q: "LEGB விதியை விரிவாக விளக்குக.", a: "மாறிகளின் எல்லை அணுகல் வரிசை: Local (உள் செயற்கூறு), Enclosed (வெளி செயற்கூறு), Global (நிரலின் உயர் மட்டம்), Built-in (உள்ளிணைந்த நூலக மாறிகள்)." },
+          { id: 2, q: "நெறிமுறையின் பண்பியல்புகளை (Characteristics of Algorithm) விளக்குக.", a: "1. உள்ளீடு (Input) 2. வெளியீடு (Output) 3. முடிவுறு தன்மை (Finiteness) 4. வரையறை (Definiteness) 5. செயல்திறன் 6. எளிமை." },
+          { id: 3, q: "பைத்தானின் டோக்கன்களைப் (Tokens in Python) பட்டியலிட்டு விளக்குக.", a: "1. குறிச்சொற்கள் (Keywords) 2. அடையாளங்காட்டிகள் (Identifiers) 3. மாறிலிகள் (Literals) 4. செயற்குறிகள் 5. வரம்புகாட்டிகள்." },
+          { id: 4, q: "பைத்தானின் மாற்று அல்லது கிளைப்பிரிவு கூற்றுகளை (Control Statements) விளக்குக.", a: "1. எளிய if (நிபந்தனை மெய்யானால் இயங்கும்) 2. if-else (மெய் மற்றும் பொய்க்கான வழிகள்) 3. if-elif-else (பல நிபந்தனைகளைச் சோதிக்க)." },
+          { id: 5, q: "செயற்கூறு செயலுருபுகளின் (Function Arguments) நான்கு வகைகளை விளக்குக.", a: "1. தேவையான செயலுருபுகள் 2. விசைச்சொல் செயலுருபுகள் 3. முன்னிருப்பு செயலுருபுகள் 4. மாறும் நீள செயலுருபுகள் (*args)." },
+          { id: 6, q: "பைனரி தேடல் (Binary Search) நெறிமுறையை விளக்குக.", a: "வரிசைப்படுத்தப்பட்ட பட்டியலின் நடு உறுப்பைக் (mid) கண்டறிந்து பாதியாகப் பிரித்து ஒப்பிட்டுத் தேடும் முறை; நேரச் சிக்கல் O(log n)." },
+          { id: 7, q: "குமிழி வரிசையாக்க (Bubble Sort) நெறிமுறையின் செயல்பாட்டை விவரி.", a: "அருகருகே உள்ள உறுப்புகளை ஒப்பிட்டு இடமாற்றம் செய்யும் முறை; ஒவ்வொரு சுற்றிலும் பெரிய உறுப்பு இறுதிக்குச் செல்லும்; நேரச் சிக்கல் O(n²)." },
+          { id: 8, q: "சரங்களைக் கையாளும் ஏதேனும் 5 உள்ளிணைந்த செயற்கூறுகளை விளக்குக.", a: "len() நீளம் அறிய, upper() பெரிய எழுத்தாக்க, lower() சிறிய எழுத்தாக்க, capitalize() முதல் எழுத்தைப் பெரிதாக்க, title() தலைப்பு எழுத்தமைக்க." },
+          { id: 9, q: "பட்டியலிலிருந்து உறுப்புகளை நீக்கப் பயன்படும் பல்வேறு வழிகள் யாவை?", a: "del கூற்று, clear() வெற்றுப் பட்டியலாக்க, pop(index) குறிப்பிட்ட சுட்டெண் உறுப்பை நீக்கித் தர, remove(value) குறிப்பிட்ட மதிப்பை நீக்க." },
+          { id: 10, q: "பைத்தானில் ஒரு இனக்குழுவை (Class) வரையறுத்து பொருளை உருவாக்கும் முறையை விவரி.", a: "class ClassName: என வரையறுக்க வேண்டும். பொருளை உருவாக்க obj = ClassName() என அழைக்க வேண்டும். obj.variable என அணுகலாம்." }
+        ]
+      }
+    };
+
+    let currentLevel = 1;
+    let cards = [];
+    let flippedCards = [];
+    let matchedPairsCount = 0;
+    let moves = 0;
+    let score = 0;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let hasTimerStarted = false;
+    let isBoardLocked = false;
+    let hintAvailable = 3;
+    let isSoundEnabled = true;
+
+    // Elements
+    const cardsGrid = document.getElementById('cardsGrid');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const movesDisplay = document.getElementById('movesDisplay');
+    const matchesDisplay = document.getElementById('matchesDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const gridTitle = document.getElementById('gridTitle');
+    const levelSelect = document.getElementById('levelSelect');
+    const hintCountBadge = document.getElementById('hintCountBadge');
+    const winModal = document.getElementById('winModal');
+    const studyModal = document.getElementById('studyModal');
+    const studyModalTitle = document.getElementById('studyModalTitle');
+    const studyModalBody = document.getElementById('studyModalBody');
+
+    const qCardText = document.getElementById('qCardText');
+    const aCardText = document.getElementById('aCardText');
+
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'flip') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'match') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.09);
+          osc.frequency.setValueAtTime(783.99, now + 0.18);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'mismatch') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.setValueAtTime(180, now + 0.12);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'victory') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const nOsc = ctx.createOscillator();
+            const nGain = ctx.createGain();
+            nOsc.connect(nGain);
+            nGain.connect(ctx.destination);
+            nOsc.type = 'triangle';
+            nOsc.frequency.setValueAtTime(freq, now + idx * 0.12);
+            nGain.gain.setValueAtTime(0.22, now + idx * 0.12);
+            nGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.12 + 0.3);
+            nOsc.start(now + idx * 0.12);
+            nOsc.stop(now + idx * 0.12 + 0.3);
+          });
+        }
+      } catch (err) {
+        console.log("Audio waiting for user interaction:", err);
+      }
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const soundIcon = document.getElementById('soundIcon');
+      if (isSoundEnabled) {
+        soundIcon.innerText = "🔊 ஒலி: ஆன்";
+      } else {
+        soundIcon.innerText = "🔇 ஒலி: ஆஃப்";
+      }
+    }
+
+    function initializeGame(levelNum) {
+      currentLevel = levelNum;
+      if (levelSelect) levelSelect.value = levelNum;
+      
+      const levelData = LEVELS_DATA[levelNum];
+      if (gridTitle) gridTitle.innerText = `${levelData.name} (4 × 5 = 20 அட்டைகள்)`;
+
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      hasTimerStarted = false;
+      if (timerDisplay) timerDisplay.innerText = "00:00";
+      moves = 0;
+      if (movesDisplay) movesDisplay.innerText = "0";
+      matchedPairsCount = 0;
+      if (matchesDisplay) matchesDisplay.innerText = "0 / 10";
+      score = 0;
+      if (scoreDisplay) scoreDisplay.innerText = "0 புள்ளிகள்";
+      flippedCards = [];
+      isBoardLocked = false;
+      hintAvailable = 3;
+      if (hintCountBadge) hintCountBadge.innerText = "3";
+      document.getElementById('hintBtn')?.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      resetPreviewPanel();
+
+      const cardDeck = [];
+      levelData.pairs.forEach(pair => {
+        cardDeck.push({
+          uid: `q-${pair.id}`,
+          pairId: pair.id,
+          type: 'question',
+          content: pair.q,
+          isFlipped: false,
+          isMatched: false
+        });
+        cardDeck.push({
+          uid: `a-${pair.id}`,
+          pairId: pair.id,
+          type: 'answer',
+          content: pair.a,
+          isFlipped: false,
+          isMatched: false
+        });
+      });
+
+      // Fisher-Yates Shuffle
+      for (let i = cardDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cardDeck[i], cardDeck[j]] = [cardDeck[j], cardDeck[i]];
+      }
+
+      cards = cardDeck;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      cardsGrid.innerHTML = '';
+      cards.forEach((card, index) => {
+        const cardContainer = document.createElement('div');
+        cardContainer.id = `card-slot-${index}`;
+        cardContainer.className = `perspective-container h-16 sm:h-20 md:h-22 lg:h-20 xl:h-24 w-full select-none ${card.isMatched ? 'card-vacant-slot' : 'cursor-pointer'}`;
+        cardContainer.setAttribute('data-index', index);
+        cardContainer.onclick = () => onCardClick(index);
+
+        const isQ = card.type === 'question';
+        const typeBadgeColor = isQ ? 'bg-indigo-900 text-indigo-200 border-indigo-500/50' : 'bg-emerald-900 text-emerald-200 border-emerald-500/50';
+        const typeIcon = isQ ? '❓' : '💡';
+        const typeLabel = isQ ? 'வினா' : 'விடை';
+
+        cardContainer.innerHTML = `
+          <div class="card-flip-inner relative w-full h-full rounded-lg sm:rounded-xl shadow-md transition-all duration-300 ${card.isFlipped ? 'is-flipped' : ''}" id="card-inner-${index}">
+            
+            <!-- CARD FRONT -->
+            <div class="card-face-front absolute inset-0 w-full h-full rounded-lg sm:rounded-xl bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900 border border-slate-700 hover:border-cyan-400 flex flex-col items-center justify-center p-1 text-center transition-all">
+              <span class="text-base sm:text-xl mb-0.5 filter drop-shadow">🎴</span>
+              <span class="text-[10px] sm:text-xs font-black text-slate-300">#${index + 1}</span>
+            </div>
+
+            <!-- CARD BACK -->
+            <div class="card-face-back absolute inset-0 w-full h-full rounded-lg sm:rounded-xl ${isQ ? 'bg-slate-900 border-2 border-indigo-400' : 'bg-slate-900 border-2 border-emerald-400'} flex flex-col justify-between p-1 sm:p-1.5 text-center shadow-lg overflow-hidden">
+              <div class="flex items-center justify-between w-full pb-0.5">
+                <span class="text-[9px] px-1 py-0.2 rounded border font-bold ${typeBadgeColor}">${typeIcon} ${typeLabel}</span>
+                <span class="text-[9px] font-mono text-slate-400 font-black">#${card.pairId}</span>
+              </div>
+              <div class="flex-1 flex items-center justify-center overflow-hidden my-0.5">
+                <p class="text-[9px] sm:text-[10.5px] font-semibold text-slate-100 line-clamp-2 leading-tight">
+                  ${card.content}
+                </p>
+              </div>
+              <div class="text-[8px] sm:text-[9px] text-slate-400 text-right font-medium">
+                ${card.isMatched ? '✓ சரி' : 'பொருத்துக'}
+              </div>
+            </div>
+
+          </div>
+        `;
+        cardsGrid.appendChild(cardContainer);
+      });
+    }
+
+    function onCardClick(index) {
+      if (isBoardLocked) return;
+      const clickedCard = cards[index];
+
+      if (clickedCard.isFlipped || clickedCard.isMatched) return;
+
+      if (!hasTimerStarted) {
+        startTimer();
+        hasTimerStarted = true;
+      }
+
+      clickedCard.isFlipped = true;
+      playSound('flip');
+      updateCardUI(index);
+      updateSidePreview(clickedCard);
+
+      flippedCards.push({ card: clickedCard, index: index });
+
+      if (flippedCards.length === 2) {
+        moves++;
+        if (movesDisplay) movesDisplay.innerText = moves;
+        evaluatePair();
+      }
+    }
+
+    function updateCardUI(index) {
+      const inner = document.getElementById(`card-inner-${index}`);
+      if (!inner) return;
+      if (cards[index].isFlipped) {
+        inner.classList.add('is-flipped');
+      } else {
+        inner.classList.remove('is-flipped');
+      }
+    }
+
+    function burstFlowerConfetti(x, y) {
+      const flowerSymbols = ['🌸', '🌺', '🌼', '🌻', '🌷', '✨', '💐', '🎉'];
+      const particleCount = 18;
+      for (let i = 0; i < particleCount; i++) {
+        const p = document.createElement('div');
+        const symbol = flowerSymbols[Math.floor(Math.random() * flowerSymbols.length)];
+        p.innerText = symbol;
+        p.className = 'fixed pointer-events-none z-50 select-none';
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.fontSize = `${Math.random() * 16 + 16}px`;
+        p.style.transition = 'transform 0.9s cubic-bezier(0.12, 0.82, 0.35, 1), opacity 0.9s ease-out';
+        p.style.transform = 'translate(-50%, -50%) scale(0.3)';
+        p.style.opacity = '1';
+        document.body.appendChild(p);
+
+        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.4;
+        const distance = Math.random() * 100 + 45;
+        const destX = Math.cos(angle) * distance;
+        const destY = Math.sin(angle) * distance - (Math.random() * 30);
+        const rotate = (Math.random() - 0.5) * 720;
+
+        requestAnimationFrame(() => {
+          p.style.transform = `translate(calc(-50% + ${destX}px), calc(-50% + ${destY}px)) rotate(${rotate}deg) scale(1.25)`;
+          p.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+          p.remove();
+        }, 950);
+      }
+    }
+
+    function evaluatePair() {
+      isBoardLocked = true;
+      const [first, second] = flippedCards;
+      const isSamePairId = first.card.pairId === second.card.pairId;
+      const isDifferentType = first.card.type !== second.card.type;
+
+      if (isSamePairId && isDifferentType) {
+        // MATCH SUCCESS
+        setTimeout(() => {
+          playSound('match');
+          first.card.isMatched = true;
+          second.card.isMatched = true;
+
+          const el1 = document.getElementById(`card-inner-${first.index}`);
+          const el2 = document.getElementById(`card-inner-${second.index}`);
+
+          if (el1) {
+            const rect1 = el1.getBoundingClientRect();
+            burstFlowerConfetti(rect1.left + rect1.width / 2, rect1.top + rect1.height / 2);
+            el1.classList.add('card-exploded');
+          }
+          if (el2) {
+            const rect2 = el2.getBoundingClientRect();
+            burstFlowerConfetti(rect2.left + rect2.width / 2, rect2.top + rect2.height / 2);
+            el2.classList.add('card-exploded');
+          }
+
+          setTimeout(() => {
+            const slot1 = document.getElementById(`card-slot-${first.index}`);
+            const slot2 = document.getElementById(`card-slot-${second.index}`);
+            if (slot1) slot1.classList.add('card-vacant-slot');
+            if (slot2) slot2.classList.add('card-vacant-slot');
+          }, 580);
+
+          matchedPairsCount++;
+          if (matchesDisplay) matchesDisplay.innerText = `${matchedPairsCount} / 10`;
+
+          score += 100;
+          if (scoreDisplay) scoreDisplay.innerText = `${score} புள்ளிகள்`;
+
+          flippedCards = [];
+          isBoardLocked = false;
+
+          if (matchedPairsCount === 10) {
+            handleVictory();
+          }
+        }, 350);
+
+      } else {
+        // MISMATCH
+        setTimeout(() => {
+          playSound('mismatch');
+        }, 300);
+
+        setTimeout(() => {
+          first.card.isFlipped = false;
+          second.card.isFlipped = false;
+          updateCardUI(first.index);
+          updateCardUI(second.index);
+
+          flippedCards = [];
+          isBoardLocked = false;
+        }, 1100);
+      }
+    }
+
+    function updateSidePreview(card) {
+      if (card.type === 'question') {
+        qCardText.innerText = card.content;
+        qCardText.className = "text-white text-base sm:text-lg md:text-xl font-bold leading-relaxed break-words";
+      } else {
+        aCardText.innerText = card.content;
+        aCardText.className = "text-emerald-300 text-base sm:text-lg md:text-xl font-bold leading-relaxed break-words";
+      }
+    }
+
+    function resetPreviewPanel() {
+      qCardText.innerText = "இடது பலகையிலுள்ள ஏதேனும் ஓர் அட்டையைத் திருப்புக...";
+      qCardText.className = "text-slate-400 text-sm sm:text-base md:text-lg font-medium leading-relaxed break-words";
+
+      aCardText.innerText = "அதற்குப் பொருத்தமான மற்றொரு விடை அட்டையைத் திருப்புக...";
+      aCardText.className = "text-slate-400 text-sm sm:text-base md:text-lg font-medium leading-relaxed break-words";
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        if (timerDisplay) {
+          const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+          const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+          timerDisplay.innerText = `${mins}:${secs}`;
+        }
+      }, 1000);
+    }
+
+    function triggerHint() {
+      if (hintAvailable <= 0 || isBoardLocked) return;
+
+      const unmatchedQ = cards.find(c => !c.isMatched && c.type === 'question');
+      if (!unmatchedQ) return;
+
+      const matchingA = cards.find(c => !c.isMatched && c.type === 'answer' && c.pairId === unmatchedQ.pairId);
+      if (!matchingA) return;
+
+      hintAvailable--;
+      if (hintCountBadge) hintCountBadge.innerText = hintAvailable;
+      if (hintAvailable === 0) {
+        document.getElementById('hintBtn')?.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+
+      const qIndex = cards.indexOf(unmatchedQ);
+      const aIndex = cards.indexOf(matchingA);
+
+      const qEl = document.getElementById(`card-inner-${qIndex}`);
+      const aEl = document.getElementById(`card-inner-${aIndex}`);
+
+      if (qEl && aEl) {
+        qEl.classList.add('hint-highlight');
+        aEl.classList.add('hint-highlight');
+        setTimeout(() => {
+          qEl.classList.remove('hint-highlight');
+          aEl.classList.remove('hint-highlight');
+        }, 1500);
+      }
+    }
+
+    function toggleInstructionsModal() {
+      const modal = document.getElementById('instructionModal');
+      modal?.classList.toggle('hidden');
+    }
+
+    function handleVictory() {
+      clearInterval(timerInterval);
+      playSound('victory');
+
+      const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+      const formattedTime = `${mins}:${secs}`;
+
+      const titleEl = document.getElementById('modalTitle');
+      if (titleEl) titleEl.innerText = "அற்புதம்! முழு வெற்றி!";
+      const levelEl = document.getElementById('modalLevelName');
+      if (levelEl) levelEl.innerText = `${LEVELS_DATA[currentLevel].name} நிறைவுற்றது!`;
+      const timeEl = document.getElementById('modalTime');
+      if (timeEl) timeEl.innerText = formattedTime;
+      const movesEl = document.getElementById('modalMoves');
+      if (movesEl) movesEl.innerText = moves;
+      const scoreEl = document.getElementById('modalScore');
+      if (scoreEl) scoreEl.innerText = score;
+
+      const nextLevelBtn = document.getElementById('nextLevelBtn');
+      if (nextLevelBtn) {
+        if (currentLevel >= 4) {
+          nextLevelBtn.innerText = "மீண்டும் முதல் படிநிலைக்கு 🔁";
+        } else {
+          nextLevelBtn.innerText = `அடுத்த படிநிலை ${currentLevel + 1} ➔`;
+        }
+      }
+
+      winModal?.classList.remove('hidden');
+    }
+
+    function goToNextLevel() {
+      winModal.classList.add('hidden');
+      if (currentLevel < 4) {
+        initializeGame(currentLevel + 1);
+      } else {
+        initializeGame(1);
+      }
+    }
+
+    function changeLevel(newLevel) {
+      initializeGame(newLevel);
+    }
+
+    function restartGame() {
+      winModal.classList.add('hidden');
+      initializeGame(currentLevel);
+    }
+
+    function openStudyModal() {
+      const data = LEVELS_DATA[currentLevel];
+      studyModalTitle.innerText = `${data.name} - 10 வினா & விடைக் குறிப்புகள்`;
+      studyModalBody.innerHTML = '';
+
+      data.pairs.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-slate-950 rounded-xl border border-slate-800 flex flex-col gap-1.5 text-xs sm:text-sm';
+        row.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="bg-indigo-600/40 text-indigo-300 font-bold px-2 py-0.5 rounded text-xs shrink-0">வினா #${item.id}</span>
+            <p class="font-bold text-white leading-relaxed">${item.q}</p>
+          </div>
+          <div class="flex items-start gap-2 pl-2 border-l-2 border-emerald-500/50 mt-1">
+            <span class="text-emerald-400 font-bold text-xs shrink-0">விடை:</span>
+            <p class="text-emerald-200 leading-relaxed">${item.a}</p>
+          </div>
+        `;
+        studyModalBody.appendChild(row);
+      });
+
+      studyModal.classList.remove('hidden');
+    }
+
+    function closeStudyModal() {
+      studyModal.classList.add('hidden');
+    }
+
+    function downloadSelfHtml() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.href = url;
+      downloadAnchor.download = "12th_CS_Memory_Game_10Q.html";
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      document.body.removeChild(downloadAnchor);
+      URL.revokeObjectURL(url);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((e) => {
+          console.log("Fullscreen not permitted:", e);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeStudyModal();
+        winModal.classList.add('hidden');
+      }
+    });
+
+    // Auto launch immediately when document loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initializeGame(1));
+    } else {
+      initializeGame(1);
+    }
+  </script>
+</body>
+</html>
