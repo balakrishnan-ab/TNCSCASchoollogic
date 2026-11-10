@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12-ஆம் வகுப்பு கணிணி அறிவியல் - மேட்பிளாட்லிப் ஆய்வகம்</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Tamil & Monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Mukta Malar', sans-serif;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Matplotlib Canvas Frame Styling */
+        .mpl-canvas-container {
+            background-color: #ffffff;
+            box-shadow: inset 0 0 0 1px #e2e8f0;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header & Navigation -->
+    <header class="bg-gradient-to-r from-blue-700 via-indigo-700 to-indigo-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm border border-white/20">
+                    <i class="fa-solid fa-chart-line text-2xl text-amber-300"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase tracking-wider bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">பாடம் 16</span>
+                        <span class="text-xs text-blue-200">12 கணிணி அறிவியல் (Computer Science)</span>
+                    </div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight">மேட்பிளாட்லிப் ஆய்வகம் (Matplotlib Interactive Lab)</h1>
+                </div>
+            </div>
+
+            <!-- Tab Buttons -->
+            <nav class="flex items-center gap-1.5 bg-blue-900/40 p-1.5 rounded-xl border border-white/10 text-sm overflow-x-auto w-full md:w-auto">
+                <button onclick="switchTab('lab')" id="tabBtn-lab" class="tab-btn px-3 py-1.5 rounded-lg font-semibold flex items-center gap-2 transition bg-white text-blue-800 shadow">
+                    <i class="fa-solid fa-flask"></i> <span>வரைபட ஆய்வகம்</span>
+                </button>
+                <button onclick="switchTab('notes')" id="tabBtn-notes" class="tab-btn px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 transition text-blue-100 hover:text-white hover:bg-white/10">
+                    <i class="fa-solid fa-book-open"></i> <span>பாடக் குறிப்புகள்</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="tabBtn-quiz" class="tab-btn px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 transition text-blue-100 hover:text-white hover:bg-white/10">
+                    <i class="fa-solid fa-circle-question"></i> <span>வினாடி வினா</span>
+                </button>
+                <button onclick="switchTab('programs')" id="tabBtn-programs" class="tab-btn px-3 py-1.5 rounded-lg font-medium flex items-center gap-2 transition text-blue-100 hover:text-white hover:bg-white/10">
+                    <i class="fa-solid fa-code"></i> <span>மாதிரி நிரல்கள்</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto p-4 md:p-6 w-full flex-1">
+
+        <!-- ==================== TAB 1: INTERACTIVE LAB ==================== -->
+        <section id="tab-lab" class="space-y-6">
+            <!-- Intro Alert Card -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-sm">
+                <div class="flex items-start gap-3">
+                    <span class="p-2 bg-blue-600 text-white rounded-xl text-lg mt-0.5"><i class="fa-solid fa-lightbulb"></i></span>
+                    <div>
+                        <h2 class="text-base font-bold text-blue-950">வரைபட வகையைத் தேர்ந்தெடுத்து, மதிப்புகளை மாற்றி உடனடி மாற்றத்தைக் காண்க!</h2>
+                        <p class="text-sm text-slate-600">வலதுபுறத்தில் பைதான் நிரல் (<span class="code-font font-semibold text-blue-700">matplotlib.pyplot</span>) தானாகவே மாறும். செய்முறைத் தேர்வுக்கு எளிதாகப் பயிற்சி செய்யலாம்.</p>
+                    </div>
+                </div>
+                <!-- Quick Preset Selector -->
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <label class="text-xs font-bold text-slate-600 whitespace-nowrap">பாடநூல் மாதிரிகள்:</label>
+                    <select id="presetSelect" onchange="loadPreset(this.value)" class="text-sm bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm w-full md:w-auto">
+                        <option value="custom">சுயமாக அமைத்தல் (Custom)</option>
+                        <option value="marks">1. பாட மதிப்பெண்கள் (Bar Chart)</option>
+                        <option value="growth">2. நிறுவன வளர்ச்சி (Line Chart)</option>
+                        <option value="hobbies">3. மாணவர் நேரம் (Pie Chart)</option>
+                        <option value="height_weight">4. உயரம் & எடை (Scatter Plot)</option>
+                        <option value="scores_hist">5. தேர்வு மதிப்பெண் பரவல் (Histogram)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Workspace: Controls (Left) & Canvas + Code (Right) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Left Column: Controls (5 cols) -->
+                <div class="lg:col-span-5 space-y-5">
+                    
+                    <!-- Chart Type Picker -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <label class="text-xs font-extrabold uppercase text-slate-500 tracking-wider block mb-3">
+                            1. வரைபட வகை (Chart Type):
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="setPlotType('line')" id="typeBtn-line" class="type-btn p-3 rounded-xl border border-blue-600 bg-blue-50 text-blue-700 font-bold text-center text-xs flex flex-col items-center gap-1.5 transition">
+                                <i class="fa-solid fa-chart-line text-lg"></i>
+                                <span>கோட்டு படம்</span>
+                                <span class="text-[10px] text-slate-500 font-normal">plt.plot()</span>
+                            </button>
+                            <button type="button" onclick="setPlotType('bar')" id="typeBtn-bar" class="type-btn p-3 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-center text-xs flex flex-col items-center gap-1.5 transition">
+                                <i class="fa-solid fa-chart-column text-lg text-emerald-600"></i>
+                                <span>பட்டை படம்</span>
+                                <span class="text-[10px] text-slate-500 font-normal">plt.bar()</span>
+                            </button>
+                            <button type="button" onclick="setPlotType('pie')" id="typeBtn-pie" class="type-btn p-3 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-center text-xs flex flex-col items-center gap-1.5 transition">
+                                <i class="fa-solid fa-chart-pie text-lg text-amber-500"></i>
+                                <span>வட்ட படம்</span>
+                                <span class="text-[10px] text-slate-500 font-normal">plt.pie()</span>
+                            </button>
+                            <button type="button" onclick="setPlotType('scatter')" id="typeBtn-scatter" class="type-btn p-3 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-center text-xs flex flex-col items-center gap-1.5 transition">
+                                <i class="fa-solid fa-braille text-lg text-purple-600"></i>
+                                <span>பரவல் படம்</span>
+                                <span class="text-[10px] text-slate-500 font-normal">plt.scatter()</span>
+                            </button>
+                            <button type="button" onclick="setPlotType('hist')" id="typeBtn-hist" class="type-btn p-3 rounded-xl border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-center text-xs flex flex-col items-center gap-1.5 transition col-span-2">
+                                <i class="fa-solid fa-chart-simple text-lg text-rose-500"></i>
+                                <span>நிகழ்வெண் செவ்வகம் (Histogram)</span>
+                                <span class="text-[10px] text-slate-500 font-normal">plt.hist()</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Data Inputs -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-extrabold uppercase text-slate-500 tracking-wider">
+                                2. தரவு உள்ளீடுகள் (Data Input):
+                            </label>
+                            <span class="text-[11px] text-slate-400">காற்புள்ளி (,) கொண்டு பிரிக்கவும்</span>
+                        </div>
+
+                        <!-- Labels / X data -->
+                        <div id="xInputGroup">
+                            <label id="xLabelText" class="text-xs font-semibold text-slate-700 block mb-1">
+                                X-அச்சு லேபிள்கள் (Labels / Categories):
+                            </label>
+                            <input type="text" id="inputX" value="தமிழ், ஆங்கிலம், கணிதம், அறிவியல், கணிணி" oninput="updatePlot()"
+                                class="w-full text-xs font-medium px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 code-font">
+                        </div>
+
+                        <!-- Values / Y data -->
+                        <div>
+                            <label id="yLabelText" class="text-xs font-semibold text-slate-700 block mb-1">
+                                Y-அச்சு மதிப்புகள் (Values / Numbers):
+                            </label>
+                            <input type="text" id="inputY" value="85, 78, 92, 88, 98" oninput="updatePlot()"
+                                class="w-full text-xs font-medium px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 code-font">
+                        </div>
+
+                        <!-- Pie Specific Controls (explode, autopct) -->
+                        <div id="pieSpecificOptions" class="hidden pt-2 border-t border-slate-100 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-semibold text-slate-700">துண்டைப் பிரித்துக் காட்ட (Explode Slice):</label>
+                                <select id="explodeSlice" onchange="updatePlot()" class="text-xs border border-slate-300 rounded-md px-2 py-1">
+                                    <option value="none">பிரித்தல் இல்லை (None)</option>
+                                    <option value="0">முதல் துண்டு (Slice 1)</option>
+                                    <option value="1">இரண்டாம் துண்டு (Slice 2)</option>
+                                    <option value="last">கடைசி துண்டு (Last Slice)</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-semibold text-slate-700">சதவீதம் காட்டு (autopct):</label>
+                                <input type="checkbox" id="showAutopct" checked onchange="updatePlot()" class="rounded text-blue-600 focus:ring-blue-500 h-4 w-4">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Elements & Appearance -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <label class="text-xs font-extrabold uppercase text-slate-500 tracking-wider block">
+                            3. வரைபடக் கூறுகள் & அலங்காரம் (Customization):
+                        </label>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 block mb-1">வரைபடத் தலைப்பு (plt.title):</label>
+                            <input type="text" id="plotTitle" value="மாணவர்களின் தேர்வு மதிப்பெண்கள்" oninput="updatePlot()"
+                                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3" id="axisLabelsGroup">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-700 block mb-1">X-அச்சு பெயர் (xlabel):</label>
+                                <input type="text" id="plotXLabel" value="பாடங்கள்" oninput="updatePlot()"
+                                    class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-slate-700 block mb-1">Y-அச்சு பெயர் (ylabel):</label>
+                                <input type="text" id="plotYLabel" value="மதிப்பெண்கள்" oninput="updatePlot()"
+                                    class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <!-- Color & Styling Row -->
+                        <div class="grid grid-cols-2 gap-3 pt-1">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-700 block mb-1">முக்கிய நிறம் (color):</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" id="plotColor" value="#2563eb" onchange="updatePlot()"
+                                        class="h-8 w-12 rounded cursor-pointer border border-slate-300">
+                                    <span id="colorHexText" class="text-xs text-slate-500 code-font">#2563eb</span>
+                                </div>
+                            </div>
+                            <div id="markerGroup">
+                                <label class="text-xs font-semibold text-slate-700 block mb-1">புள்ளி வடிவம் (marker):</label>
+                                <select id="plotMarker" onchange="updatePlot()" class="w-full text-xs border border-slate-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="o">வட்டம் 'o' (Circle)</option>
+                                    <option value="s">சதுரம் 's' (Square)</option>
+                                    <option value="^">முக்கோணம் '^' (Triangle)</option>
+                                    <option value="D">வைரம் 'D' (Diamond)</option>
+                                    <option value="none">இல்லை (None)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Checkboxes: Grid, Legend -->
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" id="plotGrid" checked onchange="updatePlot()" class="rounded text-blue-600 focus:ring-blue-500 h-4 w-4">
+                                <span>கட்டக் கோடு (plt.grid(True))</span>
+                            </label>
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                                <input type="checkbox" id="plotLegend" checked onchange="updatePlot()" class="rounded text-blue-600 focus:ring-blue-500 h-4 w-4">
+                                <span>விளக்கக் குறிப்பு (plt.legend())</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Canvas Simulator & Python Code (7 cols) -->
+                <div class="lg:col-span-7 space-y-5">
+
+                    <!-- Matplotlib Figure Canvas Window -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                        <!-- Window Titlebar mimicking OS/Matplotlib GUI window -->
+                        <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="h-3 w-3 rounded-full bg-rose-400 inline-block"></span>
+                                <span class="h-3 w-3 rounded-full bg-amber-400 inline-block"></span>
+                                <span class="h-3 w-3 rounded-full bg-emerald-400 inline-block"></span>
+                                <span class="ml-2 text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-desktop text-slate-500"></i>
+                                    Figure 1 - மேட்பிளாட்லிப் வெளியீடு (Matplotlib Output Window)
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1 text-xs">
+                                <button onclick="saveCanvasAsImage()" title="சேமிக்க (plt.savefig)" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-floppy-disk text-blue-600"></i> <span>சேமி (Save)</span>
+                                </button>
+                                <button onclick="resetDefaults()" title="மீட்டமைக்க" class="px-2.5 py-1 bg-white border border-slate-300 rounded hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid fa-rotate-left"></i> <span>Reset</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Area -->
+                        <div class="p-4 bg-slate-100 flex items-center justify-center">
+                            <div class="w-full bg-white rounded-xl shadow-inner border border-slate-300 p-2 overflow-hidden flex flex-col items-center">
+                                <canvas id="mplCanvas" width="620" height="380" class="w-full max-w-full h-auto block rounded"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Status bar -->
+                        <div class="bg-slate-50 px-4 py-2 border-t border-slate-200 text-[11px] text-slate-500 flex justify-between items-center font-mono">
+                            <span>x=0.00, y=0.00</span>
+                            <span class="text-emerald-600 font-semibold flex items-center gap-1">
+                                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                plt.show() செயல்படுத்தப்பட்டது
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Generated Python Matplotlib Code -->
+                    <div class="bg-slate-900 rounded-2xl border border-slate-800 shadow-md overflow-hidden text-slate-100">
+                        <div class="bg-slate-800/90 px-4 py-2.5 border-b border-slate-700/80 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-brands fa-python text-amber-400 text-base"></i>
+                                <span class="text-xs font-bold text-slate-200">பைதான் குறியீடு (Python Matplotlib Script)</span>
+                                <span class="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded font-mono">plot_test.py</span>
+                            </div>
+                            <button onclick="copyPythonCode()" id="copyBtn" class="text-xs bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium px-3 py-1 rounded-md transition flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-copy"></i> <span id="copyBtnText">நிரலை நகலெடு</span>
+                            </button>
+                        </div>
+                        <div class="p-4 overflow-x-auto">
+                            <pre id="pythonCodeDisplay" class="code-font text-xs md:text-sm text-emerald-300 leading-relaxed"></pre>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: STUDY NOTES ==================== -->
+        <section id="tab-notes" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <span class="text-xs font-bold bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full">பாடக் குறிப்புகள் (Notes)</span>
+                    <h2 class="text-2xl font-bold text-slate-900 mt-2">பாடம் 16: தரவு காட்சிப்படுத்துதல்: மேட்பிளாட்லிப்</h2>
+                    <p class="text-sm text-slate-600 mt-1">12-ஆம் வகுப்பு கணிணி அறிவியல் பொதுத் தேர்வுக்கான முக்கியக் குறிப்புகள் மற்றும் வரையறைகள்.</p>
+                </div>
+
+                <!-- 3 Key Concepts Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                        <div class="text-blue-700 text-xl font-bold mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-eye"></i> தரவு காட்சிப்படுத்துதல்
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            தகவல்களையும், தரவுகளையும் வரைகலை அல்லது வரைபட வடிவில் வெளிப்படுத்துவதே <b>தரவு காட்சிப்படுத்துதல் (Data Visualization)</b> எனப்படும். இது சிக்கலான தரவுகளின் போக்கை (trends) எளிதாகக் கண்டறிய உதவுகிறது.
+                        </p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                        <div class="text-emerald-700 text-xl font-bold mb-2 flex items-center gap-2">
+                            <i class="fa-brands fa-python"></i> மேட்பிளாட்லிப் (Matplotlib)
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Matplotlib என்பது பைத்தானில் தரவுகளை 2D வரைபடங்களாகக் காட்சிப்படுத்த உதவும் மிகவும் பிரபலமான திறவூற்று (Open Source) நூலகமாகும். இதனை <b>ஜான் டி. ஹண்டர் (John D. Hunter)</b> உருவாக்கினார்.
+                        </p>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                        <div class="text-purple-700 text-xl font-bold mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-shapes"></i> பைபிளாட் (pyplot) இடைமுகம்
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            <b>pyplot</b> என்பது MATLAB போன்ற வரைபட சூழலை வழங்கும் Matplotlib இன் தொகுப்பாகும். இதனை பொதுவாக <code class="text-blue-800 font-bold">import matplotlib.pyplot as plt</code> என இறக்குமதி செய்வர்.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Types of Charts Table -->
+                <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-indigo-600"></i> வரைபடங்களின் வகைகள் (Types of Plots)
+                </h3>
+                <div class="overflow-x-auto rounded-xl border border-slate-200 mb-8">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">வரைபடம் (Chart Type)</th>
+                                <th class="p-3">செயற்கூறு (Function)</th>
+                                <th class="p-3">நோக்கம் மற்றும் பயன்பாடு (Purpose)</th>
+                                <th class="p-3">முக்கிய பண்புக்கூறுகள் (Key Arguments)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-slate-700">
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-blue-700 flex items-center gap-1.5"><i class="fa-solid fa-chart-line"></i> கோட்டு வரைபடம் (Line Plot)</td>
+                                <td class="p-3 code-font font-bold text-slate-900">plt.plot(x, y)</td>
+                                <td class="p-3">தொடர்ச்சியான கால அளவில் ஏற்படும் மாற்றங்களையும் போக்கையும் காட்ட பயன்படுகிறது.</td>
+                                <td class="p-3 code-font">color, marker, linewidth, linestyle</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-emerald-700 flex items-center gap-1.5"><i class="fa-solid fa-chart-column"></i> பட்டை வரைபடம் (Bar Chart)</td>
+                                <td class="p-3 code-font font-bold text-slate-900">plt.bar(x, y)</td>
+                                <td class="p-3">வெவ்வேறு பிரிவுகள் அல்லது வகைகளுக்கு இடையேயான அளவுகளை ஒப்பிட பயன்படுகிறது.</td>
+                                <td class="p-3 code-font">color, width</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-amber-700 flex items-center gap-1.5"><i class="fa-solid fa-chart-pie"></i> வட்ட வரைபடம் (Pie Chart)</td>
+                                <td class="p-3 code-font font-bold text-slate-900">plt.pie(values, labels=...)</td>
+                                <td class="p-3">மொத்தத்தில் ஒவ்வொரு பகுதியும் எவ்வளவு விகிதம் அல்லது சதவீதம் என்பதை வட்டத் துண்டுகளாகக் காட்டுகிறது.</td>
+                                <td class="p-3 code-font">labels, autopct, explode, colors</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-purple-700 flex items-center gap-1.5"><i class="fa-solid fa-braille"></i> பரவல் வரைபடம் (Scatter Plot)</td>
+                                <td class="p-3 code-font font-bold text-slate-900">plt.scatter(x, y)</td>
+                                <td class="p-3">இரண்டு மாறிகளுக்கு இடையிலான உறவை (உறவுமுறை / Correlation) புள்ளிகளாகக் காட்டுகிறது.</td>
+                                <td class="p-3 code-font">color, marker, s (size)</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="p-3 font-bold text-rose-700 flex items-center gap-1.5"><i class="fa-solid fa-chart-simple"></i> நிகழ்வெண் செவ்வகம் (Histogram)</td>
+                                <td class="p-3 code-font font-bold text-slate-900">plt.hist(data, bins=...)</td>
+                                <td class="p-3">தொடர்ச்சியான எண் தரவுகளின் பரவலை (Frequency Distribution) குறிப்பிட்ட இடைவெளிகளில் காட்டுகிறது.</td>
+                                <td class="p-3 code-font">bins, edgecolor, color</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Essential Functions Cheat Sheet -->
+                <h3 class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench text-indigo-600"></i> முக்கிய மேட்பிளாட்லிப் செயற்கூறுகள் (Key Functions)
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.title("...")</span>
+                        <span class="text-slate-600">வரைபடத்திற்கு மேலே முதன்மை தலைப்பை அமைக்கும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.xlabel("...")</span>
+                        <span class="text-slate-600">X-அச்சுக்கு விளக்க லேபிளை அமைக்கும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.ylabel("...")</span>
+                        <span class="text-slate-600">Y-அச்சுக்கு விளக்க லேபிளை அமைக்கும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.show()</span>
+                        <span class="text-slate-600">உருவாக்கிய வரைபடத்தை புதிய சாளரத்தில் திரையிடும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.grid(True)</span>
+                        <span class="text-slate-600">மதிப்புகளைத் துல்லியமாக அறிய பின்னணியில் கட்டங்களை காட்டும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.legend()</span>
+                        <span class="text-slate-600">வரைபடத்தில் உள்ள குறியீடுகளின் விளக்கப்பெட்டியை சேர்க்கும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">plt.savefig('file.png')</span>
+                        <span class="text-slate-600">வரைபடத்தை படக் கோப்பாக கணினியில் சேமிக்கும்.</span>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                        <span class="code-font font-bold text-blue-700 block text-sm">autopct='%1.1f%%'</span>
+                        <span class="text-slate-600">வட்ட வரைபடத்தில் சதவீத மதிப்பை தசமப் புள்ளியுடன் காட்டும்.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: QUIZ ==================== -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm max-w-4xl mx-auto">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-200 gap-3">
+                    <div>
+                        <span class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">சுய மதிப்பீடு</span>
+                        <h2 class="text-2xl font-bold text-slate-900 mt-2">பாடம் 16 - தேர்வு வினாடி வினா (Self-Test Quiz)</h2>
+                        <p class="text-xs text-slate-500">12ஆம் வகுப்பு பொதுத்தேர்வு வினாத்தாள் முறையில் அமைக்கப்பட்ட கேள்விகள்.</p>
+                    </div>
+                    <!-- Live Score Badge -->
+                    <div class="bg-indigo-50 border border-indigo-200 px-4 py-2 rounded-xl flex items-center gap-3">
+                        <div class="text-right">
+                            <div class="text-[11px] text-slate-500 font-bold uppercase">உங்கள் மதிப்பெண்</div>
+                            <div class="text-xl font-extrabold text-indigo-700" id="quizScoreText">0 / 6</div>
+                        </div>
+                        <button onclick="resetQuiz()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">
+                            மீண்டும் செய்க
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Questions Container -->
+                <div id="quizContainer" class="space-y-6 mt-6">
+                    <!-- Questions will be injected dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 4: SAMPLE PROGRAMS ==================== -->
+        <section id="tab-programs" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">செய்முறைப் பயிற்சி (Lab Practical)</span>
+                    <h2 class="text-2xl font-bold text-slate-900 mt-2">12-ஆம் வகுப்பு கணிணி அறிவியல் மாதிரி நிரல்கள்</h2>
+                    <p class="text-sm text-slate-600 mt-1">பாடப்புத்தகத்தில் உள்ள முக்கியமான செய்முறை வினாக்களுக்கான முழுமையான பைதான் குறியீடுகள்.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Program 1 -->
+                    <div class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex flex-col">
+                        <div class="bg-slate-800 p-3 border-b border-slate-700 flex justify-between items-center text-xs">
+                            <span class="font-bold text-amber-300">நிரல் 1: கோட்டு வரைபடம் (Line Chart)</span>
+                            <button onclick="copySnippet('p1')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-copy"></i> நகலெடு</button>
+                        </div>
+                        <pre id="p1" class="p-4 code-font text-xs text-emerald-300 overflow-x-auto flex-1">import matplotlib.pyplot as plt
+
+# ஆண்டுகளும் விற்பனையும்
+years = [2018, 2019, 2020, 2021, 2022]
+sales = [45, 60, 55, 80, 95]
+
+# கோட்டு வரைபடம் வரைதல்
+plt.plot(years, sales, color='blue', marker='o', linewidth=2)
+
+# தலைப்பு மற்றும் அச்சு பெயர்கள்
+plt.title("வருடாந்திர விற்பனை வளர்ச்சி")
+plt.xlabel("ஆண்டுகள்")
+plt.ylabel("விற்பனை (ரூபாய் லட்சங்களில்)")
+
+# கட்டக் கோடுகளை இயக்குதல்
+plt.grid(True)
+
+# வரைபடத்தை காட்டுதல்
+plt.show()</pre>
+                    </div>
+
+                    <!-- Program 2 -->
+                    <div class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex flex-col">
+                        <div class="bg-slate-800 p-3 border-b border-slate-700 flex justify-between items-center text-xs">
+                            <span class="font-bold text-amber-300">நிரல் 2: பட்டை வரைபடம் (Bar Chart)</span>
+                            <button onclick="copySnippet('p2')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-copy"></i> நகலெடு</button>
+                        </div>
+                        <pre id="p2" class="p-4 code-font text-xs text-emerald-300 overflow-x-auto flex-1">import matplotlib.pyplot as plt
+
+# பாடங்களும் சராசரி மதிப்பெண்களும்
+subjects = ['தமிழ்', 'ஆங்கிலம்', 'கணிதம்', 'அறிவியல்', 'கணிணி']
+marks = [85, 78, 92, 88, 98]
+
+# பட்டை வரைபடம் உருவாக்குதல்
+plt.bar(subjects, marks, color=['red', 'blue', 'green', 'orange', 'purple'])
+
+# தலைப்பு மற்றும் அச்சு பெயர்கள்
+plt.title("வகுப்பு சராசரி மதிப்பெண்கள்")
+plt.xlabel("பாடங்கள்")
+plt.ylabel("மதிப்பெண்கள் (100-க்கு)")
+
+# வரைபடத்தை காட்டுதல்
+plt.show()</pre>
+                    </div>
+
+                    <!-- Program 3 -->
+                    <div class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex flex-col">
+                        <div class="bg-slate-800 p-3 border-b border-slate-700 flex justify-between items-center text-xs">
+                            <span class="font-bold text-amber-300">நிரல் 3: வட்ட வரைபடம் (Pie Chart with explode)</span>
+                            <button onclick="copySnippet('p3')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-copy"></i> நகலெடு</button>
+                        </div>
+                        <pre id="p3" class="p-4 code-font text-xs text-emerald-300 overflow-x-auto flex-1">import matplotlib.pyplot as plt
+
+# பொழுதுபோக்குகளின் நேரம் (சதவீதம்)
+activities = ['படிப்பு', 'விளையாட்டு', 'தூக்கம்', 'பிற']
+hours = [6, 2, 8, 4]
+
+# முதல் துண்டை தனியாகப் பிரித்துக் காட்ட
+my_explode = [0.1, 0, 0, 0]
+
+# வட்ட வரைபடம் வரைதல்
+plt.pie(hours, labels=activities, explode=my_explode, 
+        autopct='%1.1f%%', shadow=True)
+
+plt.title("மாணவரின் தினசரி நேரப் பகிர்வு")
+plt.show()</pre>
+                    </div>
+
+                    <!-- Program 4 -->
+                    <div class="bg-slate-900 rounded-xl overflow-hidden border border-slate-800 flex flex-col">
+                        <div class="bg-slate-800 p-3 border-b border-slate-700 flex justify-between items-center text-xs">
+                            <span class="font-bold text-amber-300">நிரல் 4: பரவல் வரைபடம் (Scatter Plot)</span>
+                            <button onclick="copySnippet('p4')" class="text-blue-400 hover:text-blue-300"><i class="fa-solid fa-copy"></i> நகலெடு</button>
+                        </div>
+                        <pre id="p4" class="p-4 code-font text-xs text-emerald-300 overflow-x-auto flex-1">import matplotlib.pyplot as plt
+
+# உயரம் (செ.மீ) மற்றும் எடை (கிலோ)
+height = [140, 145, 150, 155, 160, 165, 170]
+weight = [45, 48, 52, 56, 61, 65, 70]
+
+# பரவல் வரைபடம் வரைதல்
+plt.scatter(height, weight, color='red', marker='o', s=60)
+
+plt.title("உயரம் மற்றும் எடை தொடர்பு")
+plt.xlabel("உயரம் (செ.மீ)")
+plt.ylabel("எடை (கிலோ)")
+plt.grid(True)
+
+plt.show()</pre>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Toast (Replaces alert) -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-2 transform translate-y-20 opacity-0 transition duration-300 pointer-events-none z-50">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toastMsg">செய்தி</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>12-ஆம் வகுப்பு கணிணி அறிவியல் - பாடம் 16: தரவு காட்சிப்படுத்துதல் (Matplotlib)</p>
+            <p class="text-slate-400">தமிழ்நாடு மாநிலப் பாடத்திட்டம் (Tamil Nadu State Board)</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- State Management ---
+        const state = {
+            plotType: 'bar', // 'line', 'bar', 'pie', 'scatter', 'hist'
+            title: 'மாணவர்களின் தேர்வு மதிப்பெண்கள்',
+            xLabel: 'பாடங்கள்',
+            yLabel: 'மதிப்பெண்கள்',
+            labels: ['தமிழ்', 'ஆங்கிலம்', 'கணிதம்', 'அறிவியல்', 'கணிணி'],
+            values: [85, 78, 92, 88, 98],
+            color: '#2563eb',
+            marker: 'o',
+            grid: true,
+            legend: true,
+            explode: 'none',
+            showAutopct: true
+        };
+
+        // --- Presets Data ---
+        const presets = {
+            marks: {
+                type: 'bar',
+                title: 'பாடவாரியாக மதிப்பெண் ஒப்பீடு',
+                xLabel: 'பாடங்கள்',
+                yLabel: 'மதிப்பெண்கள் (100க்கு)',
+                labels: ['தமிழ்', 'ஆங்கிலம்', 'கணிதம்', 'அறிவியல்', 'கணிணி'],
+                values: [88, 79, 95, 84, 99],
+                color: '#2563eb',
+                marker: 'o',
+                grid: true,
+                legend: true,
+                explode: 'none'
+            },
+            growth: {
+                type: 'line',
+                title: 'வருடாந்திர வணிக வளர்ச்சி',
+                xLabel: 'ஆண்டுகள்',
+                yLabel: 'விற்பனை (ரூபாய் லட்சங்களில்)',
+                labels: ['2019', '2020', '2021', '2022', '2023'],
+                values: [42, 58, 65, 85, 110],
+                color: '#059669',
+                marker: 's',
+                grid: true,
+                legend: true,
+                explode: 'none'
+            },
+            hobbies: {
+                type: 'pie',
+                title: 'மாணவரின் 24 மணி நேர பயன்பாடு',
+                xLabel: 'செயல்கள்',
+                yLabel: 'நேரம் (மணிகள்)',
+                labels: ['படிப்பு', 'தூக்கம்', 'விளையாட்டு', 'உணவு', 'பிற'],
+                values: [6, 8, 3, 2, 5],
+                color: '#d97706',
+                marker: 'o',
+                grid: false,
+                legend: true,
+                explode: '0'
+            },
+            height_weight: {
+                type: 'scatter',
+                title: 'உயரம் மற்றும் எடை தொடர்பு ஆய்வு',
+                xLabel: 'உயரம் (செ.மீ)',
+                yLabel: 'எடை (கிலோ)',
+                labels: ['140', '148', '152', '160', '165', '172'],
+                values: [42, 48, 51, 60, 64, 73],
+                color: '#9333ea',
+                marker: '^',
+                grid: true,
+                legend: true,
+                explode: 'none'
+            },
+            scores_hist: {
+                type: 'hist',
+                title: 'வகுப்பு தேர்வு மதிப்பெண் நிகழ்வெண்',
+                xLabel: 'மதிப்பெண் வரம்புகள்',
+                yLabel: 'மாணவர்களின் எண்ணிக்கை',
+                labels: ['0-20', '20-40', '40-60', '60-80', '80-100'],
+                values: [4, 8, 15, 22, 11],
+                color: '#e11d48',
+                marker: 'o',
+                grid: true,
+                legend: true,
+                explode: 'none'
+            }
+        };
+
+        // --- Quiz Data aligned with 12th CS Chapter 16 ---
+        const quizData = [
+            {
+                q: "1. மேட்பிளாட்லிப் (Matplotlib) தொகுதியை நிரலில் இறக்குமதி செய்ய பயன்படும் சரியான கூற்று எது?",
+                options: [
+                    "import matplotlib.pyplot as plt",
+                    "import pyplot as matplotlib",
+                    "import matplotlib as plot",
+                    "import plot.matplotlib as plt"
+                ],
+                ans: 0,
+                exp: "பாடப்புத்தகத்தின்படி `import matplotlib.pyplot as plt` என்பதே நிலையான மற்றும் சரியான கூற்றாகும்."
+            },
+            {
+                q: "2. வட்ட வரைபடத்தை (Pie Chart) உருவாக்க மேட்பிளாட்லிப்பில் பயன்படும் செயற்கூறு எது?",
+                options: [
+                    "plt.circle()",
+                    "plt.pie()",
+                    "plt.plot_pie()",
+                    "plt.chart_pie()"
+                ],
+                ans: 1,
+                exp: "வட்ட வரைபடத்தை உருவாக்க `plt.pie()` செயற்கூறு பயன்படுகிறது."
+            },
+            {
+                q: "3. வரைபடத்தை ஒரு புதிய சாளரத்தில் திரையிட்டு காட்ட எந்த செயற்கூறு பயன்படுகிறது?",
+                options: [
+                    "plt.display()",
+                    "plt.print()",
+                    "plt.view()",
+                    "plt.show()"
+                ],
+                ans: 3,
+                exp: "வரைபடங்களை திரையிட்டு பார்வையிட `plt.show()` செயற்கூறு பயன்படுகிறது."
+            },
+            {
+                q: "4. வட்ட வரைபடத்தில் ஒரு குறிப்பிட்ட துண்டை மட்டும் வட்டத்திலிருந்து பிரித்துக் காட்ட உதவும் பண்புக்கூறு எது?",
+                options: [
+                    "separate",
+                    "split",
+                    "explode",
+                    "isolate"
+                ],
+                ans: 2,
+                exp: "`explode` பண்புக்கூறு வட்ட வரைபடத்தின் துண்டைப் பிரித்துக் காட்ட பயன்படுகிறது."
+            },
+            {
+                q: "5. வரைபடத்தின் X-அச்சுக்கு தலைப்பு/பெயர் வழங்க பயன்படும் செயற்கூறு எது?",
+                options: [
+                    "plt.xtitle()",
+                    "plt.xlabel()",
+                    "plt.xname()",
+                    "plt.set_x()"
+                ],
+                ans: 1,
+                exp: "X-அச்சு லேபிளை அமைக்க `plt.xlabel()` பயன்படுகிறது. Y-அச்சுக்கு `plt.ylabel()` பயன்படுகிறது."
+            },
+            {
+                q: "6. தொடர்ச்சியான எண் தரவுகளின் நிகழ்வெண் பரவலை (Frequency Distribution) காட்சிப்படுத்த உதவும் வரைபடம் எது?",
+                options: [
+                    "நிகழ்வெண் செவ்வகம் (Histogram)",
+                    "வட்ட வரைபடம் (Pie Chart)",
+                    "கோட்டு வரைபடம் (Line Plot)",
+                    "பரவல் வரைபடம் (Scatter Plot)"
+                ],
+                ans: 0,
+                exp: "தொடர்ச்சியான எண் தரவுகளின் நிகழ்வெண் பரவலைக் குறிக்க Histogram (plt.hist()) பயன்படுகிறது."
+            }
+        ];
+
+        let userQuizAnswers = {};
+
+        // --- Initialization ---
+        window.onload = function() {
+            renderQuiz();
+            syncFormWithState();
+            updatePlot();
+        };
+
+        // --- Tab Switching ---
+        function switchTab(tabId) {
+            const tabs = ['lab', 'notes', 'quiz', 'programs'];
+            tabs.forEach(t => {
+                const sec = document.getElementById('tab-' + t);
+                const btn = document.getElementById('tabBtn-' + t);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('bg-white', 'text-blue-800', 'font-semibold', 'shadow');
+                    btn.classList.remove('text-blue-100', 'hover:bg-white/10');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('bg-white', 'text-blue-800', 'font-semibold', 'shadow');
+                    btn.classList.add('text-blue-100', 'hover:bg-white/10');
+                }
+            });
+
+            if (tabId === 'lab') {
+                setTimeout(updatePlot, 50);
+            }
+        }
+
+        // --- Plot Type Selector ---
+        function setPlotType(type) {
+            state.plotType = type;
+
+            // Highlight buttons
+            const types = ['line', 'bar', 'pie', 'scatter', 'hist'];
+            types.forEach(t => {
+                const btn = document.getElementById('typeBtn-' + t);
+                if (t === type) {
+                    btn.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-700');
+                    btn.classList.remove('border-slate-200', 'text-slate-700');
+                } else {
+                    btn.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-700');
+                    btn.classList.add('border-slate-200', 'text-slate-700');
+                }
+            });
+
+            // Toggle specific control groups
+            const pieOptions = document.getElementById('pieSpecificOptions');
+            const markerGroup = document.getElementById('markerGroup');
+            const axisLabelsGroup = document.getElementById('axisLabelsGroup');
+
+            if (type === 'pie') {
+                pieOptions.classList.remove('hidden');
+                markerGroup.classList.add('hidden');
+                axisLabelsGroup.classList.add('opacity-40', 'pointer-events-none');
+            } else {
+                pieOptions.classList.add('hidden');
+                markerGroup.classList.remove('hidden');
+                axisLabelsGroup.classList.remove('opacity-40', 'pointer-events-none');
+            }
+
+            // Update Labels
+            const xLabelText = document.getElementById('xLabelText');
+            const yLabelText = document.getElementById('yLabelText');
+            if (type === 'pie') {
+                xLabelText.innerText = "வட்டத் துண்டுகளின் பெயர்கள் (Labels):";
+                yLabelText.innerText = "துண்டுகளின் அளவுகள் (Values / Hours):";
+            } else if (type === 'hist') {
+                xLabelText.innerText = "பிரிவு இடைவெளிகள் (Bins / Categories):";
+                yLabelText.innerText = "நிகழ்வெண்கள் (Frequencies):";
+            } else {
+                xLabelText.innerText = "X-அச்சு லேபிள்கள் (Labels / Categories):";
+                yLabelText.innerText = "Y-அச்சு மதிப்புகள் (Values / Numbers):";
+            }
+
+            updatePlot();
+        }
+
+        // --- Preset Loader ---
+        function loadPreset(key) {
+            if (key === 'custom' || !presets[key]) return;
+            const p = presets[key];
+            state.plotType = p.type;
+            state.title = p.title;
+            state.xLabel = p.xLabel;
+            state.yLabel = p.yLabel;
+            state.labels = [...p.labels];
+            state.values = [...p.values];
+            state.color = p.color;
+            state.marker = p.marker;
+            state.grid = p.grid;
+            state.legend = p.legend;
+            state.explode = p.explode;
+
+            syncFormWithState();
+            setPlotType(p.type);
+            showToast("மாதிரி வரைபடம் ஏற்றப்பட்டது!", "info");
+        }
+
+        function syncFormWithState() {
+            document.getElementById('inputX').value = state.labels.join(', ');
+            document.getElementById('inputY').value = state.values.join(', ');
+            document.getElementById('plotTitle').value = state.title;
+            document.getElementById('plotXLabel').value = state.xLabel;
+            document.getElementById('plotYLabel').value = state.yLabel;
+            document.getElementById('plotColor').value = state.color;
+            document.getElementById('colorHexText').innerText = state.color;
+            document.getElementById('plotMarker').value = state.marker;
+            document.getElementById('plotGrid').checked = state.grid;
+            document.getElementById('plotLegend').checked = state.legend;
+            document.getElementById('explodeSlice').value = state.explode;
+            document.getElementById('showAutopct').checked = state.showAutopct;
+        }
+
+        // --- Read Inputs & Re-render Canvas and Code ---
+        function updatePlot() {
+            // Read inputs
+            const rawX = document.getElementById('inputX').value;
+            const rawY = document.getElementById('inputY').value;
+
+            state.labels = rawX.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            state.values = rawY.split(',').map(s => {
+                const n = parseFloat(s.trim());
+                return isNaN(n) ? 0 : n;
+            }).filter((_, i) => i < state.labels.length);
+
+            // Equalize lengths
+            while (state.values.length < state.labels.length) {
+                state.values.push(10);
+            }
+
+            state.title = document.getElementById('plotTitle').value;
+            state.xLabel = document.getElementById('plotXLabel').value;
+            state.yLabel = document.getElementById('plotYLabel').value;
+            state.color = document.getElementById('plotColor').value;
+            document.getElementById('colorHexText').innerText = state.color;
+            state.marker = document.getElementById('plotMarker').value;
+            state.grid = document.getElementById('plotGrid').checked;
+            state.legend = document.getElementById('plotLegend').checked;
+            state.explode = document.getElementById('explodeSlice').value;
+            state.showAutopct = document.getElementById('showAutopct').checked;
+
+            renderMatplotlibCanvas();
+            generatePythonCode();
+        }
+
+        // --- Canvas Rendering (Authentic Matplotlib Simulation) ---
+        function renderMatplotlibCanvas() {
+            const canvas = document.getElementById('mplCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Reset background (Matplotlib default figure background)
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, w, h);
+
+            // Draw Figure Title
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 15px "Mukta Malar", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(state.title || "தலைப்பு (plt.title)", w / 2, 28);
+
+            // If Pie Chart, render polar layout
+            if (state.plotType === 'pie') {
+                renderPieChart(ctx, w, h);
+                return;
+            }
+
+            // Cartesian Plot Margins (Spines)
+            const margin = { top: 48, right: 35, bottom: 65, left: 65 };
+            const plotW = w - margin.left - margin.right;
+            const plotH = h - margin.top - margin.bottom;
+
+            // Y scale calculation
+            const maxVal = Math.max(...state.values, 10);
+            const yMax = Math.ceil(maxVal * 1.15);
+            const numTicks = 5;
+
+            // 1. Draw Grid Lines (if enabled)
+            if (state.grid) {
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+
+                for (let i = 0; i <= numTicks; i++) {
+                    const yVal = (yMax / numTicks) * i;
+                    const yPos = margin.top + plotH - (yVal / yMax) * plotH;
+                    ctx.beginPath();
+                    ctx.moveTo(margin.left, yPos);
+                    ctx.lineTo(margin.left + plotW, yPos);
+                    ctx.stroke();
+                }
+
+                // Vertical grid lines
+                for (let i = 0; i < state.labels.length; i++) {
+                    const xPos = margin.left + (plotW / state.labels.length) * (i + 0.5);
+                    ctx.beginPath();
+                    ctx.moveTo(xPos, margin.top);
+                    ctx.lineTo(xPos, margin.top + plotH);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]); // Reset dash
+            }
+
+            // 2. Draw Spines (Axes Borders)
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(margin.left, margin.top, plotW, plotH);
+
+            // 3. Draw Y Axis Ticks and Numbers
+            ctx.fillStyle = '#334155';
+            ctx.font = '11px monospace';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= numTicks; i++) {
+                const yVal = Math.round((yMax / numTicks) * i);
+                const yPos = margin.top + plotH - (yVal / yMax) * plotH;
+                ctx.fillText(yVal, margin.left - 8, yPos + 4);
+
+                // Small tick marks
+                ctx.beginPath();
+                ctx.moveTo(margin.left - 4, yPos);
+                ctx.lineTo(margin.left, yPos);
+                ctx.stroke();
+            }
+
+            // 4. Draw X Axis Ticks and Labels
+            const stepX = plotW / Math.max(state.labels.length, 1);
+            ctx.textAlign = 'center';
+            ctx.font = '11px "Mukta Malar", sans-serif';
+
+            for (let i = 0; i < state.labels.length; i++) {
+                const xPos = margin.left + stepX * (i + 0.5);
+                ctx.fillStyle = '#334155';
+                ctx.fillText(state.labels[i] || '', xPos, margin.top + plotH + 18);
+
+                // Tick
+                ctx.beginPath();
+                ctx.moveTo(xPos, margin.top + plotH);
+                ctx.lineTo(xPos, margin.top + plotH + 4);
+                ctx.stroke();
+            }
+
+            // 5. Draw Axis Labels (xlabel, ylabel)
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 12px "Mukta Malar", sans-serif';
+            ctx.fillText(state.xLabel || "X-அச்சு", margin.left + plotW / 2, h - 15);
+
+            // Rotated Y Label
+            ctx.save();
+            ctx.translate(18, margin.top + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.fillText(state.yLabel || "Y-அச்சு", 0, 0);
+            ctx.restore();
+
+            // 6. Draw Actual Plots based on Type
+            if (state.plotType === 'bar' || state.plotType === 'hist') {
+                const barWidth = state.plotType === 'hist' ? stepX * 0.95 : stepX * 0.55;
+                state.values.forEach((val, i) => {
+                    const xPos = margin.left + stepX * (i + 0.5) - barWidth / 2;
+                    const barH = (val / yMax) * plotH;
+                    const yPos = margin.top + plotH - barH;
+
+                    // Bar fill
+                    ctx.fillStyle = state.color;
+                    ctx.fillRect(xPos, yPos, barWidth, barH);
+
+                    // Bar border
+                    ctx.strokeStyle = '#1e293b';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(xPos, yPos, barWidth, barH);
+
+                    // Value label on top
+                    ctx.fillStyle = '#1e293b';
+                    ctx.font = 'bold 10px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(val, xPos + barWidth / 2, yPos - 5);
+                });
+            } else if (state.plotType === 'line') {
+                // Line plot connecting points
+                ctx.beginPath();
+                ctx.strokeStyle = state.color;
+                ctx.lineWidth = 2.5;
+
+                const points = [];
+                state.values.forEach((val, i) => {
+                    const x = margin.left + stepX * (i + 0.5);
+                    const y = margin.top + plotH - (val / yMax) * plotH;
+                    points.push({ x, y, val });
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+
+                // Draw Markers
+                points.forEach(pt => {
+                    drawMarker(ctx, pt.x, pt.y, state.marker, state.color);
+                    // Value label
+                    ctx.fillStyle = '#1e293b';
+                    ctx.font = 'bold 10px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(pt.val, pt.x, pt.y - 10);
+                });
+            } else if (state.plotType === 'scatter') {
+                // Scatter points
+                state.values.forEach((val, i) => {
+                    const x = margin.left + stepX * (i + 0.5);
+                    const y = margin.top + plotH - (val / yMax) * plotH;
+                    drawMarker(ctx, x, y, state.marker, state.color, 7);
+                    ctx.fillStyle = '#1e293b';
+                    ctx.font = 'bold 10px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`(${state.labels[i]}, ${val})`, x, y - 10);
+                });
+            }
+
+            // 7. Draw Legend Box (if enabled)
+            if (state.legend) {
+                const legW = 110;
+                const legH = 26;
+                const legX = margin.left + plotW - legW - 10;
+                const legY = margin.top + 10;
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 1;
+                ctx.fillRect(legX, legY, legW, legH);
+                ctx.strokeRect(legX, legY, legW, legH);
+
+                // Small legend symbol
+                ctx.fillStyle = state.color;
+                ctx.fillRect(legX + 8, legY + 8, 14, 10);
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '10px "Mukta Malar", sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(state.yLabel || "தரவு", legX + 28, legY + 17);
+            }
+        }
+
+        // --- Pie Chart Rendering Helper ---
+        function renderPieChart(ctx, w, h) {
+            const centerX = w / 2 - 40;
+            const centerY = h / 2 + 10;
+            const radius = Math.min(w, h) * 0.35;
+
+            const total = state.values.reduce((a, b) => a + b, 0) || 1;
+            const pieColors = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+
+            let startAngle = -Math.PI / 2;
+
+            state.values.forEach((val, i) => {
+                const sliceAngle = (val / total) * 2 * Math.PI;
+                const endAngle = startAngle + sliceAngle;
+                const color = pieColors[i % pieColors.length];
+
+                // Explode calculation
+                let offsetX = 0;
+                let offsetY = 0;
+                const isExploded = (state.explode === '0' && i === 0) ||
+                                   (state.explode === '1' && i === 1) ||
+                                   (state.explode === 'last' && i === state.values.length - 1);
+
+                if (isExploded) {
+                    const midAngle = startAngle + sliceAngle / 2;
+                    offsetX = Math.cos(midAngle) * 16;
+                    offsetY = Math.sin(midAngle) * 16;
+                }
+
+                // Slice
+                ctx.beginPath();
+                ctx.moveTo(centerX + offsetX, centerY + offsetY);
+                ctx.arc(centerX + offsetX, centerY + offsetY, radius, startAngle, endAngle);
+                ctx.closePath();
+
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Percentage text on slice
+                if (state.showAutopct && val > 0) {
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const textRadius = radius * 0.68;
+                    const tx = centerX + offsetX + Math.cos(midAngle) * textRadius;
+                    const ty = centerY + offsetY + Math.sin(midAngle) * textRadius;
+                    const pct = ((val / total) * 100).toFixed(1) + '%';
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 11px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(pct, tx, ty);
+                }
+
+                startAngle = endAngle;
+            });
+
+            // Draw Legend for Pie Chart
+            const legX = w - 140;
+            let legY = 60;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+
+            state.labels.forEach((lbl, i) => {
+                const color = pieColors[i % pieColors.length];
+                ctx.fillStyle = color;
+                ctx.fillRect(legX, legY, 12, 12);
+                ctx.strokeStyle = '#64748b';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(legX, legY, 12, 12);
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '11px "Mukta Malar", sans-serif';
+                ctx.fillText(lbl, legX + 18, legY + 10);
+
+                legY += 22;
+            });
+        }
+
+        // --- Helper for Marker Shapes ---
+        function drawMarker(ctx, x, y, marker, color, size = 5) {
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+
+            if (marker === 'none') return;
+
+            ctx.beginPath();
+            if (marker === 's') { // Square
+                ctx.rect(x - size, y - size, size * 2, size * 2);
+            } else if (marker === '^') { // Triangle
+                ctx.moveTo(x, y - size - 2);
+                ctx.lineTo(x + size + 2, y + size + 1);
+                ctx.lineTo(x - size - 2, y + size + 1);
+                ctx.closePath();
+            } else if (marker === 'D') { // Diamond
+                ctx.moveTo(x, y - size - 2);
+                ctx.lineTo(x + size + 2, y);
+                ctx.lineTo(x, y + size + 2);
+                ctx.lineTo(x - size - 2, y);
+                ctx.closePath();
+            } else { // Circle 'o' default
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+            }
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // --- Dynamic Python Code Generator ---
+        function generatePythonCode() {
+            const xDataStr = JSON.stringify(state.labels);
+            const yDataStr = JSON.stringify(state.values);
+
+            let code = `import matplotlib.pyplot as plt\n\n`;
+            code += `# தரவு உள்ளீடுகள் (Data Definition)\n`;
+            code += `x = ${xDataStr}\n`;
+            code += `y = ${yDataStr}\n\n`;
+
+            code += `# வரைபடத்தை உருவாக்குதல் (${state.plotType.toUpperCase()})\n`;
+
+            if (state.plotType === 'line') {
+                const markerArg = state.marker !== 'none' ? `, marker='${state.marker}'` : '';
+                code += `plt.plot(x, y, color='${state.color}'${markerArg}, linewidth=2, label='${state.yLabel}')\n`;
+            } else if (state.plotType === 'bar') {
+                code += `plt.bar(x, y, color='${state.color}', width=0.5, label='${state.yLabel}')\n`;
+            } else if (state.plotType === 'scatter') {
+                const markerArg = state.marker !== 'none' ? `, marker='${state.marker}'` : '';
+                code += `plt.scatter(x, y, color='${state.color}'${markerArg}, s=60, label='${state.yLabel}')\n`;
+            } else if (state.plotType === 'hist') {
+                code += `plt.hist(y, bins=len(x), color='${state.color}', edgecolor='black', label='${state.yLabel}')\n`;
+            } else if (state.plotType === 'pie') {
+                let explodeCode = '';
+                if (state.explode !== 'none') {
+                    const arr = new Array(state.values.length).fill(0);
+                    if (state.explode === '0') arr[0] = 0.1;
+                    else if (state.explode === '1') arr[1] = 0.1;
+                    else if (state.explode === 'last') arr[arr.length - 1] = 0.1;
+                    explodeCode = `, explode=${JSON.stringify(arr)}`;
+                }
+                const autopctCode = state.showAutopct ? `, autopct='%1.1f%%'` : '';
+                code += `plt.pie(y, labels=x${explodeCode}${autopctCode}, shadow=True)\n`;
+            }
+
+            if (state.plotType !== 'pie') {
+                code += `\n# அச்சு பெயர்கள் மற்றும் தலைப்பு அமைத்தல்\n`;
+                code += `plt.xlabel("${state.xLabel}")\n`;
+                code += `plt.ylabel("${state.yLabel}")\n`;
+            }
+
+            code += `plt.title("${state.title}")\n`;
+
+            if (state.grid && state.plotType !== 'pie') {
+                code += `plt.grid(True)  # கட்டக் கோடுகளை இயக்குதல்\n`;
+            }
+
+            if (state.legend && state.plotType !== 'pie') {
+                code += `plt.legend()    # குறியீட்டு விளக்கம் சேர்த்தல்\n`;
+            }
+
+            code += `\n# வரைபடத்தை திரையிடுதல்\n`;
+            code += `plt.show()\n`;
+            code += `# plt.savefig("chart.png") # கோப்பாக சேமிக்க விரும்பினால்`;
+
+            document.getElementById('pythonCodeDisplay').textContent = code;
+        }
+
+        // --- Clipboard Copy Functions ---
+        function copyPythonCode() {
+            const code = document.getElementById('pythonCodeDisplay').textContent;
+            copyToClipboard(code);
+            showToast("பைதான் நிரல் வெற்றிகரமாக நகலெடுக்கப்பட்டது!", "success");
+        }
+
+        function copySnippet(elementId) {
+            const code = document.getElementById(elementId).innerText;
+            copyToClipboard(code);
+            showToast("மாதிரி நிரல் நகலெடுக்கப்பட்டது!", "success");
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        // --- Save Canvas as PNG Image ---
+        function saveCanvasAsImage() {
+            const canvas = document.getElementById('mplCanvas');
+            const link = document.createElement('a');
+            link.download = `matplotlib_chart_${state.plotType}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast("வரைபடம் PNG படமாக சேமிக்கப்பட்டது!", "success");
+        }
+
+        // --- Reset Defaults ---
+        function resetDefaults() {
+            document.getElementById('presetSelect').value = 'custom';
+            state.plotType = 'bar';
+            state.title = 'மாணவர்களின் தேர்வு மதிப்பெண்கள்';
+            state.xLabel = 'பாடங்கள்';
+            state.yLabel = 'மதிப்பெண்கள்';
+            state.labels = ['தமிழ்', 'ஆங்கிலம்', 'கணிதம்', 'அறிவியல்', 'கணிணி'];
+            state.values = [85, 78, 92, 88, 98];
+            state.color = '#2563eb';
+            state.marker = 'o';
+            state.grid = true;
+            state.legend = true;
+            state.explode = 'none';
+
+            syncFormWithState();
+            setPlotType('bar');
+            showToast("ஆய்வகம் மீட்டமைக்கப்பட்டது!", "info");
+        }
+
+        // --- Quiz System ---
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+
+            quizData.forEach((qObj, qIdx) => {
+                const qBox = document.createElement('div');
+                qBox.className = 'p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3';
+                qBox.id = `qCard-${qIdx}`;
+
+                const qTitle = document.createElement('h4');
+                qTitle.className = 'font-bold text-sm text-slate-800';
+                qTitle.textContent = qObj.q;
+                qBox.appendChild(qTitle);
+
+                const optsGrid = document.createElement('div');
+                optsGrid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1';
+
+                qObj.options.forEach((opt, optIdx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.id = `qOpt-${qIdx}-${optIdx}`;
+                    btn.className = 'text-left text-xs p-3 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 font-medium text-slate-700 transition flex items-center gap-2';
+                    btn.innerHTML = `<span class="h-5 w-5 rounded-full border border-slate-400 flex items-center justify-center text-[10px] font-bold text-slate-500">${String.fromCharCode(65 + optIdx)}</span> <span>${opt}</span>`;
+                    btn.onclick = () => selectQuizAnswer(qIdx, optIdx);
+                    optsGrid.appendChild(btn);
+                });
+
+                qBox.appendChild(optsGrid);
+
+                // Feedback Container
+                const fbBox = document.createElement('div');
+                fbBox.id = `qFeedback-${qIdx}`;
+                fbBox.className = 'hidden text-xs p-3 rounded-lg mt-2';
+                qBox.appendChild(fbBox);
+
+                container.appendChild(qBox);
+            });
+        }
+
+        function selectQuizAnswer(qIdx, selectedOptIdx) {
+            userQuizAnswers[qIdx] = selectedOptIdx;
+            const qObj = quizData[qIdx];
+            const isCorrect = selectedOptIdx === qObj.ans;
+
+            // Highlight chosen buttons
+            qObj.options.forEach((_, optIdx) => {
+                const btn = document.getElementById(`qOpt-${qIdx}-${optIdx}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-100', 'bg-white', 'border-slate-300');
+
+                if (optIdx === qObj.ans) {
+                    btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
+                } else if (optIdx === selectedOptIdx) {
+                    btn.classList.add('bg-rose-100', 'border-rose-400', 'text-rose-900');
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Show explanation
+            const fbBox = document.getElementById(`qFeedback-${qIdx}`);
+            fbBox.classList.remove('hidden');
+            if (isCorrect) {
+                fbBox.className = 'text-xs p-3 rounded-lg mt-2 bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-start gap-2';
+                fbBox.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm mt-0.5"></i> <div><b>மிகச் சரி!</b> ${qObj.exp}</div>`;
+            } else {
+                fbBox.className = 'text-xs p-3 rounded-lg mt-2 bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-2';
+                fbBox.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 text-sm mt-0.5"></i> <div><b>தவறு!</b> சரியான விடை: <b>${qObj.options[qObj.ans]}</b>. <br>${qObj.exp}</div>`;
+            }
+
+            // Update Total Score
+            calculateQuizScore();
+        }
+
+        function calculateQuizScore() {
+            let correctCount = 0;
+            Object.keys(userQuizAnswers).forEach(qIdx => {
+                if (userQuizAnswers[qIdx] === quizData[qIdx].ans) {
+                    correctCount++;
+                }
+            });
+            document.getElementById('quizScoreText').innerText = `${correctCount} / ${quizData.length}`;
+        }
+
+        function resetQuiz() {
+            userQuizAnswers = {};
+            document.getElementById('quizScoreText').innerText = `0 / ${quizData.length}`;
+            renderQuiz();
+            showToast("வினாடி வினா மீண்டும் தொடங்கப்பட்டது!", "info");
+        }
+
+        // --- Custom Toast Notification ---
+        function showToast(msg, type = "info") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = msg;
+            if (type === 'success') {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-base';
+            } else if (type === 'info') {
+                toastIcon.className = 'fa-solid fa-circle-info text-blue-400 text-base';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
