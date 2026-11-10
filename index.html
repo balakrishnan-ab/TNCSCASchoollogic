@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TN CS & CA School Portal</title>
+    
+    <!-- அனைத்து இணைப்புகளையும் புதிய டேப்பில் திறக்க வைக்கும் வரி -->
+    <base target="_blank">
+
     <style>
         * {
             box-sizing: border-box;
@@ -147,7 +151,6 @@
                 <ul class="link-grid">
                     <li><a href="linear_search_visualizer.html">1. Linear Search</a></li>
                     <li><a href="binary_search_visualizer.html">2. Binary Search</a></li>
-                    <!-- புதிய தேடல் பக்கங்களை இங்கு சேர்க்கலாம் -->
                 </ul>
             </div>
 
@@ -186,7 +189,6 @@
                 <ul class="link-grid">
                     <li><a href="ca12_php_basics.html">1. PHP அடிப்படைகள்</a></li>
                     <li><a href="ca12_mysql_queries.html">2. MySQL தரவுத்தள வினவல்கள்</a></li>
-                    <!-- புதிய CA பக்கங்களை இங்கு சேர்க்கலாம் -->
                 </ul>
             </div>
 
@@ -266,15 +268,12 @@
 
     <script>
         function switchTab(evt, tabId) {
-            // அனைத்து Tab உள்ளடக்கங்களையும் மறைக்க
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => content.classList.remove('active'));
 
-            // அனைத்து பொத்தான்களிலிருந்தும் 'active' நிலையை நீக்க
             const tabButtons = document.querySelectorAll('.tab-btn');
             tabButtons.forEach(btn => btn.classList.remove('active'));
 
-            // தேர்ந்தெடுக்கப்பட்ட தாவலை மட்டும் காட்ட
             document.getElementById(tabId).classList.add('active');
             evt.currentTarget.classList.add('active');
         }
