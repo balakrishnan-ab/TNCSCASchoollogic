@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12-ஆம் வகுப்பு கணினி பயன்பாடுகள் - பாடம் 17: மின்-வணிகப் பாதுகாப்பு அமைப்புகள்</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Hind Madurai', 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+        .code-font {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .tab-btn.active {
+            border-bottom: 3px solid #2563eb;
+            color: #1d4ed8;
+            font-weight: 700;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .pulsing {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 bg-blue-500 rounded-xl flex items-center justify-center text-white shadow-inner">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-bold leading-tight">மின்-வணிகப் பாதுகாப்பு அமைப்புகள்</h1>
+                    <p class="text-xs text-indigo-200">12-ஆம் வகுப்பு கணினி பயன்பாடுகள் • பாடம் 17 செய்முறை மற்றும் கற்றல் கருவி</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-indigo-950/70 px-3 py-1.5 rounded-lg border border-indigo-700">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>தமிழ்நாடு மாநிலப் பாடத்திட்டம் (Samacheer Kalvi)</span>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-indigo-800 border-t border-indigo-700/60 overflow-x-auto">
+            <div class="max-w-7xl mx-auto px-4 flex space-x-2 text-sm sm:text-base whitespace-nowrap">
+                <button onclick="switchTab('tab-encrypt')" id="btn-tab-encrypt" class="tab-btn active px-4 py-3 text-indigo-100 hover:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-key"></i> குறியாக்கவியல் (Encryption)
+                </button>
+                <button onclick="switchTab('tab-signature')" id="btn-tab-signature" class="tab-btn px-4 py-3 text-indigo-200 hover:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-signature"></i> டிஜிட்டல் கையொப்பம்
+                </button>
+                <button onclick="switchTab('tab-set')" id="btn-tab-set" class="tab-btn px-4 py-3 text-indigo-200 hover:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired"></i> SET நெறிமுறை மாதிரி
+                </button>
+                <button onclick="switchTab('tab-threats')" id="btn-tab-threats" class="tab-btn px-4 py-3 text-indigo-200 hover:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bug"></i> பாதுகாப்பு அச்சுறுத்தல்கள்
+                </button>
+                <button onclick="switchTab('tab-quiz')" id="btn-tab-quiz" class="tab-btn px-4 py-3 text-indigo-200 hover:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-question"></i> தேர்வு வினாடி-வினா
+                </button>
+                <button onclick="switchTab('tab-notes')" id="btn-tab-notes" class="tab-btn px-4 py-3 text-indigo-200 hover:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-book-bookmark"></i> முக்கிய வினா-விடைகள்
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 w-full flex-grow">
+
+        <!-- ================= TAB 1: குறியாக்கவியல் ஆய்வகம் ================= -->
+        <section id="tab-encrypt" class="tab-content block">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            <span class="text-blue-600"><i class="fa-solid fa-lock"></i></span>
+                            குறியாக்க தொழில்நுட்ப ஆய்வகம் (Encryption & Decryption)
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">எளிய உரையை (Plaintext) மறைமுக உரையாக (Ciphertext) மாற்றி தரவைப் பாதுகாக்கும் செய்முறை விளக்கம்.</p>
+                    </div>
+                    <div class="inline-flex rounded-lg border border-slate-200 p-1 bg-slate-50">
+                        <button id="mode-sym-btn" onclick="setEncMode('symmetric')" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white shadow-sm transition">
+                            சமச்சீர் சாவி (Symmetric Key)
+                        </button>
+                        <button id="mode-asym-btn" onclick="setEncMode('asymmetric')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 transition">
+                            சமச்சீரற்ற சாவி (Asymmetric Key)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Concept Quick Card -->
+                <div id="enc-concept-box" class="my-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-sm leading-relaxed text-blue-900">
+                    <div class="font-bold flex items-center gap-1.5 mb-1 text-blue-800">
+                        <i class="fa-solid fa-circle-info"></i> சமச்சீர் சாவி குறியாக்கம் (Symmetric Key Encryption):
+                    </div>
+                    குறியாக்கம் (Encryption) மற்றும் மறைகுறியாக்கம் (Decryption) இரண்டிற்கும் <strong>ஒரே ஒரு இரகசிய சாவி (Single / Secret Key)</strong> பயன்படுத்தப்படுகிறது. எ.கா: <strong>DES, AES, RC4</strong>. இது அதிவேகமானது.
+                </div>
+
+                <!-- Simulation Area -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                    <!-- Step 1: Plaintext Input -->
+                    <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 flex flex-col">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">1</span>
+                                எளிய உரை (Plaintext)
+                            </label>
+                            <span class="text-xs text-slate-400">அசல் தகவல்</span>
+                        </div>
+                        <textarea id="plain-input" rows="4" class="w-full text-sm p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="அனுப்ப வேண்டிய தகவலை தட்டச்சு செய்யவும்... (எ.கா: ரகசிய கடவுச்சொல்: 1234 அல்லது TN-BOARD-2026)">வணிக கட்டண விவரம்: ரூ. 5000</textarea>
+
+                        <!-- Key Config -->
+                        <div class="mt-4 pt-3 border-t border-slate-200" id="key-section">
+                            <label class="text-xs font-bold text-slate-600 block mb-1">பகிர்வு சாவி (Secret Key):</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="sym-key-input" value="SECRET123" class="w-full text-xs p-2 border border-slate-300 rounded-md code-font bg-white">
+                                <button onclick="generateRandomKey()" class="px-2.5 py-1 text-xs bg-slate-200 hover:bg-slate-300 rounded text-slate-700" title="புதிய சாவி">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Asymmetric Key Details (Hidden by default) -->
+                        <div id="asym-key-section" class="mt-4 pt-3 border-t border-slate-200 hidden space-y-2">
+                            <div class="p-2.5 bg-indigo-50 border border-indigo-200 rounded text-xs">
+                                <p class="font-bold text-indigo-900 mb-1"><i class="fa-solid fa-key text-indigo-600"></i> பெறுபவரின் பொதுச் சாவி (Public Key):</p>
+                                <span class="code-font text-indigo-700 block truncate">PUB_KEY_REC_89102_TN</span>
+                                <p class="text-[11px] text-indigo-500 mt-1">*எல்லோரும் பார்க்க முடியும். குறியாக்கம் செய்ய மட்டுமே உதவும்.</p>
+                            </div>
+                            <div class="p-2.5 bg-amber-50 border border-amber-200 rounded text-xs">
+                                <p class="font-bold text-amber-900 mb-1"><i class="fa-solid fa-user-lock text-amber-600"></i> பெறுபவரின் தனிப்பட்ட சாவி (Private Key):</p>
+                                <span class="code-font text-amber-800 block truncate">PRIV_KEY_REC_KEEP_SECRET_77</span>
+                                <p class="text-[11px] text-amber-600 mt-1">*பெறுபவர் மட்டுமே வைத்திருப்பார். மறைகுறியாக்கத்திற்கு மட்டுமே பயன்படும்.</p>
+                            </div>
+                        </div>
+
+                        <button onclick="handleEncryptAction()" class="mt-4 w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm rounded-lg shadow transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-right"></i> குறியாக்கம் செய் (Encrypt)
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Ciphertext Output -->
+                    <div class="bg-slate-900 text-slate-100 rounded-xl border border-slate-800 p-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-slate-900 text-xs flex items-center justify-center font-bold">2</span>
+                                    மறைமுக உரை (Ciphertext)
+                                </label>
+                                <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">குறியாக்கப்பட்ட வடிவம்</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mb-2">இணைய வலையமைப்பில் பரிமாறப்படும் பாதுகாப்பான தரவு:</p>
+                            <div id="cipher-output" class="p-3 bg-slate-950 rounded-lg text-emerald-300 code-font text-xs break-all min-h-[90px] border border-slate-800 flex items-center justify-center text-center">
+                                [குறியாக்கம் செய்ய 'குறியாக்கம் செய்' பொத்தானை அழுத்தவும்]
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-800">
+                            <div class="text-[11px] text-slate-400 mb-2 flex items-center justify-between">
+                                <span>நிலை: <span id="security-badge" class="text-blue-400 font-semibold">தயார்</span></span>
+                                <span id="cipher-length" class="text-slate-500">0 bytes</span>
+                            </div>
+                            <button onclick="handleDecryptAction()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-lg shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-unlock-keyhole"></i> மறைகுறியாக்கம் செய் (Decrypt)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Decrypted Plaintext Result -->
+                    <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 flex flex-col">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs flex items-center justify-center">3</span>
+                                பெறப்பட்ட அசல் உரை (Decrypted Data)
+                            </label>
+                            <span class="text-xs text-slate-400">முடிவு</span>
+                        </div>
+                        <div id="decrypted-result" class="flex-grow p-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-800 min-h-[110px] flex items-center justify-center text-slate-400 italic">
+                            இங்கு மறைகுறியாக்கப்பட்ட அசல் தகவல் தோன்றும்...
+                        </div>
+
+                        <div class="mt-4 p-3 bg-slate-100 rounded-lg border border-slate-200 text-xs text-slate-600 space-y-1">
+                            <div class="font-semibold text-slate-800">பரிசோதனை உதவிக்குறிப்பு:</div>
+                            <p>தவறான சாவியை உள்ளிட்டு 'மறைகுறியாக்கம் செய்' பொத்தானை அழுத்தினால் என்ன நடக்கிறது என பரிசோதிக்கவும்!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Table from Chapter 17 (High Exam Importance) -->
+                <div class="mt-8 border-t border-slate-200 pt-6">
+                    <h3 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-table-list text-blue-600"></i>
+                        தேர்வு அட்டவணை: சமச்சீர் vs சமச்சீரற்ற சாவி குறியாக்கம் (முக்கிய 5-மதிப்பெண் வினா)
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm border-collapse border border-slate-200 bg-white rounded-lg">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-bold">
+                                    <th class="p-3 border border-slate-200">அம்சங்கள்</th>
+                                    <th class="p-3 border border-slate-200 text-blue-700">சமச்சீர் சாவி குறியாக்கம் (Symmetric)</th>
+                                    <th class="p-3 border border-slate-200 text-indigo-700">சமச்சீரற்ற சாவி குறியாக்கம் (Asymmetric)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-slate-600">
+                                <tr>
+                                    <td class="p-3 font-semibold bg-slate-50 border border-slate-200">சாவிகளின் எண்ணிக்கை</td>
+                                    <td class="p-3 border border-slate-200">ஒரே ஒரு இரகசிய சாவி (Single Key)</td>
+                                    <td class="p-3 border border-slate-200">இரண்டு சாவிகள் (பொது சாவி & தனிப்பட்ட சாவி)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold bg-slate-50 border border-slate-200">வேகம் (Speed)</td>
+                                    <td class="p-3 border border-slate-200 text-emerald-600 font-semibold">மிகவும் விரைவானது (Very Fast)</td>
+                                    <td class="p-3 border border-slate-200 text-amber-600 font-semibold">ஒப்பீட்டளவில் மெதுவானது (Slower)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold bg-slate-50 border border-slate-200">வழிமுறைகள் (Algorithms)</td>
+                                    <td class="p-3 border border-slate-200">DES, 3DES, AES, RC4</td>
+                                    <td class="p-3 border border-slate-200">RSA, ECC, Diffie-Hellman</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold bg-slate-50 border border-slate-200">பயன்பாடு</td>
+                                    <td class="p-3 border border-slate-200">அதிக அளவு தரவு பரிமாற்றம் செய்ய உகந்தது</td>
+                                    <td class="p-3 border border-slate-200">டிஜிட்டல் கையொப்பம் & சாவி பரிமாற்றத்திற்கு உகந்தது</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: டிஜிட்டல் கையொப்பம் ================= -->
+        <section id="tab-signature" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <span class="text-purple-600"><i class="fa-solid fa-signature"></i></span>
+                        டிஜிட்டல் கையொப்ப மாதிரி (Digital Signature Simulator)
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        டிஜிட்டல் ஆவணத்தின் <strong>நம்பகத்தன்மை (Authenticity)</strong> மற்றும் <strong>ஒருமைப்பாட்டை (Integrity)</strong> உறுதிப்படுத்தும் வழிமுறை.
+                    </p>
+                </div>
+
+                <div class="my-4 p-4 rounded-xl bg-purple-50 border border-purple-200 text-sm text-purple-900">
+                    <strong>பாடம் 17 கோட்பாடு:</strong> அனுப்புநரின் <em>தனிப்பட்ட சாவி (Private Key)</em> மூலம் ஆவணத்தின் சுருக்கம் (Hash / Message Digest) குறியாக்கம் செய்யப்படுகிறது. பெறுநர் அனுப்புநரின் <em>பொதுச் சாவி (Public Key)</em> மூலம் அதைச் சரிபார்க்கிறார். வழியில் ஒரு எழுத்து மாற்றப்பட்டாலும் கையொப்பம் செல்லாது!
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <!-- Left: Sender signing -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-purple-600"></i>
+                            அனுப்புநர் பகுதி (கையொப்பமிடுதல்)
+                        </h3>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">அசல் ஆவணம் / செய்தி:</label>
+                        <input type="text" id="sig-original-text" value="ஆணை எண்: ORD-9901 | தொகை: 1500" class="w-full text-sm p-2.5 border border-slate-300 rounded-lg bg-white mb-3" oninput="updateHashPreview()">
+
+                        <div class="space-y-2 text-xs">
+                            <div class="flex justify-between items-center text-slate-500">
+                                <span>ஆவண சுருக்கம் (Hash Digest - SHA):</span>
+                                <span id="hash-preview" class="code-font text-purple-700 font-bold">e7a4b91f...</span>
+                            </div>
+                            <div class="flex justify-between items-center text-slate-500">
+                                <span>பயன்படுத்தும் சாவி:</span>
+                                <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-mono font-semibold">அனுப்புநரின் தனிப்பட்ட சாவி</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-purple-900 text-purple-100 rounded-lg">
+                            <span class="text-[11px] uppercase tracking-wider block text-purple-300 font-semibold mb-1">உருவாக்கப்பட்ட டிஜிட்டல் கையொப்பம்:</span>
+                            <div id="sig-token" class="code-font text-xs break-all text-purple-200">
+                                SIGNED_HASH[e7a4b91f_PRIV_TN2026]
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Receiver Verification -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-stamp text-emerald-600"></i>
+                                பெறுநர் பகுதி (சரிபார்த்தல் மற்றும் ஒருமைப்பாடு சோதனை)
+                            </h3>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">பெறப்பட்ட ஆவணம்:</label>
+                            <input type="text" id="sig-received-text" value="ஆணை எண்: ORD-9901 | தொகை: 1500" class="w-full text-sm p-2.5 border border-slate-300 rounded-lg bg-white mb-2">
+
+                            <div class="flex gap-2 mb-4">
+                                <button onclick="tamperMessage()" class="px-3 py-1.5 text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-md border border-amber-300 font-medium">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> தரவை சேதப்படுத்து (Tamper with Data)
+                                </button>
+                                <button onclick="resetSignatureDoc()" class="px-3 py-1.5 text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-md">
+                                    மீட்டமை
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button onclick="verifyDigitalSignature()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-medium text-sm rounded-lg shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-circle-check"></i> பொதுச் சாவி மூலம் கையொப்பத்தை சரிபார்
+                            </button>
+
+                            <div id="sig-status-result" class="mt-3 p-3 rounded-lg text-xs font-semibold text-center border bg-slate-100 text-slate-600">
+                                'சரிபார்' பொத்தானை அழுத்தவும்
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: SET நெறிமுறை மாதிரி ================= -->
+        <section id="tab-set" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <span class="text-blue-600"><i class="fa-solid fa-shield-cat"></i></span>
+                        SET (பாதுகாப்பான மின்னணு பரிவர்த்தனை நெறிமுறை மாதிரி)
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        Secure Electronic Transaction - மின்-வணிகத்தில் அட்டைதாரர், வணிகர் மற்றும் வங்கி இடையேயான பாதுகாப்பான பரிவர்த்தனை கட்டமைப்பு.
+                    </p>
+                </div>
+
+                <div class="my-4 p-4 rounded-xl bg-blue-50 border border-blue-200 text-sm text-blue-900">
+                    <strong>SET அமைப்பின் முக்கிய அம்சம் - இரட்டை கையொப்பம் (Dual Signature):</strong>
+                    வாடிக்கையாளர் வாங்கும் பொருட்களின் பட்டியல் (Order Info) வணிகருக்கு மட்டுமே தெரியும். வாடிக்கையாளரின் கடன் அட்டை (Credit Card Info) வங்கி நுழைவாயிலுக்கு மட்டுமே தெரியும்! வணிகரால் அட்டை எண்ணை திருட முடியாது.
+                </div>
+
+                <!-- Interactive Workflow Steps -->
+                <div class="mt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                        <!-- Entity 1: Cardholder -->
+                        <div id="set-cardholder" class="p-4 rounded-xl border-2 border-blue-500 bg-blue-50/50 transition">
+                            <div class="w-12 h-12 mx-auto bg-blue-600 text-white rounded-full flex items-center justify-center text-xl mb-2 shadow">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">1. அட்டைதாரர் / வாடிக்கையாளர்</h4>
+                            <p class="text-xs text-slate-500 mt-1">பொருளை தேர்வு செய்து இரட்டை கையொப்பமிட்டு ஆணையை அனுப்புகிறார்.</p>
+                            <div class="mt-3 text-[11px] p-2 bg-white rounded border border-slate-200 text-left">
+                                <div>📦 ஆணை விவரம் (OI)</div>
+                                <div>💳 அட்டை எண் (PI - குறியாக்கம்)</div>
+                            </div>
+                        </div>
+
+                        <!-- Entity 2: Merchant -->
+                        <div id="set-merchant" class="p-4 rounded-xl border-2 border-slate-200 bg-slate-50 transition">
+                            <div class="w-12 h-12 mx-auto bg-amber-500 text-white rounded-full flex items-center justify-center text-xl mb-2 shadow">
+                                <i class="fa-solid fa-store"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">2. வணிகர் (Merchant)</h4>
+                            <p class="text-xs text-slate-500 mt-1">ஆணை விவரங்களை மட்டுமே பார்க்க முடியும். அட்டை விவரத்தை வங்கியிடம் அனுப்புகிறார்.</p>
+                            <div class="mt-3 text-[11px] p-2 bg-white rounded border border-slate-200 text-left">
+                                <div class="text-emerald-600">✓ ஆணை விவரம் தெரியும்</div>
+                                <div class="text-red-500 font-semibold">✗ அட்டை எண் மறைக்கப்பட்டுள்ளது!</div>
+                            </div>
+                        </div>
+
+                        <!-- Entity 3: Payment Gateway / Bank -->
+                        <div id="set-bank" class="p-4 rounded-xl border-2 border-slate-200 bg-slate-50 transition">
+                            <div class="w-12 h-12 mx-auto bg-emerald-600 text-white rounded-full flex items-center justify-center text-xl mb-2 shadow">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800 text-sm">3. கட்டண நுழைவாயில் / வங்கி</h4>
+                            <p class="text-xs text-slate-500 mt-1">கடன் அட்டையைச் சரிபார்த்து கட்டணத்தை வணிகருக்கு உறுதிசெய்கிறது.</p>
+                            <div class="mt-3 text-[11px] p-2 bg-white rounded border border-slate-200 text-left">
+                                <div class="text-emerald-600">✓ அட்டை எண் சரிபார்க்கப்பட்டது</div>
+                                <div class="text-slate-400">✗ வாங்கிய பொருள் விவரம் தெரியாது</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flow Control -->
+                    <div class="mt-6 flex flex-col sm:flex-row items-center justify-between p-4 bg-slate-100 rounded-xl gap-3">
+                        <div class="text-xs text-slate-600 font-medium" id="set-status-text">
+                            படி 1: அட்டைதாரர் இணையத்தில் பணம் செலுத்த தயாராக உள்ளார்.
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="nextSetStep()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow flex items-center gap-2">
+                                <span>அடுத்த செயல்முறை</span> <i class="fa-solid fa-forward"></i>
+                            </button>
+                            <button onclick="resetSetDemo()" class="px-3 py-2 bg-slate-300 hover:bg-slate-400 text-slate-800 text-xs font-semibold rounded-lg">
+                                மறுதொடக்கம்
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: பாதுகாப்பு அச்சுறுத்தல்கள் ================= -->
+        <section id="tab-threats" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <span class="text-rose-600"><i class="fa-solid fa-shield-virus"></i></span>
+                        மின்-வணிக அச்சுறுத்தல்கள் ஆய்வகம் (Security Threats Lab)
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        12-ஆம் வகுப்பு பாடத்தில் குறிப்பிடப்பட்டுள்ள முக்கிய பாதுகாப்பு அச்சுறுத்தல்களின் நேரடி உருவகப்படுத்துதல்.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    <!-- Threat 1: Typopiracy Simulator (எழுத்துப் பிழை ஆக்கிரமிப்பு) -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                                <i class="fa-solid fa-keyboard text-rose-500"></i>
+                                எழுத்துப் பிழை ஆக்கிரமிப்பு (Typopiracy Simulator)
+                            </h3>
+                            <span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded font-semibold">சைபர் அச்சுறுத்தல்</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">
+                            பிரபலமான இணையதளங்களின் முகவரியை பயனர் தட்டச்சு செய்யும்போது ஏற்படும் எழுத்துப் பிழைகளைப் பயன்படுத்தி போலியான தளத்திற்கு வழிநடத்துதல்.
+                        </p>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-slate-700 block">இணைய முகவரியை (URL) தட்டச்சு செய்து சோதிக்கவும்:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="typo-input" placeholder="எ.கா: www.goggle.com அல்லது www.google.com" value="www.goggle.com" class="w-full text-xs p-2.5 border border-slate-300 rounded-lg">
+                                <button onclick="checkTypopiracy()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg whitespace-nowrap">
+                                    சோதி
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="typo-result" class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-900">
+                            <strong><i class="fa-solid fa-triangle-exclamation text-red-600"></i> Typopiracy எச்சரிக்கை!</strong><br>
+                            'www.goggle.com' என்பது 'www.google.com' தளத்தின் எழுத்துப் பிழையைப் பயன்படுத்தும் போலி/மாற்று தளம் ஆகும்! இது பயனரின் ரகசிய தகவல்களை திருட வாய்ப்புள்ளது.
+                        </div>
+
+                        <div class="mt-3 text-[11px] text-slate-500 bg-slate-100 p-2 rounded">
+                            பாடப்புத்தக உதாரணங்கள்: <em>www.goggle.com</em>, <em>www.faceblook.com</em>.
+                        </div>
+                    </div>
+
+                    <!-- Threat 2: DDoS Attack Simulator (விநியோகிக்கப்பட்ட சேவை மறுப்புத் தாக்குதல்) -->
+                    <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-server text-indigo-600"></i>
+                                    DDoS தாக்குதல் உருவகப்படுத்துதல்
+                                </h3>
+                                <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-semibold">DDoS Attack</span>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">
+                                ஒரே நேரத்தில் ஆயிரக்கணக்கான ஜோம்பி/போட்நெட் கணினிகளிலிருந்து ஒரே சேவையகத்திற்கு வேண்டுகோள்களை அனுப்பி அதன் சேவையை முடக்குதல்.
+                            </p>
+
+                            <!-- Server Health Bar -->
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between text-xs font-semibold">
+                                    <span>மின்-வணிக சேவையக நிலை (Server Health):</span>
+                                    <span id="server-health-text" class="text-emerald-600">100% சீரானது</span>
+                                </div>
+                                <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+                                    <div id="server-health-bar" class="bg-emerald-500 h-full w-full transition-all duration-300"></div>
+                                </div>
+                                <div class="flex justify-between text-[11px] text-slate-400">
+                                    <span>வினாடிக்கு வேண்டுகோள்கள் (Traffic): <strong id="traffic-rate">50 req/s</strong></span>
+                                    <span>நிலை: <strong id="server-status-label" class="text-emerald-600">இயங்குகிறது</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button id="btn-ddos" onclick="triggerDDoSAttack()" class="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-xs rounded-lg shadow transition">
+                                <i class="fa-solid fa-bomb"></i> DDoS தாக்குதலைத் தொடங்கு
+                            </button>
+                            <button onclick="restoreServer()" class="w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow transition">
+                                <i class="fa-solid fa-shield"></i> ஃபயர்வால் பாதுகாப்பு (மீட்டெடு)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Threat Cards Grid -->
+                <div class="mt-8 border-t border-slate-200 pt-6">
+                    <h3 class="text-base font-bold text-slate-800 mb-4">பாடம் 17-ல் உள்ள இதர முக்கிய அச்சுறுத்தல்கள்:</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl hover:shadow transition">
+                            <div class="font-bold text-slate-800 text-sm mb-1 text-blue-700"><i class="fa-solid fa-globe"></i> சைபர் ஆக்கிரமிப்பு</div>
+                            <span class="text-[11px] text-slate-400 block mb-1">Cyber Squatting</span>
+                            <p class="text-slate-600">மற்றொரு நிறுவனத்தின் வர்த்தக முத்திரை அல்லது பெயரில் இணைய களத்தை முன்கூட்டியே பதிவு செய்து அதிக விலைக்கு விற்க முயலுதல்.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl hover:shadow transition">
+                            <div class="font-bold text-slate-800 text-sm mb-1 text-rose-700"><i class="fa-solid fa-file-pen"></i> சேதப்படுத்துதல்</div>
+                            <span class="text-[11px] text-slate-400 block mb-1">Tampering</span>
+                            <p class="text-slate-600">இணையதளத்தின் பக்கங்களை மாற்றுதல் அல்லது வலையமைப்பில் செல்லும் செய்திகளை இடைமறித்து மாற்றி அமைத்தல்.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl hover:shadow transition">
+                            <div class="font-bold text-slate-800 text-sm mb-1 text-amber-700"><i class="fa-solid fa-unlock"></i> தகவல் கசிவு</div>
+                            <span class="text-[11px] text-slate-400 block mb-1">Information Leakage</span>
+                            <p class="text-slate-600">பயனரின் தனிப்பட்ட மற்றும் நிதி சார்ந்த ரகசியத் தகவல்களை அங்கீகாரமின்றி கசிய விடுவது அல்லது திருடுவது.</p>
+                        </div>
+                        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl hover:shadow transition">
+                            <div class="font-bold text-slate-800 text-sm mb-1 text-purple-700"><i class="fa-solid fa-credit-card"></i> கட்டண மோசடி</div>
+                            <span class="text-[11px] text-slate-400 block mb-1">Payment Fraud</span>
+                            <p class="text-slate-600">திருடப்பட்ட கடன் அட்டை எண்கள் அல்லது போலி அடையாளங்களைப் பயன்படுத்தி ஆன்லைனில் பொருட்கள் வாங்குதல்.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: தேர்வு வினாடி-வினா ================= -->
+        <section id="tab-quiz" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                            <span class="text-emerald-600"><i class="fa-solid fa-square-check"></i></span>
+                            பாடம் 17: சுய மதிப்பீட்டு வினாடி-வினா (Self Quiz)
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">அரசுப் பொதுத்தேர்வுக்கான ஒரு மதிப்பெண் மற்றும் முக்கிய வினாக்கள் பயிற்சி.</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl text-emerald-800 font-bold text-sm">
+                        மதிப்பெண்: <span id="quiz-score">0</span> / <span id="quiz-total">6</span>
+                    </div>
+                </div>
+
+                <div id="quiz-container" class="mt-6 space-y-6">
+                    <!-- Questions will be injected dynamically -->
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-200 flex justify-between items-center">
+                    <button onclick="resetQuiz()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> மீண்டும் முயற்சி செய்
+                    </button>
+                    <span id="quiz-feedback-msg" class="text-xs font-bold text-slate-600"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 6: விரைவு திருப்புதல் குறிப்புகள் ================= -->
+        <section id="tab-notes" class="tab-content hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div class="pb-4 border-b border-slate-100">
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <span class="text-blue-600"><i class="fa-solid fa-book-open"></i></span>
+                        பாடம் 17: விரைவு திருப்புதல் குறிப்புகள் & வினா-விடைகள்
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">தேர்வில் அதிக மதிப்பெண் பெறத் தேவையான சுருக்கமான குறிப்புகள்.</p>
+                </div>
+
+                <div class="space-y-4 mt-6">
+                    <!-- Note Item 1 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleAccordion('qa-1')" class="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 flex justify-between items-center text-sm font-bold text-slate-800">
+                            <span>1. குறியாக்கம் (Encryption) என்றால் என்ன? அதன் முக்கிய நன்மைகள் யாவை? (2/3 மதிப்பெண்)</span>
+                            <i id="qa-1-icon" class="fa-solid fa-chevron-down text-slate-400"></i>
+                        </button>
+                        <div id="qa-1" class="p-4 text-xs sm:text-sm text-slate-600 border-t border-slate-200 bg-white leading-relaxed">
+                            <p><strong>பதில்:</strong> எளிய உரையை (Plaintext), குறியாக்க வழிமுறையைப் பயன்படுத்தி புரிந்துகொள்ள முடியாத மறைமுக உரையாக (Ciphertext) மாற்றும் செயல்முறைக்கு <strong>குறியாக்கம்</strong> என்று பெயர்.</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li><strong>இரகசியத்தன்மை (Confidentiality):</strong> அங்கீகரிக்கப்படாத நபர்கள் தகவலைப் படிக்க முடியாது.</li>
+                                <li><strong>ஒருமைப்பாடு (Integrity):</strong> தகவல்கள் வழியில் சிதைக்கப்படாமல் அப்படியே சேர்வதை உறுதிசெய்கிறது.</li>
+                                <li><strong>நம்பகத்தன்மை:</strong> சரியான அனுப்புநரிடம் இருந்து மட்டுமே தகவல் வருகிறது என்பதை உறுதிப்படுத்துகிறது.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Note Item 2 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleAccordion('qa-2')" class="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 flex justify-between items-center text-sm font-bold text-slate-800">
+                            <span>2. எழுத்துப் பிழை ஆக்கிரமிப்பு (Typopiracy) விளக்குக. (2 மதிப்பெண்)</span>
+                            <i id="qa-2-icon" class="fa-solid fa-chevron-down text-slate-400"></i>
+                        </button>
+                        <div id="qa-2" class="p-4 text-xs sm:text-sm text-slate-600 border-t border-slate-200 bg-white leading-relaxed hidden">
+                            <p><strong>பதில்:</strong> எழுத்துப் பிழை ஆக்கிரமிப்பு (Typopiracy) என்பது சைபர் ஆக்கிரமிப்பின் (Cyber Squatting) ஒரு மாறுபாடு ஆகும்.</p>
+                            <p class="mt-1">பயனர்கள் உலாவியின் முகவரிப் பட்டியில் இணையதள முகவரியை தட்டச்சு செய்யும்போது ஏற்படும் எழுத்துப் பிழைகளைப் பயன்படுத்தி போலியான தளங்களுக்கு பயனர்களை வழிநடத்தும் தந்திரமாகும். (எடுத்துக்காட்டாக: <em>www.google.com</em> என்பதற்கு பதிலாக <em>www.goggle.com</em> எனத் தட்டச்சு செய்தால் விபத்து போக்குவரத்தை பெறுதல்).</p>
+                        </div>
+                    </div>
+
+                    <!-- Note Item 3 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleAccordion('qa-3')" class="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 flex justify-between items-center text-sm font-bold text-slate-800">
+                            <span>3. டிஜிட்டல் சான்றிதழ் (Digital Certificate) என்றால் என்ன? (2 மதிப்பெண்)</span>
+                            <i id="qa-3-icon" class="fa-solid fa-chevron-down text-slate-400"></i>
+                        </button>
+                        <div id="qa-3" class="p-4 text-xs sm:text-sm text-slate-600 border-t border-slate-200 bg-white leading-relaxed hidden">
+                            <p><strong>பதில்:</strong> ஒரு தனிநபர் அல்லது நிறுவனத்தின் அடையாளத்தை அவர்களின் பொதுச் சாவியுடன் (Public Key) பிணைத்து அங்கீகரிக்கும் மின்னணு ஆவணம் <strong>டிஜிட்டல் சான்றிதழ்</strong> எனப்படும்.</p>
+                            <p class="mt-1">இதை நம்பகமான சான்றளிக்கும் அதிகாரி (Certification Authority - CA) வழங்குகிறார். இது இணைய உலாவிகளில் SSL/TLS மூலம் பாதுகாப்பான இணைப்பை வழங்க உதவுகிறது.</p>
+                        </div>
+                    </div>
+
+                    <!-- Note Item 4 -->
+                    <div class="border border-slate-200 rounded-xl overflow-hidden">
+                        <button onclick="toggleAccordion('qa-4')" class="w-full text-left p-4 bg-slate-50 hover:bg-slate-100 flex justify-between items-center text-sm font-bold text-slate-800">
+                            <span>4. SET (Secure Electronic Transaction) அமைப்பின் முக்கிய அம்சங்களை விவரி. (5 மதிப்பெண்)</span>
+                            <i id="qa-4-icon" class="fa-solid fa-chevron-down text-slate-400"></i>
+                        </button>
+                        <div id="qa-4" class="p-4 text-xs sm:text-sm text-slate-600 border-t border-slate-200 bg-white leading-relaxed hidden">
+                            <p><strong>பதில்:</strong> SET என்பது இணையத்தில் கடன் அட்டை வழி பாதுகாப்பான பணம் செலுத்துவதற்காக உருவாக்கப்பட்ட நெறிமுறை ஆகும். இதன் முக்கிய அம்சங்கள்:</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-1.5">
+                                <li><strong>ரகசியத்தன்மை:</strong> பொதுச் சாவி மற்றும் தனிப்பட்ட சாவி குறியாக்கங்களை பயன்படுத்தி கட்டண விவரங்கள் பாதுகாக்கப்படுகின்றன.</li>
+                                <li><strong>தகவல் ஒருமைப்பாடு:</strong> சுருக்க வழிமுறை (Message Digest) மூலம் தரவு மாற்றப்படவில்லை என்பதை உறுதி செய்கிறது.</li>
+                                <li><strong>இரட்டை கையொப்பம் (Dual Signature):</strong> வாடிக்கையாளரின் ஆர்டர் விவரம் வணிகருக்கும், அட்டை விவரம் வங்கிக்கும் மட்டுமே பிரிக்கப்பட்டு அனுப்பப்படுகிறது. வணிகருக்கு அட்டை எண் தெரியாது; வங்கிக்கு வாங்கிய பொருட்கள் தெரியாது.</li>
+                                <li><strong>அங்கீகரிப்பு:</strong> வணிகர் மற்றும் வாடிக்கையாளர் இருவருமே டிஜிட்டல் சான்றிதழ் மூலம் சரிபார்க்கப்படுகிறார்கள்.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-4 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                © 12-ஆம் வகுப்பு கணினி பயன்பாடுகள் - மின்-வணிக பாதுகாப்பு அமைப்புகள் ஊடாடும் கற்பித்தல் கருவி
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-slate-500">சமச்சீர் கல்வி பாடத்திட்டம்</span>
+                <span>•</span>
+                <span class="text-blue-400 font-medium">இலவச மென்பொருள் உதவிக்குறிப்பு</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-indigo-200');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+                activeBtn.classList.remove('text-indigo-200');
+            }
+        }
+
+        // ================= TAB 1: Encryption Logic =================
+        let currentMode = 'symmetric'; // 'symmetric' or 'asymmetric'
+        let lastCiphertext = '';
+
+        function setEncMode(mode) {
+            currentMode = mode;
+            const symBtn = document.getElementById('mode-sym-btn');
+            const asymBtn = document.getElementById('mode-asym-btn');
+            const keySec = document.getElementById('key-section');
+            const asymKeySec = document.getElementById('asym-key-section');
+            const conceptBox = document.getElementById('enc-concept-box');
+
+            if (mode === 'symmetric') {
+                symBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white shadow-sm transition';
+                asymBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 transition';
+                keySec.classList.remove('hidden');
+                asymKeySec.classList.add('hidden');
+                conceptBox.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5 mb-1 text-blue-800">
+                        <i class="fa-solid fa-circle-info"></i> சமச்சீர் சாவி குறியாக்கம் (Symmetric Key Encryption):
+                    </div>
+                    குறியாக்கம் (Encryption) மற்றும் மறைகுறியாக்கம் (Decryption) இரண்டிற்கும் <strong>ஒரே ஒரு இரகசிய சாவி (Single / Secret Key)</strong> பயன்படுத்தப்படுகிறது. எ.கா: <strong>DES, AES, RC4</strong>. இது அதிவேகமானது.
+                `;
+            } else {
+                asymBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-md bg-indigo-600 text-white shadow-sm transition';
+                symBtn.className = 'px-3 py-1.5 text-xs font-semibold rounded-md text-slate-600 hover:text-slate-900 transition';
+                keySec.classList.add('hidden');
+                asymKeySec.classList.remove('hidden');
+                conceptBox.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5 mb-1 text-indigo-800">
+                        <i class="fa-solid fa-circle-info"></i> சமச்சீரற்ற சாவி குறியாக்கம் (Asymmetric Key Encryption):
+                    </div>
+                    இதில் <strong>இரண்டு சாவிகள்</strong> உள்ளன. தகவலைப் பூட்ட <em>பெறுபவரின் பொதுச் சாவி (Public Key)</em> பயன்படுகிறது; திறக்க <em>பெறுபவரின் தனிப்பட்ட சாவி (Private Key)</em> மட்டுமே பயன்படுகிறது. எ.கா: <strong>RSA</strong>.
+                `;
+            }
+            // Reset results
+            document.getElementById('cipher-output').innerText = "[குறியாக்கம் செய்ய 'குறியாக்கம் செய்' பொத்தானை அழுத்தவும்]";
+            document.getElementById('decrypted-result').innerText = "இங்கு மறைகுறியாக்கப்பட்ட அசல் தகவல் தோன்றும்...";
+            document.getElementById('security-badge').innerText = 'தயார்';
+            document.getElementById('security-badge').className = 'text-blue-400 font-semibold';
+        }
+
+        function generateRandomKey() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let key = '';
+            for (let i = 0; i < 8; i++) {
+                key += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            document.getElementById('sym-key-input').value = 'KEY-' + key;
+        }
+
+        // Simple XOR + Base64 simulation to demonstrate real mathematical transform
+        function simulateEncrypt(text, key) {
+            let encoded = '';
+            for (let i = 0; i < text.length; i++) {
+                const charCode = text.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                encoded += String.fromCharCode(charCode);
+            }
+            return btoa(unescape(encodeURIComponent(encoded)));
+        }
+
+        function simulateDecrypt(encodedB64, key) {
+            try {
+                const decoded = decodeURIComponent(escape(atob(encodedB64)));
+                let result = '';
+                for (let i = 0; i < decoded.length; i++) {
+                    const charCode = decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length);
+                    result += String.fromCharCode(charCode);
+                }
+                return result;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function handleEncryptAction() {
+            const plain = document.getElementById('plain-input').value.trim();
+            if (!plain) {
+                alert('தயவுசெய்து எளிய உரையை உள்ளிடவும்!');
+                return;
+            }
+
+            let key = '';
+            if (currentMode === 'symmetric') {
+                key = document.getElementById('sym-key-input').value || 'KEY123';
+            } else {
+                key = 'PUB_KEY_REC_89102_TN';
+            }
+
+            lastCiphertext = simulateEncrypt(plain, key);
+            document.getElementById('cipher-output').innerText = lastCiphertext;
+            document.getElementById('cipher-length').innerText = lastCiphertext.length + ' எழுத்துகள்';
+            document.getElementById('security-badge').innerText = 'பாதுகாக்கப்பட்டது (Encrypted)';
+            document.getElementById('security-badge').className = 'text-emerald-400 font-semibold';
+
+            // Clear decrypted
+            document.getElementById('decrypted-result').innerText = "[மறைகுறியாக்க பொத்தானை அழுத்தவும்]";
+            document.getElementById('decrypted-result').className = 'flex-grow p-3 bg-white border border-slate-300 rounded-lg text-sm text-slate-400 min-h-[110px] flex items-center justify-center italic';
+        }
+
+        function handleDecryptAction() {
+            if (!lastCiphertext) {
+                alert('முதலில் குறியாக்கம் செய்யவும்!');
+                return;
+            }
+
+            let key = '';
+            if (currentMode === 'symmetric') {
+                key = document.getElementById('sym-key-input').value || 'KEY123';
+            } else {
+                key = 'PUB_KEY_REC_89102_TN'; // In demo, correctly matched pair
+            }
+
+            const decrypted = simulateDecrypt(lastCiphertext, key);
+            const resBox = document.getElementById('decrypted-result');
+
+            if (decrypted) {
+                resBox.innerText = decrypted;
+                resBox.className = 'flex-grow p-3 bg-emerald-50 border border-emerald-300 rounded-lg text-sm font-semibold text-emerald-900 min-h-[110px] flex items-center justify-center';
+            } else {
+                resBox.innerText = '❌ மறைகுறியாக்கத் தோல்வி! தவறான சாவி அல்லது தரவு சிதைந்துள்ளது.';
+                resBox.className = 'flex-grow p-3 bg-red-50 border border-red-300 rounded-lg text-sm font-semibold text-red-900 min-h-[110px] flex items-center justify-center';
+            }
+        }
+
+        // ================= TAB 2: Digital Signature Logic =================
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = (hash << 5) - hash + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(16).padStart(8, '0');
+        }
+
+        function updateHashPreview() {
+            const text = document.getElementById('sig-original-text').value;
+            const h = simpleHash(text);
+            document.getElementById('hash-preview').innerText = h;
+            document.getElementById('sig-token').innerText = 'SIGNED_HASH[' + h + '_PRIV_TN2026]';
+        }
+
+        function tamperMessage() {
+            const original = document.getElementById('sig-received-text').value;
+            document.getElementById('sig-received-text').value = original + " [மாற்றப்பட்ட தொகை: ரூ. 99,999]";
+        }
+
+        function resetSignatureDoc() {
+            const orig = document.getElementById('sig-original-text').value;
+            document.getElementById('sig-received-text').value = orig;
+            document.getElementById('sig-status-result').className = 'mt-3 p-3 rounded-lg text-xs font-semibold text-center border bg-slate-100 text-slate-600';
+            document.getElementById('sig-status-result').innerText = "'சரிபார்' பொத்தானை அழுத்தவும்";
+        }
+
+        function verifyDigitalSignature() {
+            const senderDoc = document.getElementById('sig-original-text').value;
+            const receivedDoc = document.getElementById('sig-received-text').value;
+
+            const expectedHash = simpleHash(senderDoc);
+            const actualHash = simpleHash(receivedDoc);
+            const res = document.getElementById('sig-status-result');
+
+            if (expectedHash === actualHash) {
+                res.className = 'mt-3 p-3 rounded-lg text-xs font-bold text-center border bg-emerald-100 text-emerald-800 border-emerald-300';
+                res.innerHTML = '<i class="fa-solid fa-circle-check"></i> டிஜிட்டல் கையொப்பம் வெற்றிகரமாக சரிபார்க்கப்பட்டது! ஆவணத்தின் ஒருமைப்பாடு (Integrity) மற்றும் நம்பகத்தன்மை உறுதிசெய்யப்பட்டது.';
+            } else {
+                res.className = 'mt-3 p-3 rounded-lg text-xs font-bold text-center border bg-red-100 text-red-800 border-red-300';
+                res.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> எச்சரிக்கை! கையொப்ப சரிபார்ப்பு தோல்வி அடைந்தது! தரவு வழியில் மாற்றப்பட்டுள்ளது (Tampering detected).';
+            }
+        }
+
+        // ================= TAB 3: SET Simulator Logic =================
+        let setStep = 1;
+        const setDescriptions = [
+            "படி 1: அட்டைதாரர் இணையத்தில் பொருட்களைத் தேர்ந்தெடுத்து 'ஆணை விவரம்' மற்றும் 'கட்டண விவரம்' இரண்டையும் தயார் செய்கிறார்.",
+            "படி 2: இரட்டை கையொப்பம் (Dual Signature) உருவாக்கப்பட்டு இரகசிய குறியாக்கத்துடன் வணிகருக்கு அனுப்பப்படுகிறது.",
+            "படி 3: வணிகர் ஆர்டர் விவரங்களை மட்டுமே காண்கிறார். கட்டண விவரங்கள் பூட்டப்பட்டு வங்கி வாயிலுக்கு அனுப்பப்படுகிறது.",
+            "படி 4: வங்கி கடன் அட்டையை சரிபார்த்து நிதியை பரிமாற ஒப்புதல் அளிக்கிறது. பரிவர்த்தனை வெற்றி!"
+        ];
+
+        function nextSetStep() {
+            setStep++;
+            if (setStep > 4) setStep = 1;
+            updateSetView();
+        }
+
+        function resetSetDemo() {
+            setStep = 1;
+            updateSetView();
+        }
+
+        function updateSetView() {
+            const cHolder = document.getElementById('set-cardholder');
+            const merchant = document.getElementById('set-merchant');
+            const bank = document.getElementById('set-bank');
+            const status = document.getElementById('set-status-text');
+
+            cHolder.className = 'p-4 rounded-xl border-2 transition ' + (setStep === 1 || setStep === 2 ? 'border-blue-500 bg-blue-50/70 shadow-md pulsing' : 'border-slate-200 bg-slate-50');
+            merchant.className = 'p-4 rounded-xl border-2 transition ' + (setStep === 3 ? 'border-amber-500 bg-amber-50/70 shadow-md pulsing' : 'border-slate-200 bg-slate-50');
+            bank.className = 'p-4 rounded-xl border-2 transition ' + (setStep === 4 ? 'border-emerald-500 bg-emerald-50/70 shadow-md pulsing' : 'border-slate-200 bg-slate-50');
+
+            status.innerText = setDescriptions[setStep - 1];
+        }
+
+        // ================= TAB 4: Threats Logic =================
+        function checkTypopiracy() {
+            const val = document.getElementById('typo-input').value.toLowerCase().trim();
+            const res = document.getElementById('typo-result');
+
+            const typos = {
+                'www.goggle.com': 'www.google.com',
+                'goggle.com': 'google.com',
+                'www.faceblook.com': 'www.facebook.com',
+                'faceblook.com': 'facebook.com',
+                'www.amzon.com': 'www.amazon.com',
+                'www.flipkartt.com': 'www.flipkart.com'
+            };
+
+            if (typos[val]) {
+                res.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-900';
+                res.innerHTML = `<strong><i class="fa-solid fa-triangle-exclamation text-red-600"></i> Typopiracy எச்சரிக்கை!</strong><br>
+                '${val}' என்பது அசல் '${typos[val]}' தளத்தின் எழுத்துப் பிழையைப் பயன்படுத்தும் அச்சுறுத்தல் தளம் ஆகும்! பயனர் தவறாக தட்டச்சு செய்வதை இது சாதகமாகப் பயன்படுத்துகிறது.`;
+            } else if (val.includes('google.com') || val.includes('facebook.com') || val.includes('amazon.com')) {
+                res.className = 'mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-900';
+                res.innerHTML = `<strong><i class="fa-solid fa-circle-check text-emerald-600"></i> சரியான முகவரி!</strong><br>
+                '${val}' சரியான மற்றும் அங்கீகரிக்கப்பட்ட தளம் ஆகும்.`;
+            } else {
+                res.className = 'mt-4 p-3 bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-700';
+                res.innerHTML = `முகவரி சரிபார்க்கப்பட்டது: <em>${val}</em>. எப்போதும் எழுத்துப் பிழைகள் இல்லாததை உறுதிசெய்து உலாவவும்.`;
+            }
+        }
+
+        let ddosInterval = null;
+        let serverHealth = 100;
+
+        function triggerDDoSAttack() {
+            if (ddosInterval) clearInterval(ddosInterval);
+            document.getElementById('traffic-rate').innerText = '9,850 req/s (அசுரப் பாய்வு)';
+            document.getElementById('server-status-label').innerText = 'தாக்குதலுக்கு உள்ளாகிறது!';
+            document.getElementById('server-status-label').className = 'text-rose-600 font-bold';
+
+            ddosInterval = setInterval(() => {
+                serverHealth -= 15;
+                if (serverHealth <= 0) {
+                    serverHealth = 0;
+                    clearInterval(ddosInterval);
+                    document.getElementById('server-status-label').innerText = 'சேவை முடங்கியது (Server Down)';
+                }
+                updateServerBar();
+            }, 300);
+        }
+
+        function restoreServer() {
+            if (ddosInterval) clearInterval(ddosInterval);
+            serverHealth = 100;
+            document.getElementById('traffic-rate').innerText = '60 req/s (இயல்பு)';
+            document.getElementById('server-status-label').innerText = 'இயங்குகிறது';
+            document.getElementById('server-status-label').className = 'text-emerald-600 font-bold';
+            updateServerBar();
+        }
+
+        function updateServerBar() {
+            const bar = document.getElementById('server-health-bar');
+            const text = document.getElementById('server-health-text');
+            bar.style.width = serverHealth + '%';
+            text.innerText = serverHealth + '%';
+
+            if (serverHealth > 60) {
+                bar.className = 'bg-emerald-500 h-full transition-all duration-300';
+                text.className = 'text-emerald-600';
+            } else if (serverHealth > 25) {
+                bar.className = 'bg-amber-500 h-full transition-all duration-300';
+                text.className = 'text-amber-600';
+            } else {
+                bar.className = 'bg-rose-600 h-full transition-all duration-300';
+                text.className = 'text-rose-600 font-bold';
+            }
+        }
+
+        // ================= TAB 5: Exam Quiz =================
+        const quizData = [
+            {
+                q: "1. எளிய உரையை (Plaintext) மறைமுக உரையாக (Ciphertext) மாற்றும் செயல்முறை எது?",
+                options: ["மறைகுறியாக்கம் (Decryption)", "குறியாக்கம் (Encryption)", "சான்றளித்தல் (Authentication)", "ஹாஷிங் (Hashing)"],
+                correct: 1,
+                exp: "குறியாக்கம் என்பது எளிய உரையை குறியாக்க வழிமுறையைப் பயன்படுத்தி படிக்க முடியாத மறைமுக உரையாக மாற்றுவதாகும்."
+            },
+            {
+                q: "2. சமச்சீர் சாவி குறியாக்க அமைப்பில் எத்தனை சாவிகள் பயன்படுத்தப்படுகின்றன?",
+                options: ["இரண்டு சாவிகள்", "மூன்று சாவிகள்", "ஒரே ஒரு சாவி (Single Key)", "சாவிகள் தேவையில்லை"],
+                correct: 2,
+                exp: "சமச்சீர் குறியாக்கத்தில் குறியாக்கம் மற்றும் மறைகுறியாக்கம் இரண்டிற்கும் ஒரே சாவி மட்டுமே பயன்படுகிறது."
+            },
+            {
+                q: "3. 'Typopiracy' என்பது எதன் ஒரு மாறுபட்ட வடிவமாகும்?",
+                options: ["சைபர் ஆக்கிரமிப்பு (Cyber Squatting)", "வைரஸ் தாக்குதல்", "DDoS தாக்குதல்", "ஃபிஷிங்"],
+                correct: 0,
+                exp: "Typopiracy என்பது பயனர்களின் தட்டச்சு பிழைகளைப் பயன்படுத்தி போலி தளத்திற்கு ஈர்க்கும் ஒருவகை Cyber Squatting ஆகும்."
+            },
+            {
+                q: "4. பின்வருவனவற்றில் சமச்சீரற்ற சாவி (Asymmetric Key) குறியாக்கத்திற்கான எடுத்துக்காட்டு எது?",
+                options: ["DES", "AES", "RC4", "RSA"],
+                correct: 3,
+                exp: "RSA என்பது மிகவும் பிரபலமான சமச்சீரற்ற (Public/Private Key) குறியாக்க வழிமுறையாகும். DES, AES, RC4 போன்றவை சமச்சீர் சாவி வழிமுறைகள்."
+            },
+            {
+                q: "5. SET என்பதன் முழு வடிவம் என்ன?",
+                options: ["Secure Electronic Transaction", "Simple Electronic Transfer", "Safe E-Commerce Tool", "Secure Encryption Technology"],
+                correct: 0,
+                exp: "SET என்பது Secure Electronic Transaction (பாதுகாப்பான மின்னணு பரிவர்த்தனை) என்பதைக் குறிக்கும்."
+            },
+            {
+                q: "6. வாடிக்கையாளரின் கடன் அட்டை விவரம் வணிகருக்கு தெரியாமல் வங்கியிடம் நேரடியாக பாதுகாப்பாக செல்ல உதவும் SET தொழில்நுட்பம் எது?",
+                options: ["டிஜிட்டல் சான்றிதழ்", "இரட்டை கையொப்பம் (Dual Signature)", "தீஞ்சுவர் (Firewall)", "வைரஸ் எதிர்ப்பு மென்பொருள்"],
+                correct: 1,
+                exp: "இரட்டை கையொப்பம் (Dual Signature) மூலம் ஆணை விவரம் வணிகருக்கும், அட்டை விவரம் வங்கிக்கும் தனித்தனியாக பிரிக்கப்பட்டு பாதுகாக்கப்படுகிறது."
+            }
+        ];
+
+        let userAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            document.getElementById('quiz-total').innerText = quizData.length;
+
+            quizData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50';
+
+                let optsHtml = '';
+                item.options.forEach((opt, oIndex) => {
+                    optsHtml += `
+                        <label class="flex items-center gap-3 p-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer text-xs sm:text-sm">
+                            <input type="radio" name="quiz-q-${index}" value="${oIndex}" onchange="selectAnswer(${index}, ${oIndex})" class="text-blue-600 focus:ring-blue-500">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-slate-800 text-sm sm:text-base mb-3">${item.q}</div>
+                    <div class="space-y-2">${optsHtml}</div>
+                    <div id="quiz-exp-${index}" class="mt-3 p-2.5 rounded text-xs hidden"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectAnswer(qIndex, oIndex) {
+            userAnswers[qIndex] = oIndex;
+            const item = quizData[qIndex];
+            const expBox = document.getElementById(`quiz-exp-${qIndex}`);
+            expBox.classList.remove('hidden');
+
+            if (oIndex === item.correct) {
+                expBox.className = 'mt-3 p-2.5 rounded text-xs bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium';
+                expBox.innerHTML = `✓ சரியான விடை! விளக்கம்: ${item.exp}`;
+            } else {
+                expBox.className = 'mt-3 p-2.5 rounded text-xs bg-rose-50 border border-rose-200 text-rose-800 font-medium';
+                expBox.innerHTML = `✗ தவறான விடை. சரியான விடை: <strong>${item.options[item.correct]}</strong>. (${item.exp})`;
+            }
+
+            // Recalculate score
+            let score = 0;
+            for (let q in userAnswers) {
+                if (userAnswers[q] === quizData[q].correct) score++;
+            }
+            document.getElementById('quiz-score').innerText = score;
+
+            if (Object.keys(userAnswers).length === quizData.length) {
+                document.getElementById('quiz-feedback-msg').innerText = `வாழ்த்துகள்! நீங்கள் ${quizData.length}-க்கு ${score} மதிப்பெண்கள் பெற்றுள்ளீர்கள்!`;
+            }
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            document.getElementById('quiz-score').innerText = '0';
+            document.getElementById('quiz-feedback-msg').innerText = '';
+            renderQuiz();
+        }
+
+        // ================= TAB 6: Accordion Logic =================
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                icon.className = 'fa-solid fa-chevron-up text-blue-600';
+            } else {
+                el.classList.add('hidden');
+                icon.className = 'fa-solid fa-chevron-down text-slate-400';
+            }
+        }
+
+        // Initial setup
+        window.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            updateHashPreview();
+        });
+    </script>
+</body>
+</html>
