@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TN CS & CA School Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .main-header {
+            text-align: center;
+            max-width: 850px;
+            margin: 0 auto 25px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .main-header h1 {
+            margin: 0 0 8px 0;
+            color: #1e3a8a;
+            font-size: 26px;
+        }
+        .main-header p {
+            margin: 0;
+            color: #64748b;
+            font-size: 15px;
+        }
+        .tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 850px;
+            margin: 0 auto 20px auto;
+        }
+        .tab-btn {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #475569;
+        }
+        .tab-btn:hover {
+            background-color: #e2e8f0;
+        }
+        .tab-btn.active {
+            background-color: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 3px 6px rgba(2, 132, 199, 0.3);
+        }
+        .content-area {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background: #ffffff;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+            border-left: 5px solid #0284c7;
+        }
+        .card h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .link-grid a {
+            display: block;
+            padding: 12px 14px;
+            background-color: #f8fafc;
+            color: #1e293b;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14.5px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .link-grid a:hover {
+            background-color: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>TN CS & CA கற்றல் தளம்</h1>
+        <p>11 & 12-ஆம் வகுப்பு கணிப்பொறி அறிவியல் மற்றும் பயன்பாடுகள் செயல்முறை விளக்கங்கள்</p>
+    </header>
+
+    <!-- வகுப்பு மற்றும் பாடத் தேர்வு பொத்தான்கள் -->
+    <nav class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab(event, 'cs12')">12 - கணினி அறிவியல்</button>
+        <button class="tab-btn" onclick="switchTab(event, 'ca12')">12 - கணினி பயன்பாடுகள்</button>
+        <button class="tab-btn" onclick="switchTab(event, 'cs11')">11 - கணினி அறிவியல்</button>
+        <button class="tab-btn" onclick="switchTab(event, 'ca11')">11 - கணினி பயன்பாடுகள்</button>
+    </nav>
+
+    <main class="content-area">
+
+        <!-- ============================================== -->
+        <!-- 1. 12-ஆம் வகுப்பு - கணினி அறிவியல் -->
+        <!-- ============================================== -->
+        <section id="cs12" class="tab-content active">
+            <div class="card">
+                <h2>🔍 தேடல் நெறிமுறைகள் (Searching Algorithms)</h2>
+                <ul class="link-grid">
+                    <li><a href="linear_search_visualizer.html">1. Linear Search</a></li>
+                    <li><a href="binary_search_visualizer.html">2. Binary Search</a></li>
+                    <!-- புதிய தேடல் பக்கங்களை இங்கு சேர்க்கலாம் -->
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📊 வரிசையாக்க நெறிமுறைகள் (Sorting Algorithms)</h2>
+                <ul class="link-grid">
+                    <li><a href="bubble_sort_visualizer.html">1. Bubble Sort</a></li>
+                    <li><a href="selection_sort_visualizer.html">2. Selection Sort</a></li>
+                    <li><a href="insertion_sort_visualizer.html">3. Insertion Sort</a></li>
+                    <li><a href="merge_sort_visualizer.html">4. Merge Sort</a></li>
+                    <li><a href="quick_sort_visualizer.html">5. Quick Sort</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>📈 Matplotlib தரவு காட்சிப்படுத்தல்</h2>
+                <ul class="link-grid">
+                    <li><a href="matplotlib_12th_cs_lab.html">1. Matplotlib செய்முறை பயிற்சி</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎮 பாட விளையாட்டுகள் & நினைவகச் சோதனைகள்</h2>
+                <ul class="link-grid">
+                    <li><a href="12 cs game1.html">1. 12 CS நினைவு சட்டம்</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 2. 12-ஆம் வகுப்பு - கணினி பயன்பாடுகள் -->
+        <!-- ============================================== -->
+        <section id="ca12" class="tab-content">
+            <div class="card">
+                <h2>🌐 வலை வடிவமைப்பு (PHP & MySQL)</h2>
+                <ul class="link-grid">
+                    <li><a href="ca12_php_basics.html">1. PHP அடிப்படைகள்</a></li>
+                    <li><a href="ca12_mysql_queries.html">2. MySQL தரவுத்தள வினவல்கள்</a></li>
+                    <!-- புதிய CA பக்கங்களை இங்கு சேர்க்கலாம் -->
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎨 பல்லூடகம் & கணினி வரைகலை</h2>
+                <ul class="link-grid">
+                    <li><a href="ca12_multimedia.html">1. மல்டிமீடியா கூறுகள்</a></li>
+                    <li><a href="ca12_pagemaker.html">2. PageMaker கருவிகள்</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎮 பயிற்சிகள் & தேர்வுகள்</h2>
+                <ul class="link-grid">
+                    <li><a href="ca12_quiz.html">1. ஒரு மதிப்பெண் பயிற்சி வினாக்கள்</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 3. 11-ஆம் வகுப்பு - கணினி அறிவியல் -->
+        <!-- ============================================== -->
+        <section id="cs11" class="tab-content">
+            <div class="card">
+                <h2>🔢 எண்முறைகள் & தருக்க வாயில்கள் (Number Systems & Gates)</h2>
+                <ul class="link-grid">
+                    <li><a href="cs11_number_system.html">1. எண்முறை மாற்றங்கள்</a></li>
+                    <li><a href="cs11_logic_gates.html">2. தருக்க வாயில்கள் (Logic Gates)</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>💻 நிரலாக்க அடிப்படைகள் (C++ / Python)</h2>
+                <ul class="link-grid">
+                    <li><a href="cs11_flowchart.html">1. பாய்வுப்படம் (Flowchart) விளக்கம்</a></li>
+                    <li><a href="cs11_control_structures.html">2. கட்டுப்பாட்டு அமைப்புகள்</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎮 செய்முறை & வினாடி வினா</h2>
+                <ul class="link-grid">
+                    <li><a href="cs11_quiz.html">1. பாட நினைவக விளையாட்டு</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- 4. 11-ஆம் வகுப்பு - கணினி பயன்பாடுகள் -->
+        <!-- ============================================== -->
+        <section id="ca11" class="tab-content">
+            <div class="card">
+                <h2>📑 சொல் செயலி & அட்டவணைச் செயலி</h2>
+                <ul class="link-grid">
+                    <li><a href="ca11_writer.html">1. OpenOffice Writer அடிப்படைகள்</a></li>
+                    <li><a href="ca11_calc.html">2. OpenOffice Calc சூத்திரங்கள்</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🌐 HTML & CSS இணையப் பக்க உருவாக்கம்</h2>
+                <ul class="link-grid">
+                    <li><a href="ca11_html_tags.html">1. HTML முக்கிய குறிச்சொற்கள் (Tags)</a></li>
+                    <li><a href="ca11_css_basics.html">2. CSS வடிவமைப்பு முறைகள்</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>🎮 பயிற்சிகள்</h2>
+                <ul class="link-grid">
+                    <li><a href="ca11_quiz.html">1. இணைய அடிப்படைகள் பயிற்சி</a></li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function switchTab(evt, tabId) {
+            // அனைத்து Tab உள்ளடக்கங்களையும் மறைக்க
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // அனைத்து பொத்தான்களிலிருந்தும் 'active' நிலையை நீக்க
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+
+            // தேர்ந்தெடுக்கப்பட்ட தாவலை மட்டும் காட்ட
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
