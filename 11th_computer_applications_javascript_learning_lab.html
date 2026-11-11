@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11-ஆம் வகுப்பு கணினி பயன்பாடுகள் - ஜாவாஸ்கிரிப்ட் ஆய்வகம்</title>
+    <title>11-ஆம் வகுப்பு கணினி பயன்பாடுகள் - ஜாவாஸ்கிரிப்ட் முழுமை கற்றல் தளம்</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -42,13 +42,13 @@
         .code-font {
             font-family: 'Fira Code', monospace;
         }
-        /* Custom scrollbar */
+        /* Custom scrollbars */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #f8fafc;
         }
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
@@ -57,190 +57,208 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+        .active-tab {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen">
 
     <!-- Top Header & Navigation -->
-    <header class="bg-gradient-to-r from-blue-900 via-indigo-900 to-sky-900 text-white shadow-lg sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+    <header class="bg-gradient-to-r from-blue-950 via-indigo-900 to-sky-900 text-white shadow-xl sticky top-0 z-40 border-b border-blue-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center space-x-3">
-                <div class="bg-amber-400 text-blue-950 p-2.5 rounded-xl shadow-md font-black text-xl flex items-center justify-center w-11 h-11">
+                <div class="bg-amber-400 text-blue-950 p-2 rounded-xl shadow-md font-black text-2xl flex items-center justify-center w-11 h-11">
                     <i class="fa-brands fa-js"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="bg-blue-800 text-amber-300 text-xs px-2 py-0.5 rounded-full font-semibold border border-blue-700">11-ஆம் வகுப்பு</span>
-                        <span class="text-xs text-blue-200">கணினி பயன்பாடுகள் (Computer Applications)</span>
+                        <span class="bg-amber-400 text-blue-950 text-xs px-2 py-0.5 rounded-md font-black tracking-wide">11-ஆம் வகுப்பு</span>
+                        <span class="text-xs text-blue-200 font-semibold tracking-wide">கணினி பயன்பாடுகள் (Computer Applications)</span>
                     </div>
-                    <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">ஜாவாஸ்கிரிப்ட் கற்றல் & செய்முறை களம்</h1>
+                    <h1 class="text-base sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5 mt-0.5">
+                        ஜாவாஸ்கிரிப்ட் ஊடாடும் ஆய்வகம் & தேர்வு வழிகாட்டி
+                    </h1>
                 </div>
             </div>
 
             <!-- Tab Buttons -->
-            <nav class="flex items-center bg-blue-950/60 p-1 rounded-xl border border-blue-800/60 overflow-x-auto text-sm">
-                <button onclick="switchTab('lessons')" id="tab-btn-lessons" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-2 bg-blue-600 text-white shadow-sm">
-                    <i class="fa-solid fa-book-open text-xs"></i> <span>பாடக் குறிப்புகள்</span>
+            <nav class="flex items-center bg-blue-950/80 p-1 rounded-xl border border-blue-800/80 overflow-x-auto text-xs sm:text-sm font-medium gap-1">
+                <button onclick="switchTab('lessons')" id="tab-btn-lessons" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 active-tab">
+                    <i class="fa-solid fa-book-open"></i> <span>பாடங்கள்</span>
                 </button>
-                <button onclick="switchTab('playground')" id="tab-btn-playground" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-2 text-blue-200 hover:text-white">
-                    <i class="fa-solid fa-laptop-code text-xs"></i> <span>கோட் ஆய்வகம்</span>
+                <button onclick="switchTab('playground')" id="tab-btn-playground" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-blue-200 hover:text-white">
+                    <i class="fa-solid fa-code"></i> <span>கோட் ஆய்வகம்</span>
                 </button>
-                <button onclick="switchTab('lab')" id="tab-btn-lab" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-2 text-blue-200 hover:text-white">
-                    <i class="fa-solid fa-flask text-xs"></i> <span>செய்முறை பயிற்சிகள்</span>
+                <button onclick="switchTab('lab')" id="tab-btn-lab" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-blue-200 hover:text-white">
+                    <i class="fa-solid fa-flask"></i> <span>செய்முறை தேர்வுகள்</span>
                 </button>
-                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-2 text-blue-200 hover:text-white">
-                    <i class="fa-solid fa-circle-question text-xs"></i> <span>சுய மதிப்பீடு (Quiz)</span>
+                <button onclick="switchTab('validation')" id="tab-btn-validation" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-blue-200 hover:text-white">
+                    <i class="fa-solid fa-square-check"></i> <span>படிவ சரிபார்ப்பு</span>
                 </button>
-                <button onclick="switchTab('debugger')" id="tab-btn-debugger" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-2 text-blue-200 hover:text-white">
-                    <i class="fa-solid fa-bug text-xs"></i> <span>பிழை திருத்து</span>
+                <button onclick="switchTab('qa')" id="tab-btn-qa" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-blue-200 hover:text-white">
+                    <i class="fa-solid fa-graduation-cap"></i> <span>வினா-விடை வங்கி</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-blue-200 hover:text-white">
+                    <i class="fa-solid fa-circle-question"></i> <span>சுய மதிப்பீடு & பிழைகள்</span>
                 </button>
             </nav>
         </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
 
         <!-- ========================================== -->
-        <!-- TAB 1: LESSONS (பாடக் குறிப்புகள்) -->
+        <!-- TAB 1: LESSONS (விரிவான பாடக் குறிப்புகள்) -->
         <!-- ========================================== -->
         <section id="tab-lessons" class="space-y-6">
             <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-blue-950 flex items-center gap-2">
-                        <i class="fa-solid fa-graduation-cap text-sky-600"></i>
-                        ஜாவாஸ்கிரிப்ட் பாடப்பகுதி சுருக்கங்கள்
+                    <h2 class="text-2xl font-extrabold text-blue-950 flex items-center gap-2">
+                        <i class="fa-solid fa-book-bookmark text-blue-600"></i>
+                        ஜாவாஸ்கிரிப்ட் பாடப்பகுதி சுருக்கக் குறிப்புகள்
                     </h2>
-                    <p class="text-slate-600 text-sm mt-1">11-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடநூலின் அத்தியாயம் 14 & 15-ன் முக்கியக் கோட்பாடுகள் மற்றும் சூத்திரங்கள்.</p>
+                    <p class="text-slate-600 text-sm mt-1">தமிழ்நாடு பாடநூல் கழகத்தின் 11-ஆம் வகுப்பு கணினி பயன்பாடுகள் அத்தியாயம் 14 & 15-ன் முழுமையான விளக்கங்கள்.</p>
                 </div>
-                <div class="flex gap-2">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <i class="fa-solid fa-check"></i> அரசுத் தேர்வு பாடத்திட்டம்
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        அத்தியாயம் 14: ஜாவாஸ்கிரிப்ட் அறிமுகம்
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        அத்தியாயம் 15: கட்டுப்பாட்டுக் கட்டமைப்புகள்
                     </span>
                 </div>
             </div>
 
             <!-- Concept Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-                <!-- 1. Intro & <script> -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">1</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900">ஜாவாஸ்கிரிப்ட் ஓர் அறிமுகம்</h3>
-                            <span class="text-xs text-slate-500">Introduction to JavaScript</span>
+                <!-- 1. Intro -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-sm">1</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-semibold">பாடம் 14</span>
                         </div>
+                        <h3 class="font-bold text-slate-900 text-base">ஜாவாஸ்கிரிப்ட் ஓர் அறிமுகம்</h3>
+                        <p class="text-xs text-blue-600 mb-2 font-medium">Introduction to JavaScript</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            <li>• 1995-ல் நெட்ஸ்கேப் (Netscape) நிறுவனத்தில் <strong>பிரெண்டன் ஐக்</strong> என்பவரால் உருவாக்கப்பட்டது.</li>
+                            <li>• இது ஒரு பிரபலமான <strong>கிளையன்ட் பக்க (Client-side)</strong> ஸ்கிரிப்டிங் மொழியாகும்.</li>
+                            <li>• நிலையான HTML வலைப்பக்கங்களை செயல்மிக்கதாக (Dynamic & Interactive) மாற்ற உதவுகிறது.</li>
+                            <li>• HTML ஆவணத்தில் <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">&lt;script&gt;</code> மற்றும் <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">&lt;/script&gt;</code> ஒட்டுகளுக்குள் எழுதப்படும்.</li>
+                        </ul>
                     </div>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-4">
-                        <li>• பிரெண்டன் ஐக் (Brendan Eich) என்பவரால் 1995-ல் உருவாக்கப்பட்டது.</li>
-                        <li>• இது ஒரு <strong>கிளையன்ட் பக்க (Client-side)</strong> ஸ்கிரிப்டிங் மொழியாகும்.</li>
-                        <li>• வலைப்பக்கங்களை செயல்மிக்கதாக (Dynamic & Interactive) மாற்ற உதவுகிறது.</li>
-                        <li>• HTML கோப்பில் <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">&lt;script&gt;</code> ஒட்டின் மூலம் சேர்க்கப்படுகிறது.</li>
-                    </ul>
-                    <button onclick="loadLessonToPlayground('intro')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg flex items-center justify-center gap-1">
-                        <span>மாதிரியை இயக்குக</span> <i class="fa-solid fa-arrow-right"></i>
+                    <button onclick="loadLessonToPlayground('intro')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>ஆய்வகத்தில் பரிசோதிக்க</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
                 <!-- 2. Variables & Data Types -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">2</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900">மாறிகள் & தரவு வகைகள்</h3>
-                            <span class="text-xs text-slate-500">Variables & Data Types</span>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm">2</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-semibold">பாடம் 14</span>
                         </div>
+                        <h3 class="font-bold text-slate-900 text-base">மாறிகள் & தரவு வகைகள்</h3>
+                        <p class="text-xs text-emerald-600 mb-2 font-medium">Variables & Data Types</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            <li>• மாறிகள் <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">var</code> என்ற சிறப்புச் சொல் மூலம் அறிவிக்கப்படுகின்றன.</li>
+                            <li>• <strong>பெயரிடும் விதிமுறைகள்:</strong> பெயர் எழுத்து அல்லது அடிக்கோடு (_) கொண்டு தொடங்க வேண்டும்; எண்களில் தொடங்கக் கூடாது; சிறப்புச் சொற்களைப் பெயராக இடக்கூடாது.</li>
+                            <li>• <strong>அடிப்படை தரவு வகைகள்:</strong>
+                                <span class="block text-slate-500 pl-2 mt-1">1. Number (எ.கா: 100, 45.6)</span>
+                                <span class="block text-slate-500 pl-2">2. String (எ.கா: "தமிழ்நாடு")</span>
+                                <span class="block text-slate-500 pl-2">3. Boolean (true அல்லது false)</span>
+                            </li>
+                        </ul>
                     </div>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-4">
-                        <li>• மாறிகள் <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">var</code> அல்லது <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">let</code> கொண்டு அறிவிக்கப்படும்.</li>
-                        <li>• <strong>முக்கிய தரவு வகைகள்:</strong>
-                            <ul class="pl-4 list-disc mt-1 text-xs text-slate-500 space-y-1">
-                                <li><strong>Number:</strong> எண்கள் (எ.கா: 25, 3.14)</li>
-                                <li><strong>String:</strong> உரை சரங்கள் (எ.கா: "தமிழ்நாடு")</li>
-                                <li><strong>Boolean:</strong> உண்மை/பொய் (true, false)</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <button onclick="loadLessonToPlayground('variables')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg flex items-center justify-center gap-1">
-                        <span>மாதிரியை இயக்குக</span> <i class="fa-solid fa-arrow-right"></i>
+                    <button onclick="loadLessonToPlayground('variables')" class="w-full text-xs py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>ஆய்வகத்தில் பரிசோதிக்க</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
                 <!-- 3. Operators -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">3</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900">செயற்குறிகள்</h3>
-                            <span class="text-xs text-slate-500">Operators in JavaScript</span>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-800 font-bold flex items-center justify-center text-sm">3</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-semibold">பாடம் 14</span>
                         </div>
+                        <h3 class="font-bold text-slate-900 text-base">ஜாவாஸ்கிரிப்ட் செயற்குறிகள்</h3>
+                        <p class="text-xs text-purple-600 mb-2 font-medium">Operators in JavaScript</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            <li>• <strong>கணிதச் செயற்குறிகள்:</strong> +, -, *, /, % (மீதி), ++, --</li>
+                            <li>• <strong>ஒப்பீட்டுச் செயற்குறிகள்:</strong> ==, === (சமமதிப்பு மற்றும் சமதரவு வகை), !=, &gt;, &lt;, &gt;=, &lt;=</li>
+                            <li>• <strong>தருக்கச் செயற்குறிகள்:</strong> &amp;&amp; (மற்றும்), || (அல்லது), ! (இல்லை)</li>
+                            <li>• <strong>நிபந்தனைச் செயற்குறி:</strong> (நிபந்தனை ? மெய் : பொய்)</li>
+                        </ul>
                     </div>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-4">
-                        <li>• <strong>கணிதச் செயற்குறிகள்:</strong> +, -, *, /, %, ++, --</li>
-                        <li>• <strong>ஒப்பீட்டுச் செயற்குறிகள்:</strong> ==, ===, !=, &gt;, &lt;, &gt;=, &lt;=</li>
-                        <li>• <strong>தருக்கச் செயற்குறிகள்:</strong> &amp;&amp; (AND), || (OR), ! (NOT)</li>
-                        <li>• <strong>நிபந்தனைச் செயற்குறி:</strong> <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">?:</code> (Ternary Operator)</li>
-                    </ul>
-                    <button onclick="loadLessonToPlayground('operators')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg flex items-center justify-center gap-1">
-                        <span>மாதிரியை இயக்குக</span> <i class="fa-solid fa-arrow-right"></i>
+                    <button onclick="loadLessonToPlayground('operators')" class="w-full text-xs py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>ஆய்வகத்தில் பரிசோதிக்க</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
                 <!-- 4. Dialog Boxes -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">4</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900">உரையாடல் பெட்டிகள்</h3>
-                            <span class="text-xs text-slate-500">Dialog Boxes (Alert, Prompt, Confirm)</span>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-rose-100 text-rose-800 font-bold flex items-center justify-center text-sm">4</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-semibold">பாடம் 14</span>
                         </div>
+                        <h3 class="font-bold text-slate-900 text-base">உரையாடல் பெட்டிகள்</h3>
+                        <p class="text-xs text-rose-600 mb-2 font-medium">Dialog Boxes (Alert, Prompt, Confirm)</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">alert("செய்தி")</code>: பயனருக்கு எச்சரிக்கை அல்லது செய்திப் பெட்டியைத் தோற்றுவிக்கும். இதில் 'சரி' (OK) பொத்தான் மட்டுமே இருக்கும்.</li>
+                            <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">prompt("உரை", "முன்னிருப்பு")</code>: பயனரிடம் இருந்து உரை உள்ளீட்டைப் பெற உதவும்.</li>
+                            <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">confirm("கேள்வி")</code>: பயனரின் சம்மதத்தைப் பெற உதவும் (OK எனில் true, Cancel எனில் false தரும்).</li>
+                        </ul>
                     </div>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-4">
-                        <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">alert()</code>: பயனருக்கு எச்சரிக்கை/செய்தி காட்ட உதவும்.</li>
-                        <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">prompt()</code>: பயனரிடமிருந்து உள்ளீட்டை (Input) பெற உதவும்.</li>
-                        <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">confirm()</code>: OK / Cancel என சரிபார்க்க உதவும்.</li>
-                    </ul>
-                    <button onclick="loadLessonToPlayground('dialogs')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg flex items-center justify-center gap-1">
-                        <span>மாதிரியை இயக்குக</span> <i class="fa-solid fa-arrow-right"></i>
+                    <button onclick="loadLessonToPlayground('dialogs')" class="w-full text-xs py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>ஆய்வகத்தில் பரிசோதிக்க</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
-                <!-- 5. Control Structures: Branching -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">5</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900">தேர்ந்தெடுப்புக் கூற்றுகள்</h3>
-                            <span class="text-xs text-slate-500">Branching (if, else, switch)</span>
+                <!-- 5. Branching Statements -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-sm">5</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-semibold">பாடம் 15</span>
                         </div>
+                        <h3 class="font-bold text-slate-900 text-base">கிளைப்பிரிப்புக் கூற்றுகள்</h3>
+                        <p class="text-xs text-teal-600 mb-2 font-medium">Branching / Conditional Statements</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">if</code> கூற்று: நிபந்தனை மெய்யாக இருக்கும்போது மட்டுமே தொகுதி இயங்கும்.</li>
+                            <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">if...else</code>: மெய் எனில் ஒரு தொகுதியும், பொய் எனில் மாற்று தொகுதியும் இயங்கும்.</li>
+                            <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">switch...case</code>: பல தேர்வுகளில் இருந்து ஒரு குறிப்பிட்ட வழியைத் தேர்ந்தெடுக்க உதவும் (break கூற்றுடன் பயன்படும்).</li>
+                        </ul>
                     </div>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-4">
-                        <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">if</code> கூற்று: நிபந்தனை மெய்யானால் இயங்கும்.</li>
-                        <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">if...else</code>: மெய்/பொய் இரு நிலைகளிலும் இயங்கும்.</li>
-                        <li>• <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded code-font">switch...case</code>: பல தேர்வுகளில் ஒன்றை தேர்ந்தெடுக்க உதவும்.</li>
-                    </ul>
-                    <button onclick="loadLessonToPlayground('branching')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg flex items-center justify-center gap-1">
-                        <span>மாதிரியை இயக்குக</span> <i class="fa-solid fa-arrow-right"></i>
+                    <button onclick="loadLessonToPlayground('branching')" class="w-full text-xs py-2 bg-teal-50 hover:bg-teal-100 text-teal-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>ஆய்வகத்தில் பரிசோதிக்க</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
                 <!-- 6. Looping Statements -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">6</div>
-                        <div>
-                            <h3 class="font-bold text-slate-900">சுழற்சி / மடக்குக் கூற்றுகள்</h3>
-                            <span class="text-xs text-slate-500">Loops (for, while, do-while)</span>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 font-bold flex items-center justify-center text-sm">6</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-semibold">பாடம் 15</span>
                         </div>
+                        <h3 class="font-bold text-slate-900 text-base">மடக்குக் கூற்றுகள் (Loops)</h3>
+                        <p class="text-xs text-amber-600 mb-2 font-medium">Repetitive Execution</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            <li>• <strong>for மடக்கு:</strong> சுழற்சிகளின் எண்ணிக்கை முன்பே தெரிந்தால் பயன்படுத்தப்படும்.</li>
+                            <li>• <strong>while மடக்கு:</strong> நுழைவு சோதிப்பு மடக்கு (Entry check loop). நிபந்தனை மெய்யாக இருக்கும் வரை மட்டுமே இயங்கும்.</li>
+                            <li>• <strong>do...while மடக்கு:</strong> வெளியேறு சோதிப்பு மடக்கு (Exit check loop). நிபந்தனை பொய்யாக இருந்தாலும் குறைந்தது ஒரு முறையாவது இயங்கும்.</li>
+                        </ul>
                     </div>
-                    <ul class="text-sm text-slate-600 space-y-2 mb-4">
-                        <li>• <strong>for மடக்கு:</strong> எண்ணிக்கை முன்பே தெரிந்தால் பயன்படும் (தொடக்க மதிப்பு, நிபந்தனை, மிகுப்பு).</li>
-                        <li>• <strong>while:</strong> நுழைவு சோதிப்பு மடக்கு (Entry-check loop).</li>
-                        <li>• <strong>do...while:</strong> வெளியேறு சோதிப்பு மடக்கு (Exit-check loop - ஒரு முறையாவது இயங்கும்).</li>
-                    </ul>
-                    <button onclick="loadLessonToPlayground('loops')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg flex items-center justify-center gap-1">
-                        <span>மாதிரியை இயக்குக</span> <i class="fa-solid fa-arrow-right"></i>
+                    <button onclick="loadLessonToPlayground('loops')" class="w-full text-xs py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>ஆய்வகத்தில் பரிசோதிக்க</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
 
@@ -248,33 +266,37 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- TAB 2: PLAYGROUND (கோட் ஆய்வகம்) -->
+        <!-- TAB 2: PLAYGROUND (கோட் ஆய்வகம் & எடிட்டர்) -->
         <!-- ========================================== -->
         <section id="tab-playground" class="hidden space-y-4">
             
             <!-- Controls bar -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <label class="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                        <i class="fa-solid fa-code text-blue-600"></i> முன்மாதிரி நிரல்கள்:
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-folder-open text-blue-600"></i> மாதிரி நிரல்:
                     </label>
-                    <select id="preset-selector" onchange="loadPresetCode(this.value)" class="text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-blue-500">
-                        <option value="custom">-- புதிய நிரல் (Blank) --</option>
+                    <select id="preset-selector" onchange="loadPresetCode(this.value)" class="text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="welcome">1. வணக்கம் உலகம் (document.write)</option>
-                        <option value="add">2. இரு எண்களைக் கூட்டுதல்</option>
-                        <option value="evenOdd">3. ஒற்றை / இரட்டை எண் சோதனை (if..else)</option>
+                        <option value="add">2. இரு எண்களைக் கூட்டுதல் (Variables & Addition)</option>
+                        <option value="evenOdd">3. ஒற்றை / இரட்டை எண் சோதனை (if...else)</option>
                         <option value="multTable">4. 5-ஆம் வாய்ப்பாடு (for loop)</option>
                         <option value="gradeCalc">5. தேர்வு தரவரிசை (switch case)</option>
-                        <option value="sumN">6. முதல் N எண்களின் கூடுதல் (while loop)</option>
+                        <option value="sumN">6. முதல் 10 எண்களின் கூடுதல் (while loop)</option>
+                        <option value="userFunc">7. பயனர் செயற்கூறு (User defined function)</option>
+                        <option value="custom">-- புதிய வெற்றுப் பக்கம் (Blank Code) --</option>
                     </select>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="resetEditor()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold transition flex items-center gap-1.5">
+                    <button onclick="copyCurrentCode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5" title="குறியீட்டை நகலெடு">
+                        <i class="fa-solid fa-copy"></i> நகலெடு
+                    </button>
+                    <button onclick="resetEditor()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
                         <i class="fa-solid fa-rotate-left"></i> மீட்டமைக்க
                     </button>
-                    <button onclick="runCode()" class="px-5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold transition shadow flex items-center gap-2">
-                        <i class="fa-solid fa-play"></i> நிரலை இயக்குக (Run)
+                    <button onclick="runCode()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-bold transition shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> நிரலை இயக்கு (Run)
                     </button>
                 </div>
             </div>
@@ -283,42 +305,44 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 
                 <!-- Left: Code Editor (7 cols) -->
-                <div class="lg:col-span-7 bg-editorBg rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[520px]">
+                <div class="lg:col-span-7 bg-editorBg rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[540px]">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs">
                         <div class="flex items-center gap-2">
                             <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
                             <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
                             <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
-                            <span class="ml-2 font-mono text-slate-300 font-semibold">script.js</span>
+                            <span class="ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1">
+                                <i class="fa-brands fa-square-js text-amber-400"></i> script.js
+                            </span>
                         </div>
-                        <span class="text-slate-400">ஜாவாஸ்கிரிப்ட் குறியீட்டை இங்கே தட்டச்சு செய்யவும்</span>
+                        <span class="text-slate-400 text-[11px]">11-ஆம் வகுப்பு பாடநூல் குறியீட்டு முறை</span>
                     </div>
 
                     <div class="flex-grow pt-3 relative">
-                        <textarea id="code-editor" spellcheck="false" class="w-full h-full bg-transparent text-emerald-400 code-font text-sm leading-relaxed outline-none resize-none p-2" placeholder="// உங்கள் JavaScript நிரலை இங்கே தட்டச்சு செய்யவும்..."></textarea>
+                        <textarea id="code-editor" spellcheck="false" class="w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2" placeholder="// உங்கள் JavaScript நிரலை இங்கே தட்டச்சு செய்யவும்..."></textarea>
                     </div>
 
-                    <div class="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                        <span>உதவி: <code class="text-amber-400">document.write()</code>, <code class="text-amber-400">console.log()</code>, <code class="text-amber-400">alert()</code>, <code class="text-amber-400">prompt()</code> ஆதரிக்கப்படுகின்றன.</span>
-                        <span class="code-font text-slate-400">JS Engine Ready</span>
+                    <div class="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                        <span>ஆதரிப்பவை: <code class="text-amber-400">document.write()</code>, <code class="text-amber-400">console.log()</code>, <code class="text-amber-400">alert()</code>, <code class="text-amber-400">prompt()</code>, <code class="text-amber-400">confirm()</code></span>
+                        <span class="text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> எடிட்டர் தயார்</span>
                     </div>
                 </div>
 
                 <!-- Right: Output & Console (5 cols) -->
-                <div class="lg:col-span-5 flex flex-col gap-4 h-[520px]">
+                <div class="lg:col-span-5 flex flex-col gap-3 h-[540px]">
                     
                     <!-- Web Page Output (Simulated document.write) -->
                     <div class="flex-1 bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
                         <div class="flex items-center justify-between pb-2 border-b border-slate-100 text-xs font-bold text-slate-600">
                             <span class="flex items-center gap-1.5 text-blue-700">
-                                <i class="fa-solid fa-desktop"></i> வலைப்பக்க வெளியீடு (Document Output)
+                                <i class="fa-solid fa-display"></i> வலைப்பக்க வெளியீடு (Document Output)
                             </span>
-                            <button onclick="clearDocOutput()" class="text-slate-400 hover:text-red-500 text-xs">
+                            <button onclick="clearDocOutput()" class="text-slate-400 hover:text-red-500 text-xs transition">
                                 <i class="fa-solid fa-trash-can"></i> துடைக்க
                             </button>
                         </div>
-                        <div id="document-output" class="flex-grow p-3 overflow-y-auto text-sm text-slate-800 font-normal bg-slate-50/50 rounded-lg mt-2 border border-slate-100">
-                            <span class="text-slate-400 italic">நிரலின் document.write() முடிவுகள் இங்கு தோன்றும்...</span>
+                        <div id="document-output" class="flex-grow p-3 overflow-y-auto text-xs sm:text-sm text-slate-800 font-normal bg-slate-50/70 rounded-xl mt-2 border border-slate-200">
+                            <span class="text-slate-400 italic">நிரலின் document.write() முடிவுகள் இங்கு உடனுக்குடன் தோன்றும்...</span>
                         </div>
                     </div>
 
@@ -326,14 +350,14 @@
                     <div class="flex-1 bg-slate-900 rounded-2xl p-4 border border-slate-800 shadow-inner flex flex-col overflow-hidden">
                         <div class="flex items-center justify-between pb-2 border-b border-slate-800 text-xs text-slate-400 font-mono">
                             <span class="flex items-center gap-1.5 text-sky-400">
-                                <i class="fa-solid fa-terminal"></i> கன்சோல் பதிவு (Console Log)
+                                <i class="fa-solid fa-terminal"></i> கன்சோல் பதிவு (Console Output)
                             </span>
-                            <button onclick="clearConsoleOutput()" class="hover:text-red-400 text-xs text-slate-400">
+                            <button onclick="clearConsoleOutput()" class="hover:text-red-400 text-xs text-slate-400 transition">
                                 <i class="fa-solid fa-eraser"></i> துடைக்க
                             </button>
                         </div>
-                        <div id="console-output" class="flex-grow p-3 overflow-y-auto text-xs code-font text-slate-200 space-y-1 bg-slate-950/60 rounded-lg mt-2">
-                            <div class="text-slate-400">// console.log() விவரங்கள் இங்கு காட்டப்படும்...</div>
+                        <div id="console-output" class="flex-grow p-3 overflow-y-auto text-xs code-font text-slate-200 space-y-1 bg-slate-950/70 rounded-xl mt-2">
+                            <div class="text-slate-500">// console.log() முடிவுகள் இங்கு தோன்றும்...</div>
                         </div>
                     </div>
 
@@ -343,89 +367,136 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- TAB 3: LAB PRACTICALS (செய்முறை பயிற்சிகள்) -->
+        <!-- TAB 3: LAB PRACTICALS (அரசு செய்முறைத் தேர்வுகள்) -->
         <!-- ========================================== -->
         <section id="tab-lab" class="hidden space-y-6">
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h2 class="text-2xl font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-flask-vial text-emerald-600"></i>
-                    11-ஆம் வகுப்பு பாடநூல் செய்முறைப் பயிற்சிகள் (Lab Exercises)
-                </h2>
-                <p class="text-slate-600 text-sm mt-1">பள்ளி செய்முறைத் தேர்வில் கேட்கப்படும் மாதிரி நிரல்கள், தர்க்க விளக்கம் மற்றும் நேரடி இயக்கம்.</p>
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-blue-950 flex items-center gap-2">
+                        <i class="fa-solid fa-flask-vial text-emerald-600"></i>
+                        11-ஆம் வகுப்பு செய்முறைப் பயிற்சி நிரல்கள் (Lab Programs)
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">பொதுத்தேர்வு செய்முறைத் தேர்வில் கேட்கப்படும் அதிகாரப்பூர்வ பாடநூல் செய்முறைக் குறியீடுகள்.</p>
+                </div>
+                <span class="bg-emerald-50 text-emerald-700 text-xs px-3 py-1.5 rounded-full font-bold border border-emerald-200">
+                    <i class="fa-solid fa-star text-amber-500 mr-1"></i> செய்முறை வினாக்கள்
+                </span>
             </div>
 
             <!-- Exercises Accordion / List -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 
-                <!-- Lab 1: Factorial -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-blue-300 transition flex flex-col justify-between">
+                <!-- Lab 1: Odd or Even -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-blue-400 transition flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-bold">செய்முறை 1</span>
-                            <span class="text-xs text-slate-400">for loop</span>
+                            <span class="text-xs text-slate-400 font-mono">if...else</span>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-lg">காரணீயம் காணுதல் (Factorial of a Number)</h3>
-                        <p class="text-xs text-slate-600 mt-1 mb-3">ஒரு குறிப்பிட்ட முழு எண்ணிற்கான காரணீயத்தைக் (n!) கணக்கிடும் ஜாவாஸ்கிரிப்ட் நிரல்.</p>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-700">
-                            <strong>சூத்திரம்:</strong> 5! = 5 × 4 × 3 × 2 × 1 = 120
+                        <h3 class="font-bold text-slate-900 text-base">ஒற்றை / இரட்டை எண் சோதனை</h3>
+                        <p class="text-xs text-slate-500 mb-2 font-medium">Odd or Even Number</p>
+                        <p class="text-xs text-slate-600 mb-3">வகுமீதி செயற்குறி (%) பயன்படுத்தி கொடுக்கப்பட்ட எண் இரட்டைப்படையா அல்லது ஒற்றைப்படையா என அறிதல்.</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
+                            <strong>தர்க்கம்:</strong> if (num % 2 == 0) =&gt; இரட்டை எண்
                         </div>
                     </div>
-                    <button onclick="loadLabCode('factorial')" class="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-play text-xs"></i> ஆய்வகத்தில் இயக்கிப் பார்க்கவும்
+                    <button onclick="loadLabCode('evenOddLab')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ஆய்வகத்தில் இயக்கு
                     </button>
                 </div>
 
                 <!-- Lab 2: Multiplication Table -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-blue-300 transition flex flex-col justify-between">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-indigo-400 transition flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="px-2.5 py-1 bg-indigo-100 text-indigo-800 rounded-md text-xs font-bold">செய்முறை 2</span>
-                            <span class="text-xs text-slate-400">for loop</span>
+                            <span class="text-xs text-slate-400 font-mono">for loop</span>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-lg">பெருக்கல் வாய்ப்பாடு (Multiplication Table)</h3>
-                        <p class="text-xs text-slate-600 mt-1 mb-3">பயனர் கேட்கும் எந்த ஒரு எண்ணிற்கும் 1 முதல் 10 வரை வாய்ப்பாடு அட்டவணை தயாரித்தல்.</p>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-700">
-                            <strong>வெளியீடு:</strong> 7 × 1 = 7 ... 7 × 10 = 70
+                        <h3 class="font-bold text-slate-900 text-base">பெருக்கல் வாய்ப்பாடு</h3>
+                        <p class="text-xs text-indigo-600 mb-2 font-medium">Multiplication Table</p>
+                        <p class="text-xs text-slate-600 mb-3">பயனர் விரும்பும் எந்தவொரு எண்ணிற்கும் 1 முதல் 10 வரை பெருக்கல் அட்டவணை தயாரித்தல்.</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
+                            <strong>மாதிரி:</strong> 7 × 1 = 7 ... 7 × 10 = 70
                         </div>
                     </div>
-                    <button onclick="loadLabCode('table')" class="mt-4 w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-play text-xs"></i> ஆய்வகத்தில் இயக்கிப் பார்க்கவும்
+                    <button onclick="loadLabCode('table')" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ஆய்வகத்தில் இயக்கு
                     </button>
                 </div>
 
-                <!-- Lab 3: Odd or Even -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-blue-300 transition flex flex-col justify-between">
+                <!-- Lab 3: Factorial -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-emerald-400 transition flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-xs font-bold">செய்முறை 3</span>
-                            <span class="text-xs text-slate-400">if...else &amp; %</span>
+                            <span class="text-xs text-slate-400 font-mono">Loop &amp; Logic</span>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-lg">ஒற்றை / இரட்டை எண் சோதனை (Odd or Even)</h3>
-                        <p class="text-xs text-slate-600 mt-1 mb-3">வகுமீதி செயற்குறி (%) பயன்படுத்தி ஒரு எண் இரட்டைப்படையா அல்லது ஒற்றைப்படையா என அறிதல்.</p>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-700">
-                            <strong>தர்க்கம்:</strong> (n % 2 == 0) எனில் இரட்டைப்படை எண்
+                        <h3 class="font-bold text-slate-900 text-base">காரணீயம் கணக்கிடுதல்</h3>
+                        <p class="text-xs text-emerald-600 mb-2 font-medium">Factorial of a Number</p>
+                        <p class="text-xs text-slate-600 mb-3">ஒரு குறிப்பிட்ட முழு எண்ணிற்கான காரணீயத்தைக் (n!) கணக்கிடும் ஜாவாஸ்கிரிப்ட் நிரல்.</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
+                            <strong>சூத்திரம்:</strong> 5! = 5 × 4 × 3 × 2 × 1 = 120
                         </div>
                     </div>
-                    <button onclick="loadLabCode('evenOddLab')" class="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-play text-xs"></i> ஆய்வகத்தில் இயக்கிப் பார்க்கவும்
+                    <button onclick="loadLabCode('factorial')" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ஆய்வகத்தில் இயக்கு
                     </button>
                 </div>
 
                 <!-- Lab 4: Biggest of 3 Numbers -->
-                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-blue-300 transition flex flex-col justify-between">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-amber-400 transition flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
                             <span class="px-2.5 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-bold">செய்முறை 4</span>
-                            <span class="text-xs text-slate-400">Nested if / &amp;&amp;</span>
+                            <span class="text-xs text-slate-400 font-mono">&amp;&amp; Operator</span>
                         </div>
-                        <h3 class="font-bold text-slate-900 text-lg">மூன்று எண்களில் பெரிய எண் (Largest of 3)</h3>
-                        <p class="text-xs text-slate-600 mt-1 mb-3">மூன்று எண்களைப் பயனரிடமிருந்து பெற்று ஒப்பீட்டுச் செயற்குறி மூலம் மிகப்பெரிய எண்ணை தீர்மானித்தல்.</p>
-                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs font-mono text-slate-700">
+                        <h3 class="font-bold text-slate-900 text-base">மூன்று எண்களில் பெரிய எண்</h3>
+                        <p class="text-xs text-amber-600 mb-2 font-medium">Largest of Three Numbers</p>
+                        <p class="text-xs text-slate-600 mb-3">மூன்று எண்களைப் பயனரிடமிருந்து பெற்று ஒப்பீட்டுச் செயற்குறி மூலம் மிகப்பெரிய எண்ணை தேர்வு செய்தல்.</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
                             <strong>தர்க்கம்:</strong> if(a &gt; b &amp;&amp; a &gt; c) =&gt; a பெரியது
                         </div>
                     </div>
-                    <button onclick="loadLabCode('largest')" class="mt-4 w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition">
-                        <i class="fa-solid fa-play text-xs"></i> ஆய்வகத்தில் இயக்கிப் பார்க்கவும்
+                    <button onclick="loadLabCode('largest')" class="w-full py-2 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ஆய்வகத்தில் இயக்கு
+                    </button>
+                </div>
+
+                <!-- Lab 5: Sum of N numbers -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-purple-400 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 bg-purple-100 text-purple-800 rounded-md text-xs font-bold">செய்முறை 5</span>
+                            <span class="text-xs text-slate-400 font-mono">while loop</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-base">முதல் N இயல் எண்களின் கூடுதல்</h3>
+                        <p class="text-xs text-purple-600 mb-2 font-medium">Sum of First N Natural Numbers</p>
+                        <p class="text-xs text-slate-600 mb-3">while மடக்கைப் பயன்படுத்தி 1 முதல் N வரையிலான எண்களைக் கூட்டி மொத்தத்தை அச்சிடுதல்.</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
+                            <strong>கூடுதல்:</strong> 1 + 2 + 3 + ... + 10 = 55
+                        </div>
+                    </div>
+                    <button onclick="loadLabCode('sumNLab')" class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ஆய்வகத்தில் இயக்கு
+                    </button>
+                </div>
+
+                <!-- Lab 6: Armstrong Number Check -->
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-rose-400 transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 bg-rose-100 text-rose-800 rounded-md text-xs font-bold">செய்முறை 6</span>
+                            <span class="text-xs text-slate-400 font-mono">Math Logic</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-base">ஆம்ஸ்ட்ராங் எண் சோதனை</h3>
+                        <p class="text-xs text-rose-600 mb-2 font-medium">Armstrong Number Verification</p>
+                        <p class="text-xs text-slate-600 mb-3">ஓர் எண்ணின் இலக்கங்களின் கனங்களின் (cube) கூடுதல் அதே எண்ணிற்கு சமமாக உள்ளதா என சரிபார்த்தல்.</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
+                            <strong>எ.கா:</strong> 153 = 1³ + 5³ + 3³ = 1 + 125 + 27 = 153
+                        </div>
+                    </div>
+                    <button onclick="loadLabCode('armstrong')" class="w-full py-2 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ஆய்வகத்தில் இயக்கு
                     </button>
                 </div>
 
@@ -433,78 +504,236 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- TAB 4: QUIZ (சுய மதிப்பீடு) -->
+        <!-- TAB 4: FORM VALIDATION LAB (படிவ சரிபார்ப்பு) -->
+        <!-- ========================================== -->
+        <section id="tab-validation" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-blue-950 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-blue-600"></i>
+                            ஜாவாஸ்கிரிப்ட் படிவ சரிபார்ப்பு ஆய்வகம் (Form Validation)
+                        </h2>
+                        <p class="text-slate-600 text-sm mt-1">11-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடத்தில் கிளையன்ட் பக்க படிவ சரிபார்ப்பின் செயல்முறை மாதிரி.</p>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold">
+                        செய்முறைத் தேர்வு மாதிரி
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left: Form Simulator -->
+                <div class="lg:col-span-6 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-900 text-lg mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-user-graduate text-indigo-600"></i> மாணவர் சேர்க்கைப் படிவம்
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-5">மதிப்புகளை உள்ளிட்டு 'பதிவு செய்' பொத்தானை அழுத்தி ஜாவாஸ்கிரிப்ட் சரிபார்ப்பைச் சோதிக்கவும்.</p>
+
+                    <form id="student-admission-form" onsubmit="event.preventDefault(); validateStudentForm();" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">மாணவர் பெயர் (Name): *</label>
+                            <input type="text" id="val-name" placeholder="எ.கா: சுந்தர்" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <span id="err-name" class="text-[11px] text-red-600 hidden font-semibold mt-0.5">பெயர் காலியாக இருக்கக் கூடாது!</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">பதிவு எண் (Register Number - 6 இலக்கங்கள்): *</label>
+                            <input type="text" id="val-regno" placeholder="எ.கா: 110245" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <span id="err-regno" class="text-[11px] text-red-600 hidden font-semibold mt-0.5">பதிவு எண் சரியாக 6 இலக்க எண்களாக இருக்க வேண்டும்!</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">கைபேசி எண் (Mobile Number - 10 இலக்கங்கள்): *</label>
+                            <input type="text" id="val-mobile" placeholder="எ.கா: 9876543210" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <span id="err-mobile" class="text-[11px] text-red-600 hidden font-semibold mt-0.5">சரியான 10 இலக்க கைபேசி எண்ணை உள்ளிடவும்!</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">10-ஆம் வகுப்பு மதிப்பெண் (Marks 1-500): *</label>
+                            <input type="number" id="val-mark" placeholder="எ.கா: 435" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <span id="err-mark" class="text-[11px] text-red-600 hidden font-semibold mt-0.5">மதிப்பெண் 0 முதல் 500-க்குள் மட்டுமே இருக்க வேண்டும்!</span>
+                        </div>
+
+                        <div class="pt-3 flex gap-2">
+                            <button type="submit" class="flex-1 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl text-sm transition shadow">
+                                <i class="fa-solid fa-check-circle mr-1"></i> படிவத்தை சரிபார் (Validate)
+                            </button>
+                            <button type="button" onclick="resetValidationForm()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition">
+                                அழி
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="validation-success-box" class="mt-4 p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-xs text-emerald-800 hidden font-semibold">
+                        <i class="fa-solid fa-circle-check text-emerald-600 mr-1 text-sm"></i> அனைத்து விவரங்களும் சரியாக உள்ளன! படிவம் வெற்றிகரமாக சரிபார்க்கப்பட்டது (Form Validated Successfully).
+                    </div>
+                </div>
+
+                <!-- Right: Explanatory Code -->
+                <div class="lg:col-span-6 bg-slate-900 rounded-2xl p-5 border border-slate-800 shadow flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-slate-300 text-xs">
+                            <span class="font-mono text-amber-400 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-code"></i> படிவ சரிபார்ப்பு ஜாவாஸ்கிரிப்ட் நிரல்
+                            </span>
+                            <button onclick="copyValidationCode()" class="text-xs text-slate-400 hover:text-white transition">
+                                <i class="fa-solid fa-copy"></i> நகலெடு
+                            </button>
+                        </div>
+                        <pre id="val-code-block" class="mt-3 p-3 bg-slate-950 rounded-xl text-[11px] sm:text-xs code-font text-emerald-300 overflow-x-auto leading-relaxed">
+function validateForm() {
+    var name = document.getElementById("name").value;
+    var mobile = document.getElementById("mobile").value;
+
+    // 1. பெயர் காலியாக உள்ளதா என அறிதல்
+    if (name == "") {
+        alert("பெயர் காலியாக இருக்கக் கூடாது!");
+        return false;
+    }
+
+    // 2. கைபேசி எண் 10 இலக்கங்கள் மற்றும் எண்களா என அறிதல்
+    if (isNaN(mobile) || mobile.length != 10) {
+        alert("சரியான 10 இலக்க கைபேசி எண்ணை உள்ளிடவும்!");
+        return false;
+    }
+
+    alert("படிவம் வெற்றிகரமாக ஏற்றுக்கொள்ளப்பட்டது!");
+    return true;
+}</pre>
+                    </div>
+
+                    <div class="mt-4 bg-slate-800/70 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+                        <strong class="text-amber-400 block mb-1">பாடநூல் குறிப்பு (Tamil Nadu SCERT):</strong>
+                        படிவ சரிபார்ப்பின் முக்கிய நோக்கம், தரவு சேவையகத்திற்கு (Server) அனுப்பப்படும் முன் கிளையன்ட் பக்கத்திலேயே பிழைகளைத் தடுத்து நேரத்தையும் இணையப் பயன்பாட்டையும் மிச்சப்படுத்துவதாகும்.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: EXAM Q&A BANK (2, 3, 5 மதிப்பெண் வினாக்கள்) -->
+        <!-- ========================================== -->
+        <section id="tab-qa" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-blue-950 flex items-center gap-2">
+                        <i class="fa-solid fa-award text-amber-500"></i>
+                        அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1">11-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடத்தில் அத்தியாயம் 14 & 15-லிருந்து கேட்கப்படும் மிக முக்கியமான வினாக்கள்.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="filterQA('all')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-blue-600 text-white" id="qa-btn-all">அனைத்தும்</button>
+                    <button onclick="filterQA('2m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-2m">2 மதிப்பெண்</button>
+                    <button onclick="filterQA('3m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-3m">3 மதிப்பெண்</button>
+                    <button onclick="filterQA('5m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-5m">5 மதிப்பெண்</button>
+                </div>
+            </div>
+
+            <!-- Questions Container -->
+            <div id="qa-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: QUIZ & DEBUGGER (சுய மதிப்பீடு & பிழை திருத்து) -->
         <!-- ========================================== -->
         <section id="tab-quiz" class="hidden space-y-6">
             <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-blue-950 flex items-center gap-2">
-                        <i class="fa-solid fa-award text-amber-500"></i>
-                        11-ஆம் வகுப்பு ஜாவாஸ்கிரிப்ட் வினாடி வினா
+                    <h2 class="text-2xl font-extrabold text-blue-950 flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-purple-600"></i>
+                        ஜாவாஸ்கிரிப்ட் வினாடி வினா & பிழை திருத்துதல்
                     </h2>
-                    <p class="text-slate-600 text-sm mt-1">அரசுப் பொதுத்தேர்வில் கேட்கப்படும் மிக முக்கியமான ஒரு மதிப்பெண் வினாக்கள் (MCQs).</p>
+                    <p class="text-slate-600 text-sm mt-1">பொதுத்தேர்வு ஒரு மதிப்பெண் வினாக்கள் (MCQ) மற்றும் குறியீட்டுப் பிழை ஆய்வுகள்.</p>
                 </div>
-                <div id="quiz-score-badge" class="px-4 py-2 bg-blue-50 text-blue-900 rounded-xl font-bold border border-blue-200 text-sm">
+                <div class="px-4 py-2 bg-blue-50 text-blue-900 rounded-xl font-bold border border-blue-200 text-sm">
                     மதிப்பெண்: <span id="current-score" class="text-blue-600 text-lg">0</span> / 10
                 </div>
             </div>
 
-            <!-- Quiz Container -->
-            <div id="quiz-container" class="space-y-4">
-                <!-- Dynamically populated by JS -->
+            <!-- Quiz Questions Section -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (MCQs)
+                </h3>
+                <div id="quiz-container" class="space-y-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Debug Section -->
+            <div class="pt-6 border-t border-slate-200 space-y-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-bug text-rose-600"></i> பகுதி 2: பிழையைக் கண்டுபிடி! (Find the Bug)
+                    </h3>
+                    <p class="text-xs text-slate-500">கீழே கொடுக்கப்பட்டுள்ள ஜாவாஸ்கிரிப்ட் வரிகளில் உள்ள பிழைகளைத் தேர்வு செய்யவும்.</p>
+                </div>
+
+                <div id="bug-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Populated dynamically -->
+                </div>
             </div>
 
             <div class="flex justify-center pt-4">
-                <button onclick="resetQuiz()" class="px-6 py-2.5 bg-blue-800 hover:bg-blue-900 text-white font-bold rounded-xl shadow transition flex items-center gap-2">
+                <button onclick="resetQuiz()" class="px-6 py-2.5 bg-blue-800 hover:bg-blue-900 text-white font-bold rounded-xl shadow transition flex items-center gap-2 text-sm">
                     <i class="fa-solid fa-rotate"></i> வினாடி வினாவை மீண்டும் தொடங்க
                 </button>
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- TAB 5: DEBUGGER CHALLENGE (பிழை திருத்து) -->
-        <!-- ========================================== -->
-        <section id="tab-debugger" class="hidden space-y-6">
-            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                <h2 class="text-2xl font-bold text-blue-950 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-virus text-rose-600"></i>
-                    பிழையைக் கண்டுபிடி! (Find &amp; Fix the Bug)
-                </h2>
-                <p class="text-slate-600 text-sm mt-1">கீழே கொடுக்கப்பட்டுள்ள ஜாவாஸ்கிரிப்ட் வரிகளில் உள்ள தொடரியல் பிழைகளை (Syntax Errors) கண்டறிந்து சரியான விடையை தேர்வு செய்யவும்.</p>
-            </div>
-
-            <div id="bug-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Populated dynamically via JS -->
-            </div>
-        </section>
-
     </main>
 
-    <!-- Simulated Prompt Modal (Required because alert() & confirm() are forbidden) -->
+    <!-- Simulated Prompt Modal (alert/confirm/prompt replacement compliant with strict rules) -->
     <div id="prompt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 animate-in fade-in zoom-in duration-150">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
                     <i class="fa-solid fa-keyboard"></i>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-800">ஜாவாஸ்கிரிப்ட் உள்ளீடு (Prompt)</h4>
+                    <h4 class="font-bold text-slate-800 text-base">ஜாவாஸ்கிரிப்ட் உள்ளீடு (Prompt)</h4>
                     <span class="text-xs text-slate-400">பயனர் தரவு தேவைப்படுகிறது</span>
                 </div>
             </div>
-            <p id="prompt-message" class="text-sm font-medium text-slate-700 mb-3">மதிப்பை உள்ளிடவும்:</p>
-            <input type="text" id="prompt-input-field" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 text-sm mb-5" placeholder="உங்கள் விடை...">
+            <p id="prompt-message" class="text-sm font-semibold text-slate-700 mb-3">மதிப்பை உள்ளிடவும்:</p>
+            <input type="text" id="prompt-input-field" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 text-sm mb-5 font-mono" placeholder="உங்கள் உள்ளீடு...">
             <div class="flex justify-end gap-2">
-                <button onclick="resolvePrompt(null)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold">ரத்து செய்</button>
-                <button onclick="submitPrompt()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold">சரி (OK)</button>
+                <button onclick="resolvePrompt(null)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">ரத்து செய்</button>
+                <button onclick="submitPrompt()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow">சரி (OK)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-base">உறுதிப்படுத்தல் (Confirm)</h4>
+                    <span class="text-xs text-slate-400">தீர்மானிப்புக் கூற்று</span>
+                </div>
+            </div>
+            <p id="confirm-message" class="text-sm font-medium text-slate-700 mb-5">செயலைத் தொடர விரும்புகிறீர்களா?</p>
+            <div class="flex justify-end gap-2">
+                <button onclick="resolveConfirm(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">ரத்து (Cancel)</button>
+                <button onclick="resolveConfirm(true)" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow">சரி (OK)</button>
             </div>
         </div>
     </div>
 
     <!-- In-App Notification / Toast for Alert replacement -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
         <div id="toast-icon" class="text-amber-400 text-xl pt-0.5">
-            <i class="fa-solid fa-circle-exclamation"></i>
+            <i class="fa-solid fa-bell"></i>
         </div>
         <div class="flex-grow">
             <h5 id="toast-title" class="font-bold text-sm text-amber-300">செய்தி (Alert)</h5>
@@ -517,14 +746,14 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-8">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium">
             11-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடநூல் - தமிழ்நாடு பள்ளிக் கல்வித்துறை வழிகாட்டுதலின்படி வடிவமைக்கப்பட்டது.
         </div>
     </footer>
 
     <!-- Application JavaScript Logic -->
     <script>
-        // Audio synthesis for soft interactive feedback
+        // Audio synthesis for soft interactive feedback using Tone.js
         let synth = null;
         function getSynth() {
             if (!synth && window.Tone) {
@@ -549,14 +778,14 @@
                     s.triggerAttackRelease("C4", "32n");
                 }
             } catch(e) {
-                // Ignore audio restriction issues
+                // Audio restrictions fallback
             }
         }
 
         // ==========================================
         // Tab Navigation
         // ==========================================
-        const tabs = ['lessons', 'playground', 'lab', 'quiz', 'debugger'];
+        const tabs = ['lessons', 'playground', 'lab', 'validation', 'qa', 'quiz'];
 
         function switchTab(tabId) {
             playSound('click');
@@ -565,11 +794,11 @@
                 const btn = document.getElementById(`tab-btn-${t}`);
                 if (t === tabId) {
                     section.classList.remove('hidden');
-                    btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+                    btn.classList.add('active-tab');
                     btn.classList.remove('text-blue-200');
                 } else {
                     section.classList.add('hidden');
-                    btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                    btn.classList.remove('active-tab');
                     btn.classList.add('text-blue-200');
                 }
             });
@@ -581,24 +810,25 @@
         // ==========================================
         const codeSnippets = {
             welcome: `// பாடம் 14: document.write() மற்றும் console.log() பயன்பாடு
-var studentName = "கவின்";
+var studentName = "சுந்தர்";
 var schoolName = "அரசு மேல்நிலைப் பள்ளி";
 
 document.write("<h2>வணக்கம், " + studentName + "!</h2>");
 document.write("<p>பள்ளி: " + schoolName + "</p>");
-document.write("<p>11-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடத்திற்கு நல்வரவு!</p>");
+document.write("<p style='color:green; font-weight:bold;'>11-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடத்திற்கு நல்வரவு!</p>");
 
-console.log("மாணவர் விவரம் வெற்றிகரமாகப் பதிவானது.");`,
+console.log("மாணவர் பெயர்: " + studentName);
+console.log("பள்ளி: " + schoolName);`,
 
-            add: `// இரு எண்களைப் பெற்று கூட்டிக் காட்டுதல்
-var num1 = 45;
-var num2 = 55;
-var sum = num1 + num2;
+            add: `// இரு எண்களைப் பெற்று கூட்டுதல்
+var a = 45;
+var b = 55;
+var sum = a + b;
 
 document.write("<h3>கூட்டல் கணக்கீடு</h3>");
-document.write("முதல் எண்: " + num1 + "<br>");
-document.write("இரண்டாம் எண்: " + num2 + "<br>");
-document.write("<b>கூடுதல்: " + sum + "</b>");
+document.write("முதல் எண் (a): " + a + "<br>");
+document.write("இரண்டாம் எண் (b): " + b + "<br>");
+document.write("<b style='color:blue;'>கூடுதல் (a + b) = " + sum + "</b>");
 
 console.log("கூடுதல் விடை: " + sum);`,
 
@@ -609,10 +839,10 @@ var number = 18;
 document.write("<h3>எண் சோதனை: " + number + "</h3>");
 
 if (number % 2 === 0) {
-    document.write("<p style='color:green; font-weight:bold;'>" + number + " என்பது இரட்டைப்படை எண் (Even Number)</p>");
+    document.write("<p style='color:green; font-weight:bold;'>" + number + " என்பது ஓர் இரட்டைப்படை எண் (Even Number)</p>");
     console.log(number + " - இரட்டை எண்");
 } else {
-    document.write("<p style='color:blue; font-weight:bold;'>" + number + " என்பது ஒற்றைப்படை எண் (Odd Number)</p>");
+    document.write("<p style='color:blue; font-weight:bold;'>" + number + " என்பது ஓர் ஒற்றைப்படை எண் (Odd Number)</p>");
     console.log(number + " - ஒற்றை எண்");
 }`,
 
@@ -634,16 +864,16 @@ document.write("<h3>தேர்வு தரவரிசை முடிவு�
 
 switch(grade) {
     case 'A':
-        document.write("<b style='color:green;'>சிறப்பான தேர்ச்சி (Distinction)!</b>");
+        document.write("<b style='color:green;'>சிறப்பான தேர்ச்சி (Distinction - A)!</b>");
         break;
     case 'B':
-        document.write("<b style='color:blue;'>முதல் வகுப்பு (First Class)!</b>");
+        document.write("<b style='color:blue;'>முதல் வகுப்பு (First Class - B)!</b>");
         break;
     case 'C':
-        document.write("<b style='color:orange;'>இரண்டாம் வகுப்பு (Second Class)!</b>");
+        document.write("<b style='color:orange;'>இரண்டாம் வகுப்பு (Second Class - C)!</b>");
         break;
     default:
-        document.write("மறுமதிப்பீடு தேவை.");
+        document.write("மறுமதிப்பீடு தேவை அல்லது தேர்ச்சி பெறவில்லை.");
         break;
 }`,
 
@@ -658,13 +888,27 @@ while (i <= 10) {
 
 document.write("<h3>1 முதல் 10 வரையிலான எண்களின் கூடுதல்</h3>");
 document.write("<b>மொத்தக் கூடுதல் = " + total + "</b>");
-console.log("Total sum is: " + total);`
+console.log("Total sum is: " + total);`,
+
+            userFunc: `// பாடம் 15: பயனர் வரையறுக்கும் செயற்கூறு (User defined function)
+function calculateSquare(num) {
+    return num * num;
+}
+
+var x = 7;
+var answer = calculateSquare(x);
+
+document.write("<h3>செயற்கூறு மாதிரி</h3>");
+document.write("எண்: " + x + "<br>");
+document.write("<b>" + x + "-ன் வர்க்கம் (Square) = " + answer + "</b>");
+console.log("Square of " + x + " = " + answer);`
         };
 
         const lessonSnippets = {
             intro: `// ஜாவாஸ்கிரிப்ட் மூலம் ஊடாடும் தகவல்
-alert("ஜாவாஸ்கிரிப்ட் கற்போம்!");
+alert("ஜாவாஸ்கிரிப்ட் ஆய்வகத்திற்கு நல்வரவு!");
 document.write("<h3>ஜாவாஸ்கிரிப்ட் வலைப்பக்கத்திற்கு உயிரூட்டுகிறது!</h3>");
+document.write("<p>இது கிளையன்ட் பக்கத்தில் இயங்கும் ஸ்கிரிப்டிங் மொழியாகும்.</p>");
 console.log("JavaScript is loaded safely!");`,
 
             variables: `// மாறிகள் மற்றும் தரவு வகைகள்
@@ -674,7 +918,8 @@ var isPass = true;                 // Boolean
 
 document.write("பாடம்: " + subject + "<br>");
 document.write("மதிப்பெண்: " + mark + "<br>");
-document.write("தேர்ச்சி பெற்றவரா?: " + isPass);`,
+document.write("தேர்ச்சி பெற்றவரா?: " + isPass + "<br>");
+document.write("வகை (mark): " + typeof mark);`,
 
             operators: `// கணித மற்றும் ஒப்பீட்டுச் செயற்குறிகள்
 var a = 20;
@@ -683,7 +928,8 @@ var b = 7;
 document.write("கூட்டல் (a + b): " + (a + b) + "<br>");
 document.write("கழித்தல் (a - b): " + (a - b) + "<br>");
 document.write("வகுமீதி (a % b): " + (a % b) + "<br>");
-document.write("பெரியதா? (a > b): " + (a > b) + "<br>");`,
+document.write("a > b மெய்யா?: " + (a > b) + "<br>");
+document.write("நிபந்தனை செயற்குறி: " + (a > b ? "a பெரியது" : "b பெரியது"));`,
 
             dialogs: `// alert மற்றும் prompt மாதிரி
 var name = prompt("உங்கள் பெயர் என்ன?", "மாணவர்");
@@ -691,10 +937,10 @@ if(name) {
     alert("வணக்கம் " + name + "!");
     document.write("நல்வரவு, <b>" + name + "</b>!");
 } else {
-    document.write("பெயர் உள்ளிடப்படவில்லை.");
+    document.write("பெயர் எதுவும் உள்ளிடப்படவில்லை.");
 }`,
 
-            branching: `// நிபந்தனைக் கூற்று
+            branching: `// நிபந்தனைக் கூற்று (if...else)
 var score = 75;
 document.write("மதிப்பெண்: " + score + "<br>");
 
@@ -712,7 +958,26 @@ for (var i = 1; i <= 5; i++) {
         };
 
         const labSnippets = {
-            factorial: `// செய்முறை 1: ஒரு எண்ணின் காரணீயம் (Factorial)
+            evenOddLab: `// செய்முறை 1: ஒற்றை அல்லது இரட்டைப்படை எண்
+var num = 24;
+
+document.write("<h3>கொடுக்கப்பட்ட எண்: " + num + "</h3>");
+
+if (num % 2 === 0) {
+    document.write("<b style='color:green;'>" + num + " என்பது ஓர் இரட்டைப்படை எண் (Even Number).</b>");
+} else {
+    document.write("<b style='color:blue;'>" + num + " என்பது ஓர் ஒற்றைப்படை எண் (Odd Number).</b>");
+}`,
+
+            table: `// செய்முறை 2: பயனர் விரும்பும் வாய்ப்பாடு
+var tableNo = 7;
+
+document.write("<h3>" + tableNo + "-ஆம் வாய்ப்பாடு (Multiplication Table)</h3>");
+for (var i = 1; i <= 10; i++) {
+    document.write(tableNo + " × " + i + " = " + (tableNo * i) + "<br>");
+}`,
+
+            factorial: `// செய்முறை 3: ஒரு எண்ணின் காரணீயம் (Factorial of n)
 var n = 5;
 var fact = 1;
 
@@ -724,23 +989,6 @@ document.write("<h3>காரணீயம் கணக்கீடு</h3>");
 document.write(n + "-ன் காரணீயம் (" + n + "!) = <b>" + fact + "</b>");
 console.log("Factorial of " + n + " is " + fact);`,
 
-            table: `// செய்முறை 2: பயனர் விரும்பும் வாய்ப்பாடு
-var tableNo = 7;
-
-document.write("<h3>" + tableNo + "-ஆம் வாய்ப்பாடு</h3>");
-for (var i = 1; i <= 10; i++) {
-    document.write(tableNo + " × " + i + " = " + (tableNo * i) + "<br>");
-}`,
-
-            evenOddLab: `// செய்முறை 3: ஒற்றை அல்லது இரட்டைப்படை எண்
-var num = 24;
-
-if (num % 2 === 0) {
-    document.write("<h3>" + num + " என்பது ஓர் இரட்டைப்படை எண்.</h3>");
-} else {
-    document.write("<h3>" + num + " என்பது ஓர் ஒற்றைப்படை எண்.</h3>");
-}`,
-
             largest: `// செய்முறை 4: மூன்று எண்களில் மிகப்பெரிய எண்
 var a = 45;
 var b = 78;
@@ -749,11 +997,42 @@ var c = 32;
 document.write("எண்கள்: a = " + a + ", b = " + b + ", c = " + c + "<br><br>");
 
 if (a >= b && a >= c) {
-    document.write("<b>மிகப்பெரிய எண் a = " + a + "</b>");
+    document.write("<b style='color:green;'>மிகப்பெரிய எண் a = " + a + "</b>");
 } else if (b >= a && b >= c) {
-    document.write("<b>மிகப்பெரிய எண் b = " + b + "</b>");
+    document.write("<b style='color:green;'>மிகப்பெரிய எண் b = " + b + "</b>");
 } else {
-    document.write("<b>மிகப்பெரிய எண் c = " + c + "</b>");
+    document.write("<b style='color:green;'>மிகப்பெரிய எண் c = " + c + "</b>");
+}`,
+
+            sumNLab: `// செய்முறை 5: முதல் 10 இயல் எண்களின் கூடுதல்
+var n = 10;
+var sum = 0;
+var count = 1;
+
+while (count <= n) {
+    sum += count;
+    count++;
+}
+
+document.write("<h3>முதல் " + n + " எண்களின் கூடுதல்</h3>");
+document.write("1 + 2 + ... + " + n + " = <b>" + sum + "</b>");`,
+
+            armstrong: `// செய்முறை 6: ஆம்ஸ்ட்ராங் எண் சோதனை (எ.கா: 153)
+var number = 153;
+var temp = number;
+var sum = 0;
+
+while (temp > 0) {
+    var remainder = temp % 10;
+    sum += remainder * remainder * remainder;
+    temp = parseInt(temp / 10);
+}
+
+document.write("<h3>ஆம்ஸ்ட்ராங் எண் சோதனை: " + number + "</h3>");
+if (sum === number) {
+    document.write("<b style='color:green;'>" + number + " என்பது ஓர் ஆம்ஸ்ட்ராங் எண் ஆகும்!</b>");
+} else {
+    document.write("<b style='color:red;'>" + number + " என்பது ஆம்ஸ்ட்ராங் எண் அல்ல!</b>");
 }`
         };
 
@@ -797,17 +1076,42 @@ if (a >= b && a >= c) {
         }
 
         function clearDocOutput() {
-            document.getElementById('document-output').innerHTML = '<span class="text-slate-400 italic">நிரலின் document.write() முடிவுகள் இங்கு தோன்றும்...</span>';
+            document.getElementById('document-output').innerHTML = '<span class="text-slate-400 italic">நிரலின் document.write() முடிவுகள் இங்கு உடனுக்குடன் தோன்றும்...</span>';
         }
 
         function clearConsoleOutput() {
-            document.getElementById('console-output').innerHTML = '<div class="text-slate-400">// console.log() விவரங்கள் இங்கு காட்டப்படும்...</div>';
+            document.getElementById('console-output').innerHTML = '<div class="text-slate-500">// console.log() முடிவுகள் இங்கு தோன்றும்...</div>';
+        }
+
+        // Copy Code utility using document.execCommand
+        function copyCurrentCode() {
+            playSound('click');
+            const textarea = document.createElement('textarea');
+            textarea.value = editor.value;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast("குறியீடு வெற்றிகரமாக நகலெடுக்கப்பட்டது!", "நகல் தகவல்");
+        }
+
+        function copyValidationCode() {
+            playSound('click');
+            const code = document.getElementById('val-code-block').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast("படிவ சரிபார்ப்புக் குறியீடு நகலெடுக்கப்பட்டது!", "நகல் தகவல்");
         }
 
         // ==========================================
-        // Safe Code Runner Engine with Mocked Prompt & Alert
+        // Safe Code Runner Engine with Mocked Prompt, Alert & Confirm
         // ==========================================
         let promptResolveHandler = null;
+        let confirmResolveHandler = null;
 
         function customPrompt(message, defaultValue = "") {
             return new Promise((resolve) => {
@@ -837,11 +1141,27 @@ if (a >= b && a >= c) {
             }
         }
 
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                confirmResolveHandler = resolve;
+                document.getElementById('confirm-message').textContent = message || "செயலைத் தொடர விரும்புகிறீர்களா?";
+                document.getElementById('confirm-modal').classList.remove('hidden');
+            });
+        }
+
+        function resolveConfirm(result) {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            if (confirmResolveHandler) {
+                confirmResolveHandler(result);
+                confirmResolveHandler = null;
+            }
+        }
+
         function showToast(message, title = "ஜாவாஸ்கிரிப்ட் செய்தி (Alert)") {
             const toast = document.getElementById('toast-notification');
             document.getElementById('toast-title').textContent = title;
             document.getElementById('toast-body').textContent = message;
-            toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
             setTimeout(() => {
                 hideToast();
             }, 4500);
@@ -849,7 +1169,7 @@ if (a >= b && a >= c) {
 
         function hideToast() {
             const toast = document.getElementById('toast-notification');
-            toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
         }
 
         async function runCode() {
@@ -857,7 +1177,6 @@ if (a >= b && a >= c) {
             const docOut = document.getElementById('document-output');
             const consoleOut = document.getElementById('console-output');
 
-            // Reset outputs
             docOut.innerHTML = '';
             consoleOut.innerHTML = '';
 
@@ -905,18 +1224,19 @@ if (a >= b && a >= c) {
             const codeText = editor.value;
 
             try {
-                // Wrap code inside an async execution context with mocked globals
+                // Wrap code inside an async execution context with strictly mocked globals
                 const runner = new Function(
                     'document',
                     'console',
                     'alert',
                     'prompt',
+                    'confirm',
                     `return (async () => {
                         ${codeText}
                     })();`
                 );
 
-                await runner(mockDoc, mockConsole, mockAlert, customPrompt);
+                await runner(mockDoc, mockConsole, mockAlert, customPrompt, customConfirm);
 
                 if (!docBuffer) {
                     docOut.innerHTML = '<span class="text-slate-400 italic">நிரல் இயங்கியது. ஆனால் document.write() மூலம் எதுவும் எழுதப்படவில்லை. கன்சோலை சரிபார்க்கவும்.</span>';
@@ -932,6 +1252,168 @@ if (a >= b && a >= c) {
         }
 
         // ==========================================
+        // FORM VALIDATION SIMULATOR
+        // ==========================================
+        function validateStudentForm() {
+            playSound('click');
+            let isValid = true;
+
+            const name = document.getElementById('val-name').value.trim();
+            const regno = document.getElementById('val-regno').value.trim();
+            const mobile = document.getElementById('val-mobile').value.trim();
+            const mark = document.getElementById('val-mark').value.trim();
+
+            const errName = document.getElementById('err-name');
+            const errRegno = document.getElementById('err-regno');
+            const errMobile = document.getElementById('err-mobile');
+            const errMark = document.getElementById('err-mark');
+            const successBox = document.getElementById('validation-success-box');
+
+            // Hide old errors
+            errName.classList.add('hidden');
+            errRegno.classList.add('hidden');
+            errMobile.classList.add('hidden');
+            errMark.classList.add('hidden');
+            successBox.classList.add('hidden');
+
+            // 1. Name Check
+            if (name === "") {
+                errName.classList.remove('hidden');
+                isValid = false;
+            }
+
+            // 2. Register Number Check (exact 6 digits)
+            if (isNaN(regno) || regno.length !== 6) {
+                errRegno.classList.remove('hidden');
+                isValid = false;
+            }
+
+            // 3. Mobile Number Check (10 digits)
+            if (isNaN(mobile) || mobile.length !== 10) {
+                errMobile.classList.remove('hidden');
+                isValid = false;
+            }
+
+            // 4. Marks Range Check (0 - 500)
+            const numMark = Number(mark);
+            if (mark === "" || isNaN(numMark) || numMark < 0 || numMark > 500) {
+                errMark.classList.remove('hidden');
+                isValid = false;
+            }
+
+            if (isValid) {
+                playSound('success');
+                successBox.classList.remove('hidden');
+                showToast("மாணவர் படிவம் வெற்றிகரமாக சரிபார்க்கப்பட்டது!", "சரிபார்ப்பு வெற்றி");
+            } else {
+                playSound('error');
+            }
+        }
+
+        function resetValidationForm() {
+            playSound('click');
+            document.getElementById('student-admission-form').reset();
+            document.getElementById('err-name').classList.add('hidden');
+            document.getElementById('err-regno').classList.add('hidden');
+            document.getElementById('err-mobile').classList.add('hidden');
+            document.getElementById('err-mark').classList.add('hidden');
+            document.getElementById('validation-success-box').classList.add('hidden');
+        }
+
+        // ==========================================
+        // EXAM Q&A BANK DATA (அரசுப் பொதுத்தேர்வு வினாக்கள்)
+        // ==========================================
+        const examQuestions = [
+            {
+                type: '2m',
+                q: "1. ஜாவாஸ்கிரிப்ட் என்றால் என்ன?",
+                ans: "ஜாவாஸ்கிரிப்ட் என்பது நெட்ஸ்கேப் நிறுவனத்தின் பிரெண்டன் ஐக் என்பவரால் உருவாக்கப்பட்ட மிகவும் பிரபலமான கிளையன்ட் பக்க (Client-side) ஸ்கிரிப்டிங் மொழியாகும். இது HTML வலைப்பக்கங்களை ஊடாடும் மற்றும் செயல்மிக்க பக்கங்களாக மாற்ற உதவுகிறது."
+            },
+            {
+                type: '2m',
+                q: "2. மாறிகள் (Variables) என்றால் என்ன? அதை எவ்வாறு அறிவிக்க வேண்டும்?",
+                ans: "மாறிகள் என்பது கணினி நினைவகத்தில் ஒரு குறிப்பிட்ட மதிப்பைச் சேமித்து வைக்கப் பயன்படும் பெயரிடப்பட்ட இடமாகும். ஜாவாஸ்கிரிப்டில் மாறிகளை அறிவிக்க 'var' என்ற சிறப்புச் சொல் பயன்படுகிறது. (எ.கா: var mark = 90;)"
+            },
+            {
+                type: '2m',
+                q: "3. ஜாவாஸ்கிரிப்ட்டின் உள்ளமைந்த உரையாடல் பெட்டிகள் (Dialog Boxes) யாவை?",
+                ans: "1. alert() - பயனருக்கு எச்சரிக்கை அல்லது செய்தி காட்ட.<br>2. prompt() - பயனரிடமிருந்து உள்ளீட்டுத் தகவலைப் பெற.<br>3. confirm() - பயனரின் சம்மதம் அல்லது உறுதிப்படுத்தலைப் பெற."
+            },
+            {
+                type: '2m',
+                q: "4. break மற்றும் continue கூற்றுகளுக்கு இடையேயான வேறுபாடு யாது?",
+                ans: "• <b>break:</b> தற்போதைய மடக்கு அல்லது switch கட்டமைப்பை விட்டு உடனடியாக வெளியேற்றுகிறது.<br>• <b>continue:</b> நடப்பு சுழற்சியை மட்டும் தவிர்த்துவிட்டு, அடுத்த சுழற்சிக்கு உடனடியாகத் தாவுகிறது."
+            },
+            {
+                type: '3m',
+                q: "5. மாறி குறிப்பெயர்களுக்கான (Identifiers) பெயரிடும் விதிமுறைகள் யாவை?",
+                ans: "1. மாறியின் முதல் எழுத்து ஓர் ஆங்கில எழுத்தாகவோ (Letter) அல்லது அடிக்கோடாகவோ (_) இருக்க வேண்டும்.<br>2. எண்களில் தொடங்கக் கூடாது (எ.கா: 2rank என்பது தவறு).<br>3. ஜாவாஸ்கிரிப்ட்டின் சிறப்புச் சொற்களை (Keywords) மாறிப் பெயராகப் பயன்படுத்தக் கூடாது.<br>4. இது எழுத்து வடிவ உணர்வுடையது (Case-sensitive - total மற்றும் Total வெவ்வேறானவை)."
+            },
+            {
+                type: '3m',
+                q: "6. while மற்றும் do...while மடக்குகளை ஒப்பிடுக.",
+                ans: "• <b>while மடக்கு:</b> இது ஒரு 'நுழைவு சோதிப்பு மடக்கு' (Entry check loop). நிபந்தனை தொடக்கத்திலேயே சோதிக்கப்பட்டு மெய்யானால் மட்டுமே மடக்கு இயங்கும்.<br>• <b>do...while மடக்கு:</b> இது ஒரு 'வெளியேறு சோதிப்பு மடக்கு' (Exit check loop). நிபந்தனை இறுதியில் சோதிக்கப்படுவதால், நிபந்தனை பொய்யாக இருந்தாலும் குறைந்தது ஒரு முறையாவது இயங்கும்."
+            },
+            {
+                type: '3m',
+                q: "7. ஜாவாஸ்கிரிப்ட்டில் உள்ள தரவு வகைகள் யாவை?",
+                ans: "1. <b>Number:</b> முழு எண்கள் மற்றும் தசம எண்கள் (எ.கா: 25, 45.8)<br>2. <b>String:</b> மேற்கோள் குறிகளுக்குள் தரப்படும் எழுத்துக்கள் (எ.கா: 'வணக்கம்')<br>3. <b>Boolean:</b> உண்மை அல்லது பொய் (true அல்லது false)<br>4. <b>Null & Undefined:</b> மதிப்பற்ற மற்றும் வரையறுக்கப்படாத நிலைகள்."
+            },
+            {
+                type: '5m',
+                q: "8. switch...case கூற்றின் தொடரியல் மற்றும் பயன்பாட்டை எடுத்துக்காட்டுடன் விளக்குக.",
+                ans: "switch கூற்றானது கொடுக்கப்பட்ட ஒரு மாறியின் மதிப்பை பல case கூறுகளுடன் ஒப்பிட்டு, பொருந்தும் வழியைத் தேர்ந்தெடுக்கிறது.<br><br><b>தொடரியல்:</b><br><pre class='bg-slate-100 p-2 rounded text-xs mt-1 font-mono'>switch(expression) {<br>  case val1: statements; break;<br>  case val2: statements; break;<br>  default: statements;<br>}</pre>break கூற்று அடுத்த case தொகுதிக்குச் செல்லாமல் உடனே switch-லிருந்து வெளியேற உதவுகிறது."
+            },
+            {
+                type: '5m',
+                q: "9. for மடக்கின் மூன்று பாகங்களை எடுத்துக்காட்டு நிரலுடன் விரிவாக விளக்குக.",
+                ans: "for மடக்கு ஒரு குறிமுறைத் தொகுதியை குறிப்பிட்ட எண்ணிக்கையில் மீண்டும் மீண்டும் இயக்கப் பயன்படுகிறது.<br><br><b>தொடரியல்:</b> for(தொடக்க மதிப்பு; நிபந்தனை; மிகுப்பு/குறைப்பு)<br>1. <b>தொடக்க மதிப்பு (Initialization):</b> மடக்கின் மாறியை தொடக்க மதிப்பில் இருத்துகிறது.<br>2. <b>நிபந்தனை (Condition):</b> இது மெய்யாக உள்ளவரை மடக்கு சுழலும்.<br>3. <b>மிகுப்பு/குறைப்பு (Increment/Decrement):</b> ஒவ்வொரு சுழற்சியின் முடிவிலும் மாறியின் மதிப்பை மாற்றும்."
+            }
+        ];
+
+        function renderExamQA(filter = 'all') {
+            const container = document.getElementById('qa-cards-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? examQuestions : examQuestions.filter(q => q.type === filter);
+
+            filtered.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between';
+
+                const badgeColor = item.type === '2m' ? 'bg-blue-100 text-blue-800' : (item.type === '3m' ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800');
+                const badgeLabel = item.type === '2m' ? '2 மதிப்பெண் வினா' : (item.type === '3m' ? '3 மதிப்பெண் வினா' : '5 மதிப்பெண் வினா');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs px-2.5 py-1 rounded-md font-bold ${badgeColor}">${badgeLabel}</span>
+                            <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-graduation-cap"></i> SCERT TN</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm sm:text-base mb-3 leading-snug">${item.q}</h4>
+                        <div class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            ${item.ans}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterQA(type) {
+            playSound('click');
+            ['all', '2m', '3m', '5m'].forEach(t => {
+                const btn = document.getElementById(`qa-btn-${t}`);
+                if (t === type) {
+                    btn.className = 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-blue-600 text-white';
+                } else {
+                    btn.className = 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+                }
+            });
+            renderExamQA(type);
+        }
+
+        // ==========================================
         // QUIZ DATA (அரசுப் பொதுத்தேர்வு வினாக்கள்)
         // ==========================================
         const quizQuestions = [
@@ -943,12 +1425,12 @@ if (a >= b && a >= c) {
             },
             {
                 q: "2. HTML ஆவணத்தில் ஜாவாஸ்கிரிப்ட் குறியீடுகளை எந்த ஒட்டின் (Tag) உள்ளே எழுத வேண்டும்?",
-                options: ["<javascript>", "<script>", "<js>", "<code>"],
+                options: ["&lt;javascript&gt;", "&lt;script&gt;", "&lt;js&gt;", "&lt;code&gt;"],
                 answer: 1,
-                explanation: "HTML ஆவணத்தில் ஜாவாஸ்கிரிப்டை இணைக்க <script> மற்றும் </script> ஒட்டுகள் பயன்படுகின்றன."
+                explanation: "HTML ஆவணத்தில் ஜாவாஸ்கிரிப்டை இணைக்க &lt;script&gt; மற்றும் &lt;/script&gt; ஒட்டுகள் பயன்படுகின்றன."
             },
             {
-                q: "3. பின்வருவனவற்றுள் எது ஜாவாஸ்கிரிப்ட்டின் கிளையன்ட் பக்க உரையாடல் பெட்டி (Dialog Box) அல்ல?",
+                q: "3. பின்வருவனவற்றுள் எது ஜாவாஸ்கிரிப்ட்டின் கிளையன்ட் பக்க உரையாடல் பெட்டி அல்ல?",
                 options: ["alert()", "prompt()", "confirm()", "print()"],
                 answer: 3,
                 explanation: "alert, prompt மற்றும் confirm ஆகியவை ஜாவாஸ்கிரிப்ட்டின் உள்ளமைந்த உரையாடல் பெட்டிகளாகும்."
@@ -1011,15 +1493,15 @@ if (a >= b && a >= c) {
                 let optionsHtml = '';
                 item.options.forEach((opt, optIndex) => {
                     optionsHtml += `
-                        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-blue-50/50 cursor-pointer transition text-sm">
+                        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-blue-50/50 cursor-pointer transition text-xs sm:text-sm">
                             <input type="radio" name="question_${index}" value="${optIndex}" onchange="selectOption(${index}, ${optIndex})" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
-                            <span class="text-slate-700">${opt}</span>
+                            <span class="text-slate-700 font-medium">${opt}</span>
                         </label>
                     `;
                 });
 
                 card.innerHTML = `
-                    <div class="font-bold text-slate-900 text-base mb-3 flex items-start gap-2">
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mb-3 flex items-start gap-2">
                         <span>${item.q}</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
@@ -1047,7 +1529,7 @@ if (a >= b && a >= c) {
                 feedbackBox.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> தவறான விடை!</b> சரியான விடை: <b>${item.options[item.answer]}</b>.<br>${item.explanation}`;
             }
 
-            // Update total score
+            // Update score
             let correctCount = 0;
             quizQuestions.forEach((q, idx) => {
                 if (userAnswers[idx] === q.answer) correctCount++;
@@ -1080,7 +1562,7 @@ if (a >= b && a >= c) {
                 solution: "மாறியின் பெயர் எப்போதும் எழுத்து (Letter) அல்லது அடிக்கோடு (_) கொண்டு மட்டுமே தொடங்க வேண்டும்."
             },
             {
-                title: "சவால் 2: if நிபந்தனை தவறு",
+                title: "சவால் 2: if நிபந்தனை ஒப்பீட்டுப் பிழை",
                 desc: "கீழே உள்ள நிரலில் மதிப்பீடு செய்யாமல் மதிப்பிருத்தல் செய்யப்பட்டுள்ளது:",
                 code: "var age = 18;\nif (age = 18) {\n    document.write(\"வாக்களிக்க தகுதியுடையவர்\");\n}",
                 options: [
@@ -1107,7 +1589,7 @@ if (a >= b && a >= c) {
             },
             {
                 title: "சவால் 4: விடுபட்ட அடைப்புக்குறி",
-                desc: "செயற்கூறு அல்லது கூற்றில் விடுபட்டதை தேர்வு செய்க:",
+                desc: "கூற்றில் விடுபட்ட சரியான நிறுத்தற்குறியைத் தேர்வு செய்க:",
                 code: "var x = 10;\nif (x > 5 \n    document.write(\"பெரிய எண்\");\n}",
                 options: [
                     "if-ன் நிபந்தனைக்கு முடிவு அடைப்புக்குறி ')' இடப்படவில்லை",
@@ -1140,7 +1622,7 @@ if (a >= b && a >= c) {
                 card.innerHTML = `
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <span class="font-bold text-slate-900">${item.title}</span>
+                            <span class="font-bold text-slate-900 text-sm sm:text-base">${item.title}</span>
                             <span class="text-xs bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">பிழை ஆய்வு</span>
                         </div>
                         <p class="text-xs text-slate-600 mb-3">${item.desc}</p>
@@ -1175,9 +1657,10 @@ if (a >= b && a >= c) {
 
         // Initialize components on load
         window.addEventListener('DOMContentLoaded', () => {
+            renderExamQA('all');
             renderQuiz();
             renderBugChallenges();
-            // Run welcome code automatically on startup
+            // Automatically run first code snippet
             runCode();
         });
     </script>
