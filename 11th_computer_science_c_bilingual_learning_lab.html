@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11-ஆம் வகுப்பு சி++ (C++) ஊடாடும் கற்றல் தளம் | 11th Std C++ Bilingual Lab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Soft Educational Audio Feedback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Google Fonts for Tamil & Monospace Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        tamil: ['"Mukta Malar"', 'sans-serif'],
+                        code: ['"Fira Code"', 'monospace'],
+                        inter: ['"Inter"', 'sans-serif']
+                    },
+                    colors: {
+                        cppBlue: '#00599C',
+                        cppDark: '#0b132b',
+                        turboBlue: '#0000AA',
+                        editorBgDark: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Mukta Malar', 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .active-tab {
+            background-color: #0284c7 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Header & Navigation -->
+    <header class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white shadow-xl sticky top-0 z-40 border-b border-blue-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-br from-blue-600 to-cyan-500 text-white p-2 rounded-xl shadow-md font-black text-xl flex items-center justify-center w-11 h-11 border border-cyan-400/30">
+                    <span>C++</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-cyan-500 text-slate-950 text-[11px] px-2 py-0.5 rounded-md font-black tracking-wide" id="lbl-header-std">11-ஆம் வகுப்பு</span>
+                        <span class="text-xs text-cyan-200 font-semibold tracking-wide" id="lbl-header-sub">கணிப்பொறி அறிவியல் / பயன்பாடுகள்</span>
+                    </div>
+                    <h1 class="text-sm sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5 mt-0.5" id="lbl-header-title">
+                        சி++ (C++) இருமொழி ஊடாடும் ஆய்வகம் & தேர்வு வழிகாட்டி
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Top Controls: Bilingual Switcher & Tabs -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" id="lang-switch-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700 shadow-sm" title="Change Language / மொழியை மாற்றுக">
+                    <i class="fa-solid fa-language text-sm"></i>
+                    <span id="lang-btn-text">English / தமிழ்</span>
+                </button>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700 overflow-x-auto text-xs sm:text-sm font-medium gap-1">
+                    <button onclick="switchTab('lessons')" id="tab-btn-lessons" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 active-tab">
+                        <i class="fa-solid fa-book-open"></i> <span id="tab-title-lessons">பாடங்கள்</span>
+                    </button>
+                    <button onclick="switchTab('playground')" id="tab-btn-playground" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-code"></i> <span id="tab-title-playground">C++ ஆய்வகம்</span>
+                    </button>
+                    <button onclick="switchTab('lab')" id="tab-btn-lab" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-flask"></i> <span id="tab-title-lab">செய்முறைத் தேர்வுகள்</span>
+                    </button>
+                    <button onclick="switchTab('qa')" id="tab-btn-qa" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-graduation-cap"></i> <span id="tab-title-qa">வினா வங்கி</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-circle-question"></i> <span id="tab-title-quiz">சுய மதிப்பீடு</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: LESSONS (பாடங்கள் - இருமொழி) -->
+        <!-- ========================================== -->
+        <section id="tab-lessons" class="space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-book-bookmark text-blue-600"></i>
+                        <span id="lessons-heading">சி++ (C++) பாடப்பகுதி சுருக்கக் குறிப்புகள்</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="lessons-subheading">
+                        தமிழ்நாடு பாடநூல் கழகத்தின் 11-ஆம் வகுப்பு கணிப்பொறி அறிவியல் / பயன்பாடுகள் பாடத்திட்டம்.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold bg-blue-50 text-blue-700 border border-blue-200" id="badge-ch1">
+                        அத்தியாயம் 9: C++ அறிமுகம்
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold bg-indigo-50 text-indigo-700 border border-indigo-200" id="badge-ch2">
+                        அத்தியாயம் 10: கட்டுப்பாட்டுக் கட்டமைப்புகள்
+                    </span>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full font-bold bg-purple-50 text-purple-700 border border-purple-200" id="badge-ch3">
+                        அத்தியாயம் 11-14: செயற்கூறு & OOP
+                    </span>
+                </div>
+            </div>
+
+            <!-- Concept Cards Grid -->
+            <div id="lessons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically rendered via bilingual data -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: C++ PLAYGROUND & INTERPRETER -->
+        <!-- ========================================== -->
+        <section id="tab-playground" class="hidden space-y-4">
+            
+            <!-- Controls bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5" id="lbl-preset-select">
+                        <i class="fa-solid fa-folder-open text-blue-600"></i> மாதிரி நிரல்:
+                    </label>
+                    <select id="preset-selector" onchange="loadPresetCode(this.value)" class="text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+
+                <div class="flex items-center flex-wrap gap-2">
+                    <!-- Editor Theme Switcher (Dark / Light) -->
+                    <button onclick="toggleEditorTheme()" id="theme-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm">
+                        <i id="theme-btn-icon" class="fa-solid fa-moon"></i>
+                        <span id="theme-btn-label">கருப்பு தீம் (Dark)</span>
+                    </button>
+                    <!-- Copy Code -->
+                    <button onclick="copyCurrentCode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5" title="Copy Code">
+                        <i class="fa-solid fa-copy"></i> <span id="btn-copy-code">நகலெடு</span>
+                    </button>
+                    <!-- Reset -->
+                    <button onclick="resetEditor()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> <span id="btn-reset-code">மீட்டமை</span>
+                    </button>
+                    <!-- Run Code -->
+                    <button onclick="runCppCode()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-bold transition shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="btn-run-code">நிரலை இயக்கு (Run)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Editor & Terminal Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Left: C++ Code Editor (7 cols) -->
+                <div id="editor-container" class="lg:col-span-7 bg-editorBgDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[540px] transition-all duration-200">
+                    <div id="editor-header" class="flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                            <span id="editor-title-text" class="ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-code text-cyan-400"></i> main.cpp
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <button onclick="toggleEditorTheme()" id="editor-badge-theme" class="text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-half-stroke"></i>
+                                <span id="editor-badge-text">தீம்: இருட்டு</span>
+                            </button>
+                            <span id="editor-header-note" class="text-slate-400 text-[11px] hidden sm:inline">ISO C++17 / SCERT TN</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow pt-3 relative">
+                        <textarea id="code-editor" spellcheck="false" class="w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors" placeholder="// C++ நிரலை இங்கே தட்டச்சு செய்யவும்..."></textarea>
+                    </div>
+
+                    <div id="editor-footer" class="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                        <span id="editor-supported-tags">ஆதரிப்பவை: <code class="text-cyan-400">#include &lt;iostream&gt;</code>, <code class="text-cyan-400">cout &lt;&lt;</code>, <code class="text-cyan-400">cin &gt;&gt;</code>, <code class="text-cyan-400">endl</code>, <code class="text-cyan-400">if-else</code>, <code class="text-cyan-400">loops</code></span>
+                        <span id="editor-status-indicator" class="text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="lbl-editor-ready">கம்பைலர் தயார்</span></span>
+                    </div>
+                </div>
+
+                <!-- Right: Simulated C++ Console / Terminal (5 cols) -->
+                <div class="lg:col-span-5 flex flex-col h-[540px]">
+                    <div id="terminal-container" class="flex-1 bg-slate-950 rounded-2xl p-4 border border-slate-800 shadow-2xl flex flex-col overflow-hidden transition-all duration-200">
+                        <div id="terminal-header" class="flex items-center justify-between pb-2 border-b border-slate-800 text-xs text-slate-400 font-mono">
+                            <span id="terminal-title-text" class="flex items-center gap-1.5 text-cyan-400 font-semibold">
+                                <i class="fa-solid fa-terminal"></i> C++ Terminal Console
+                            </span>
+                            <button onclick="clearTerminal()" class="hover:text-red-400 text-xs text-slate-400 transition" title="Clear Console">
+                                <i class="fa-solid fa-eraser"></i> <span id="lbl-clear-term">துடைக்க</span>
+                            </button>
+                        </div>
+                        <div id="terminal-output" class="flex-grow p-3 overflow-y-auto text-xs code-font text-slate-200 space-y-1 bg-black/60 rounded-xl mt-2 transition-colors">
+                            <div class="text-slate-500">// C++ cout வெளியீடுகள் இங்கு தோன்றும்...</div>
+                        </div>
+                        <div id="terminal-footer" class="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] text-slate-500">
+                            <span>Exit Code: <span id="term-exit-code" class="text-emerald-400 font-mono">0</span></span>
+                            <span id="term-exec-time">Execution: 0.00ms</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: LAB PRACTICALS (செய்முறைத் தேர்வுகள்) -->
+        <!-- ========================================== -->
+        <section id="tab-lab" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-flask-vial text-emerald-600"></i>
+                        <span id="lab-heading">11-ஆம் வகுப்பு C++ செய்முறைப் பயிற்சிகள் (Lab Programs)</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="lab-subheading">
+                        அரசுப் பொதுத்தேர்வு செய்முறைத் தேர்விற்கான அதிகாரப்பூர்வ பாடநூல் நிரல்கள்.
+                    </p>
+                </div>
+                <span class="bg-emerald-50 text-emerald-700 text-xs px-3 py-1.5 rounded-full font-bold border border-emerald-200">
+                    <i class="fa-solid fa-star text-amber-500 mr-1"></i> <span id="lab-badge-text">அரசு செய்முறை வினாக்கள்</span>
+                </span>
+            </div>
+
+            <!-- Exercises Cards Grid -->
+            <div id="lab-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically populated via bilingual data -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: EXAM Q&A BANK (2, 3, 5 மதிப்பெண் வினாக்கள்) -->
+        <!-- ========================================== -->
+        <section id="tab-qa" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-award text-amber-500"></i>
+                        <span id="qa-heading">அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="qa-subheading">
+                        முக்கியமான 2, 3 மற்றும் 5 மதிப்பெண் வினாக்கள் முழுமையான விளக்கங்களுடன்.
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="filterQA('all')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-blue-600 text-white" id="qa-btn-all">அனைத்தும்</button>
+                    <button onclick="filterQA('2m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-2m">2 மதிப்பெண்</button>
+                    <button onclick="filterQA('3m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-3m">3 மதிப்பெண்</button>
+                    <button onclick="filterQA('5m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-5m">5 மதிப்பெண்</button>
+                </div>
+            </div>
+
+            <!-- Questions Container -->
+            <div id="qa-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: QUIZ & DEBUGGER (சுய மதிப்பீடு) -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-purple-600"></i>
+                        <span id="quiz-heading">C++ வினாடி வினா & பிழை திருத்துதல்</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="quiz-subheading">
+                        பொதுத்தேர்வு ஒரு மதிப்பெண் வினாக்கள் (MCQ) மற்றும் நிரல் பிழை ஆய்வு.
+                    </p>
+                </div>
+                <div class="px-4 py-2 bg-blue-50 text-blue-900 rounded-xl font-bold border border-blue-200 text-sm">
+                    <span id="lbl-score-text">மதிப்பெண்:</span> <span id="current-score" class="text-blue-600 text-lg">0</span> / 10
+                </div>
+            </div>
+
+            <!-- Quiz Questions Section -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i> <span id="quiz-part1-title">பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (MCQs)</span>
+                </h3>
+                <div id="quiz-container" class="space-y-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Bug Hunt Section -->
+            <div class="pt-6 border-t border-slate-200 space-y-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-bug text-rose-600"></i> <span id="bug-part2-title">பகுதி 2: பிழையைக் கண்டுபிடி! (Find the Bug)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500" id="bug-part2-sub">கீழே கொடுக்கப்பட்டுள்ள C++ வரிகளில் உள்ள தொடரியல் பிழைகளைக் கண்டறியவும்.</p>
+                </div>
+
+                <div id="bug-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="flex justify-center pt-4">
+                <button onclick="resetQuiz()" class="px-6 py-2.5 bg-blue-800 hover:bg-blue-900 text-white font-bold rounded-xl shadow transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> <span id="btn-quiz-reset">வினாடி வினாவை மீண்டும் தொடங்க</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Simulated CIN Input Modal (Replaces browser prompt) -->
+    <div id="cin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-lg font-bold">
+                    <span>cin&gt;&gt;</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-base" id="cin-modal-title">C++ உள்ளீடு தேவைப்படுகிறது (User Input)</h4>
+                    <span class="text-xs text-slate-400" id="cin-modal-sub">std::cin stream</span>
+                </div>
+            </div>
+            <p id="cin-message" class="text-sm font-semibold text-slate-700 mb-3">மதிப்பை உள்ளிடவும்:</p>
+            <input type="text" id="cin-input-field" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 text-sm mb-5 font-mono" placeholder="Input value...">
+            <div class="flex justify-end gap-2">
+                <button onclick="submitCin()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition shadow" id="btn-cin-ok">சரி (Submit / OK)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
+        <div id="toast-icon" class="text-cyan-400 text-xl pt-0.5">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div class="flex-grow">
+            <h5 id="toast-title" class="font-bold text-sm text-cyan-300">செய்தி</h5>
+            <p id="toast-body" class="text-xs text-slate-300 mt-1 leading-relaxed">விவரம்</p>
+        </div>
+        <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium" id="footer-text">
+            11-ஆம் வகுப்பு கணிப்பொறி அறிவியல் / பயன்பாடுகள் பாடநூல் - தமிழ்நாடு பள்ளிக் கல்வித்துறை வழிகாட்டுதலின்படி வடிவமைக்கப்பட்டது.
+        </div>
+    </footer>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Audio synthesis for soft interactive feedback
+        let synth = null;
+        function getSynth() {
+            if (!synth && window.Tone) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.volume.value = -14;
+            }
+            return synth;
+        }
+
+        function playSound(type) {
+            try {
+                const s = getSynth();
+                if (!s) return;
+                Tone.start();
+                if (type === 'run') s.triggerAttackRelease(["C5", "E5"], "8n");
+                else if (type === 'success') s.triggerAttackRelease(["C5", "G5"], "16n");
+                else if (type === 'error') s.triggerAttackRelease(["F4", "Db4"], "8n");
+                else if (type === 'click') s.triggerAttackRelease("C4", "32n");
+            } catch(e) {}
+        }
+
+        // ==========================================
+        // BILINGUAL LOCALIZATION ENGINE (Tamil & English)
+        // ==========================================
+        let currentLang = 'ta'; // 'ta' for Tamil, 'en' for English
+
+        const UI_TEXT = {
+            ta: {
+                headerStd: "11-ஆம் வகுப்பு",
+                headerSub: "கணிப்பொறி அறிவியல் / பயன்பாடுகள்",
+                headerTitle: "சி++ (C++) இருமொழி ஊடாடும் ஆய்வகம் & தேர்வு வழிகாட்டி",
+                langBtn: "English மொழிக்கு மாறுக 🇬🇧",
+                tabLessons: "பாடங்கள்",
+                tabPlayground: "C++ ஆய்வகம்",
+                tabLab: "செய்முறைத் தேர்வுகள்",
+                tabQA: "வினா வங்கி",
+                tabQuiz: "சுய மதிப்பீடு",
+                lessonsHeading: "சி++ (C++) பாடப்பகுதி சுருக்கக் குறிப்புகள்",
+                lessonsSub: "தமிழ்நாடு பாடநூல் கழகத்தின் 11-ஆம் வகுப்பு கணிப்பொறி அறிவியல் பாடத்திட்டம்.",
+                badgeCh1: "அத்தியாயம் 9: C++ அறிமுகம்",
+                badgeCh2: "அத்தியாயம் 10: கட்டுப்பாட்டுக் கட்டமைப்புகள்",
+                badgeCh3: "அத்தியாயம் 11-14: செயற்கூறு & OOP",
+                lblPreset: "மாதிரி நிரல்:",
+                btnCopy: "நகலெடு",
+                btnReset: "மீட்டமை",
+                btnRun: "நிரலை இயக்கு (Run)",
+                themeDark: "கருப்பு தீம் (Dark)",
+                themeLight: "வெண்மை தீம் (Light)",
+                badgeDark: "தீம்: இருட்டு",
+                badgeLight: "தீம்: வெண்மை",
+                lblReady: "கம்பைலர் தயார்",
+                clearTerm: "துடைக்க",
+                labHeading: "11-ஆம் வகுப்பு C++ செய்முறைப் பயிற்சிகள் (Lab Programs)",
+                labSub: "அரசுப் பொதுத்தேர்வு செய்முறைத் தேர்விற்கான அதிகாரப்பூர்வ பாடநூல் நிரல்கள்.",
+                labBadge: "அரசு செய்முறை வினாக்கள்",
+                qaHeading: "அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி",
+                qaSub: "முக்கியமான 2, 3 மற்றும் 5 மதிப்பெண் வினாக்கள் முழுமையான விளக்கங்களுடன்.",
+                qaBtnAll: "அனைத்தும்",
+                qaBtn2m: "2 மதிப்பெண்",
+                qaBtn3m: "3 மதிப்பெண்",
+                qaBtn5m: "5 மதிப்பெண்",
+                quizHeading: "C++ வினாடி வினா & பிழை திருத்துதல்",
+                quizSub: "பொதுத்தேர்வு ஒரு மதிப்பெண் வினாக்கள் (MCQ) மற்றும் நிரல் பிழை ஆய்வு.",
+                lblScore: "மதிப்பெண்:",
+                quizP1Title: "பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (MCQs)",
+                quizP2Title: "பகுதி 2: பிழையைக் கண்டுபிடி! (Find the Bug)",
+                quizP2Sub: "கீழே கொடுக்கப்பட்டுள்ள C++ வரிகளில் உள்ள தொடரியல் பிழைகளைக் கண்டறியவும்.",
+                btnQuizReset: "வினாடி வினாவை மீண்டும் தொடங்க",
+                cinTitle: "C++ உள்ளீடு தேவைப்படுகிறது (User Input)",
+                cinSub: "std::cin ஸ்ட்ரீம்",
+                btnCinOk: "சரி (Submit / OK)",
+                footerText: "11-ஆம் வகுப்பு கணிப்பொறி அறிவியல் / பயன்பாடுகள் பாடநூல் - தமிழ்நாடு பள்ளிக் கல்வித்துறை வழிகாட்டுதலின்படி வடிவமைக்கப்பட்டது.",
+                runInPlayground: "ஆய்வகத்தில் இயக்கு",
+                testInLab: "பரிசோதிக்க"
+            },
+            en: {
+                headerStd: "Class 11",
+                headerSub: "Computer Science / Computer Applications",
+                headerTitle: "C++ Bilingual Interactive Lab & Exam Guide",
+                langBtn: "Switch to தமிழ் 🇮🇳",
+                tabLessons: "Lessons",
+                tabPlayground: "C++ Playground",
+                tabLab: "Lab Practicals",
+                tabQA: "Question Bank",
+                tabQuiz: "Self Assessment",
+                lessonsHeading: "C++ Core Concepts & Study Notes",
+                lessonsSub: "Tamil Nadu State Board Class 11 Computer Science Syllabus.",
+                badgeCh1: "Chapter 9: Intro to C++",
+                badgeCh2: "Chapter 10: Control Structures",
+                badgeCh3: "Chapter 11-14: Functions & OOP",
+                lblPreset: "Preset Program:",
+                btnCopy: "Copy Code",
+                btnReset: "Reset",
+                btnRun: "Run Program",
+                themeDark: "Dark Theme",
+                themeLight: "Light Theme",
+                badgeDark: "Theme: Dark",
+                badgeLight: "Theme: Light",
+                lblReady: "Compiler Ready",
+                clearTerm: "Clear",
+                labHeading: "Class 11 C++ Practical Programs (Lab)",
+                labSub: "Official government practical syllabus programs with live simulation.",
+                labBadge: "Govt Lab Questions",
+                qaHeading: "Public Exam Question & Answer Bank",
+                qaSub: "Crucial 2, 3 and 5-mark exam questions with complete explanations.",
+                qaBtnAll: "All",
+                qaBtn2m: "2 Marks",
+                qaBtn3m: "3 Marks",
+                qaBtn5m: "5 Marks",
+                quizHeading: "C++ Quiz & Bug Hunt Challenge",
+                quizSub: "Standard board exam MCQs and syntax debugging challenges.",
+                lblScore: "Score:",
+                quizP1Title: "Section 1: Multiple Choice Questions (MCQs)",
+                quizP2Title: "Section 2: Spot the Bug! (Syntax Debugger)",
+                quizP2Sub: "Identify the syntax or logical errors in the C++ code snippets below.",
+                btnQuizReset: "Restart Quiz",
+                cinTitle: "C++ User Input Required (cin)",
+                cinSub: "std::cin stream",
+                btnCinOk: "Submit / OK",
+                footerText: "Designed in accordance with Tamil Nadu School Education Dept Class 11 Curriculum.",
+                runInPlayground: "Run in Lab",
+                testInLab: "Test in Playground"
+            }
+        };
+
+        // ==========================================
+        // LESSONS DATA (BILINGUAL)
+        // ==========================================
+        const lessonsData = [
+            {
+                id: 1,
+                chapter: { ta: "பாடம் 9", en: "Chapter 9" },
+                title: { ta: "C++ ஓர் அறிமுகம்", en: "Introduction to C++" },
+                subtitle: { ta: "வரலாறு மற்றும் சிறப்பம்சங்கள்", en: "History & Features" },
+                points: {
+                    ta: [
+                        "1979-ல் ஏடி & டி பெல் ஆய்வகத்தில் <strong>பியர்னே ஸ்ட்ரௌஸ்ட்ரூப் (Bjarne Stroustrup)</strong> என்பவரால் உருவாக்கப்பட்டது.",
+                        "இது சி மொழியுடன் பொருள்நோக்கு (OOP) கருத்துக்களை இணைத்து உருவானது. தொடக்கத்தில் 'C with Classes' என அழைக்கப்பட்டது.",
+                        "1983-ல் ரிக் மசிட்டி (Rick Mascitti) என்பவரால் 'C++' என மறுபெயரிடப்பட்டது. (++ என்பது C-ன் மிகுப்பு செயற்குறி).",
+                        "நிரலின் அடிப்படை அமைப்பு: <code>#include &lt;iostream&gt;</code> மற்றும் <code>int main() { ... }</code>."
+                    ],
+                    en: [
+                        "Developed by <strong>Bjarne Stroustrup</strong> at AT&T Bell Laboratories in 1979.",
+                        "It is an extension of C with Object-Oriented features. Originally named 'C with Classes'.",
+                        "Renamed as 'C++' in 1983 by Rick Mascitti (++ stands for the C increment operator).",
+                        "Basic Program structure begins with <code>#include &lt;iostream&gt;</code> and <code>int main() { ... }</code>."
+                    ]
+                },
+                presetKey: "hello"
+            },
+            {
+                id: 2,
+                chapter: { ta: "பாடம் 9", en: "Chapter 9" },
+                title: { ta: "C++ வில்லைகள் & மாறிகள்", en: "Tokens, Variables & Data Types" },
+                subtitle: { ta: "மாறிகள் மற்றும் நினைவக ஒதுக்கீடு", en: "Variables & Memory Allocation" },
+                points: {
+                    ta: [
+                        "<strong>வில்லைகள் (Tokens):</strong> சிறப்புச் சொற்கள் (Keywords), குறிப்பெயர்கள் (Identifiers), மாறிலிகள் (Literals), செயற்குறிகள் (Operators).",
+                        "<strong>தரவு வகைகள் (Data Types):</strong> <code>int</code> (முழு எண்), <code>float</code>/<code>double</code> (தசம எண்), <code>char</code> (எழுத்துரு), <code>bool</code> (மெய்/பொய்).",
+                        "<strong>மாறி பெயரிடும் விதி:</strong> முதல் எழுத்து ஆங்கில எழுத்தாகவோ அடிக்கோடாகவோ (_) இருக்க வேண்டும்; எண்களில் தொடங்கக் கூடாது; எழுத்து வடிவ உணர்வுடையது (Case-sensitive)."
+                    ],
+                    en: [
+                        "<strong>Tokens:</strong> Smallest individual elements (Keywords, Identifiers, Literals, Operators, Punctuators).",
+                        "<strong>Data Types:</strong> <code>int</code> (Integer), <code>float</code>/<code>double</code> (Floating point), <code>char</code> (Character), <code>bool</code> (Boolean).",
+                        "<strong>Variable Naming Rules:</strong> Must start with an alphabet or underscore (_); Cannot start with digits; Case-sensitive."
+                    ]
+                },
+                presetKey: "variables"
+            },
+            {
+                id: 3,
+                chapter: { ta: "பாடம் 9", en: "Chapter 9" },
+                title: { ta: "உள்ளீடு / வெளியீடு ஸ்ட்ரீம்கள்", en: "Input / Output Streams (cin & cout)" },
+                subtitle: { ta: "I/O Stream Operators", en: "Stream Insertion & Extraction" },
+                points: {
+                    ta: [
+                        "<code>cout &lt;&lt;</code>: உட்செலுத்தும் செயற்குறி (Stream Insertion). திரையில் வெளியீட்டை அச்சிடப் பயன்படுகிறது.",
+                        "<code>cin &gt;&gt;</code>: பிரித்தெடுக்கும் செயற்குறி (Stream Extraction). விசைப்பலகையிலிருந்து உள்ளீட்டைப் பெறுகிறது.",
+                        "<code>endl</code> அல்லது <code>'\\n'</code>: புதிய வரியை உருவாக்க (New line) பயன்படுகிறது.",
+                        "இவை அனைத்தும் <code>iostream</code> தலைப்புக் கோப்பில் வரையறுக்கப்பட்டுள்ளன."
+                    ],
+                    en: [
+                        "<code>cout &lt;&lt;</code>: Stream Insertion operator. Used to send formatted output to the console.",
+                        "<code>cin &gt;&gt;</code>: Stream Extraction operator. Used to receive input from the user/keyboard.",
+                        "<code>endl</code> or <code>'\\n'</code>: Used to insert a newline into the stream.",
+                        "Declared inside the preprocessor header <code>&lt;iostream&gt;</code> under <code>namespace std</code>."
+                    ]
+                },
+                presetKey: "cinCout"
+            },
+            {
+                id: 4,
+                chapter: { ta: "பாடம் 10", en: "Chapter 10" },
+                title: { ta: "கிளைப்பிரிப்புக் கூற்றுகள்", en: "Decision Making & Branching" },
+                subtitle: { ta: "if, if-else & switch", en: "Conditional Statements" },
+                points: {
+                    ta: [
+                        "<code>if</code>: நிபந்தனை மெய்யாக இருக்கும்போது மட்டும் குறிப்பிட்ட தொகுதியை இயக்கும்.",
+                        "<code>if...else</code>: நிபந்தனை மெய் எனில் ஒரு தொகுதியும், பொய் எனில் மாற்று தொகுதியும் இயங்கும்.",
+                        "<code>switch...case</code>: பல தேர்வுகளில் இருந்து ஒரு வழியைத் தேர்ந்தெடுக்க உதவும்; <code>break</code> கூற்றுடன் பயன்படும்.",
+                        "நிபந்தனை செயற்குறி: <code>(நிபந்தனை ? மெய்_விடை : பொய்_விடை)</code>."
+                    ],
+                    en: [
+                        "<code>if</code> statement: Executes a block of code only when the specified condition evaluates to true.",
+                        "<code>if...else</code>: Selects between two mutually exclusive blocks based on a boolean condition.",
+                        "<code>switch...case</code>: Multi-way branch statement; evaluated with constant integral cases and terminated by <code>break</code>.",
+                        "Ternary / Conditional Operator: <code>(condition ? val_if_true : val_if_false)</code>."
+                    ]
+                },
+                presetKey: "ifElse"
+            },
+            {
+                id: 5,
+                chapter: { ta: "பாடம் 10", en: "Chapter 10" },
+                title: { ta: "மடக்குக் கூற்றுகள் (Loops)", en: "Looping Structures" },
+                subtitle: { ta: "for, while & do...while", en: "Repetitive Execution" },
+                points: {
+                    ta: [
+                        "<strong>for மடக்கு:</strong> சுழற்சிகளின் எண்ணிக்கை முன்பே தெரிந்தால் பயன்படுத்தப்படும் (தொடக்க மதிப்பு; நிபந்தனை; மிகுப்பு/குறைப்பு).",
+                        "<strong>while மடக்கு:</strong> நுழைவு சோதிப்பு மடக்கு (Entry check loop). நிபந்தனை மெய்யானால் மட்டுமே இயங்கும்.",
+                        "<strong>do...while மடக்கு:</strong> வெளியேறு சோதிப்பு மடக்கு (Exit check loop). நிபந்தனை பொய்யாக இருந்தாலும் குறைந்தது ஒரு முறையாவது இயங்கும்."
+                    ],
+                    en: [
+                        "<strong>for loop:</strong> Best suited when the number of iterations is known in advance (init; condition; update).",
+                        "<strong>while loop:</strong> Entry-controlled loop. Evaluates the condition before entering the body.",
+                        "<strong>do...while loop:</strong> Exit-controlled loop. Executes at least once even if the condition is initially false."
+                    ]
+                },
+                presetKey: "forLoop"
+            },
+            {
+                id: 6,
+                chapter: { ta: "பாடம் 11 & 14", en: "Chapter 11 & 14" },
+                title: { ta: "செயற்கூறுகள் & OOP அறிமுகம்", en: "Functions & OOP Concepts" },
+                subtitle: { ta: "Functions, Classes & Objects", en: "Modularity & Object-Oriented Principles" },
+                points: {
+                    ta: [
+                        "<strong>செயற்கூறுகள் (Functions):</strong> குறிமுறையின் மறுபயனாக்கத்தை அதிகரிக்கும் துணை நிரல் (Subprogram).",
+                        "மதிப்பு மூலம் அழைத்தல் (Call by Value) மற்றும் குறிப்பு மூலம் அழைத்தல் (Call by Reference - &).",
+                        "<strong>OOP முக்கிய தூண்கள்:</strong> தரவு மறைப்பு (Data Abstraction), உறைபொதியாக்கம் (Encapsulation), மரபுரிமம் (Inheritance), பல்லுருவாக்கம் (Polymorphism).",
+                        "<strong>இனக்குழு (Class):</strong> பொருள்கள் உருவாக்கப் பயன்படும் பயனர் வரையறுத்த கட்டமைப்பு (Blueprint)."
+                    ],
+                    en: [
+                        "<strong>Functions:</strong> Named subprograms that enhance modularity and code reusability.",
+                        "Parameter passing methods: Call by Value and Call by Reference (using reference operator &).",
+                        "<strong>Core OOP Pillars:</strong> Data Abstraction, Encapsulation, Inheritance, and Polymorphism.",
+                        "<strong>Class & Objects:</strong> Class is a user-defined blueprint/type; Object is an instance of a class."
+                    ]
+                },
+                presetKey: "functions"
+            }
+        ];
+
+        // ==========================================
+        // PRESET C++ SNIPPETS FOR PLAYGROUND
+        // ==========================================
+        const cppPresets = {
+            hello: {
+                name: { ta: "1. வணக்கம் உலகம் (Hello World)", en: "1. Hello World (cout)" },
+                code: `// C++ நிரல் 1: வணக்கம் உலகம்
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "========================================" << endl;
+    cout << "வணக்கம்! C++ ஆய்வகத்திற்கு நல்வரவு!" << endl;
+    cout << "Welcome to Class 11 C++ Learning Lab!" << endl;
+    cout << "========================================" << endl;
+    return 0;
+}`
+            },
+            variables: {
+                name: { ta: "2. மாறிகள் & கூட்டல் (Variables & Sum)", en: "2. Variables & Summation" },
+                code: `// C++ நிரல் 2: இரு எண்களின் கூடுதல்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int num1 = 45;
+    int num2 = 55;
+    int sum = num1 + num2;
+
+    cout << "முதல் எண் (Num1)   = " << num1 << endl;
+    cout << "இரண்டாம் எண் (Num2) = " << num2 << endl;
+    cout << "மொத்தக் கூடுதல் (Sum) = " << sum << endl;
+    
+    return 0;
+}`
+            },
+            cinCout: {
+                name: { ta: "3. cin கொண்டு பயனர் உள்ளீடு (cin >> input)", en: "3. User Input using cin" },
+                code: `// C++ நிரல் 3: cin கொண்டு பயனர் உள்ளீடு பெறுதல்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int age;
+    cout << "உங்கள் வயதை உள்ளிடவும் (Enter your age): ";
+    cin >> age;
+
+    cout << "நீங்கள் உள்ளிட்ட வயது = " << age << endl;
+
+    if (age >= 18) {
+        cout << "நீங்கள் வாக்களிக்க தகுதியுடையவர்! (Eligible to Vote)" << endl;
+    } else {
+        cout << "வாக்களிக்க தகுதியில்லை (Not Eligible yet)." << endl;
+    }
+
+    return 0;
+}`
+            },
+            ifElse: {
+                name: { ta: "4. ஒற்றை / இரட்டை எண் (if...else)", en: "4. Even or Odd Number" },
+                code: `// C++ நிரல் 4: ஒற்றை அல்லது இரட்டைப்படை எண்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 28;
+    cout << "கொடுக்கப்பட்ட எண் = " << n << endl;
+
+    if (n % 2 == 0) {
+        cout << n << " என்பது ஓர் இரட்டைப்படை எண் (Even Number) ஆகும்." << endl;
+    } else {
+        cout << n << " என்பது ஓர் ஒற்றைப்படை எண் (Odd Number) ஆகும்." << endl;
+    }
+
+    return 0;
+}`
+            },
+            forLoop: {
+                name: { ta: "5. பெருக்கல் வாய்ப்பாடு (for loop)", en: "5. Multiplication Table" },
+                code: `// C++ நிரல் 5: பெருக்கல் வாய்ப்பாடு தயாரித்தல்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int table = 6;
+    cout << "--- " << table << "-ஆம் பெருக்கல் வாய்ப்பாடு ---" << endl;
+
+    for (int i = 1; i <= 10; i++) {
+        cout << table << " x " << i << " = " << (table * i) << endl;
+    }
+
+    return 0;
+}`
+            },
+            whileLoop: {
+                name: { ta: "6. முதல் 10 எண்களின் கூடுதல் (while loop)", en: "6. Sum of 10 Natural Numbers" },
+                code: `// C++ நிரல் 6: while மடக்கு கொண்டு 1 முதல் 10 வரை கூடுதல்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int i = 1;
+    int total = 0;
+
+    while (i <= 10) {
+        total += i;
+        i++;
+    }
+
+    cout << "1 முதல் 10 வரையிலான இயல் எண்களின் கூடுதல் = " << total << endl;
+    return 0;
+}`
+            },
+            functions: {
+                name: { ta: "7. பயனர் செயற்கூறு (User Function)", en: "7. User Defined Function" },
+                code: `// C++ நிரல் 7: வர்க்கம் கணக்கிடும் பயனர் செயற்கூறு
+#include <iostream>
+using namespace std;
+
+int square(int n) {
+    return n * n;
+}
+
+int main() {
+    int x = 8;
+    int ans = square(x);
+
+    cout << "எண் (Number) = " << x << endl;
+    cout << x << "-ன் வர்க்கம் (Square) = " << ans << endl;
+
+    return 0;
+}`
+            },
+            custom: {
+                name: { ta: "-- புதிய வெற்றுப் பக்கம் (Blank Code) --", en: "-- Blank Code --" },
+                code: `// உங்கள் C++ நிரலை இங்கே எழுதவும்
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello C++!" << endl;
+    return 0;
+}`
+            }
+        };
+
+        // ==========================================
+        // LAB PRACTICAL PROGRAMS DATA
+        // ==========================================
+        const labProgramsData = [
+            {
+                id: 'lab1',
+                badge: { ta: "செய்முறை 1", en: "Lab 1" },
+                type: "if...else",
+                title: { ta: "ஒற்றை / இரட்டை எண் சோதனை", en: "Odd or Even Number" },
+                desc: { ta: "கொடுக்கப்பட்ட முழு எண் இரட்டைப்படையா அல்லது ஒற்றைப்படையா என % செயற்குறி மூலம் அறிதல்.", en: "Find whether an integer is Odd or Even using modulus (%) operator." },
+                logic: "if (num % 2 == 0) => Even",
+                code: `// செய்முறை 1: ஒற்றை அல்லது இரட்டைப்படை எண்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int num = 24;
+    cout << "எண் = " << num << endl;
+
+    if (num % 2 == 0) {
+        cout << num << " என்பது ஓர் இரட்டைப்படை எண் (Even Number)." << endl;
+    } else {
+        cout << num << " என்பது ஓர் ஒற்றைப்படை எண் (Odd Number)." << endl;
+    }
+    return 0;
+}`
+            },
+            {
+                id: 'lab2',
+                badge: { ta: "செய்முறை 2", en: "Lab 2" },
+                type: "for loop",
+                title: { ta: "பெருக்கல் வாய்ப்பாடு தயாரித்தல்", en: "Multiplication Table Generator" },
+                desc: { ta: "பயனர் விரும்பும் குறிப்பிட்ட எண்ணிற்கு 1 முதல் 10 வரை பெருக்கல் அட்டவணை தயாரித்தல்.", en: "Generate multiplication table for any given integer from 1 to 10." },
+                logic: "for(int i=1; i<=10; i++) cout << n*i;",
+                code: `// செய்முறை 2: பெருக்கல் வாய்ப்பாடு
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 7;
+    cout << "--- " << n << "-ஆம் வாய்ப்பாடு ---" << endl;
+
+    for (int i = 1; i <= 10; i++) {
+        cout << n << " x " << i << " = " << (n * i) << endl;
+    }
+    return 0;
+}`
+            },
+            {
+                id: 'lab3',
+                badge: { ta: "செய்முறை 3", en: "Lab 3" },
+                type: "Looping",
+                title: { ta: "காரணீயம் கணக்கிடுதல் (Factorial)", en: "Factorial of a Number" },
+                desc: { ta: "ஒரு குறிப்பிட்ட எண்ணிற்கான காரணீயத்தை (n! = n x (n-1)...) சுழற்சி மூலம் கணக்கிடுதல்.", en: "Calculate the factorial (n!) of a given number using a for loop." },
+                logic: "fact = fact * i; (5! = 120)",
+                code: `// செய்முறை 3: ஒரு எண்ணின் காரணீயம் (Factorial)
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 5;
+    long long fact = 1;
+
+    for (int i = 1; i <= n; i++) {
+        fact = fact * i;
+    }
+
+    cout << n << "-ன் காரணீயம் (" << n << "!) = " << fact << endl;
+    return 0;
+}`
+            },
+            {
+                id: 'lab4',
+                badge: { ta: "செய்முறை 4", en: "Lab 4" },
+                type: "Logic &&",
+                title: { ta: "மூன்று எண்களில் மிகப்பெரிய எண்", en: "Largest of Three Numbers" },
+                desc: { ta: "மூன்று எண்களை ஒப்பீட்டுச் செயற்குறி கொண்டு ஒப்பிட்டு மிகப்பெரிய எண்ணை அச்சிடுதல்.", en: "Compare three numbers using logical AND (&&) to find the largest." },
+                logic: "if (a >= b && a >= c) => a is largest",
+                code: `// செய்முறை 4: மூன்று எண்களில் பெரிய எண்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 45, b = 78, c = 32;
+    cout << "எண்கள்: a=" << a << ", b=" << b << ", c=" << c << endl;
+
+    if (a >= b && a >= c) {
+        cout << "மிகப்பெரிய எண் a = " << a << endl;
+    } else if (b >= a && b >= c) {
+        cout << "மிகப்பெரிய எண் b = " << b << endl;
+    } else {
+        cout << "மிகப்பெரிய எண் c = " << c << endl;
+    }
+    return 0;
+}`
+            },
+            {
+                id: 'lab5',
+                badge: { ta: "செய்முறை 5", en: "Lab 5" },
+                type: "while loop",
+                title: { ta: "பிபனோசி தொடர் (Fibonacci Series)", en: "Fibonacci Series" },
+                desc: { ta: "முந்தைய இரு எண்களைக் கூட்டி அடுத்த எண்ணைப் பெறும் பிபனோசி எண்தொடரை அச்சிடுதல்.", en: "Generate the Fibonacci sequence (0, 1, 1, 2, 3, 5, 8...) up to N terms." },
+                logic: "nextTerm = t1 + t2;",
+                code: `// செய்முறை 5: முதல் 8 பிபனோசி எண்கள்
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n = 8;
+    int t1 = 0, t2 = 1, nextTerm = 0;
+
+    cout << "முதல் " << n << " பிபனோசி எண்கள்: " << endl;
+
+    for (int i = 1; i <= n; ++i) {
+        if (i == 1) {
+            cout << t1 << " ";
+            continue;
+        }
+        if (i == 2) {
+            cout << t2 << " ";
+            continue;
+        }
+        nextTerm = t1 + t2;
+        t1 = t2;
+        t2 = nextTerm;
+        cout << nextTerm << " ";
+    }
+    cout << endl;
+    return 0;
+}`
+            },
+            {
+                id: 'lab6',
+                badge: { ta: "செய்முறை 6", en: "Lab 6" },
+                type: "OOP / Class",
+                title: { ta: "மாணவர் இனக்குழு மாதிரி (Class & Object)", en: "Student Class & Object" },
+                desc: { ta: "பயனர் வரையறுத்த Student இனக்குழுவை உருவாக்கி பொருளின் மூலம் மதிப்பெண்களைக் கணக்கிடுதல்.", en: "Define a Student class with members and calculate total marks via an object." },
+                logic: "class Student { public: int mark1, mark2; };",
+                code: `// செய்முறை 6: இனக்குழு மற்றும் பொருள் (Class & Object)
+#include <iostream>
+using namespace std;
+
+class Student {
+public:
+    int m1, m2;
+
+    int getTotal() {
+        return m1 + m2;
+    }
+};
+
+int main() {
+    Student s1;
+    s1.m1 = 92;
+    s1.m2 = 96;
+
+    cout << "மாணவர் பாடம் 1 மதிப்பெண் = " << s1.m1 << endl;
+    cout << "மாணவர் பாடம் 2 மதிப்பெண் = " << s1.m2 << endl;
+    cout << "மொத்த மதிப்பெண் (Total)    = " << s1.getTotal() << endl;
+
+    return 0;
+}`
+            }
+        ];
+
+        // ==========================================
+        // EXAM QUESTION BANK (BILINGUAL)
+        // ==========================================
+        const examQuestionsData = [
+            {
+                type: '2m',
+                q: {
+                    ta: "1. சி++ (C++) நிரலாக்க மொழியை உருவாக்கியவர் யார்? எப்போது?",
+                    en: "1. Who developed the C++ language and when?"
+                },
+                ans: {
+                    ta: "C++ மொழியானது 1979-ஆம் ஆண்டில் ஏடி & டி பெல் ஆய்வகத்தில் <b>பியர்னே ஸ்ட்ரௌஸ்ட்ரூப் (Bjarne Stroustrup)</b> என்பவரால் உருவாக்கப்பட்டது.",
+                    en: "C++ was developed by <b>Bjarne Stroustrup</b> in the year 1979 at AT&T Bell Laboratories, New Jersey."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "2. C++ வில்லைகள் (Tokens) என்றால் என்ன? அவற்றின் வகைகள் யாவை?",
+                    en: "2. What are Tokens in C++? What are their types?"
+                },
+                ans: {
+                    ta: "ஒரு நிரலின் மிகச்சிறிய தனிப்பட்ட அலகு <b>வில்லை (Token)</b> எனப்படும்.<br>வகைகள்: 1. சிறப்புச் சொற்கள் (Keywords), 2. குறிப்பெயர்கள் (Identifiers), 3. மாறிலிகள் (Literals), 4. செயற்குறிகள் (Operators), 5. நிறுத்தற்குறிகள் (Punctuators).",
+                    en: "The smallest individual unit in a C++ program is called a <b>Token</b>.<br>Types: 1. Keywords, 2. Identifiers, 3. Literals (Constants), 4. Operators, 5. Punctuators."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "3. cin மற்றும் cout ஸ்ட்ரீம்களின் வேறுபாடு யாது?",
+                    en: "3. Differentiate between cin and cout streams."
+                },
+                ans: {
+                    ta: "• <b>cout:</b> உட்செலுத்தும் செயற்குறி (&lt;&lt;) கொண்டு வெளியீட்டுத் திரையில் தகவல்களை அச்சிடுகிறது.<br>• <b>cin:</b> பிரித்தெடுக்கும் செயற்குறி (&gt;&gt;) கொண்டு விசைப்பலகையிலிருந்து உள்ளீட்டுத் தகவல்களைப் பெறுகிறது.",
+                    en: "• <b>cout:</b> Standard output stream using stream insertion (&lt;&lt;) operator to display data on the screen.<br>• <b>cin:</b> Standard input stream using stream extraction (&gt;&gt;) operator to read data from the keyboard."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "4. break மற்றும் continue கூற்றுகளுக்கு இடையேயான வேறுபாடு யாது?",
+                    en: "4. What is the difference between break and continue statements?"
+                },
+                ans: {
+                    ta: "• <b>break:</b> தற்போதைய மடக்கு அல்லது switch கூட்டை விட்டு உடனடியாக வெளியேற்றுகிறது.<br>• <b>continue:</b> நடப்பு சுழற்சியை மட்டும் தவிர்த்துவிட்டு, அடுத்த சுழற்சிக்கு உடனடியாகத் தாவுகிறது.",
+                    en: "• <b>break:</b> Causes immediate termination of the innermost enclosing loop or switch construct.<br>• <b>continue:</b> Skips the rest of the current iteration and jumps to the next cycle of the loop."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "5. மாறிகளுக்குப் பெயரிடுவதற்கான விதிமுறைகள் யாவை?",
+                    en: "5. What are the identifier naming rules in C++?"
+                },
+                ans: {
+                    ta: "1. மாறியின் முதல் எழுத்து ஓர் ஆங்கில எழுத்தாகவோ (A-Z, a-z) அல்லது அடிக்கோடாகவோ (_) இருக்க வேண்டும்.<br>2. எண்களில் தொடங்கக் கூடாது (எ.கா: 2rank என்பது தவறானது).<br>3. C++ சிறப்புச் சொற்களைப் பெயராக இடக்கூடாது.<br>4. இது எழுத்து வடிவ உணர்வுடையது (Case-sensitive - num மற்றும் NUM வெவ்வேறானவை).",
+                    en: "1. The first character must be an alphabet or underscore (_).<br>2. It cannot begin with a numeric digit (e.g., 2ndNumber is invalid).<br>3. Reserved keywords cannot be used as variable names.<br>4. C++ is case-sensitive (e.g., count and Count are distinct identifiers)."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "6. while மற்றும் do...while மடக்குகளை ஒப்பிடுக.",
+                    en: "6. Compare while and do...while loops."
+                },
+                ans: {
+                    ta: "• <b>while மடக்கு:</b> இது 'நுழைவு சோதிப்பு மடக்கு' (Entry check loop). தொடக்கத்திலேயே நிபந்தனை சோதிக்கப்பட்டு மெய்யானால் மட்டுமே இயங்கும்.<br>• <b>do...while மடக்கு:</b> இது 'வெளியேறு சோதிப்பு மடக்கு' (Exit check loop). நிபந்தனை பொய்யாக இருந்தாலும் குறைந்தது ஒரு முறையாவது உடல் பகுதி இயங்கும்.",
+                    en: "• <b>while loop:</b> Entry-controlled loop. The test expression is evaluated prior to executing the loop body.<br>• <b>do...while loop:</b> Exit-controlled loop. The test condition is checked at the end, so the loop body executes at least once."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "7. பொருள்நோக்கு நிரலாக்கத்தின் (OOP) முக்கிய சிறப்பியல்புகள் யாவை?",
+                    en: "7. What are the key characteristics of Object-Oriented Programming (OOP)?"
+                },
+                ans: {
+                    ta: "1. <b>தரவு மறைப்பு (Data Abstraction):</b> அத்தியாவசிய தகவல்களை மட்டும் காட்டி உட்புற விவரங்களை மறைத்தல்.<br>2. <b>உறைபொதியாக்கம் (Encapsulation):</b> தரவுகளையும் அவற்றை இயக்கும் செயற்கூறுகளையும் ஒன்றாக இணைத்தல்.<br>3. <b>மரபுரிமம் (Inheritance):</b> ஒரு இனக்குழுவின் பண்புகளை மற்றொரு இனக்குழு பெறுதல்.<br>4. <b>பல்லுருவாக்கம் (Polymorphism):</b> ஒரே பெயர் பல வடிவங்களில் செயல்படுதல்.",
+                    en: "1. <b>Data Abstraction:</b> Representing essential features without including background implementation details.<br>2. <b>Encapsulation:</b> Wrapping data and member functions into a single unit (class).<br>3. <b>Inheritance:</b> Mechanism of deriving new classes from existing ones.<br>4. <b>Polymorphism:</b> Ability for a message or function to be processed in more than one form."
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "8. switch...case கூற்றின் கட்டமைப்பு மற்றும் பயன்பாட்டை எடுத்துக்காட்டுடன் விளக்குக.",
+                    en: "8. Explain the syntax and working of switch...case with an example."
+                },
+                ans: {
+                    ta: "switch கூற்றானது ஒரு மாறியின் மதிப்பை பல case மாறிலிகளுடன் ஒப்பிட்டு, பொருந்தும் தொகுதியை இயக்குகிறது.<br><br><b>தொடரியல்:</b><br><pre class='bg-slate-100 p-2 rounded text-xs mt-1 font-mono'>switch(expression) {<br>  case val1: statements; break;<br>  case val2: statements; break;<br>  default: statements;<br>}</pre>ஒவ்வொரு case முடிவிலும் இடப்படும் <b>break</b> கூற்று 다음 case-க்கு கட்டுப்பாட்டைச் செல்லவிடாமல் switch-லிருந்து வெளியேற்றுகிறது.",
+                    en: "The switch statement is a multi-way branch selection statement that compares an expression against multiple constant integral case values.<br><br><b>Syntax:</b><br><pre class='bg-slate-100 p-2 rounded text-xs mt-1 font-mono'>switch(expression) {<br>  case val1: statements; break;<br>  case val2: statements; break;<br>  default: default_statements;<br>}</pre>The <b>break</b> statement prevents fall-through to subsequent case labels."
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "9. for மடக்கின் மூன்று பாகங்களை எடுத்துக்காட்டுடன் விரிவாக விளக்குக.",
+                    en: "9. Explain the three components of for loop with an example."
+                },
+                ans: {
+                    ta: "for மடக்கு ஒரு தொகுதி நிரலை குறிப்பிட்ட எண்ணிக்கையில் சுழற்றி இயக்கப் பயன்படுகிறது.<br><br><b>தொடரியல்:</b> for(தொடக்க மதிப்பு; நிபந்தனை; மிகுப்பு/குறைப்பு)<br>1. <b>தொடக்க மதிப்பு (Initialization):</b> மடக்கின் மாறியை தொடக்க மதிப்பில் இருத்துகிறது (ஒருமுறை மட்டுமே இயங்கும்).<br>2. <b>நிபந்தனை (Condition):</b> இது மெய்யாக உள்ளவரை மட்டுமே மடக்கு இயங்கும்.<br>3. <b>மிகுப்பு/குறைப்பு (Update expression):</b> ஒவ்வொரு சுழற்சியின் முடிவிலும் மாறியின் மதிப்பை மாற்றும்.",
+                    en: "The for loop repeats a statement block a determined number of times.<br><br><b>Syntax:</b> for(initialization; condition; increment/decrement)<br>1. <b>Initialization:</b> Assigns starting value to the loop counter (executed once).<br>2. <b>Condition:</b> Boolean test checked before each iteration.<br>3. <b>Update expression:</b> Modifies the loop counter at the end of each iteration."
+                }
+            }
+        ];
+
+        // ==========================================
+        // QUIZ DATA (BILINGUAL MCQs)
+        // ==========================================
+        const quizQuestionsData = [
+            {
+                q: {
+                    ta: "1. C++ நிரலாக்க மொழியின் தந்தை என்று அழைக்கப்படுபவர் யார்?",
+                    en: "1. Who is widely known as the creator/father of C++?"
+                },
+                options: {
+                    ta: ["ஜேம்ஸ் கோஸ்லிங்", "பியர்னே ஸ்ட்ரௌஸ்ட்ரூப் (Bjarne Stroustrup)", "டென்னிஸ் ரிட்சி", "சார்லஸ் பாபேஜ்"],
+                    en: ["James Gosling", "Bjarne Stroustrup", "Dennis Ritchie", "Charles Babbage"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "C++ மொழியானது 1979-ல் பியர்னே ஸ்ட்ரௌஸ்ட்ரூப் என்பவரால் பெல் ஆய்வகத்தில் உருவாக்கப்பட்டது.",
+                    en: "C++ was invented by Bjarne Stroustrup at Bell Labs starting in 1979."
+                }
+            },
+            {
+                q: {
+                    ta: "2. C++ மொழியின் தொடக்க காலப் பெயர் என்ன?",
+                    en: "2. What was the initial name of C++ before 1983?"
+                },
+                options: {
+                    ta: ["C with Classes", "C Plus", "Advanced C", "Object C"],
+                    en: ["C with Classes", "C Plus", "Advanced C", "Object C"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "1983-ல் 'C++' என மாற்றுவதற்கு முன்பு இது 'C with Classes' என அழைக்கப்பட்டது.",
+                    en: "Prior to being renamed C++ in 1983, it was called 'C with Classes'."
+                }
+            },
+            {
+                q: {
+                    ta: "3. cin மற்றும் cout ஆகியவற்றைப் பயன்படுத்த எந்த தலைப்புக் கோப்பு இணைக்கப்பட வேண்டும்?",
+                    en: "3. Which header file must be included to use cin and cout?"
+                },
+                options: {
+                    ta: ["<stdio.h>", "<conio.h>", "<iostream>", "<math.h>"],
+                    en: ["<stdio.h>", "<conio.h>", "<iostream>", "<math.h>"]
+                },
+                answer: 2,
+                explanation: {
+                    ta: "<iostream> (Input Output Stream) தலைப்புக் கோப்பில் cin மற்றும் cout வரையறுக்கப்பட்டுள்ளன.",
+                    en: "Standard I/O stream objects like cin and cout are declared in <iostream>."
+                }
+            },
+            {
+                q: {
+                    ta: "4. பின்வருவனவற்றுள் எது 'வெளியேறு சோதிப்பு மடக்கு' (Exit-Check Loop)?",
+                    en: "4. Which of the following is an Exit-Controlled Loop?"
+                },
+                options: {
+                    ta: ["for மடக்கு", "while மடக்கு", "do...while மடக்கு", "switch கூற்று"],
+                    en: ["for loop", "while loop", "do...while loop", "switch statement"]
+                },
+                answer: 2,
+                explanation: {
+                    ta: "do...while மடக்கின் இறுதியில் நிபந்தனை சோதிக்கப்படுவதால் இது வெளியேறு சோதிப்பு மடக்காகும்.",
+                    en: "do...while tests its condition at the end of the loop body."
+                }
+            },
+            {
+                q: {
+                    ta: "5. பின்வருவனவற்றுள் எது சரியான C++ மாறி அறிவிப்பு ஆகும்?",
+                    en: "5. Which of the following is a valid variable identifier in C++?"
+                },
+                options: {
+                    ta: ["int 2total;", "int total_marks;", "int total-marks;", "int class;"],
+                    en: ["int 2total;", "int total_marks;", "int total-marks;", "int class;"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "மாறியின் பெயர் எண்ணில் தொடங்கக் கூடாது, ஹைபன் (-) வரக்கூடாது, 'class' என்பது சிறப்புச் சொல். எனவே total_marks சரியானது.",
+                    en: "Identifiers cannot start with digits, cannot contain hyphens, and 'class' is a keyword. total_marks is valid."
+                }
+            },
+            {
+                q: {
+                    ta: "6. 17 % 5 என்பதன் வெளியீடு (Output) என்னவாக இருக்கும்?",
+                    en: "6. What is the result of the expression 17 % 5?"
+                },
+                options: {
+                    ta: ["3", "2", "3.4", "0"],
+                    en: ["3", "2", "3.4", "0"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "% என்பது வகுமீதி செயற்குறி (Modulus). 17-ஐ 5-ஆல் வகுத்தால் மீதி 2 கிடைக்கும் (5 x 3 = 15, மீதி 2).",
+                    en: "The % modulus operator gives the integer remainder: 17 = 5 * 3 + 2, so remainder is 2."
+                }
+            },
+            {
+                q: {
+                    ta: "7. ஒரு மடக்கை அல்லது switch கூட்டை உடனடியாக விட்டு வெளியேறப் பயன்படும் சிறப்புச் சொல் எது?",
+                    en: "7. Which keyword immediately terminates a loop or switch case?"
+                },
+                options: {
+                    ta: ["continue", "exit", "break", "return"],
+                    en: ["continue", "exit", "break", "return"]
+                },
+                answer: 2,
+                explanation: {
+                    ta: "break கூற்று தற்போதைய மடக்கை அல்லது switch கூட்டை விட்டு உடனடியாக வெளியேற்றுகிறது.",
+                    en: "break statement immediately terminates the loop or switch block."
+                }
+            },
+            {
+                q: {
+                    ta: "8. C++ மொழியில் புதிய வரியை உருவாக்க (Newline) பயன்படும் செயற்குறி எது?",
+                    en: "8. Which manipulator is commonly used to insert a new line in C++ streams?"
+                },
+                options: {
+                    ta: ["endl", "stop", "break", "new"],
+                    en: ["endl", "stop", "break", "new"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "endl மற்றும் '\\n' புதிய வரிக்குச் செல்லப் பயன்படுகின்றன.",
+                    en: "std::endl inserts a newline character and flushes the stream buffer."
+                }
+            },
+            {
+                q: {
+                    ta: "9. ஒரு மாறியின் மதிப்பையும் வகையையும் குறிப்பு மூலம் (Reference) அனுப்ப எந்த குறியீடு பயன்படுகிறது?",
+                    en: "9. Which symbol is used in C++ to declare a reference variable / pass by reference?"
+                },
+                options: {
+                    ta: ["*", "&", "#", "%"],
+                    en: ["*", "&", "#", "%"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "& (Ampersand) செயற்குறி குறிப்பு மாறிகளை (Reference variables) அறிவிக்கப் பயன்படுகிறது.",
+                    en: "The ampersand (&) operator indicates reference parameters in function declarations."
+                }
+            },
+            {
+                q: {
+                    ta: "10. ஒரே பெயரில் பல செயற்கூறுகள் வெவ்வேறு அளபுருக்களுடன் செயல்படுவது எது?",
+                    en: "10. What is having multiple functions with the same name but different parameters called?"
+                },
+                options: {
+                    ta: ["செயற்கூறு பணிமிகுப்பு (Function Overloading)", "மரபுரிமம் (Inheritance)", "அமைப்புகள் (Structures)", "சுழற்சி (Looping)"],
+                    en: ["Function Overloading", "Inheritance", "Structures", "Recursion"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "ஒரே பெயருடைய செயற்கூறு வெவ்வேறு எண்ணிக்கையிலான அல்லது வகையான அளபுருக்களைக் கொண்டு செயல்படுவது செயற்கூறு பணிமிகுப்பு (பல்லுருவாக்கம்) ஆகும்.",
+                    en: "Declaring multiple functions with the same name differentiated by parameter count or types is Function Overloading."
+                }
+            }
+        ];
+
+        // ==========================================
+        // BUG HUNT CHALLENGES (BILINGUAL)
+        // ==========================================
+        const bugChallengesData = [
+            {
+                title: { ta: "சவால் 1: தவறான மாறி பெயர் (Syntax Error)", en: "Challenge 1: Invalid Identifier Syntax" },
+                desc: { ta: "கீழே உள்ள C++ குறிமுறையில் உள்ள பிழையைக் கண்டறியவும்:", en: "Spot the compilation error in the following snippet:" },
+                code: "int 1st_mark = 95;\ncout << 1st_mark << endl;",
+                options: {
+                    ta: [
+                        "மாறியின் பெயர் எண்ணில் (1st_mark) தொடங்கக் கூடாது",
+                        "int என்ற தரவு வகை வரக்கூடாது",
+                        "cout-ல் << செயற்குறி தவறானது",
+                        "endl வரக்கூடாது"
+                    ],
+                    en: [
+                        "Identifier cannot begin with a number (1st_mark)",
+                        "int datatype cannot be used here",
+                        "<< operator is incorrect",
+                        "endl cannot be used"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "மாறியின் பெயர் எப்போதும் ஆங்கில எழுத்து அல்லது அடிக்கோடு (_) கொண்டு மட்டுமே தொடங்க வேண்டும் (எ.கா: mark_1st).",
+                    en: "Variable names must start with an alphabet or underscore, never a number (e.g., mark_1st)."
+                }
+            },
+            {
+                title: { ta: "சவால் 2: cout ஸ்ட்ரீம் செயற்குறி பிழை", en: "Challenge 2: Inverted Stream Operator" },
+                desc: { ta: "இந்த நிரலை கம்பைல் செய்யும்போது பிழை வருகிறது. ஏன்?", en: "Why does the compiler throw an error on this line?" },
+                code: "cout >> \"வணக்கம் தமிழ்நாடு!\" >> endl;",
+                options: {
+                    ta: [
+                        "cout உடன் >> வரக்கூடாது; << (உட்செலுத்தும் செயற்குறி) மட்டுமே வர வேண்டும்",
+                        "இரட்டை மேற்கோள் குறி வரக்கூடாது",
+                        "நிரல் சரியானது",
+                        "endl-க்கு முன் அரைப்புள்ளி தேவை"
+                    ],
+                    en: [
+                        "cout uses insertion operator << instead of extraction >>",
+                        "Double quotes are invalid",
+                        "Code is completely valid",
+                        "Semicolon missing before endl"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "cout எப்போதும் << (Insertion) செயற்குறியைப் பயன்படுத்த வேண்டும். >> என்பது cin-க்கு மட்டுமே உரியது.",
+                    en: "cout pairs with << (insertion operator). >> is reserved for cin (extraction)."
+                }
+            },
+            {
+                title: { ta: "சவால் 3: if நிபந்தனை ஒப்பீட்டுப் பிழை", en: "Challenge 3: Assignment vs Equality" },
+                desc: { ta: "கீழே உள்ள நிரலில் மதிப்பீடு செய்யாமல் மதிப்பிருத்தல் செய்யப்பட்டுள்ளது:", en: "Notice the logical mistake inside the condition:" },
+                code: "int mark = 80;\nif (mark = 100) {\n    cout << \"நூற்றுக்கு நூறு!\";\n}",
+                options: {
+                    ta: [
+                        "if-க்குள் அடைப்புக்குறி வரக்கூடாது",
+                        "= என்பது மதிப்பிருத்தல் செயற்குறி; ஒப்பீடு செய்ய == பயன்படுத்த வேண்டும்",
+                        "mark என்ற மாறியைப் பயன்படுத்தக் கூடாது",
+                        "cout தவறானது"
+                    ],
+                    en: [
+                        "Parentheses are disallowed",
+                        "= is assignment; equality comparison requires ==",
+                        "Variable mark is invalid",
+                        "cout is undeclared"
+                    ]
+                },
+                correct: 1,
+                solution: {
+                    ta: "ஒப்பீடு செய்வதற்கு '==' சமநிலை ஒப்பீட்டுச் செயற்குறியைப் பயன்படுத்த வேண்டும் (if (mark == 100)).",
+                    en: "Use '==' for comparison. Single '=' assigns 100 to mark and always evaluates to true."
+                }
+            },
+            {
+                title: { ta: "சவால் 4: for மடக்கு பிரிப்பான் பிழை", en: "Challenge 4: For Loop Separators" },
+                desc: { ta: "for மடக்கின் தலைப்பில் உள்ள நிறுத்தற்குறி பிழையைக் கண்டறியவும்:", en: "Identify the punctuator error in the loop header:" },
+                code: "for (int i = 1, i <= 5, i++) {\n    cout << i << endl;\n}",
+                options: {
+                    ta: [
+                        "காற்புள்ளிகளுக்கு (,) பதிலாக அரைப்புள்ளிகள் (;) இடப்பட வேண்டும்",
+                        "i++ வரக்கூடாது",
+                        "int என்ற சொல் for-க்குள் வரக்கூடாது",
+                        "endl தவறானது"
+                    ],
+                    en: [
+                        "Semicolons (;) must separate header parts, not commas (,)",
+                        "i++ cannot be used in a loop",
+                        "Cannot declare int inside for header",
+                        "endl syntax is incorrect"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "for மடக்கின் 3 கூறுகளும் அரைப்புள்ளியால் (;) மட்டுமே பிரிக்கப்பட வேண்டும்: for(int i=1; i<=5; i++)",
+                    en: "for-loop expressions must be delimited with semicolons (;): for(int i=1; i<=5; i++)."
+                }
+            }
+        ];
+
+        // ==========================================
+        // UI RENDERING & BILINGUAL LOGIC
+        // ==========================================
+        function updateLocalizedStaticTexts() {
+            const t = UI_TEXT[currentLang];
+            document.getElementById('lbl-header-std').textContent = t.headerStd;
+            document.getElementById('lbl-header-sub').textContent = t.headerSub;
+            document.getElementById('lbl-header-title').textContent = t.headerTitle;
+            document.getElementById('lang-btn-text').textContent = t.langBtn;
+
+            document.getElementById('tab-title-lessons').textContent = t.tabLessons;
+            document.getElementById('tab-title-playground').textContent = t.tabPlayground;
+            document.getElementById('tab-title-lab').textContent = t.tabLab;
+            document.getElementById('tab-title-qa').textContent = t.tabQA;
+            document.getElementById('tab-title-quiz').textContent = t.tabQuiz;
+
+            document.getElementById('lessons-heading').textContent = t.lessonsHeading;
+            document.getElementById('lessons-subheading').textContent = t.lessonsSub;
+            document.getElementById('badge-ch1').textContent = t.badgeCh1;
+            document.getElementById('badge-ch2').textContent = t.badgeCh2;
+            document.getElementById('badge-ch3').textContent = t.badgeCh3;
+
+            document.getElementById('lbl-preset-select').innerHTML = `<i class="fa-solid fa-folder-open text-blue-600"></i> ${t.lblPreset}`;
+            document.getElementById('btn-copy-code').textContent = t.btnCopy;
+            document.getElementById('btn-reset-code').textContent = t.btnReset;
+            document.getElementById('btn-run-code').textContent = t.btnRun;
+            document.getElementById('lbl-clear-term').textContent = t.clearTerm;
+            document.getElementById('lbl-editor-ready').textContent = t.lblReady;
+
+            document.getElementById('lab-heading').textContent = t.labHeading;
+            document.getElementById('lab-subheading').textContent = t.labSub;
+            document.getElementById('lab-badge-text').textContent = t.labBadge;
+
+            document.getElementById('qa-heading').textContent = t.qaHeading;
+            document.getElementById('qa-subheading').textContent = t.qaSub;
+            document.getElementById('qa-btn-all').textContent = t.qaBtnAll;
+            document.getElementById('qa-btn-2m').textContent = t.qaBtn2m;
+            document.getElementById('qa-btn-3m').textContent = t.qaBtn3m;
+            document.getElementById('qa-btn-5m').textContent = t.qaBtn5m;
+
+            document.getElementById('quiz-heading').textContent = t.quizHeading;
+            document.getElementById('quiz-subheading').textContent = t.quizSub;
+            document.getElementById('lbl-score-text').textContent = t.lblScore;
+            document.getElementById('quiz-part1-title').textContent = t.quizP1Title;
+            document.getElementById('bug-part2-title').textContent = t.quizP2Title;
+            document.getElementById('bug-part2-sub').textContent = t.quizP2Sub;
+            document.getElementById('btn-quiz-reset').textContent = t.btnQuizReset;
+
+            document.getElementById('cin-modal-title').textContent = t.cinTitle;
+            document.getElementById('cin-modal-sub').textContent = t.cinSub;
+            document.getElementById('btn-cin-ok').textContent = t.btnCinOk;
+            document.getElementById('footer-text').textContent = t.footerText;
+
+            // Update Theme labels
+            updateThemeLabelTexts();
+        }
+
+        function toggleLanguage() {
+            playSound('click');
+            currentLang = currentLang === 'ta' ? 'en' : 'ta';
+            try {
+                localStorage.setItem('cppLabLang', currentLang);
+            } catch(e) {}
+
+            updateLocalizedStaticTexts();
+            renderPresetSelector();
+            renderLessons();
+            renderLabPrograms();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            showToast(currentLang === 'ta' ? "மொழி தமிழாக மாற்றப்பட்டது." : "Switched to English language.", "Language");
+        }
+
+        // ==========================================
+        // RENDER LESSONS
+        // ==========================================
+        function renderLessons() {
+            const container = document.getElementById('lessons-grid');
+            container.innerHTML = '';
+            const t = UI_TEXT[currentLang];
+
+            lessonsData.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-md transition flex flex-col justify-between';
+
+                const pointsList = item.points[currentLang].map(p => `<li>• ${p}</li>`).join('');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 font-bold flex items-center justify-center text-sm">${idx + 1}</span>
+                            <span class="text-xs bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-semibold">${item.chapter[currentLang]}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-base">${item.title[currentLang]}</h3>
+                        <p class="text-xs text-blue-600 mb-2 font-medium">${item.subtitle[currentLang]}</p>
+                        <ul class="text-xs text-slate-600 space-y-1.5 mb-4 leading-relaxed">
+                            ${pointsList}
+                        </ul>
+                    </div>
+                    <button onclick="loadLessonToPlayground('${item.presetKey}')" class="w-full text-xs py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-xl flex items-center justify-center gap-1.5 transition">
+                        <span>${t.testInLab}</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // RENDER LAB PROGRAMS
+        // ==========================================
+        function renderLabPrograms() {
+            const container = document.getElementById('lab-grid');
+            container.innerHTML = '';
+            const t = UI_TEXT[currentLang];
+
+            labProgramsData.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:border-blue-400 transition flex flex-col justify-between';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-md text-xs font-bold">${item.badge[currentLang]}</span>
+                            <span class="text-xs text-slate-400 font-mono">${item.type}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-base">${item.title[currentLang]}</h3>
+                        <p class="text-xs text-slate-600 mb-3 mt-1 leading-relaxed">${item.desc[currentLang]}</p>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs font-mono text-slate-700 mb-4">
+                            <strong>Logic:</strong> ${item.logic}
+                        </div>
+                    </div>
+                    <button onclick="loadLabCode('${item.id}')" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-play"></i> ${t.runInPlayground}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // RENDER EXAM QUESTION BANK
+        // ==========================================
+        let currentQAFilter = 'all';
+
+        function renderExamQA(filter = currentQAFilter) {
+            currentQAFilter = filter;
+            const container = document.getElementById('qa-cards-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? examQuestionsData : examQuestionsData.filter(q => q.type === filter);
+
+            filtered.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between';
+
+                const badgeColor = item.type === '2m' ? 'bg-blue-100 text-blue-800' : (item.type === '3m' ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800');
+                const badgeLabel = currentLang === 'ta' 
+                    ? (item.type === '2m' ? '2 மதிப்பெண்' : (item.type === '3m' ? '3 மதிப்பெண்' : '5 மதிப்பெண்'))
+                    : (item.type === '2m' ? '2 Marks' : (item.type === '3m' ? '3 Marks' : '5 Marks'));
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs px-2.5 py-1 rounded-md font-bold ${badgeColor}">${badgeLabel}</span>
+                            <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-graduation-cap"></i> SCERT TN</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm sm:text-base mb-3 leading-snug">${item.q[currentLang]}</h4>
+                        <div class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            ${item.ans[currentLang]}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterQA(type) {
+            playSound('click');
+            ['all', '2m', '3m', '5m'].forEach(t => {
+                const btn = document.getElementById(`qa-btn-${t}`);
+                if (t === type) {
+                    btn.className = 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-blue-600 text-white';
+                } else {
+                    btn.className = 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+                }
+            });
+            renderExamQA(type);
+        }
+
+        // ==========================================
+        // RENDER QUIZ & BUG CHALLENGES
+        // ==========================================
+        let userQuizAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizQuestionsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm transition';
+                card.id = `q-card-${index}`;
+
+                let optionsHtml = '';
+                item.options[currentLang].forEach((opt, optIndex) => {
+                    const isChecked = userQuizAnswers[index] === optIndex ? 'checked' : '';
+                    optionsHtml += `
+                        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-blue-50/50 cursor-pointer transition text-xs sm:text-sm">
+                            <input type="radio" name="question_${index}" value="${optIndex}" ${isChecked} onchange="selectQuizOption(${index}, ${optIndex})" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                            <span class="text-slate-700 font-medium">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mb-3 flex items-start gap-2">
+                        <span>${item.q[currentLang]}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                        ${optionsHtml}
+                    </div>
+                    <div id="feedback-${index}" class="hidden text-xs p-3 rounded-xl"></div>
+                `;
+                container.appendChild(card);
+
+                // If previously answered, show feedback
+                if (userQuizAnswers[index] !== undefined) {
+                    highlightQuizFeedback(index, userQuizAnswers[index]);
+                }
+            });
+        }
+
+        function selectQuizOption(qIdx, selectedOpt) {
+            userQuizAnswers[qIdx] = selectedOpt;
+            highlightQuizFeedback(qIdx, selectedOpt);
+
+            // Update score
+            let correctCount = 0;
+            quizQuestionsData.forEach((q, idx) => {
+                if (userQuizAnswers[idx] === q.answer) correctCount++;
+            });
+            document.getElementById('current-score').textContent = correctCount;
+        }
+
+        function highlightQuizFeedback(qIdx, selectedOpt) {
+            const item = quizQuestionsData[qIdx];
+            const feedbackBox = document.getElementById(`feedback-${qIdx}`);
+            if (!feedbackBox) return;
+            feedbackBox.classList.remove('hidden');
+
+            const isCorrect = selectedOpt === item.answer;
+            if (isCorrect) {
+                playSound('success');
+                feedbackBox.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                feedbackBox.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'சரியான விடை!' : 'Correct Answer!'}</b> ${item.explanation[currentLang]}`;
+            } else {
+                playSound('error');
+                feedbackBox.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                feedbackBox.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'தவறான விடை!' : 'Incorrect!'}</b> ${currentLang === 'ta' ? 'சரியான விடை:' : 'Correct answer:'} <b>${item.options[currentLang][item.answer]}</b>.<br>${item.explanation[currentLang]}`;
+            }
+        }
+
+        function resetQuiz() {
+            playSound('click');
+            userQuizAnswers = {};
+            document.getElementById('current-score').textContent = '0';
+            renderQuiz();
+        }
+
+        function renderBugChallenges() {
+            const container = document.getElementById('bug-cards-container');
+            container.innerHTML = '';
+
+            bugChallengesData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between';
+                
+                let optHtml = '';
+                item.options[currentLang].forEach((opt, oIdx) => {
+                    optHtml += `
+                        <button onclick="checkBugChoice(${index}, ${oIdx})" id="bug-opt-${index}-${oIdx}" class="text-left p-2.5 rounded-lg border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 transition font-medium">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-slate-900 text-sm sm:text-base">${item.title[currentLang]}</span>
+                            <span class="text-xs bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">${currentLang === 'ta' ? 'பிழை ஆய்வு' : 'Bug Spotting'}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">${item.desc[currentLang]}</p>
+                        
+                        <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono mb-4 overflow-x-auto"><code>${item.code}</code></pre>
+                        
+                        <div class="space-y-1.5 mb-3 flex flex-col">
+                            ${optHtml}
+                        </div>
+                    </div>
+                    <div id="bug-feedback-${index}" class="hidden text-xs p-3 rounded-xl mt-2 font-medium"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function checkBugChoice(challengeIdx, choiceIdx) {
+            const ch = bugChallengesData[challengeIdx];
+            const feedback = document.getElementById(`bug-feedback-${challengeIdx}`);
+            feedback.classList.remove('hidden');
+
+            if (choiceIdx === ch.correct) {
+                playSound('success');
+                feedback.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                feedback.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'மிகச் சரி!' : 'Bingo! Correct!'}</b> ${ch.solution[currentLang]}`;
+            } else {
+                playSound('error');
+                feedback.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                feedback.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'மீண்டும் முயல்க!' : 'Try Again!'}</b> ${ch.options[currentLang][choiceIdx]} ${currentLang === 'ta' ? 'சரியான தீர்வு அல்ல.' : 'is not the actual root cause.'}`;
+            }
+        }
+
+        // ==========================================
+        // EDITOR PRESETS & NAVIGATION
+        // ==========================================
+        function renderPresetSelector() {
+            const selector = document.getElementById('preset-selector');
+            const currentVal = selector.value || 'hello';
+            selector.innerHTML = '';
+
+            for (let key in cppPresets) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = cppPresets[key].name[currentLang];
+                selector.appendChild(opt);
+            }
+            selector.value = currentVal;
+        }
+
+        function loadPresetCode(presetKey) {
+            playSound('click');
+            if (cppPresets[presetKey]) {
+                editor.value = cppPresets[presetKey].code;
+            }
+        }
+
+        function loadLessonToPlayground(presetKey) {
+            playSound('click');
+            if (cppPresets[presetKey]) {
+                editor.value = cppPresets[presetKey].code;
+                document.getElementById('preset-selector').value = presetKey;
+            }
+            switchTab('playground');
+        }
+
+        function loadLabCode(labId) {
+            playSound('click');
+            const lab = labProgramsData.find(l => l.id === labId);
+            if (lab) {
+                editor.value = lab.code;
+                document.getElementById('preset-selector').value = 'custom';
+            }
+            switchTab('playground');
+        }
+
+        const editor = document.getElementById('code-editor');
+
+        function resetEditor() {
+            playSound('click');
+            editor.value = cppPresets.hello.code;
+            document.getElementById('preset-selector').value = 'hello';
+            clearTerminal();
+        }
+
+        function clearTerminal() {
+            const colorClass = currentEditorTheme === 'light' ? 'text-slate-400' : 'text-slate-500';
+            document.getElementById('terminal-output').innerHTML = `<div class="${colorClass}">// C++ cout வெளியீடுகள் இங்கு தோன்றும்...</div>`;
+            document.getElementById('term-exit-code').textContent = '0';
+            document.getElementById('term-exec-time').textContent = 'Execution: 0.00ms';
+        }
+
+        function copyCurrentCode() {
+            playSound('click');
+            const textarea = document.createElement('textarea');
+            textarea.value = editor.value;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "C++ குறியீடு நகலெடுக்கப்பட்டது!" : "C++ code copied to clipboard!", "Clipboard");
+        }
+
+        // ==========================================
+        // EDITOR & TERMINAL THEME SWITCHER (Dark/Light)
+        // ==========================================
+        let currentEditorTheme = 'dark'; // 'dark' or 'light'
+
+        function updateThemeLabelTexts() {
+            const t = UI_TEXT[currentLang];
+            const btnLabel = document.getElementById('theme-btn-label');
+            const badgeText = document.getElementById('editor-badge-text');
+
+            if (currentEditorTheme === 'light') {
+                btnLabel.textContent = t.themeLight;
+                badgeText.textContent = t.badgeLight;
+            } else {
+                btnLabel.textContent = t.themeDark;
+                badgeText.textContent = t.badgeDark;
+            }
+        }
+
+        function setEditorTheme(theme, notify = false) {
+            currentEditorTheme = theme;
+            try {
+                localStorage.setItem('cppLabTheme', theme);
+            } catch(e) {}
+
+            const container = document.getElementById('editor-container');
+            const header = document.getElementById('editor-header');
+            const titleText = document.getElementById('editor-title-text');
+            const textarea = document.getElementById('code-editor');
+            const footer = document.getElementById('editor-footer');
+            const statusInd = document.getElementById('editor-status-indicator');
+            const btn = document.getElementById('theme-toggle-btn');
+            const btnIcon = document.getElementById('theme-btn-icon');
+            const badge = document.getElementById('editor-badge-theme');
+
+            const termContainer = document.getElementById('terminal-container');
+            const termHeader = document.getElementById('terminal-header');
+            const termTitle = document.getElementById('terminal-title-text');
+            const termOut = document.getElementById('terminal-output');
+            const termFooter = document.getElementById('terminal-footer');
+
+            if (theme === 'light') {
+                // Light Theme
+                container.className = 'lg:col-span-7 bg-white rounded-2xl p-4 shadow-xl border border-slate-300 flex flex-col h-[540px] transition-all duration-200';
+                header.className = 'flex items-center justify-between pb-3 border-b border-slate-200 text-slate-600 text-xs';
+                titleText.className = 'ml-2 font-mono text-slate-800 font-bold flex items-center gap-1.5';
+                textarea.className = 'w-full h-full bg-white text-slate-900 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 font-medium transition-colors';
+                footer.className = 'pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-[11px] text-slate-600 gap-2';
+                statusInd.className = 'text-emerald-700 font-semibold flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 shadow-sm';
+                btnIcon.className = 'fa-solid fa-sun text-amber-600';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 flex items-center gap-1';
+
+                // Terminal in Light Theme
+                termContainer.className = 'flex-1 bg-slate-100 rounded-2xl p-4 border border-slate-300 shadow-inner flex flex-col overflow-hidden transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-2 border-b border-slate-300 text-xs text-slate-600 font-mono';
+                termTitle.className = 'flex items-center gap-1.5 text-blue-700 font-bold';
+                termOut.className = 'flex-grow p-3 overflow-y-auto text-xs code-font text-slate-900 space-y-1 bg-white rounded-xl mt-2 border border-slate-200 transition-colors';
+                termFooter.className = 'pt-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-600';
+            } else {
+                // Dark Theme (Default)
+                container.className = 'lg:col-span-7 bg-editorBgDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[540px] transition-all duration-200';
+                header.className = 'flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs';
+                titleText.className = 'ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1.5';
+                textarea.className = 'w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors';
+                footer.className = 'pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2';
+                statusInd.className = 'text-emerald-400 flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm';
+                btnIcon.className = 'fa-solid fa-moon text-amber-300';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1';
+
+                // Terminal in Dark Theme
+                termContainer.className = 'flex-1 bg-slate-950 rounded-2xl p-4 border border-slate-800 shadow-2xl flex flex-col overflow-hidden transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-2 border-b border-slate-800 text-xs text-slate-400 font-mono';
+                termTitle.className = 'flex items-center gap-1.5 text-cyan-400 font-semibold';
+                termOut.className = 'flex-grow p-3 overflow-y-auto text-xs code-font text-slate-200 space-y-1 bg-black/60 rounded-xl mt-2 transition-colors';
+                termFooter.className = 'pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] text-slate-500';
+            }
+
+            updateThemeLabelTexts();
+
+            if (notify) {
+                playSound('click');
+                showToast(theme === 'light' ? "வெண்மை வண்ணத் தீமிற்கு (Light Theme) மாற்றப்பட்டது." : "கருப்பு வண்ணத் தீமிற்கு (Dark Theme) மாற்றப்பட்டது.", "Theme");
+            }
+        }
+
+        function toggleEditorTheme() {
+            const nextTheme = currentEditorTheme === 'dark' ? 'light' : 'dark';
+            setEditorTheme(nextTheme, true);
+        }
+
+        // ==========================================
+        // TAB NAVIGATION
+        // ==========================================
+        const allTabs = ['lessons', 'playground', 'lab', 'qa', 'quiz'];
+
+        function switchTab(tabId) {
+            playSound('click');
+            allTabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('active-tab');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // ASYNC CIN PROMPT SYSTEM (std::cin)
+        // ==========================================
+        let cinResolveHandler = null;
+
+        function customCin(promptText = "Enter value:") {
+            return new Promise((resolve) => {
+                cinResolveHandler = resolve;
+                document.getElementById('cin-message').textContent = promptText;
+                const inputField = document.getElementById('cin-input-field');
+                inputField.value = "";
+                document.getElementById('cin-modal').classList.remove('hidden');
+                setTimeout(() => inputField.focus(), 50);
+            });
+        }
+
+        function submitCin() {
+            const val = document.getElementById('cin-input-field').value;
+            document.getElementById('cin-modal').classList.add('hidden');
+            if (cinResolveHandler) {
+                cinResolveHandler(val);
+                cinResolveHandler = null;
+            }
+        }
+
+        // Toast Notification System
+        function showToast(message, title = "C++ Console") {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-body').textContent = message;
+            toast.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                hideToast();
+            }, 3500);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast-notification');
+            toast.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+        }
+
+        // ==========================================
+        // C++ BROWSER INTERPRETER & EXECUTION ENGINE
+        // ==========================================
+        async function runCppCode() {
+            playSound('run');
+            const startTime = performance.now();
+            const termOut = document.getElementById('terminal-output');
+            termOut.innerHTML = '';
+
+            let currentLineBuffer = '';
+            function appendTerminal(str, isError = false) {
+                const line = document.createElement('div');
+                if (isError) {
+                    line.className = 'text-rose-400 font-bold';
+                    line.textContent = str;
+                } else {
+                    line.className = currentEditorTheme === 'light' ? 'text-slate-800 font-medium' : 'text-cyan-300';
+                    line.textContent = str;
+                }
+                termOut.appendChild(line);
+                termOut.scrollTop = termOut.scrollHeight;
+            }
+
+            const rawCode = editor.value;
+
+            try {
+                // 1. Remove preprocessors, comments, and namespace statements
+                let code = rawCode.replace(/\/\*[\s\S]*?\*\//g, ''); // strip block comments
+                code = code.replace(/\/\/.*$/gm, ''); // strip single-line comments
+                code = code.replace(/#include\s*[<"][^>"]+[>"]/g, '');
+                code = code.replace(/using\s+namespace\s+[a-zA-Z0-9_]+;/g, '');
+                code = code.replace(/\bstd::/g, '');
+                code = code.replace(/\bendl\b/g, '"\\n"');
+
+                // 2. Loop Guard against Infinite Loops
+                let loopProtection = `
+                    let __guard = 0;
+                    function __checkLoop() {
+                        if (++__guard > 200000) throw new Error("Infinite loop detected (>200,000 iterations). Check loop termination condition.");
+                    }
+                `;
+
+                // 3. Handle C++ Classes (e.g., class Student { ... };)
+                const customClasses = new Set();
+                const classMatches = [...code.matchAll(/\bclass\s+([a-zA-Z0-9_]+)\s*\{/g)];
+                for (const m of classMatches) {
+                    customClasses.add(m[1]);
+                }
+
+                code = code.replace(/\bclass\s+([a-zA-Z0-9_]+)\s*\{([\s\S]*?)\};/g, (match, className, classBody) => {
+                    let body = classBody;
+                    body = body.replace(/\b(public|private|protected)\s*:/g, '');
+                    
+                    const memberVars = [];
+                    // Convert member variable declarations
+                    body = body.replace(/\b(int|float|double|char|bool|string|long)\s+([^;]+);/g, (varMatch, type, vars) => {
+                        if (vars.includes('(')) return varMatch;
+                        const names = vars.split(',').map(v => v.trim().split('=')[0].trim()).filter(Boolean);
+                        names.forEach(n => memberVars.push(n));
+                        return names.map(n => `${n} = 0;`).join('\n');
+                    });
+
+                    // Convert member methods (prefix member vars with this.)
+                    body = body.replace(/\b(int|void|float|double|char|bool|string)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{([\s\S]*?)\}/g, (mMatch, retType, mName, params, mBody) => {
+                        let cleanBody = mBody;
+                        memberVars.forEach(v => {
+                            const re = new RegExp(`\\b${v}\\b`, 'g');
+                            cleanBody = cleanBody.replace(re, `this.${v}`);
+                        });
+                        const cleanParams = params.split(',').map(p => p.trim().replace(/\b(int|float|double|char|bool|string)\s+(&)?/, '').trim()).filter(Boolean).join(', ');
+                        return `${mName}(${cleanParams}) { ${cleanBody} }`;
+                    });
+
+                    return `class ${className} {\n${body}\n}`;
+                });
+
+                // Convert object instantiations (e.g. Student s1; -> let s1 = new Student();)
+                for (const cName of customClasses) {
+                    const re = new RegExp(`\\b${cName}\\s+([a-zA-Z0-9_\\s,]+);`, 'g');
+                    code = code.replace(re, (match, instances) => {
+                        const list = instances.split(',').map(s => s.trim()).filter(Boolean);
+                        return list.map(s => `let ${s} = new ${cName}();`).join('\n');
+                    });
+                }
+
+                // 4. Convert User Functions BEFORE variable types to prevent "let fname()" syntax error
+                code = code.replace(/\b(int|void|float|double|char|bool|string|long)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g, (match, retType, fnName, params) => {
+                    if (fnName === 'main' || ['if', 'while', 'for', 'switch'].includes(fnName)) {
+                        return match;
+                    }
+                    const cleanParams = params.split(',').map(p => {
+                        return p.trim().replace(/\b(int|float|double|char|bool|string|long)\s*(&)?\s*/g, '').trim();
+                    }).filter(Boolean).join(', ');
+                    return `function ${fnName}(${cleanParams}) {`;
+                });
+
+                // Convert main() function
+                code = code.replace(/\b(int|void)\s+main\s*\(([^)]*)\)\s*\{/g, 'async function main($2) {');
+
+                // 5. Convert cout << ... << endl;
+                code = code.replace(/cout\s*<<\s*([^;]+);/g, (match, exprs) => {
+                    const parts = exprs.split('<<').map(p => p.trim()).filter(Boolean);
+                    return `__cout(${parts.join(', ')});`;
+                });
+
+                // 6. Convert cin >> var1 >> var2;
+                code = code.replace(/cin\s*>>\s*([^;]+);/g, (match, vars) => {
+                    const varNames = vars.split('>>').map(v => v.trim()).filter(Boolean);
+                    return varNames.map(v => `${v} = await __cin("cin >> ${v}:");`).join('\n');
+                });
+
+                // 7. Convert C++ data types to JavaScript let declarations
+                code = code.replace(/\blong\s+long\b/g, 'let');
+                code = code.replace(/\b(unsigned|signed|short|long)\s+(int|float|double|char)?/g, 'let ');
+                code = code.replace(/\b(int|float|double|char|bool|string|long)\s+/g, 'let ');
+                code = code.replace(/\blet\s+let\b/g, 'let');
+
+                // 8. Inject loop guards into for/while/do loops
+                code = code.replace(/\b(for|while)\s*(\([^{]+\))\s*\{/g, '$1 $2 { __checkLoop(); ');
+                code = code.replace(/\bdo\s*\{/g, 'do { __checkLoop(); ');
+
+                // 9. If user did not wrap in main(), wrap top-level statements automatically
+                const hasMain = /\basync\s+function\s+main\b|\bfunction\s+main\b/.test(code);
+                if (!hasMain) {
+                    code = `async function main() {\n${code}\n}`;
+                }
+
+                // 10. Assemble executable sandbox
+                let fullScript = `
+                    return (async (__cout, __cin) => {
+                        ${loopProtection}
+                        ${code}
+                        if (typeof main === 'function') {
+                            return await main();
+                        }
+                    });
+                `;
+
+                // Mock Synchronous cout Stream
+                const coutMock = (...items) => {
+                    for (let item of items) {
+                        const str = (item === undefined || item === null) ? '' : String(item);
+                        if (str.includes('\n')) {
+                            const sub = str.split('\n');
+                            for (let i = 0; i < sub.length; i++) {
+                                currentLineBuffer += sub[i];
+                                if (i < sub.length - 1) {
+                                    appendTerminal(currentLineBuffer);
+                                    currentLineBuffer = '';
+                                }
+                            }
+                        } else {
+                            currentLineBuffer += str;
+                        }
+                    }
+                };
+
+                // Mock Asynchronous cin Stream
+                const cinMock = async (promptMsg) => {
+                    if (currentLineBuffer.length > 0) {
+                        appendTerminal(currentLineBuffer);
+                        currentLineBuffer = '';
+                    }
+                    const input = await customCin(promptMsg);
+                    appendTerminal(`> ${input}`);
+                    if (!isNaN(input) && input.trim() !== '') {
+                        return Number(input);
+                    }
+                    return input;
+                };
+
+                const runner = new Function(fullScript)();
+                const exitCode = await runner(coutMock, cinMock);
+
+                // Flush any remaining characters in the output buffer
+                if (currentLineBuffer.length > 0) {
+                    appendTerminal(currentLineBuffer);
+                    currentLineBuffer = '';
+                }
+
+                const endTime = performance.now();
+                const diffTime = (endTime - startTime).toFixed(2);
+
+                document.getElementById('term-exit-code').textContent = (exitCode === undefined ? 0 : exitCode);
+                document.getElementById('term-exec-time').textContent = `Execution: ${diffTime}ms`;
+                playSound('success');
+
+            } catch (err) {
+                playSound('error');
+                appendTerminal(`[C++ Compilation / Runtime Error]: ${err.message}`, true);
+                document.getElementById('term-exit-code').textContent = '1 (Error)';
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            // Restore Language Preference
+            try {
+                const savedLang = localStorage.getItem('cppLabLang');
+                if (savedLang === 'en' || savedLang === 'ta') {
+                    currentLang = savedLang;
+                }
+            } catch(e) {}
+
+            // Restore Theme Preference
+            try {
+                const savedTheme = localStorage.getItem('cppLabTheme') || 'dark';
+                setEditorTheme(savedTheme, false);
+            } catch(e) {
+                setEditorTheme('dark', false);
+            }
+
+            updateLocalizedStaticTexts();
+            renderPresetSelector();
+            renderLessons();
+            renderLabPrograms();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            // Set initial code
+            editor.value = cppPresets.hello.code;
+            // Execute default snippet once
+            runCppCode();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3072 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ இனக்குழுக்கள் மற்றும் பொருள்கள் | C++ Classes & Objects OOP Interactive Lab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Soft Educational Audio Feedback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Google Fonts for Tamil & Monospace Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        tamil: ['"Mukta Malar"', 'sans-serif'],
+                        code: ['"Fira Code"', 'monospace'],
+                        inter: ['"Inter"', 'sans-serif']
+                    },
+                    colors: {
+                        cppViolet: '#6366f1',
+                        cppDark: '#0b1120',
+                        editorDark: '#0f172a',
+                        ramGreen: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Mukta Malar', 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .active-tab {
+            background-color: #4f46e5 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.25);
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.92; }
+        }
+        .obj-box-highlight {
+            animation: pulseGlow 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Header & Navigation -->
+    <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white shadow-xl sticky top-0 z-40 border-b border-indigo-900/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-2 rounded-xl shadow-md font-black text-xl flex items-center justify-center w-11 h-11 border border-indigo-400/40">
+                    <span>OOP</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-indigo-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold uppercase tracking-wider" id="lbl-header-std">11-ஆம் வகுப்பு கணிப்பொறி அறிவியல்</span>
+                        <span class="text-xs text-indigo-300 font-medium hidden sm:inline" id="lbl-header-sub">பொருள்நோக்கு நிரலாக்கம் (OOP)</span>
+                    </div>
+                    <h1 class="text-sm sm:text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5 mt-0.5" id="lbl-header-title">
+                        சி++ (C++) இனக்குழுக்கள் மற்றும் பொருள்கள் | ஊடாடும் ஆய்வகம்
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Controls: Bilingual Switcher & Tabs -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" id="lang-switch-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-700 shadow-sm" title="Switch Language / மொழியை மாற்றுக">
+                    <i class="fa-solid fa-language text-sm"></i>
+                    <span id="lang-btn-text">English / தமிழ்</span>
+                </button>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700 overflow-x-auto text-xs sm:text-sm font-medium gap-1">
+                    <button onclick="switchTab('concepts')" id="tab-btn-concepts" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 active-tab">
+                        <i class="fa-solid fa-shapes"></i> <span id="tab-title-concepts">OOP கோட்பாடுகள்</span>
+                    </button>
+                    <button onclick="switchTab('visualizer')" id="tab-btn-visualizer" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-cube"></i> <span id="tab-title-visualizer">நினைவகக் காட்சிப்படுத்தி</span>
+                    </button>
+                    <button onclick="switchTab('playground')" id="tab-btn-playground" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-code"></i> <span id="tab-title-playground">OOP ஆய்வகம்</span>
+                    </button>
+                    <button onclick="switchTab('qa')" id="tab-btn-qa" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-award"></i> <span id="tab-title-qa">தேர்வு வினா வங்கி</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-circle-question"></i> <span id="tab-title-quiz">சுய மதிப்பீடு</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: OOP CONCEPTS & PILLARS (கோட்பாடுகள்) -->
+        <!-- ========================================== -->
+        <section id="tab-concepts" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <span class="bg-indigo-500/30 text-indigo-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-indigo-400/30" id="badge-chapter">
+                        11-ஆம் வகுப்பு அத்தியாயம் 14 & 15
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 flex items-center gap-2">
+                        <i class="fa-solid fa-cubes-stacked text-amber-400"></i>
+                        <span id="hero-title">இனக்குழுக்கள் மற்றும் பொருள்கள் (Classes & Objects)</span>
+                    </h2>
+                    <p class="text-indigo-200 text-sm mt-1 max-w-2xl leading-relaxed" id="hero-sub">
+                        பொருள்நோக்கு நிரலாக்கத்தின் (OOP) மிக முக்கியமான அடித்தளம் இனக்குழு மற்றும் பொருள் ஆகும். நிஜ உலகச் சூழல்களை கணினியில் மாதிரியாக்கம் செய்ய இவை பயன்படுகின்றன.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="switchTab('visualizer')" class="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-cube"></i> <span id="hero-btn-visual">பொருளை உருவாக்கிப் பார்</span>
+                    </button>
+                    <button onclick="switchTab('playground')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-terminal"></i> <span id="hero-btn-code">கோட் ஆய்வகம்</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Class vs Object Quick Comparative Infographic -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Class (Blueprint) Card -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-indigo-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-indigo-100 text-indigo-800 text-xs font-black px-3 py-1 rounded-bl-xl uppercase" id="badge-class-type">திட்ட வரைபடம் (Blueprint)</div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-black">
+                            <i class="fa-solid fa-drafting-compass"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900" id="card-class-head">இனக்குழு என்றால் என்ன? (Class)</h3>
+                            <span class="text-xs text-indigo-600 font-semibold" id="card-class-sub">பயனர் வரையறுத்த தரவு வகை (User-Defined Type)</span>
+                        </div>
+                    </div>
+                    <ul class="text-xs sm:text-sm text-slate-600 space-y-2 leading-relaxed" id="card-class-points">
+                        <li>• இது பொருள்களை உருவாக்குவதற்கான <strong>மாதிரி வரைபடம் (Blueprint)</strong> ஆகும்.</li>
+                        <li>• இனக்குழுவை அறிவிக்கும் போது அதற்கு கணினியின் முதன்மை நினைவகத்தில் (RAM) <strong>இடம் ஒதுக்கப்படுவதில்லை</strong>.</li>
+                        <li>• இது <strong>தரவு உறுப்புகள் (Data Members)</strong> மற்றும் <strong>உறுப்புச் செயற்கூறுகளை (Member Functions)</strong> ஒன்றாக இணைக்கிறது.</li>
+                        <li>• தொடரியல்: <code>class ClassName { access_specifier: ... };</code></li>
+                    </ul>
+                </div>
+
+                <!-- Object (Instance) Card -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-emerald-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-bl-xl uppercase" id="badge-obj-type">உயிர்ப்புள்ள சான்று (Instance)</div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-black">
+                            <i class="fa-solid fa-house-laptop"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900" id="card-obj-head">பொருள் என்றால் என்ன? (Object)</h3>
+                            <span class="text-xs text-emerald-600 font-semibold" id="card-obj-sub">இனக்குழுவின் சான்று (Instance of a Class)</span>
+                        </div>
+                    </div>
+                    <ul class="text-xs sm:text-sm text-slate-600 space-y-2 leading-relaxed" id="card-obj-points">
+                        <li>• ஒரு இனக்குழுவின் அடிப்படையில் தோற்றுவிக்கப்படும் <strong>நடைமுறை வடிவம் (Instance)</strong> பொருள் எனப்படும்.</li>
+                        <li>• ஒரு பொருள் தோற்றுவிக்கப்படும் போதுதான் அதற்கு <strong>நினைவகம் (Memory) ஒதுக்கப்படுகிறது</strong>.</li>
+                        <li>• ஒரே இனக்குழுவை அடிப்படையாகக் கொண்டு <strong>பல பொருள்களை</strong> தனித்தனி மதிப்புகளுடன் உருவாக்க முடியும்.</li>
+                        <li>• புள்ளி செயற்குறி (.) கொண்டு உறுப்புகளை அணுகலாம்: <code>s1.getData();</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Four Pillars of OOP Grid -->
+            <div>
+                <div class="flex flex-wrap items-center justify-between mb-4 gap-2">
+                    <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-landmark text-indigo-600"></i>
+                        <span id="title-pillars">பொருள்நோக்கு நிரலாக்கத்தின் (OOP) 4 தூண்கள்</span>
+                    </h3>
+                    <span class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
+                        <i class="fa-solid fa-hand-pointer text-indigo-500"></i> <span id="lbl-tap-hint">தலைப்பைத் தொட்டு விரிவான விளக்கம் & நிரல் காண்க</span>
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="pillars-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Access Specifiers (Private, Public, Protected) -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex flex-wrap items-center justify-between mb-3 gap-2">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-500"></i>
+                        <span id="title-access-spec">அணுகியல் விவரக்குறிப்புகள் (Access Specifiers in C++)</span>
+                    </h3>
+                    <span class="text-[11px] text-slate-500 font-medium hidden sm:inline" id="lbl-spec-hint">தொட்டுப் பார்க்கவும் (Click to explore)</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="access-spec-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Constructors & Destructors Note -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-lg font-bold">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900" id="title-constructors">ஆக்கிகள் மற்றும் அழிப்பிகள் (Constructors & Destructors)</h3>
+                            <span class="text-xs text-purple-600 font-semibold" id="sub-constructors">பொருள் துவக்கம் மற்றும் நினைவக விடுவிப்பு</span>
+                        </div>
+                    </div>
+                    <span class="text-[11px] text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full font-semibold border border-purple-200 hidden sm:inline" id="lbl-cd-hint">தொட்டு ஒப்புமை & நிரல் காண்க</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-600 leading-relaxed" id="constructors-content">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: INTERACTIVE OBJECT & MEMORY VISUALIZER -->
+        <!-- ========================================== -->
+        <section id="tab-visualizer" class="hidden space-y-6">
+            
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-indigo-600"></i>
+                        <span id="vis-heading">ஊடாடும் நினைவகக் காட்சிப்படுத்தி (Class Blueprint vs Living Objects)</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="vis-subheading">
+                        இனக்குழு என்பது திட்ட வரைபடம் மட்டுமே; 'பொருளை உருவாக்கு' பொத்தானை அழுத்தி கணினியின் நினைவகத்தில் (RAM) பொருள்கள் எவ்வாறு தனித்தனி முகவரியுடன் உருவாகின்றன என்பதைக் கண்கூடாகக் காணுங்கள்!
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="resetVisualizer()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> <span id="btn-vis-reset">மீட்டமை (Reset)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Visualizer Workspace: Left Blueprint, Right Living Objects -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                
+                <!-- Left: Class Blueprint Card (5 Cols) -->
+                <div class="lg:col-span-5 bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                            <span class="text-xs font-mono text-indigo-400 font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-code"></i> <span id="vis-code-title">Student.h (Class Blueprint)</span>
+                            </span>
+                            <span class="text-[11px] bg-indigo-950 text-indigo-300 border border-indigo-700 px-2 py-0.5 rounded font-mono">0 Bytes (No RAM used)</span>
+                        </div>
+
+                        <!-- Class C++ Code display -->
+                        <pre class="bg-black/60 p-3.5 rounded-xl text-xs font-mono text-emerald-400 leading-relaxed overflow-x-auto border border-slate-800/80"><code><span class="text-indigo-400 font-bold">class</span> <span class="text-amber-300 font-bold">Student</span> {
+<span class="text-rose-400 font-bold">private:</span>
+    <span class="text-cyan-400">int</span> rollNo;
+    <span class="text-cyan-400">string</span> name;
+    <span class="text-cyan-400">int</span> mark1, mark2;
+
+<span class="text-emerald-400 font-bold">public:</span>
+    <span class="text-slate-400">// ஆக்கி (Constructor)</span>
+    <span class="text-amber-300 font-bold">Student</span>(<span class="text-cyan-400">int</span> r, <span class="text-cyan-400">string</span> n, <span class="text-cyan-400">int</span> m1, <span class="text-cyan-400">int</span> m2);
+    <span class="text-cyan-400">int</span> <span class="text-blue-300">getTotal</span>();
+    <span class="text-cyan-400">void</span> <span class="text-blue-300">bonusMarks</span>(<span class="text-cyan-400">int</span> b);
+};</code></pre>
+
+                        <div class="mt-4 p-3 rounded-xl bg-slate-800/60 border border-slate-700 text-xs text-slate-300 space-y-1.5 leading-relaxed">
+                            <div class="flex items-center gap-2 text-indigo-300 font-bold">
+                                <i class="fa-solid fa-circle-info"></i> <span id="vis-info-title">முக்கியக் குறிப்பு:</span>
+                            </div>
+                            <p id="vis-info-desc">இனக்குழு அறிவிக்கப்படும் போது கணினியின் நினைவகத்தில் (RAM) எந்த இடமும் ஒதுக்கப்படாது. அது ஒரு படிவம் (Form) போன்றது.</p>
+                        </div>
+                    </div>
+
+                    <!-- Object Instantiation Form Controls -->
+                    <div class="pt-4 mt-4 border-t border-slate-800 space-y-3">
+                        <div class="text-xs font-bold text-amber-400 flex items-center gap-1.5" id="vis-instantiate-title">
+                            <i class="fa-solid fa-plus-circle"></i> புதிய பொருளை உருவாக்கு (Instantiate Object):
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <input type="text" id="inp-obj-name" placeholder="பெயர் (Name)" value="கவின் (Kavin)" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="number" id="inp-obj-roll" placeholder="பதிவு எண் (Roll)" value="101" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="number" id="inp-obj-m1" placeholder="பாடம் 1 (Mark1)" value="88" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="number" id="inp-obj-m2" placeholder="பாடம் 2 (Mark2)" value="94" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-white outline-none focus:ring-1 focus:ring-indigo-500">
+                        </div>
+                        <button onclick="instantiateCustomStudent()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="btn-instantiate-text">நினைவகத்தில் பொருளைத் தோற்றுவி (Create in RAM)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Active Living Objects in RAM (7 Cols) -->
+                <div class="lg:col-span-7 bg-white rounded-2xl p-5 border border-slate-200 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h3 class="font-bold text-slate-800 text-sm sm:text-base" id="vis-ram-heading">கணினி நினைவகம் (RAM - Living Objects)</h3>
+                            </div>
+                            <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-md border border-emerald-200">
+                                <span id="vis-obj-count">பொருள்கள்: 2</span>
+                            </span>
+                        </div>
+
+                        <!-- Objects Container -->
+                        <div id="ram-objects-container" class="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                            <!-- Populated dynamically with live interactable objects -->
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl mt-4 text-[11px] text-slate-500 flex items-center justify-between">
+                        <span id="vis-note-encaps">உறைபொதியாக்கம்: Private மாறிகள் மறைக்கப்பட்டு, Public செயற்கூறுகள் வழியாக மட்டுமே அணுகப்படுகின்றன.</span>
+                        <span class="text-indigo-600 font-mono font-bold">sizeof(Student) ≈ 48 bytes</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: OOP C++ PLAYGROUND (ஆய்வகம்) -->
+        <!-- ========================================== -->
+        <section id="tab-playground" class="hidden space-y-4">
+            
+            <!-- Controls bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5" id="lbl-preset-select">
+                        <i class="fa-solid fa-shapes text-indigo-600"></i> OOP மாதிரி நிரல்:
+                    </label>
+                    <select id="preset-selector" onchange="loadOopPreset(this.value)" class="text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="flex items-center flex-wrap gap-2">
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleEditorTheme()" id="theme-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm">
+                        <i id="theme-btn-icon" class="fa-solid fa-moon"></i>
+                        <span id="theme-btn-label">கருப்பு தீம் (Dark)</span>
+                    </button>
+                    <!-- Copy -->
+                    <button onclick="copyCurrentCode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-copy"></i> <span id="btn-copy-code">நகலெடு</span>
+                    </button>
+                    <!-- Reset -->
+                    <button onclick="resetEditor()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> <span id="btn-reset-code">மீட்டமை</span>
+                    </button>
+                    <!-- Run Program -->
+                    <button onclick="runOopCode()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-bold transition shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="btn-run-code">நிரலை இயக்கு (Run)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Editor & Terminal Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Left: C++ Code Editor (7 cols) -->
+                <div id="editor-container" class="lg:col-span-7 bg-editorDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[560px] transition-all duration-200">
+                    <div id="editor-header" class="flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                            <span id="editor-title-text" class="ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-code text-indigo-400"></i> class_demo.cpp
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <button onclick="toggleEditorTheme()" id="editor-badge-theme" class="text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-half-stroke"></i>
+                                <span id="editor-badge-text">தீம்: இருட்டு</span>
+                            </button>
+                            <span class="text-slate-500 text-[11px] hidden sm:inline">C++ OOP Compiler</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow pt-3 relative">
+                        <textarea id="code-editor" spellcheck="false" class="w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors" placeholder="// C++ OOP இனக்குழு நிரலை இங்கே எழுதவும்..."></textarea>
+                    </div>
+
+                    <div id="editor-footer" class="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                        <span>ஆதரிப்பவை: <code class="text-indigo-400 font-bold">class</code>, <code class="text-indigo-400 font-bold">public:</code>, <code class="text-indigo-400 font-bold">private:</code>, <code class="text-indigo-400 font-bold">constructors</code>, <code class="text-indigo-400 font-bold">objects</code></span>
+                        <span id="editor-status-indicator" class="text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="lbl-editor-ready">OOP கம்பைலர் தயார்</span></span>
+                    </div>
+                </div>
+
+                <!-- Right: Simulated C++ Terminal (5 cols) -->
+                <div class="lg:col-span-5 flex flex-col h-[560px]">
+                    <div id="terminal-container" class="flex-1 bg-slate-950 rounded-2xl p-4 border border-slate-800 shadow-2xl flex flex-col overflow-hidden transition-all duration-200">
+                        <div id="terminal-header" class="flex items-center justify-between pb-2 border-b border-slate-800 text-xs text-slate-400 font-mono">
+                            <span id="terminal-title-text" class="flex items-center gap-1.5 text-indigo-400 font-semibold">
+                                <i class="fa-solid fa-terminal"></i> C++ Output Terminal
+                            </span>
+                            <button onclick="clearTerminal()" class="hover:text-rose-400 text-xs text-slate-400 transition" title="Clear Console">
+                                <i class="fa-solid fa-eraser"></i> <span id="lbl-clear-term">துடைக்க</span>
+                            </button>
+                        </div>
+                        <div id="terminal-output" class="flex-grow p-3 overflow-y-auto text-xs code-font text-slate-200 space-y-1 bg-black/60 rounded-xl mt-2 transition-colors">
+                            <div class="text-slate-500">// cout வெளியீடுகள் மற்றும் ஆக்கிகளின் செயல்பாடுகள் இங்கு தோன்றும்...</div>
+                        </div>
+                        <div id="terminal-footer" class="pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] text-slate-500">
+                            <span>Exit Code: <span id="term-exit-code" class="text-emerald-400 font-mono">0</span></span>
+                            <span id="term-exec-time">Execution: 0.00ms</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: EXAM QUESTION BANK (வினா வங்கி) -->
+        <!-- ========================================== -->
+        <section id="tab-qa" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap text-indigo-600"></i>
+                        <span id="qa-heading">அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி (OOP பிரத்யேகம்)</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="qa-subheading">
+                        11 மற்றும் 12-ஆம் வகுப்பு பொதுத்தேர்வில் கேட்கப்படும் மிக முக்கியமான 2, 3 மற்றும் 5 மதிப்பெண் வினாக்கள்.
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="filterQA('all')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-indigo-600 text-white" id="qa-btn-all">அனைத்தும்</button>
+                    <button onclick="filterQA('2m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-2m">2 மதிப்பெண்</button>
+                    <button onclick="filterQA('3m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-3m">3 மதிப்பெண்</button>
+                    <button onclick="filterQA('5m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-5m">5 மதிப்பெண்</button>
+                </div>
+            </div>
+
+            <!-- Questions Grid -->
+            <div id="qa-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Dynamically Populated -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: QUIZ & OOP BUG HUNTER (சுய மதிப்பீடு) -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-purple-600"></i>
+                        <span id="quiz-heading">OOP வினாடி வினா & பிழை திருத்தும் சவால்</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="quiz-subheading">
+                        இனக்குழுக்கள், பொருள்கள், அணுகியல் கட்டுப்பாடுகள் மற்றும் ஆக்கிகள் குறித்த சுய மதிப்பீடு.
+                    </p>
+                </div>
+                <div class="px-4 py-2 bg-indigo-50 text-indigo-900 rounded-xl font-bold border border-indigo-200 text-sm">
+                    <span id="lbl-score-text">மதிப்பெண்:</span> <span id="current-score" class="text-indigo-600 text-lg">0</span> / 10
+                </div>
+            </div>
+
+            <!-- Quiz Questions Section -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-emerald-600"></i> <span id="quiz-part1-title">பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (MCQs)</span>
+                </h3>
+                <div id="quiz-container" class="space-y-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Bug Hunt Section -->
+            <div class="pt-6 border-t border-slate-200 space-y-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-bug text-rose-600"></i> <span id="bug-part2-title">பகுதி 2: OOP பிழையைக் கண்டுபிடி! (Spot the Bug)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500" id="bug-part2-sub">கீழே உள்ள C++ இனக்குழு வரிகளில் உள்ள தொடரியல் பிழைகளைக் கண்டறியவும்.</p>
+                </div>
+
+                <div id="bug-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="flex justify-center pt-4">
+                <button onclick="resetQuiz()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> <span id="btn-quiz-reset">வினாடி வினாவை மீண்டும் தொடங்க</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Simulated CIN Input Modal -->
+    <div id="cin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg font-bold">
+                    <span>cin&gt;&gt;</span>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-base" id="cin-modal-title">C++ உள்ளீடு தேவைப்படுகிறது</h4>
+                    <span class="text-xs text-slate-400">Object Member Input Stream</span>
+                </div>
+            </div>
+            <p id="cin-message" class="text-sm font-semibold text-slate-700 mb-3">மதிப்பை உள்ளிடவும்:</p>
+            <input type="text" id="cin-input-field" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-800 text-sm mb-5 font-mono" placeholder="Enter value...">
+            <div class="flex justify-end gap-2">
+                <button onclick="submitCin()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition shadow" id="btn-cin-ok">சரி (Submit)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topic Deep-Dive Interactive Modal (விளக்கங்கள் & எடுத்துக்காட்டுகள்) -->
+    <div id="topic-detail-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-4 sm:p-5 flex items-center justify-between border-b border-indigo-900">
+                <div class="flex items-center gap-3">
+                    <div id="modal-topic-icon-wrap" class="w-11 h-11 rounded-xl bg-indigo-500/30 text-indigo-300 border border-indigo-400/40 flex items-center justify-center text-xl font-bold">
+                        <i id="modal-topic-icon" class="fa-solid fa-box-archive"></i>
+                    </div>
+                    <div>
+                        <span id="modal-topic-cat" class="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/40 text-indigo-200 border border-indigo-400/30">OOP தூண்</span>
+                        <h3 id="modal-topic-title" class="text-base sm:text-lg font-bold text-white mt-0.5">தலைப்பு</h3>
+                    </div>
+                </div>
+                <button onclick="closeTopicDetail()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-slate-800 text-xs sm:text-sm">
+                <!-- Summary / Definition -->
+                <div class="bg-indigo-50/60 border border-indigo-100 p-3.5 rounded-xl">
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-question text-indigo-600"></i> <span id="lbl-modal-concept">கருத்து விளக்கம் (Concept):</span>
+                    </h4>
+                    <p id="modal-topic-summary" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Real-world Analogy -->
+                <div class="bg-amber-50/70 border border-amber-200 p-3.5 rounded-xl">
+                    <h4 class="font-bold text-amber-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> <span id="modal-topic-analogy-title">நிஜ உலக ஒப்புமை (Real-world Analogy):</span>
+                    </h4>
+                    <p id="modal-topic-analogy-desc" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Key Exam Points -->
+                <div>
+                    <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-check-double text-emerald-600"></i> <span id="lbl-modal-points">முக்கியத் தேர்வு குறிப்புகள் (Key Exam Points):</span>
+                    </h4>
+                    <ul id="modal-topic-points" class="space-y-1.5 text-slate-600">
+                    </ul>
+                </div>
+
+                <!-- Code Example -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-code text-indigo-600"></i> <span id="lbl-modal-code">C++ நிரல் எடுத்துக்காட்டு (C++ Code Example):</span>
+                        </h4>
+                        <button onclick="copyModalCode()" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> <span id="lbl-modal-copy">நகலெடு</span>
+                        </button>
+                    </div>
+                    <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono overflow-x-auto border border-slate-800"><code id="modal-topic-code"></code></pre>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                    <button onclick="navigateTopicDetail(-1)" class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1" title="Previous Topic">
+                        <i class="fa-solid fa-chevron-left"></i> <span id="lbl-modal-prev">முந்தையது</span>
+                    </button>
+                    <button onclick="navigateTopicDetail(1)" class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1" title="Next Topic">
+                        <span id="lbl-modal-next">அடுத்தது</span> <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeTopicDetail()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs transition">
+                        <span id="lbl-modal-close">மூடுக</span>
+                    </button>
+                    <button onclick="loadTopicCodeToPlayground(currentModalTopicId)" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="lbl-modal-run">ஆய்வகத்தில் இயக்கு (Run in Playground)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulated CIN Input Modal -->
+    <div id="cin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
+        <div id="toast-icon" class="text-indigo-400 text-xl pt-0.5">
+            <i class="fa-solid fa-cube"></i>
+        </div>
+        <div class="flex-grow">
+            <h5 id="toast-title" class="font-bold text-sm text-indigo-300">செய்தி</h5>
+            <p id="toast-body" class="text-xs text-slate-300 mt-1 leading-relaxed">விவரம்</p>
+        </div>
+        <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium" id="footer-text">
+            11-ஆம் வகுப்பு கணிப்பொறி அறிவியல் / பயன்பாடுகள் பாடநூல் - தமிழ்நாடு பள்ளிக் கல்வித்துறை பாடத்திட்ட வழிகாட்டுதலின்படி வடிவமைக்கப்பட்டது.
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Audio synthesis for soft interactive feedback
+        let synth = null;
+        function getSynth() {
+            if (!synth && window.Tone) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.volume.value = -14;
+            }
+            return synth;
+        }
+
+        function playSound(type) {
+            try {
+                const s = getSynth();
+                if (!s) return;
+                Tone.start();
+                if (type === 'create') s.triggerAttackRelease(["C4", "E4", "G4"], "16n");
+                else if (type === 'run') s.triggerAttackRelease(["C5", "E5"], "8n");
+                else if (type === 'success') s.triggerAttackRelease(["C5", "G5"], "16n");
+                else if (type === 'error') s.triggerAttackRelease(["F4", "Db4"], "8n");
+                else if (type === 'click') s.triggerAttackRelease("C4", "32n");
+            } catch(e) {}
+        }
+
+        // ==========================================
+        // BILINGUAL LOCALIZATION ENGINE (Tamil & English)
+        // ==========================================
+        let currentLang = 'ta'; // 'ta' for Tamil, 'en' for English
+
+        const UI_TEXT = {
+            ta: {
+                headerStd: "11-ஆம் வகுப்பு கணிப்பொறி அறிவியல்",
+                headerSub: "பொருள்நோக்கு நிரலாக்கம் (OOP)",
+                headerTitle: "சி++ (C++) இனக்குழுக்கள் மற்றும் பொருள்கள் | ஊடாடும் ஆய்வகம்",
+                langBtn: "English மொழிக்கு மாறுக 🇬🇧",
+                tabConcepts: "OOP கோட்பாடுகள்",
+                tabVisualizer: "நினைவகக் காட்சிப்படுத்தி",
+                tabPlayground: "OOP ஆய்வகம்",
+                tabQA: "தேர்வு வினா வங்கி",
+                tabQuiz: "சுய மதிப்பீடு",
+                badgeChapter: "11-ஆம் வகுப்பு அத்தியாயம் 14 & 15",
+                heroTitle: "இனக்குழுக்கள் மற்றும் பொருள்கள் (Classes & Objects)",
+                heroSub: "பொருள்நோக்கு நிரலாக்கத்தின் (OOP) மிக முக்கியமான அடித்தளம் இனக்குழு மற்றும் பொருள் ஆகும். நிஜ உலகச் சூழல்களை கணினியில் மாதிரியாக்கம் செய்ய இவை பயன்படுகின்றன.",
+                heroBtnVisual: "பொருளை உருவாக்கிப் பார்",
+                heroBtnCode: "கோட் ஆய்வகம்",
+                badgeClassType: "திட்ட வரைபடம் (Blueprint)",
+                badgeObjType: "உயிர்ப்புள்ள சான்று (Instance)",
+                cardClassHead: "இனக்குழு என்றால் என்ன? (Class)",
+                cardClassSub: "பயனர் வரையறுத்த தரவு வகை (User-Defined Type)",
+                cardObjHead: "பொருள் என்றால் என்ன? (Object)",
+                cardObjSub: "இனக்குழுவின் சான்று (Instance of a Class)",
+                titlePillars: "பொருள்நோக்கு நிரலாக்கத்தின் (OOP) 4 தூண்கள்",
+                titleAccessSpec: "அணுகியல் விவரக்குறிப்புகள் (Access Specifiers in C++)",
+                titleConstructors: "ஆக்கிகள் மற்றும் அழிப்பிகள் (Constructors & Destructors)",
+                subConstructors: "பொருள் துவக்கம் மற்றும் நினைவக விடுவிப்பு",
+                visHeading: "ஊடாடும் நினைவகக் காட்சிப்படுத்தி (Class Blueprint vs Living Objects)",
+                visSubheading: "இனக்குழு என்பது திட்ட வரைபடம் மட்டுமே; 'பொருளை உருவாக்கு' பொத்தானை அழுத்தி கணினியின் நினைவகத்தில் (RAM) பொருள்கள் எவ்வாறு தனித்தனி முகவரியுடன் உருவாகின்றன என்பதைக் கண்கூடாகக் காணுங்கள்!",
+                btnVisReset: "மீட்டமை (Reset)",
+                visCodeTitle: "Student.h (இனக்குழு வரைபடம்)",
+                visInfoTitle: "முக்கியக் குறிப்பு:",
+                visInfoDesc: "இனக்குழு அறிவிக்கப்படும் போது கணினியின் நினைவகத்தில் (RAM) எந்த இடமும் ஒதுக்கப்படாது. அது ஒரு படிவம் (Form) போன்றது.",
+                visInstantiateTitle: "புதிய பொருளை உருவாக்கு (Instantiate Object):",
+                btnInstantiateText: "நினைவகத்தில் பொருளைத் தோற்றுவி (Create in RAM)",
+                visRamHeading: "கணினி நினைவகம் (RAM - Living Objects)",
+                visNoteEncaps: "உறைபொதியாக்கம்: Private மாறிகள் மறைக்கப்பட்டு, Public செயற்கூறுகள் வழியாக மட்டுமே அணுகப்படுகின்றன.",
+                lblPreset: "OOP மாதிரி நிரல்:",
+                btnCopy: "நகலெடு",
+                btnReset: "மீட்டமை",
+                btnRun: "நிரலை இயக்கு (Run)",
+                themeDark: "கருப்பு தீம் (Dark)",
+                themeLight: "வெண்மை தீம் (Light)",
+                badgeDark: "தீம்: இருட்டு",
+                badgeLight: "தீம்: வெண்மை",
+                lblReady: "OOP கம்பைலர் தயார்",
+                clearTerm: "துடைக்க",
+                qaHeading: "அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி (OOP பிரத்யேகம்)",
+                qaSub: "11 மற்றும் 12-ஆம் வகுப்பு பொதுத்தேர்வில் கேட்கப்படும் மிக முக்கியமான 2, 3 மற்றும் 5 மதிப்பெண் வினாக்கள்.",
+                qaBtnAll: "அனைத்தும்",
+                qaBtn2m: "2 மதிப்பெண்",
+                qaBtn3m: "3 மதிப்பெண்",
+                qaBtn5m: "5 மதிப்பெண்",
+                quizHeading: "OOP வினாடி வினா & பிழை திருத்தும் சவால்",
+                quizSub: "இனக்குழுக்கள், பொருள்கள், அணுகியல் கட்டுப்பாடுகள் மற்றும் ஆக்கிகள் குறித்த சுய மதிப்பீடு.",
+                lblScore: "மதிப்பெண்:",
+                quizP1Title: "பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (MCQs)",
+                quizP2Title: "பகுதி 2: OOP பிழையைக் கண்டுபிடி! (Spot the Bug)",
+                quizP2Sub: "கீழே உள்ள C++ இனக்குழு வரிகளில் உள்ள தொடரியல் பிழைகளைக் கண்டறியவும்.",
+                btnQuizReset: "வினாடி வினாவை மீண்டும் தொடங்க",
+                cinTitle: "C++ உள்ளீடு தேவைப்படுகிறது",
+                btnCinOk: "சரி (Submit)",
+                footerText: "11-ஆம் வகுப்பு கணிப்பொறி அறிவியல் / பயன்பாடுகள் பாடநூல் - தமிழ்நாடு பள்ளிக் கல்வித்துறை பாடத்திட்ட வழிகாட்டுதலின்படி வடிவமைக்கப்பட்டது.",
+                objBtnBonus: "போனஸ் மதிப்பெண் +5",
+                objBtnTotal: "மொத்தம் காண்க",
+                lblTapHint: "தலைப்பைத் தொட்டு விரிவான விளக்கம் & நிரல் காண்க",
+                lblSpecHint: "தொட்டுப் பார்க்கவும் (Click to explore)",
+                lblCdHint: "தொட்டு ஒப்புமை & நிரல் காண்க",
+                modalConcept: "கருத்து விளக்கம் (Concept):",
+                modalPoints: "முக்கியத் தேர்வு குறிப்புகள் (Key Exam Points):",
+                modalCode: "C++ நிரல் எடுத்துக்காட்டு (C++ Code Example):",
+                modalCopy: "நகலெடு",
+                modalPrev: "முந்தையது",
+                modalNext: "அடுத்தது",
+                modalClose: "மூடுக",
+                modalRun: "ஆய்வகத்தில் இயக்கு (Run in Playground)"
+            },
+            en: {
+                headerStd: "Class 11 Computer Science",
+                headerSub: "Object-Oriented Programming (OOP)",
+                headerTitle: "C++ Classes & Objects | Interactive Learning Lab",
+                langBtn: "Switch to தமிழ் 🇮🇳",
+                tabConcepts: "OOP Concepts",
+                tabVisualizer: "Memory Visualizer",
+                tabPlayground: "OOP Playground",
+                tabQA: "Question Bank",
+                tabQuiz: "Self Assessment",
+                badgeChapter: "Class 11 Chapter 14 & 15",
+                heroTitle: "Classes and Objects in C++",
+                heroSub: "The cornerstone of Object-Oriented Programming (OOP). Classes and Objects allow developers to model real-world entities faithfully inside computer memory.",
+                heroBtnVisual: "Instantiate Object",
+                heroBtnCode: "Open Code Lab",
+                badgeClassType: "Blueprint / Type",
+                badgeObjType: "Instance in Memory",
+                cardClassHead: "What is a Class?",
+                cardClassSub: "User-Defined Abstract Data Type",
+                cardObjHead: "What is an Object?",
+                cardObjSub: "Concrete Instance of a Class",
+                titlePillars: "The 4 Core Pillars of OOP",
+                titleAccessSpec: "Access Specifiers in C++",
+                titleConstructors: "Constructors & Destructors",
+                subConstructors: "Object Initialization & Memory Clean-up",
+                visHeading: "Interactive Object & Memory Visualizer",
+                visSubheading: "A Class is merely an architectural blueprint. Click 'Create in RAM' to witness live objects dynamically allocated in computer memory with unique addresses!",
+                btnVisReset: "Reset State",
+                visCodeTitle: "Student.h (Class Blueprint)",
+                visInfoTitle: "Key Principle:",
+                visInfoDesc: "Declaring a class occupies 0 bytes of RAM. It only serves as a mold or specification until an object is instantiated.",
+                visInstantiateTitle: "Instantiate New Object:",
+                btnInstantiateText: "Create Object in RAM",
+                visRamHeading: "System RAM (Living Objects)",
+                visNoteEncaps: "Encapsulation: Private members are guarded and accessed solely via Public member methods.",
+                lblPreset: "OOP Preset:",
+                btnCopy: "Copy Code",
+                btnReset: "Reset",
+                btnRun: "Run Program",
+                themeDark: "Dark Theme",
+                themeLight: "Light Theme",
+                badgeDark: "Theme: Dark",
+                badgeLight: "Theme: Light",
+                lblReady: "OOP Compiler Ready",
+                clearTerm: "Clear",
+                qaHeading: "Board Exam Question Bank (OOP Special)",
+                qaSub: "Crucial 2, 3 and 5-mark examination questions with complete solutions.",
+                qaBtnAll: "All",
+                qaBtn2m: "2 Marks",
+                qaBtn3m: "3 Marks",
+                qaBtn5m: "5 Marks",
+                quizHeading: "OOP Quiz & Bug Hunt Challenge",
+                quizSub: "Evaluate your understanding of classes, objects, access controls, and constructors.",
+                lblScore: "Score:",
+                quizP1Title: "Section 1: Multiple Choice Questions (MCQs)",
+                quizP2Title: "Section 2: Spot the OOP Bug!",
+                quizP2Sub: "Identify syntax and encapsulation violations in the following C++ code.",
+                btnQuizReset: "Restart Quiz",
+                cinTitle: "C++ Input Stream Required",
+                btnCinOk: "Submit",
+                footerText: "Designed in accordance with Tamil Nadu School Education Dept Class 11 Computer Science Curriculum.",
+                objBtnBonus: "Add Bonus +5",
+                objBtnTotal: "View Total",
+                lblTapHint: "Tap any card for detailed explanation, analogy & code",
+                lblSpecHint: "Click to explore",
+                lblCdHint: "Tap for analogy & live code",
+                modalConcept: "Concept in Detail:",
+                modalPoints: "Key Exam Takeaways:",
+                modalCode: "C++ Code Example:",
+                modalCopy: "Copy Code",
+                modalPrev: "Previous",
+                modalNext: "Next",
+                modalClose: "Close",
+                modalRun: "Run in Playground"
+            }
+        };
+
+        // ==========================================
+        // OOP CONCEPTS & PILLARS DATA
+        // ==========================================
+        const oopPillarsData = [
+            {
+                id: "encapsulation",
+                name: { ta: "1. உறைபொதியாக்கம் (Encapsulation)", en: "1. Encapsulation" },
+                icon: "fa-box-archive",
+                color: "text-indigo-600 bg-indigo-50 border-indigo-200",
+                desc: {
+                    ta: "தரவுகளையும் (Variables) அவற்றை இயக்கும் செயற்கூறுகளையும் (Functions) <strong>இனக்குழு (Class)</strong> என்ற ஒரே பெட்டகத்திற்குள் ஒன்றாக இணைப்பதாகும்.",
+                    en: "Binding data members and the member functions that manipulate them together into a single cohesive unit called a <strong>Class</strong>."
+                }
+            },
+            {
+                id: "abstraction",
+                name: { ta: "2. தரவு மறைப்பு (Data Abstraction)", en: "2. Data Abstraction" },
+                icon: "fa-user-shield",
+                color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+                desc: {
+                    ta: "அத்தியாவசியமான தகவல்களை மட்டும் காட்டிவிட்டு, தேவையற்ற உட்புற செயலாக்க விவரங்களை பயனருக்கு மறைப்பதாகும் (<code>private</code>).",
+                    en: "Exposing only the essential interface to the user while concealing background implementation details and private states."
+                }
+            },
+            {
+                id: "inheritance",
+                name: { ta: "3. மரபுரிமம் (Inheritance)", en: "3. Inheritance" },
+                icon: "fa-sitemap",
+                color: "text-purple-600 bg-purple-50 border-purple-200",
+                desc: {
+                    ta: "ஏற்கனவே உள்ள ஒரு அடிப்படை இனக்குழுவின் (Base class) பண்புகளை ஒரு புதிய தருவிக்கப்பட்ட இனக்குழு (Derived class) பெறுவது.",
+                    en: "The mechanism of deriving a new class from an existing base class to inherit and reuse existing properties and methods."
+                }
+            },
+            {
+                id: "polymorphism",
+                name: { ta: "4. பல்லுருவாக்கம் (Polymorphism)", en: "4. Polymorphism" },
+                icon: "fa-shapes",
+                color: "text-amber-600 bg-amber-50 border-amber-200",
+                desc: {
+                    ta: "'பல்வேறு உருவங்களைக் கொண்டது'. ஒரே பெயருடைய செயற்கூறு வெவ்வேறு சூழ்நிலைகளில் வெவ்வேறு பணிகளைச் செய்தல் (Function Overloading).",
+                    en: "'Many forms'. The ability of a message or member function to be processed in more than one way depending on inputs."
+                }
+            }
+        ];
+
+        const accessSpecifiersData = [
+            {
+                id: "private_spec",
+                type: "private",
+                badge: { ta: "தனிப்பட்ட (Private - இயல்புநிலை)", en: "Private (Default in Class)" },
+                icon: "fa-lock",
+                color: "border-rose-300 bg-rose-50/40",
+                badgeColor: "bg-rose-100 text-rose-800",
+                desc: {
+                    ta: "இந்த பகுதியில் உள்ள மாறிகள் மற்றும் செயற்கூறுகளை <strong>அந்த இனக்குழுவின் உள்ளே மட்டுமே</strong> அணுக முடியும். வெளியிலிருந்து (main()) நேரடியாக அணுக முடியாது.",
+                    en: "Members declared private are accessible <strong>only by member functions of that same class</strong>. Direct external access triggers compilation errors."
+                }
+            },
+            {
+                id: "public_spec",
+                type: "public",
+                badge: { ta: "பொதுவான (Public)", en: "Public" },
+                icon: "fa-lock-open",
+                color: "border-emerald-300 bg-emerald-50/40",
+                badgeColor: "bg-emerald-100 text-emerald-800",
+                desc: {
+                    ta: "இந்த பகுதியில் உள்ள உறுப்புகளை நிரலின் <strong>எந்தப் பகுதியிலிருந்தும் (main() உள்பட)</strong> புள்ளி செயற்குறி (.) கொண்டு தாராளமாக அணுகலாம்.",
+                    en: "Members declared public can be accessed from <strong>anywhere in the program</strong> via an object using the dot (.) operator."
+                }
+            },
+            {
+                id: "protected_spec",
+                type: "protected",
+                badge: { ta: "பாதுகாக்கப்பட்ட (Protected)", en: "Protected" },
+                icon: "fa-shield",
+                color: "border-amber-300 bg-amber-50/40",
+                badgeColor: "bg-amber-100 text-amber-800",
+                desc: {
+                    ta: "இது private போலவே செயல்படும்; ஆனால் <strong>மரபுரிமம் (Inheritance)</strong> மூலம் பெறப்பட்ட தருவிக்கப்பட்ட இனக்குழுக்களும் இவற்றை அணுக முடியும்.",
+                    en: "Behaves like private to outside worlds, but remains accessible to <strong>derived classes</strong> through inheritance."
+                }
+            }
+        ];
+
+        // ==========================================
+        // TOPIC DEEP-DIVE MODAL KNOWLEDGE BASE (9 TOPICS)
+        // ==========================================
+        const topicDetailKeys = ['encapsulation', 'abstraction', 'inheritance', 'polymorphism', 'private_spec', 'public_spec', 'protected_spec', 'constructor', 'destructor'];
+        let currentModalTopicId = 'encapsulation';
+
+        const topicDetails = {
+            encapsulation: {
+                id: 'encapsulation',
+                category: { ta: "OOP தூண் 1", en: "OOP Pillar 1" },
+                title: { ta: "1. உறைபொதியாக்கம் (Encapsulation)", en: "1. Encapsulation" },
+                icon: "fa-box-archive",
+                summary: {
+                    ta: "தரவுகளையும் (Variables) அவற்றை இயக்கும் செயற்கூறுகளையும் (Functions) 'இனக்குழு' (Class) என்ற ஒற்றைப் பெட்டகத்திற்குள் ஒன்றாகப் பிணைத்து வைக்கும் தத்துவமே உறைபொதியாக்கம் ஆகும்.",
+                    en: "Encapsulation is the mechanism of wrapping data (variables) and the code acting on them (member functions) together into a single unified unit called a Class."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: மருத்துவ காப்சூல் மாத்திரை (Medicine Capsule)", en: "Real-world Analogy: Medicine Capsule" },
+                    desc: {
+                        ta: "ஒரு மருத்துவ காப்சூல் மாத்திரையின் உள்ளே பல்வேறு மூலிகைத் தூள்கள் அடைக்கப்பட்டு, வெளிப்புற மென்மையான உறை வழியே பாதுகாக்கப்படுகிறது. அதுபோல, இனக்குழுவின் முக்கியமான மாறிகள் private என பாதுகாக்கப்பட்டு, public செயற்கூறுகள் வழியாக மட்டுமே பாதுகாப்பாக இயக்கப்படுகின்றன.",
+                        en: "A medicine capsule encloses several medicinal powders securely inside an outer gelatin shell. Similarly, sensitive member variables are shielded inside a class boundary and safely manipulated through public methods."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "தரவு பாதுகாப்பு (Data Security) மற்றும் தரவு ஒருமைப்பாடு உறுதி செய்யப்படுகிறது.",
+                        "வெளிப்புற நிரல்கள் மற்றும் செயற்கூறுகள் மாறிகளை நேரடியாக மாற்றுவதைத் தடுக்கிறது.",
+                        "அணுகியல் விவரக்குறிப்புகள் (private, public, protected) கொண்டு நடைமுறைப்படுத்தப்படுகிறது."
+                    ],
+                    en: [
+                        "Ensures strict data security and internal integrity.",
+                        "Prevents outside code from tampering with critical object variables directly.",
+                        "Enforced via C++ access specifiers (private, public, protected)."
+                    ]
+                },
+                code: `// உறைபொதியாக்கம் (Encapsulation) மாதிரி நிரல்
+#include <iostream>
+#include <string>
+using namespace std;
+
+class BankAccount {
+private:
+    int balance; // மறைக்கப்பட்ட தனிப்பட்ட தரவு
+
+public:
+    string accountHolder;
+
+    BankAccount(string name, int initBal) {
+        accountHolder = name;
+        balance = initBal;
+    }
+
+    void deposit(int amt) {
+        if (amt > 0) {
+            balance += amt;
+            cout << amt << " ரூபாய் வரவு வைக்கப்பட்டது." << endl;
+        }
+    }
+
+    void showBalance() {
+        cout << accountHolder << "-ன் கணக்கு இருப்பு: ரூ. " << balance << endl;
+    }
+};
+
+int main() {
+    BankAccount user("கவின் (Kavin)", 5000);
+    user.deposit(1500);
+    user.showBalance();
+    // user.balance = 999999; // பிழை! (Error: private variable!)
+    return 0;
+}`
+            },
+            abstraction: {
+                id: 'abstraction',
+                category: { ta: "OOP தூண் 2", en: "OOP Pillar 2" },
+                title: { ta: "2. தரவு மறைப்பு (Data Abstraction)", en: "2. Data Abstraction" },
+                icon: "fa-user-shield",
+                summary: {
+                    ta: "பயனருக்குத் தேவையான அத்தியாவசிய தகவல்களை மட்டும் வெளியில் வழங்கிவிட்டு, பின்னணியில் நிகழும் சிக்கலான செயலாக்க நுணுக்கங்களை மறைப்பதே தரவு மறைப்பு ஆகும்.",
+                    en: "Data Abstraction refers to providing only the essential features to the outside world while concealing background implementation complexity."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: கார் ஆக்சிலரேட்டர் அல்லது தொலைக்காட்சி ரிமோட்", en: "Real-world Analogy: Car Accelerator Pedal / TV Remote" },
+                    desc: {
+                        ta: "காரை ஓட்டும்போது நாம் ஆக்சிலரேட்டரை (Accelerator) மிதிக்கிறோம், கார் வேகம் எடுக்கிறது. எஞ்சினுக்குள் பெட்ரோல் எவ்வாறு தெளிக்கப்படுகிறது, பிஸ்டன் எவ்வாறு இயங்குகிறது என்ற சிக்கலான உட்புற நுணுக்கங்கள் ஓட்டுநருக்கு மறைக்கப்பட்டுள்ளன.",
+                        en: "When pressing a car's accelerator, the car moves faster. The driver only interfaces with the pedal, while internal combustion, spark timing, and gear shifts remain hidden."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "நிரலின் சிக்கல் தன்மையைக் குறைத்து எளிய இடைமுகத்தை (Interface) வழங்குகிறது.",
+                        "மென்பொருளைப் பயன்படுத்தும் பயனருக்குத் தேவையான வசதிகளை மட்டும் public-ல் தருகிறது.",
+                        "C++ மொழியில் இனக்குழுக்கள் (Class) மற்றும் private கூறுகள் மூலம் செயல்படுத்தப்படுகிறது."
+                    ],
+                    en: [
+                        "Reduces software complexity by hiding non-essential mechanics.",
+                        "Provides clean, intuitive public methods for users to interact with.",
+                        "Achieved in C++ using classes and private access specifiers."
+                    ]
+                },
+                code: `// தரவு மறைப்பு (Data Abstraction) மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class SmartPhone {
+private:
+    void connectToTower() {
+        cout << "[பின்னணி செயல்] செல்போன் கோபுரத்துடன் சிக்னல் இணைக்கப்பட்டது." << endl;
+    }
+
+public:
+    void makeCall(string number) {
+        connectToTower(); // உட்புற செயல்முறை மறைக்கப்பட்டுள்ளது
+        cout << number << " என்ற எண்ணிற்கு அழைப்பு இணைக்கப்பட்டது!" << endl;
+    }
+};
+
+int main() {
+    SmartPhone phone;
+    // பயனர் அழைப்பது எளிய public இடைமுகம் மட்டுமே
+    phone.makeCall("9840012345");
+    return 0;
+}`
+            },
+            inheritance: {
+                id: 'inheritance',
+                category: { ta: "OOP தூண் 3", en: "OOP Pillar 3" },
+                title: { ta: "3. மரபுரிமம் (Inheritance)", en: "3. Inheritance" },
+                icon: "fa-sitemap",
+                summary: {
+                    ta: "ஏற்கனவே உள்ள ஒரு அடிப்படை இனக்குழுவின் (Base Class) பண்புகளையும் செயற்கூறுகளையும் மற்றொரு புதிய தருவிக்கப்பட்ட இனக்குழு (Derived Class) சுவீகரித்துக் கொள்ளும் தத்துவமே மரபுரிமம் ஆகும்.",
+                    en: "Inheritance is the process by which a new class (derived class) inherits the properties and methods of an existing class (base class)."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: தந்தை - மகன் பரம்பரைப் பண்புகள்", en: "Real-world Analogy: Parent-Child Inheritance" },
+                    desc: {
+                        ta: "ஒரு குழந்தை தன் பெற்றோரிடமிருந்து கண் வடிவம், நடை, குரல் போன்ற பண்புகளை இயல்பாகப் பெறுவதுடன், தனக்கென புதிய திறமைகளையும் வளர்த்துக் கொள்வது போன்றதாகும்.",
+                        en: "A child inherits genetic features, eye color, and physical traits from their parents, while developing their own unique strengths and skills."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "குறியீட்டு மறுபயனாக்கம் (Code Reusability) - ஒரே குறியீட்டை மீண்டும் எழுதத் தேவையில்லை.",
+                        "இயற்கையான வகைப்பாடுகளை (Hierarchies) உருவாக்க உதவுகிறது.",
+                        "தொடரியல்: `class DerivedClass : public BaseClass { ... };`"
+                    ],
+                    en: [
+                        "Maximizes code reusability across related entities.",
+                        "Models real-world hierarchies naturally and cleanly.",
+                        "Syntax: `class DerivedClass : public BaseClass { ... };`"
+                    ]
+                },
+                code: `// மரபுரிமம் (Inheritance) மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class Vehicle {
+public:
+    string brand = "Tata Motors";
+    void startEngine() {
+        cout << "வாகன எஞ்சின் தொடங்கியது (Engine Started)!" << endl;
+    }
+};
+
+class ElectricCar : public Vehicle {
+public:
+    int batteryLevel = 90;
+    void showBattery() {
+        cout << brand << " காரின் மின்கல இருப்பு: " << batteryLevel << "%" << endl;
+    }
+};
+
+int main() {
+    ElectricCar car;
+    car.startEngine(); // தந்தை இனக்குழுவிடமிருந்து பெறப்பட்டது
+    car.showBattery();  // மகன் இனக்குழுவின் தனிப்பண்பு
+    return 0;
+}`
+            },
+            polymorphism: {
+                id: 'polymorphism',
+                category: { ta: "OOP தூண் 4", en: "OOP Pillar 4" },
+                title: { ta: "4. பல்லுருவாக்கம் (Polymorphism)", en: "4. Polymorphism" },
+                icon: "fa-shapes",
+                summary: {
+                    ta: "பல்லுருவாக்கம் என்பது 'பல வடிவங்களை ஏற்கும் திறன்' ஆகும். ஒரே பெயருடைய செயற்கூறு வெவ்வேறு சூழல்களில் சூழலுக்கேற்ப பல பணிகளைச் செய்வதாகும்.",
+                    en: "Polymorphism means 'having many forms'. It is the ability of a single interface or function name to execute different behaviors depending on inputs."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: ஒருவர் பல பாத்திரங்கள் (One Person, Many Roles)", en: "Real-world Analogy: One Person in Multiple Roles" },
+                    desc: {
+                        ta: "ஒரே நபர் பள்ளியில் ஆசிரியராகவும், வீட்டில் தந்தையாகவும், அங்காடியில் வாடிக்கையாளராகவும் ஒரே நபர் சூழலுக்கு ஏற்ப பல பாத்திரங்களில் செயல்படுகிறார்.",
+                        en: "A person behaves as a teacher in a school, a parent at home, and a customer at a supermarket. The same individual exhibits different behaviors by context."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "செயற்கூறு பணிமிகுப்பு (Function Overloading) மற்றும் செயற்குறி பணிமிகுப்பு (Operator Overloading).",
+                        "தொகுப்பு நேர பல்லுருவாக்கம் (Compile-time) & இயக்க நேர பல்லுருவாக்கம் (Run-time).",
+                        "நிரலை மிக நெகிழ்வுத்தன்மையுடையதாக (Flexible) மாற்றுகிறது."
+                    ],
+                    en: [
+                        "Includes Function Overloading and Operator Overloading.",
+                        "Categorized into Compile-time (Static) and Run-time (Dynamic).",
+                        "Provides elegant, intuitive, and readable function naming."
+                    ]
+                },
+                code: `// பல்லுருவாக்கம் (Function Overloading) மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class Calculator {
+public:
+    // 2 முழு எண்களைக் கூட்டல்
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    // அதே பெயரில் 3 முழு எண்களைக் கூட்டல்
+    int add(int a, int b, int c) {
+        return a + b + c;
+    }
+};
+
+int main() {
+    Calculator calc;
+    cout << "2 எண்களின் கூடுதல்: " << calc.add(10, 20) << endl;
+    cout << "3 எண்களின் கூடுதல்: " << calc.add(10, 20, 30) << endl;
+    return 0;
+}`
+            },
+            private_spec: {
+                id: 'private_spec',
+                category: { ta: "அணுகியல் விவரக்குறிப்பு", en: "Access Specifier" },
+                title: { ta: "தனிப்பட்ட (Private - இயல்புநிலை அணுகியல்)", en: "Private Access Specifier (Default)" },
+                icon: "fa-lock",
+                summary: {
+                    ta: "C++ இனக்குழுவில் எந்த அணுகியலும் குறிப்பிடப்படாவிட்டால், அது இயல்பாகவே 'private' ஆகும். இந்த உறுப்புகளை அந்த இனக்குழுவின் உள்ளே மட்டுமே அணுக முடியும்.",
+                    en: "In C++, class members default to 'private'. They are accessible strictly by member functions within the enclosing class."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: வங்கியின் லாக்கர் அல்லது ஏடிஎம் பின் (ATM PIN)", en: "Real-world Analogy: Bank Safe / ATM PIN" },
+                    desc: {
+                        ta: "உங்கள் ஏடிஎம் பின் எண்ணை நீங்கள் மட்டுமே அறிவீர்கள்; மற்றவர்கள் நேரடியாக அதை அறிய முடியாது. அதுபோல private மாறிகள் வெளிப்புற நேரடி மாற்றங்களிலிருந்து பாதுகாக்கப்படுகின்றன.",
+                        en: "Your ATM PIN is strictly private to you. Strangers cannot read it directly. Similarly, private data members cannot be touched directly from main()."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "`class`-ன் இயல்புநிலை அணுகியல் `private` ஆகும்.",
+                        "`main()` செயற்கூறிலிருந்தோ பிற இனக்குழுக்களிலிருந்தோ நேரடியாக அணுக முடியாது.",
+                        "மீறி அணுக முயன்றால் தொகுப்புப் பிழை (Compiler Error) தோன்றும்."
+                    ],
+                    en: [
+                        "Default access level for C++ classes.",
+                        "Direct external access from `main()` is strictly prohibited.",
+                        "Triggers a compile-time error upon unauthorized access attempts."
+                    ]
+                },
+                code: `// private அணுகியல் மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class UserAccount {
+private:
+    int password = 4321; // தனிப்பட்ட தரவு
+
+public:
+    bool checkPassword(int p) {
+        return p == password;
+    }
+};
+
+int main() {
+    UserAccount acc;
+    // cout << acc.password; // பிழை! (Error: password is private)
+    if (acc.checkPassword(4321)) {
+        cout << "கடவுச்சொல் சரிபார்க்கப்பட்டது (Verified via public method)!" << endl;
+    }
+    return 0;
+}`
+            },
+            public_spec: {
+                id: 'public_spec',
+                category: { ta: "அணுகியல் விவரக்குறிப்பு", en: "Access Specifier" },
+                title: { ta: "பொதுவான (Public அணுகியல் விவரக்குறிப்பு)", en: "Public Access Specifier" },
+                icon: "fa-lock-open",
+                summary: {
+                    ta: "public எனக் குறிப்பிடப்பட்ட உறுப்புகளை நிரலின் எந்தப் பகுதியிலிருந்தும், பொருளின் பெயர் மற்றும் புள்ளி செயற்குறி (.) கொண்டு தாராளமாக அணுக முடியும்.",
+                    en: "Members declared under public are accessible from anywhere in the program using an object identifier and the dot (.) operator."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: பொதுப் பூங்கா அல்லது தகவல் பலகை (Notice Board)", en: "Real-world Analogy: Public Park / Notice Board" },
+                    desc: {
+                        ta: "ஒரு பள்ளியின் தகவல் பலகையில் உள்ள அறிவிப்பை மாணவர்கள், ஆசிரியர்கள், பார்வையாளர்கள் என அனைவரும் தாராளமாகப் படிக்கலாம். அதுவே public உறுப்புகள்.",
+                        en: "A notice board placed at a school entrance can be viewed by all students and visitors. Public methods are similarly open to all program callers."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "நிரலின் அனைத்து செயற்கூறுகளாலும் நேரடியாக அணுக இயலும்.",
+                        "பொதுவாக உறுப்புச் செயற்கூறுகள் (Methods) public-ல் அறிவிக்கப்படும்.",
+                        "புள்ளி செயற்குறி (.) மூலம் இயக்கப்படும்."
+                    ],
+                    en: [
+                        "Callable and modifiable from any function across the program.",
+                        "Serves as the primary public interface for the class.",
+                        "Invoked via the standard dot (.) operator on object instances."
+                    ]
+                },
+                code: `// public அணுகியல் மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class NoticeBoard {
+public:
+    string notice = "நாளை அறிவியல் கண்காட்சி நடைபெறும்!";
+
+    void readNotice() {
+        cout << "பள்ளி அறிவிப்பு: " << notice << endl;
+    }
+};
+
+int main() {
+    NoticeBoard board;
+    // public உறுப்பை நேரடியாக அணுக முடிகிறது
+    board.readNotice();
+    cout << "நேரடி அணுகல்: " << board.notice << endl;
+    return 0;
+}`
+            },
+            protected_spec: {
+                id: 'protected_spec',
+                category: { ta: "அணுகியல் விவரக்குறிப்பு", en: "Access Specifier" },
+                title: { ta: "பாதுகாக்கப்பட்ட (Protected அணுகியல் விவரக்குறிப்பு)", en: "Protected Access Specifier" },
+                icon: "fa-shield",
+                summary: {
+                    ta: "protected உறுப்புகள் வெளி உலகிற்கு private போலவே செயல்படும்; ஆனால் மரபுரிமம் மூலம் உருவாகும் தருவிக்கப்பட்ட (Derived) இனக்குழுக்களுக்கு மட்டும் அணுக அனுமதி வழங்கப்படுகிறது.",
+                    en: "Protected members act like private to the external world, but remain directly accessible to derived (child) classes via inheritance."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: குடும்ப பூர்வீகச் சொத்து (Ancestral Property)", en: "Real-world Analogy: Ancestral Property / Family Heirloom" },
+                    desc: {
+                        ta: "குடும்பத்தின் பூர்வீக சொத்தை வெளியாட்கள் யாரும் உரிமை கொண்டாட முடியாது. ஆனால் குடும்பத்தின் வாரிசுகளுக்கு (மகன், மகள் போன்ற Derived Classes) முழு உரிமை உண்டு.",
+                        en: "An ancestral property cannot be claimed by strangers on the street. However, the direct heirs and descendants have full lawful access to it."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "மரபுரிமத்தில் (Inheritance) மிக முக்கியமான பங்கு வகிக்கிறது.",
+                        "`main()`-ல் இருந்து நேரடியாக அணுக முடியாது.",
+                        "தருவிக்கப்பட்ட இனக்குழுக்கள் மூலம் மட்டுமே பயன்படுத்த இயலும்."
+                    ],
+                    en: [
+                        "Pivotal for building secure inheritance hierarchies.",
+                        "Direct access from `main()` is rejected by compiler.",
+                        "Directly accessible only inside derived child classes."
+                    ]
+                },
+                code: `// protected அணுகியல் மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class Parent {
+protected:
+    int familySecretFund = 75000; // protected உறுப்பு
+};
+
+class Child : public Parent {
+public:
+    void showFund() {
+        // தருவிக்கப்பட்ட இனக்குழுவால் அணுக முடிகிறது!
+        cout << "குடும்ப நிதி (Family Fund) = ரூ. " << familySecretFund << endl;
+    }
+};
+
+int main() {
+    Child c;
+    c.showFund();
+    // cout << c.familySecretFund; // பிழை! main-ல் நேரடியாக அணுக முடியாது
+    return 0;
+}`
+            },
+            constructor: {
+                id: 'constructor',
+                category: { ta: "சிறப்பு உறுப்புச் செயற்கூறு", en: "Special Member Method" },
+                title: { ta: "ஆக்கி (Constructor)", en: "Constructor in C++" },
+                icon: "fa-seedling",
+                summary: {
+                    ta: "ஆக்கி என்பது இனக்குழுவின் பெயரையே தனக்கும் பெயராகக் கொண்ட சிறப்பு உறுப்புச் செயற்கூறு ஆகும். ஒரு பொருள் நினைவகத்தில் உருவாகும் போதே தானாகவே இயக்கப்பட்டு தொடக்க மதிப்புகளை இருத்துகிறது.",
+                    en: "A Constructor is a special member function having the same name as the class. It is invoked automatically whenever an object of that class is created to initialize data members."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: புதிய ஸ்மார்ட்போனை இயக்கும் Setup Wizard", en: "Real-world Analogy: New Phone Setup Wizard" },
+                    desc: {
+                        ta: "புதிய ஸ்மார்ட்போனை பெட்டியிலிருந்து பிரித்து இயக்கியவுடன் முதன்முதலில் 'Setup Wizard' தானாக தோன்றி மொழி, நேரம் போன்ற தொடக்க அமைப்புகளைச் செய்வது போன்றது ஆக்கியின் பணி.",
+                        en: "Unboxing a new smartphone launches its initial Setup Wizard automatically to configure the language and clock before general usage."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "இனக்குழுவின் அதே பெயரைப் பெற்றிருக்கும்.",
+                        "`void` உட்பட எந்த ஒரு திருப்பி அனுப்பும் வகையும் (Return type) கிடையாது.",
+                        "பொருளைத் தோற்றுவிக்கும் போதே தொடக்க மதிப்புகளை இருத்தப் பயன்படுகிறது."
+                    ],
+                    en: [
+                        "Bears the exact same name as the enclosing class.",
+                        "Has NO return type (not even void).",
+                        "Invoked automatically upon object instantiation."
+                    ]
+                },
+                code: `// ஆக்கி (Constructor) மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class Book {
+public:
+    string title;
+    int price;
+
+    // ஆக்கி (Constructor)
+    Book(string t, int p) {
+        title = t;
+        price = p;
+        cout << "[ஆக்கி] '" << title << "' புத்தகம் நினைவகத்தில் உருவானது!" << endl;
+    }
+
+    void display() {
+        cout << "தலைப்பு: " << title << " | விலை: ரூ. " << price << endl;
+    }
+};
+
+int main() {
+    // பொருள் உருவாகும் போதே ஆக்கி இயங்குகிறது
+    Book b1("கணிப்பொறி அறிவியல்", 350);
+    b1.display();
+    return 0;
+}`
+            },
+            destructor: {
+                id: 'destructor',
+                category: { ta: "சிறப்பு உறுப்புச் செயற்கூறு", en: "Special Member Method" },
+                title: { ta: "அழிப்பி (Destructor)", en: "Destructor in C++" },
+                icon: "fa-broom",
+                summary: {
+                    ta: "அழிப்பி என்பது பொருள் தன் வாழ்நாளை முடித்து நினைவகத்தை விட்டு அழியும் போது தானாகவே இயக்கப்பட்டு நினைவகத்தை விடுவிக்கும் சிறப்பு உறுப்புச் செயற்கூறு ஆகும்.",
+                    en: "A Destructor is a special member function that is automatically executed when an object goes out of scope or is deleted, releasing allocated resources."
+                },
+                analogy: {
+                    title: { ta: "நிஜ உலக ஒப்புமை: அறையை விட்டு வெளியேறும் போது விளக்குகளை அணைத்து சுத்தம் செய்தல்", en: "Real-world Analogy: Switching Off Lights & Hall Clean-up" },
+                    desc: {
+                        ta: "ஒரு கூட்ட அரங்கில் கூட்டம் முடிந்ததும் விளக்குகளை அணைத்து, குப்பைகளை அகற்றிவிட்டு கதவைப் பூட்டுவது போல, பொருள் அழியும் போது நினைவகத்தை சுத்தம் செய்வது அழிப்பி.",
+                        en: "When leaving an auditorium after an event, turning off lights, clearing chairs, and locking the doors ensures a tidy room. Destructors ensure zero memory leaks."
+                    }
+                },
+                keyPoints: {
+                    ta: [
+                        "இனக்குழு பெயருக்கு முன்னால் டில்டே (~) குறி இருக்கும் (எ.கா: `~Book()`).",
+                        "அழிப்பிக்கு எந்த அளபுருக்களும் (Parameters) இருக்காது; பணிமிகுக்க முடியாது.",
+                        "நினைவகம் வீணாவதைத் தடுக்கிறது (Prevents Memory Leak)."
+                    ],
+                    en: [
+                        "Prefixed with a tilde (~) before class name (e.g., `~Book()`).",
+                        "Takes no parameters and cannot be overloaded.",
+                        "Guarantees memory deallocation and prevents leaks."
+                    ]
+                },
+                code: `// அழிப்பி (Destructor) மாதிரி நிரல்
+#include <iostream>
+using namespace std;
+
+class MemoryDemo {
+public:
+    MemoryDemo() {
+        cout << "1. [ஆக்கி] பொருள் நினைவகத்தில் உருவானது." << endl;
+    }
+
+    ~MemoryDemo() {
+        cout << "2. [அழிப்பி] பொருள் நினைவகத்திலிருந்து அழிக்கப்பட்டது!" << endl;
+    }
+};
+
+int main() {
+    cout << "main() துவங்கியது." << endl;
+    {
+        MemoryDemo obj; // அடைப்புக்குறிக்குள் பொருள் வாழ்கிறது
+    } // அடைப்புக்குறி முடிந்ததும் அழிப்பி தானாக இயங்கும்!
+    cout << "main() நிறைவடைந்தது." << endl;
+    return 0;
+}`
+            }
+        };
+
+        // ==========================================
+        // C++ OOP PLAYGROUND PRESET CODES
+        // ==========================================
+        const oopPresets = {
+            basicClass: {
+                name: { ta: "1. அடிப்படை இனக்குழு & பொருள் (Student Class)", en: "1. Basic Class & Object (Student)" },
+                code: `// C++ OOP நிரல் 1: மாணவர் இனக்குழு மற்றும் பொருள்
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Student {
+public:
+    int rollNo;
+    string name;
+    int mark1;
+    int mark2;
+
+    // உறுப்புச் செயற்கூறு (Member function)
+    int calculateTotal() {
+        return mark1 + mark2;
+    }
+
+    void display() {
+        cout << "மாணவர் பெயர் (Name)     : " << name << endl;
+        cout << "பதிவு எண் (Roll No)     : " << rollNo << endl;
+        cout << "மொத்த மதிப்பெண் (Total) : " << calculateTotal() << endl;
+    }
+};
+
+int main() {
+    cout << "--- இனக்குழுவின் பொருள்களை உருவாக்குதல் ---" << endl;
+
+    // பொருள் 1 (Object 1)
+    Student s1;
+    s1.rollNo = 101;
+    s1.name = "கவின் (Kavin)";
+    s1.mark1 = 92;
+    s1.mark2 = 95;
+    s1.display();
+
+    cout << "---------------------------------------" << endl;
+
+    // பொருள் 2 (Object 2)
+    Student s2;
+    s2.rollNo = 102;
+    s2.name = "மலர் (Malar)";
+    s2.mark1 = 88;
+    s2.mark2 = 90;
+    s2.display();
+
+    return 0;
+}`
+            },
+            encapsulation: {
+                name: { ta: "2. தரவு மறைப்பு & வங்கி கணக்கு (Encapsulation)", en: "2. Data Hiding (Bank Account)" },
+                code: `// C++ OOP நிரல் 2: Private தரவு மறைப்பு (Encapsulation)
+#include <iostream>
+#include <string>
+using namespace std;
+
+class BankAccount {
+private:
+    // இருப்புத் தொகை மறைக்கப்பட்டுள்ளது (Encapsulated)
+    int balance;
+
+public:
+    string accountHolder;
+
+    // ஆக்கி (Constructor)
+    BankAccount(string name, int initialDeposit) {
+        accountHolder = name;
+        balance = initialDeposit;
+        cout << "புதிய கணக்கு துவங்கப்பட்டது: " << accountHolder << endl;
+    }
+
+    void deposit(int amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << amount << " ரூபாய் வரவு வைக்கப்பட்டது." << endl;
+        }
+    }
+
+    void showBalance() {
+        cout << accountHolder << "-ன் கணக்கு இருப்பு: ரூ. " << balance << endl;
+    }
+};
+
+int main() {
+    BankAccount acc("ராஜா (Raja)", 5000);
+    acc.showBalance();
+
+    acc.deposit(2500);
+    acc.showBalance();
+
+    // acc.balance = 100000; // பிழை! (Error: balance is private)
+    return 0;
+}`
+            },
+            constructor: {
+                name: { ta: "3. ஆக்கிகள் & அழிப்பிகள் (Constructor & Destructor)", en: "3. Constructor & Destructor" },
+                code: `// C++ OOP நிரல் 3: ஆக்கி மற்றும் அழிப்பியின் செயல்பாடு
+#include <iostream>
+using namespace std;
+
+class Rectangle {
+private:
+    int length;
+    int breadth;
+
+public:
+    // ஆக்கி (Constructor) - பொருள் தோன்றும் போது தானாக இயங்கும்
+    Rectangle(int l, int b) {
+        length = l;
+        breadth = b;
+        cout << "[ஆக்கி] செவ்வகப் பொருள் நினைவகத்தில் உருவானது!" << endl;
+    }
+
+    int getArea() {
+        return length * breadth;
+    }
+
+    // அழிப்பி (Destructor) - பொருள் அழியும் போது தானாக இயங்கும்
+    ~Rectangle() {
+        cout << "[அழிப்பி] செவ்வகப் பொருள் நினைவகத்திலிருந்து அழிக்கப்பட்டது!" << endl;
+    }
+};
+
+int main() {
+    cout << "main() தொடங்குகிறது..." << endl;
+    
+    Rectangle rect(10, 5);
+    cout << "செவ்வகத்தின் பரப்பளவு = " << rect.getArea() << endl;
+
+    cout << "main() நிறைவடைகிறது..." << endl;
+    return 0;
+}`
+            },
+            inheritance: {
+                name: { ta: "4. எளிய மரபுரிமம் (Single Inheritance)", en: "4. Single Inheritance" },
+                code: `// C++ OOP நிரல் 4: எளிய மரபுரிமம் (Single Inheritance)
+#include <iostream>
+#include <string>
+using namespace std;
+
+// அடிப்படை இனக்குழு (Base Class)
+class Vehicle {
+public:
+    string brand = "Tata Motors";
+    void honk() {
+        cout << "வாகன ஒலி: பீப்... பீப்! (Beep Beep!)" << endl;
+    }
+};
+
+// தருவிக்கப்பட்ட இனக்குழு (Derived Class)
+class Car : public Vehicle {
+public:
+    string model = "Nexon EV";
+    int topSpeed = 150;
+
+    void displayInfo() {
+        cout << "நிறுவனம் (Brand) : " << brand << endl;
+        cout << "மாதிரி (Model)    : " << model << endl;
+        cout << "வேகம் (Speed)    : " << topSpeed << " km/h" << endl;
+    }
+};
+
+int main() {
+    Car myCar;
+    myCar.displayInfo();
+    myCar.honk(); // அடிப்படை இனக்குழுவின் செயற்கூறு
+    return 0;
+}`
+            },
+            blank: {
+                name: { ta: "-- புதிய வெற்றுப் பக்கம் (Blank Code) --", en: "-- Blank Code --" },
+                code: `// C++ OOP புதிய நிரலை இங்கே எழுதவும்
+#include <iostream>
+using namespace std;
+
+class MyClass {
+public:
+    void greet() {
+        cout << "வணக்கம்! இனக்குழு வெற்றிகரமாக இயங்கியது." << endl;
+    }
+};
+
+int main() {
+    MyClass obj;
+    obj.greet();
+    return 0;
+}`
+            }
+        };
+
+        // ==========================================
+        // EXAM QUESTION BANK (BILINGUAL)
+        // ==========================================
+        const examQuestionsData = [
+            {
+                type: '2m',
+                q: {
+                    ta: "1. இனக்குழு (Class) என்றால் என்ன? அதன் தொடரியல் யாது?",
+                    en: "1. What is a Class in C++? Give its general syntax."
+                },
+                ans: {
+                    ta: "இனக்குழு என்பது தரவு உறுப்புகளையும் (Data members), அவற்றை இயக்கும் உறுப்புச் செயற்கூறுகளையும் (Member functions) ஒன்றாகப் பிணைக்கும் பயனர் வரையறுத்த தரவு வகையாகும்.<br><br><b>தொடரியல்:</b><br><code class='text-indigo-600 font-mono'>class class_name {<br>&nbsp;&nbsp;private:<br>&nbsp;&nbsp;&nbsp;&nbsp;variable declarations;<br>&nbsp;&nbsp;public:<br>&nbsp;&nbsp;&nbsp;&nbsp;function declarations;<br>};</code>",
+                    en: "A Class is a user-defined data type that binds data members and member functions into a single unit.<br><br><b>Syntax:</b><br><code class='text-indigo-600 font-mono'>class class_name {<br>&nbsp;&nbsp;private:<br>&nbsp;&nbsp;&nbsp;&nbsp;variable declarations;<br>&nbsp;&nbsp;public:<br>&nbsp;&nbsp;&nbsp;&nbsp;function declarations;<br>};</code>"
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "2. பொருள் (Object) என்றால் என்ன? எடுத்துக்காட்டு தருக.",
+                    en: "2. What is an Object in C++? Give an example."
+                },
+                ans: {
+                    ta: "ஒரு இனக்குழுவின் அடிப்படையில் உருவாக்கப்படும் நடைமுறை வடிவம் அல்லது சான்று <b>பொருள் (Object)</b> எனப்படும். பொருளை உருவாக்கும் போது மட்டுமே கணினியில் நினைவகம் ஒதுக்கப்படுகிறது.<br><b>எடுத்துக்காட்டு:</b> <code>Student s1;</code> (Student என்பது இனக்குழு, s1 என்பது பொருள்).",
+                    en: "An <b>Object</b> is an identifiable instance of a class. Memory is allocated only when an object is instantiated.<br><b>Example:</b> <code>Student s1;</code> (Student is the class, s1 is the object)."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "3. இனக்குழு உறுப்புகளை அணுகும் புள்ளி செயற்குறி (.) பற்றி எழுதுக.",
+                    en: "3. Write about the dot (.) member access operator."
+                },
+                ans: {
+                    ta: "ஒரு இனக்குழுவின் பொதுவான (public) உறுப்புச் செயற்கூறுகளையோ அல்லது மாறிகளையோ அணுக <b>புள்ளி செயற்குறி (Dot operator)</b> பயன்படுகிறது.<br><b>எடுத்துக்காட்டு:</b> <code>s1.calculateTotal();</code>",
+                    en: "The <b>Dot operator (.)</b> is used in conjunction with an object identifier to access public members of that class.<br><b>Example:</b> <code>s1.calculateTotal();</code>"
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "4. ஆக்கி (Constructor) என்றால் என்ன?",
+                    en: "4. What is a Constructor?"
+                },
+                ans: {
+                    ta: "ஆக்கி என்பது <b>இனக்குழுவின் பெயரையே தனக்கும் பெயராகக் கொண்ட</b> ஒரு சிறப்பு உறுப்புச் செயற்கூறாகும். ஒரு பொருள் நினைவகத்தில் உருவாக்கப்படும் போது இது தானாகவே செயல்படுத்தப்பட்டு தொடக்க மதிப்புகளை இருத்துகிறது.",
+                    en: "A <b>Constructor</b> is a special member function having the <b>same name as its class</b>. It is invoked automatically when an object of that class is created to initialize data members."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "5. private மற்றும் public அணுகியல் விவரக்குறிப்புகளை ஒப்பிடுக.",
+                    en: "5. Compare private and public access specifiers."
+                },
+                ans: {
+                    ta: "• <b>private:</b> இனக்குழுவின் இயல்புநிலை அணுகியல் ஆகும். இந்த உறுப்புகளை அந்த இனக்குழுவின் உறுப்புச் செயற்கூறுகள் மட்டுமே அணுக முடியும். வெளியில் இருந்து (main()) அணுக முடியாது.<br>• <b>public:</b> இந்த உறுப்புகளை நிரலின் எந்தப் பகுதியிலிருந்தும் புள்ளி செயற்குறி கொண்டு பொருளின் வாயிலாக நேரடியாக அணுக முடியும்.",
+                    en: "• <b>private:</b> Default access specifier. Members are accessible only within the class member functions. External access is forbidden.<br>• <b>public:</b> Members are fully accessible from anywhere in the program via the object and dot (.) operator."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "6. ஆக்கிகள் மற்றும் அழிப்பிகளுக்கு இடையேயான 3 முக்கிய வேறுபாடுகள் யாவை?",
+                    en: "6. What are the 3 major differences between Constructors and Destructors?"
+                },
+                ans: {
+                    ta: "1. <b>பெயர்:</b> ஆக்கிக்கு இனக்குழுவின் பெயரே இருக்கும்; அழிப்பியின் பெயருக்கு முன்னால் <b>டில்டே (~)</b> குறி இருக்கும்.<br>2. <b>செயல்பாடு:</b> ஆக்கி பொருள் உருவாகும் போது இயங்குகிறது; அழிப்பி பொருள் நினைவகத்தை விட்டு அழியும் போது இயங்குகிறது.<br>3. <b>அளபுருக்கள்:</b> ஆக்கிகளுக்கு அளபுருக்கள் (Parameters) இருக்கலாம்; ஆனால் அழிப்பிகளுக்கு ஒருபோதும் அளபுருக்கள் இருக்காது.",
+                    en: "1. <b>Name:</b> Constructor shares the class name; Destructor precedes the class name with a <b>tilde (~)</b> symbol.<br>2. <b>Invocation:</b> Constructor runs on object instantiation; Destructor runs when the object goes out of scope.<br>3. <b>Parameters:</b> Constructors can take arguments (overloading); Destructors cannot take any arguments."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "7. உறைபொதியாக்கம் (Encapsulation) எவ்வாறு தரவு பாதுகாப்பை உறுதி செய்கிறது?",
+                    en: "7. How does Encapsulation ensure data security?"
+                },
+                ans: {
+                    ta: "உறைபொதியாக்கம் தரவு மாறிகளை <code>private</code> என அறிவிப்பதன் மூலம் வெளிப்புற நேரடி மாற்றங்களிலிருந்து பாதுகாக்கிறது. தரவை மாற்றவோ பெறவோ வேண்டுமெனில் <code>public</code> செயற்கூறுகள் (Getters/Setters) மூலமாக மட்டுமே கட்டுப்படுத்தப்பட்ட முறையில் அனுமதிக்கிறது.",
+                    en: "Encapsulation protects variables by declaring them <code>private</code>, insulating them from accidental external corruption. Data can only be modified or inspected via authorized public member functions (Getters/Setters)."
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "8. C++ மொழியில் இனக்குழு மற்றும் பொருளை தகுந்த எடுத்துக்காட்டு நிரலுடன் விரிவாக விளக்குக.",
+                    en: "8. Explain Classes and Objects in C++ in detail with a complete code example."
+                },
+                ans: {
+                    ta: "<b>விளக்கம்:</b><br>இனக்குழு என்பது ஒரு புதிய தரவு வகையை உருவாக்கும் வார்ப்புரு. பொருள் என்பது அந்த வார்ப்புருவின் மெய்நிகர் உருவம்.<br><br><b>நிரல் எடுத்துக்காட்டு:</b><br><pre class='bg-slate-100 p-2.5 rounded text-xs font-mono mt-1'>class Box {<br>public:<br>  int length, breadth;<br>  int getArea() { return length * breadth; }<br>};<br><br>int main() {<br>  Box b1; // பொருள் உருவாக்கம்<br>  b1.length = 10; b1.breadth = 5;<br>  cout &lt;&lt; b1.getArea();<br>  return 0;<br>}</pre>",
+                    en: "<b>Concept:</b><br>A Class defines a prototype blueprint; an Object is a physical reality in memory.<br><br><b>Code Example:</b><br><pre class='bg-slate-100 p-2.5 rounded text-xs font-mono mt-1'>class Box {<br>public:<br>  int length, breadth;<br>  int getArea() { return length * breadth; }<br>};<br><br>int main() {<br>  Box b1; // Object instantiated<br>  b1.length = 10; b1.breadth = 5;<br>  cout &lt;&lt; b1.getArea();<br>  return 0;<br>}</pre>"
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "9. பொருள்நோக்கு நிரலாக்கத்தின் (OOP) நான்கு அடிப்படைக் கூறுகளை விளக்குக.",
+                    en: "9. Elaborate on the four fundamental pillars of Object-Oriented Programming (OOP)."
+                },
+                ans: {
+                    ta: "1. <b>உறைபொதியாக்கம் (Encapsulation):</b> தரவுகளையும் செயற்கூறுகளையும் இனக்குழுவுக்குள் பொதிந்து வைத்தல்.<br>2. <b>தரவு மறைப்பு (Abstraction):</b> அத்தியாவசிய தகவல்களை வழங்கி உட்புற நுணுக்கங்களை மறைத்தல்.<br>3. <b>மரபுரிமம் (Inheritance):</b> ஏற்கனவே உள்ள அடிப்படை இனக்குழுவின் பண்புகளை புதிய தருவிக்கப்பட்ட இனக்குழு பெற்று குறியீட்டு மறுபயனாக்கத்தை அதிகரித்தல்.<br>4. <b>பல்லுருவாக்கம் (Polymorphism):</b> ஒரே பெயர் கொண்ட செயற்கூறு வெவ்வேறு சூழல்களில் பல வடிவங்களில் செயல்படுதல்.",
+                    en: "1. <b>Encapsulation:</b> Packaging state (data) and behavior (methods) into an enclosed class object.<br>2. <b>Data Abstraction:</b> Exposing only the essential interface while hiding complex internal implementations.<br>3. <b>Inheritance:</b> Deriving sub-classes from super-classes to maximize code reusability.<br>4. <b>Polymorphism:</b> Enabling a single interface or function name to exhibit multiple forms based on execution contexts."
+                }
+            }
+        ];
+
+        // ==========================================
+        // QUIZ MCQs DATA (OOP FOCUSED)
+        // ==========================================
+        const quizQuestionsData = [
+            {
+                q: {
+                    ta: "1. C++ மொழியில் இனக்குழுவுக்குள் (Class) வரையறுக்கப்படும் மாறிகள் எவ்வாறு அழைக்கப்படுகின்றன?",
+                    en: "1. Variables declared inside a C++ class are technically termed as:"
+                },
+                options: {
+                    ta: ["தரவு உறுப்புகள் (Data Members)", "உறுப்புச் செயற்கூறுகள் (Member Functions)", "அக மாறிகள் (Global Variables)", "காரணிகள் (Arguments)"],
+                    en: ["Data Members", "Member Functions", "Global Variables", "Arguments"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "இனக்குழுவிற்குள் அறிவிக்கப்படும் மாறிகள் 'தரவு உறுப்புகள்' (Data Members) எனப்படும்.",
+                    en: "Variables defined inside a class scope are called Data Members."
+                }
+            },
+            {
+                q: {
+                    ta: "2. இனக்குழுவை அறிவிக்கும் போது இயல்புநிலையாக (Default) அமையும் அணுகியல் விவரக்குறிப்பு எது?",
+                    en: "2. What is the default access specifier for members of a C++ class?"
+                },
+                options: {
+                    ta: ["public", "private", "protected", "auto"],
+                    en: ["public", "private", "protected", "auto"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "இனக்குழுவில் அணுகியல் குறிப்பிடப்படாவிட்டால், அது தானாகவே 'private' ஆகக் கருதப்படும்.",
+                    en: "In a C++ class, members default to 'private' unless explicitly declared otherwise."
+                }
+            },
+            {
+                q: {
+                    ta: "3. ஒரு பொருளின் வாயிலாக இனக்குழுவின் உறுப்புகளை அணுகப் பயன்படும் செயற்குறி எது?",
+                    en: "3. Which operator is used to access class members through an object instance?"
+                },
+                options: {
+                    ta: [":: (வரையெல்லை செயற்குறி)", ". (புள்ளி செயற்குறி)", "-> (அம்பு செயற்குறி)", "& (முகவரி செயற்குறி)"],
+                    en: [":: (Scope Resolution)", ". (Dot Operator)", "-> (Arrow Operator)", "& (Address-of)"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "பொருளின் பெயரை அடுத்து புள்ளி செயற்குறி (.) இட்டு உறுப்புகளை அணுகலாம் (எ.கா: obj.display()).",
+                    en: "The dot (.) operator links an object to its accessible member fields and methods."
+                }
+            },
+            {
+                q: {
+                    ta: "4. பின்வருவனவற்றுள் ஆக்கி (Constructor) பற்றிய எந்தக் கூற்று சரியானது?",
+                    en: "4. Which statement about C++ Constructors is TRUE?"
+                },
+                options: {
+                    ta: ["அதற்கு தரவு திருப்பி அனுப்பும் வகை (Return type) உண்டு", "அதன் பெயர் இனக்குழுவின் பெயராகவே இருக்க வேண்டும்", "பொருள் அழியும் போது மட்டுமே இயங்கும்", "ஒரு நிரலில் ஒரு ஆக்கி மட்டுமே இருக்க முடியும்"],
+                    en: ["It must return an int", "Its name must match the class name exactly", "It runs only during destruction", "Only one constructor is permitted per program"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "ஆக்கியின் பெயரானது எப்போதும் இனக்குழுவின் பெயரையே கொண்டிருக்கும். அதற்கு திருப்பி அனுப்பும் வகை கிடையாது.",
+                    en: "A constructor must bear the exact same identifier as its enclosing class and returns no value."
+                }
+            },
+            {
+                q: {
+                    ta: "5. C++ மொழியில் ஓர் அழிப்பியின் (Destructor) முன்னால் இடப்படும் குறியீடு எது?",
+                    en: "5. Which symbol prefixes the name of a C++ Destructor?"
+                },
+                options: {
+                    ta: ["! (Exclamation)", "~ (Tilde)", "# (Hash)", "$ (Dollar)"],
+                    en: ["! (Exclamation)", "~ (Tilde)", "# (Hash)", "$ (Dollar)"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "அழிப்பியின் பெயரானது டில்டே (~) குறியீட்டுடன் தொடங்கும் (எ.கா: ~Student()).",
+                    en: "A destructor function is explicitly designated with a tilde (~) prefix."
+                }
+            },
+            {
+                q: {
+                    ta: "6. ஒரு இனக்குழுவின் திட்ட வரைபடத்தை (Class declaration) முடிக்கும் போது இடப்பட வேண்டிய குறியீடு எது?",
+                    en: "6. Every C++ class declaration must terminate with which punctuator?"
+                },
+                options: {
+                    ta: [": (முக்காற்புள்ளி)", "; (அரைப்புள்ளி)", ". (முற்றுப்புள்ளி)", "} (மூடும் அடைப்புக்குறி மட்டும்)"],
+                    en: [": (Colon)", "; (Semicolon)", ". (Dot)", "} (Closing brace only)"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "இனக்குழுவின் மூடும் அடைப்புக்குறிக்கு அடுத்து எப்போதும் அரைப்புள்ளி (;) இடப்பட வேண்டும் (};).",
+                    en: "Class definitions must conclude with a semicolon after the closing curly brace (};)."
+                }
+            },
+            {
+                q: {
+                    ta: "7. தரவுகளையும் செயற்கூறுகளையும் ஒரே இனக்குழு பெட்டகத்திற்குள் ஒன்றாகப் பிணைப்பது எது?",
+                    en: "7. Wrapping data and member methods into a unified single container is called:"
+                },
+                options: {
+                    ta: ["உறைபொதியாக்கம் (Encapsulation)", "மரபுரிமம் (Inheritance)", "பல்லுருவாக்கம் (Polymorphism)", "கோப்பு மேலாண்மை"],
+                    en: ["Encapsulation", "Inheritance", "Polymorphism", "File Handling"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "தரவுகளையும் அவற்றை இயக்கும் செயற்கூறுகளையும் ஒருங்கே வைப்பது உறைபொதியாக்கம் ஆகும்.",
+                    en: "Encapsulation packs data and methods safely inside the class boundary."
+                }
+            },
+            {
+                q: {
+                    ta: "8. ஒரு இனக்குழு அறிவிக்கப்பட்டவுடன் கணினியின் நினைவகத்தில் (RAM) எத்தனை பைட்டுகள் ஒதுக்கப்படும்?",
+                    en: "8. How much RAM memory is allocated when a C++ class is merely declared (without objects)?"
+                },
+                options: {
+                    ta: ["4 Bytes", "8 Bytes", "0 Bytes (நினைவகம் ஒதுக்கப்படாது)", "1024 Bytes"],
+                    en: ["4 Bytes", "8 Bytes", "0 Bytes (No memory allocated)", "1024 Bytes"]
+                },
+                answer: 2,
+                explanation: {
+                    ta: "இனக்குழு ஒரு திட்ட வரைபடம் மட்டுமே. பொருளை உருவாக்கும் போது மட்டுமே நினைவகம் ஒதுக்கப்படுகிறது.",
+                    en: "Declaring a class creates a specification blueprint only, consuming 0 bytes of RAM until instantiated."
+                }
+            },
+            {
+                q: {
+                    ta: "9. அடிப்படை இனக்குழுவின் பண்புகளை மற்றொரு இனக்குழு பெறுவது எது?",
+                    en: "9. Deriving attributes and methods from an existing base class is known as:"
+                },
+                options: {
+                    ta: ["மரபுரிமம் (Inheritance)", "தரவு மறைப்பு", "ஆக்கி பணிமிகுப்பு", "அழிப்பி"],
+                    en: ["Inheritance", "Data Abstraction", "Constructor Overloading", "Destruction"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "அடிப்படை இனக்குழுவிலிருந்து புதிய இனக்குழு பண்புகளைப் பெறுவது மரபுரிமம் (Inheritance) ஆகும்.",
+                    en: "Inheritance enables a derived class to acquire properties from an existing base class."
+                }
+            },
+            {
+                q: {
+                    ta: "10. Student இனக்குழுவிற்கு s1, s2 என இரண்டு பொருள்கள் உருவாக்கப்பட்டால், calculateTotal() செயற்கூறு எத்தனை நகல்கள் உருவாக்கப்படும்?",
+                    en: "10. If two objects s1 and s2 are created for class Student, member methods exist as:"
+                },
+                options: {
+                    ta: ["ஒவ்வொரு பொருளுக்கும் தனித்தனி நகல்", "அனைத்துப் பொருள்களுக்கும் ஒரே ஒரு பொதுவான குறியீட்டு நகல்", "இரண்டு நகல்கள்", "நினைவகத்தில் இருக்காது"],
+                    en: ["Separate code copy for each object", "A single shared code block in memory", "Two duplicate copies in heap", "None"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "செயற்கூறுகளின் குறியீடு நினைவகத்தில் ஒரு முறை மட்டுமே வைக்கப்பட்டு, அனைத்துப் பொருள்களாலும் பகிரப்படுகிறது (this சுட்டுக்குறி மூலம்).",
+                    en: "Member function code is loaded once and shared across all object instances via the 'this' pointer."
+                }
+            }
+        ];
+
+        // ==========================================
+        // BUG HUNT CHALLENGES (OOP FOCUSED)
+        // ==========================================
+        const bugChallengesData = [
+            {
+                title: { ta: "சவால் 1: இனக்குழு முடிவில் அரைப்புள்ளி பிழை", en: "Challenge 1: Missing Class Semicolon" },
+                desc: { ta: "கீழே உள்ள இனக்குழு குறிமுறையில் உள்ள மிகப்பெரிய தொடரியல் பிழையைக் கண்டறியவும்:", en: "Spot the critical syntax error at the end of the class declaration:" },
+                code: "class Box {\npublic:\n    int length;\n    int width;\n}\n\nint main() {\n    Box b;\n    return 0;\n}",
+                options: {
+                    ta: [
+                        "இனக்குழுவின் முடிவு அடைப்புக்குறிக்குப் பின் அரைப்புள்ளி (;) விடுபட்டுள்ளது",
+                        "public வரக்கூடாது",
+                        "Box b என்பது தவறானது",
+                        "int main-ல் return 0 வரக்கூடாது"
+                    ],
+                    en: [
+                        "Missing semicolon (;) after closing brace of class declaration",
+                        "public specifier is disallowed",
+                        "Box b object instantiation is invalid",
+                        "return 0 should not be used"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "C++ மொழியில் இனக்குழு அறிவிப்பின் நிறைவில் கட்டாயமாக அரைப்புள்ளி இடப்பட வேண்டும்: `};`",
+                    en: "A C++ class definition must always terminate with a semicolon: `};`."
+                }
+            },
+            {
+                title: { ta: "சவால் 2: Private தரவை நேரடியாக அணுகும் பிழை", en: "Challenge 2: Private Access Violation" },
+                desc: { ta: "கீழே உள்ள நிரலை கம்பைல் செய்யும் போது பிழை ஏன் வருகிறது?", en: "Why does the compiler fail with an error when building this code?" },
+                code: "class Account {\n    int pinNumber = 1234; // default private\n};\n\nint main() {\n    Account a;\n    cout << a.pinNumber; // Error!\n    return 0;\n}",
+                options: {
+                    ta: [
+                        "pinNumber என்பது இயல்புநிலையாக private; main()-லிருந்து நேரடியாக அணுக முடியாது",
+                        "Account a என்பது தவறு",
+                        "cout-ல் << செயற்குறி தவறானது",
+                        "pinNumber-ல் எண்கள் வரக்கூடாது"
+                    ],
+                    en: [
+                        "pinNumber is implicitly private and inaccessible outside the class",
+                        "Object instantiation is incorrect",
+                        "cout stream operator is reversed",
+                        "pinNumber cannot store integers"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "இனக்குழுவின் மாறிகள் இயல்பாக private ஆகும். அவற்றை அணுக `public:` பகுதியில் உறுப்புச் செயற்கூறு ஒன்றை அமைக்க வேண்டும்.",
+                    en: "Class members default to private. They cannot be accessed directly from main(); create a public getter function."
+                }
+            },
+            {
+                title: { ta: "சவால் 3: தவறான ஆக்கி திருப்பி அனுப்பும் வகை", en: "Challenge 3: Constructor Return Type" },
+                desc: { ta: "கீழே உள்ள ஆக்கி அறிவிப்பில் உள்ள தொடரியல் பிழையைக் கண்டறியவும்:", en: "Find the fatal syntax error in this constructor definition:" },
+                code: "class Student {\npublic:\n    void Student() { // Syntax Error!\n        cout << \"பொருள் உருவானது!\";\n    }\n};",
+                options: {
+                    ta: [
+                        "ஆக்கிக்கு (Constructor) திருப்பி அனுப்பும் வகை (void/int) இருக்கக்கூடாது",
+                        "Student என்ற பெயர் வரக்கூடாது",
+                        "cout-ல் மேற்கோள் குறி வரக்கூடாது",
+                        "public வரக்கூடாது"
+                    ],
+                    en: [
+                        "Constructors must NOT declare any return type (not even void)",
+                        "Constructor name cannot match class name",
+                        "Quotes in cout are forbidden",
+                        "public label is invalid"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "ஆக்கிகளுக்கு `void` உள்ளிட்ட எந்தவொரு திருப்பி அனுப்பும் வகையும் இருக்கக்கூடாது: `Student() { ... }` என்பதே சரியானது.",
+                    en: "Constructors do not have any return type (not even void). The correct declaration is `Student() { ... }`."
+                }
+            },
+            {
+                title: { ta: "சவால் 4: புள்ளி செயற்குறிக்குப் பதிலாக அம்பு செயற்குறி", en: "Challenge 4: Incorrect Member Operator" },
+                desc: { ta: "பொருளின் உறுப்பை அணுகும் போது ஏற்பட்டுள்ள குறியீட்டுப் பிழை எது?", en: "What is wrong with the member invocation on regular object 'c'?" },
+                code: "class Car {\npublic:\n    void start() { cout << \"Started!\"; }\n};\n\nint main() {\n    Car c;\n    c->start(); // Error!\n    return 0;\n}",
+                options: {
+                    ta: [
+                        "நேரடி பொருளுக்கு புள்ளி செயற்குறி (c.start()) மட்டுமே பயன்படும்; -> சுட்டுக்குறிக்கு (Pointer) மட்டுமே உரியது",
+                        "Car c என்று எழுதக்கூடாது",
+                        "start() அடைப்புக்குறி வரக்கூடாது",
+                        "நிரலில் எந்தப் பிழையுமில்லை"
+                    ],
+                    en: [
+                        "Direct objects use dot operator (c.start()); -> is only for pointers",
+                        "Car c instantiation is illegal",
+                        "Parentheses are disallowed on start",
+                        "There is no error in the code"
+                    ]
+                },
+                correct: 0,
+                solution: {
+                    ta: "நேரடி பொருள்களுக்கு புள்ளி செயற்குறியைப் பயன்படுத்த வேண்டும்: `c.start();`. அம்பு செயற்குறி (->) சுட்டுக்குறி மாறிகளுக்கு (Pointers) மட்டுமே பயன்படும்.",
+                    en: "Use dot notation `c.start();` for direct objects. Arrow `->` is strictly reserved for pointer instances."
+                }
+            }
+        ];
+
+        // ==========================================
+        // LIVING OBJECTS STATE (VISUALIZER ENGINE)
+        // ==========================================
+        let liveStudentObjects = [
+            {
+                id: 'obj_1',
+                name: 'கவின் (Kavin)',
+                roll: 101,
+                m1: 92,
+                m2: 95,
+                address: '0x7ffd982a4b10'
+            },
+            {
+                id: 'obj_2',
+                name: 'மலர் (Malar)',
+                roll: 102,
+                m1: 88,
+                m2: 90,
+                address: '0x7ffd982a4b40'
+            }
+        ];
+
+        function renderLivingObjects() {
+            const container = document.getElementById('ram-objects-container');
+            container.innerHTML = '';
+            const t = UI_TEXT[currentLang];
+
+            document.getElementById('vis-obj-count').textContent = `${currentLang === 'ta' ? 'பொருள்கள்' : 'Objects'}: ${liveStudentObjects.length}`;
+
+            liveStudentObjects.forEach((obj, idx) => {
+                const total = obj.m1 + obj.m2;
+                const card = document.createElement('div');
+                card.id = `vis-card-${obj.id}`;
+                card.className = 'bg-slate-50 border-2 border-indigo-200 rounded-2xl p-4 shadow-sm hover:border-indigo-400 transition-all';
+
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between pb-2 border-b border-slate-200 gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white font-mono font-bold text-xs flex items-center justify-center">s${idx + 1}</span>
+                            <div>
+                                <span class="font-bold text-slate-900 text-sm">Student ${obj.name}</span>
+                                <span class="text-[11px] text-slate-500 font-mono ml-1">RAM: ${obj.address}</span>
+                            </div>
+                        </div>
+                        <button onclick="destroyObject('${obj.id}')" class="text-xs text-rose-500 hover:text-rose-700 font-bold px-2 py-1 rounded hover:bg-rose-50 transition" title="Delete object (~Destructor)">
+                            <i class="fa-solid fa-trash-can"></i> ~${currentLang === 'ta' ? 'அழிப்பி' : 'Destroy'}
+                        </button>
+                    </div>
+
+                    <!-- Encapsulated Internal State (Private Members) -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 my-3 text-xs">
+                        <div class="bg-white p-2 rounded-xl border border-rose-200 shadow-2xs">
+                            <span class="text-[10px] text-rose-500 font-mono uppercase font-bold flex items-center gap-1"><i class="fa-solid fa-lock text-[9px]"></i> rollNo</span>
+                            <span class="font-mono text-slate-800 font-bold text-sm block mt-0.5">${obj.roll}</span>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl border border-rose-200 shadow-2xs">
+                            <span class="text-[10px] text-rose-500 font-mono uppercase font-bold flex items-center gap-1"><i class="fa-solid fa-lock text-[9px]"></i> name</span>
+                            <span class="font-semibold text-slate-800 text-xs block mt-0.5 truncate">${obj.name}</span>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl border border-rose-200 shadow-2xs">
+                            <span class="text-[10px] text-rose-500 font-mono uppercase font-bold flex items-center gap-1"><i class="fa-solid fa-lock text-[9px]"></i> mark1</span>
+                            <span class="font-mono text-slate-800 font-bold text-sm block mt-0.5" id="val-m1-${obj.id}">${obj.m1}</span>
+                        </div>
+                        <div class="bg-white p-2 rounded-xl border border-rose-200 shadow-2xs">
+                            <span class="text-[10px] text-rose-500 font-mono uppercase font-bold flex items-center gap-1"><i class="fa-solid fa-lock text-[9px]"></i> mark2</span>
+                            <span class="font-mono text-slate-800 font-bold text-sm block mt-0.5" id="val-m2-${obj.id}">${obj.m2}</span>
+                        </div>
+                    </div>
+
+                    <!-- Public Member Functions Interface -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 text-xs">
+                        <div class="flex items-center gap-1.5 font-bold text-slate-700">
+                            <span class="text-indigo-600"><i class="fa-solid fa-calculator"></i> ${currentLang === 'ta' ? 'மொத்தம்' : 'Total'}:</span>
+                            <span class="font-mono text-sm text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200" id="val-tot-${obj.id}">${total}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="invokeBonus('${obj.id}', 5)" class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg transition flex items-center gap-1">
+                                <i class="fa-solid fa-gift"></i> <span>s${idx + 1}.bonusMarks(5)</span>
+                            </button>
+                            <button onclick="flashTotal('${obj.id}')" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition flex items-center gap-1">
+                                <i class="fa-solid fa-terminal"></i> <span>s${idx + 1}.getTotal()</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function instantiateCustomStudent() {
+            playSound('create');
+            const name = document.getElementById('inp-obj-name').value.trim() || 'மாணவர்';
+            const roll = parseInt(document.getElementById('inp-obj-roll').value) || 103;
+            const m1 = parseInt(document.getElementById('inp-obj-m1').value) || 85;
+            const m2 = parseInt(document.getElementById('inp-obj-m2').value) || 90;
+
+            const randomHex = Math.floor(Math.random() * 0xFFFF).toString(16).padStart(4, '0');
+            const newObj = {
+                id: 'obj_' + Date.now(),
+                name: name,
+                roll: roll,
+                m1: m1,
+                m2: m2,
+                address: `0x7ffd${randomHex}`
+            };
+
+            liveStudentObjects.push(newObj);
+            renderLivingObjects();
+
+            // Highlight the newly created card
+            const el = document.getElementById(`vis-card-${newObj.id}`);
+            if (el) el.classList.add('obj-box-highlight');
+
+            showToast(currentLang === 'ta' ? `[ஆக்கி Constructor] ${name} என்ற பொருள் நினைவகத்தில் ${newObj.address} முகவரியில் உருவாக்கப்பட்டது!` : `[Constructor] ${name} instantiated in RAM at ${newObj.address}!`, "Constructor Invoked");
+        }
+
+        function destroyObject(objId) {
+            playSound('error');
+            const target = liveStudentObjects.find(o => o.id === objId);
+            const name = target ? target.name : 'Object';
+            liveStudentObjects = liveStudentObjects.filter(o => o.id !== objId);
+            renderLivingObjects();
+            showToast(currentLang === 'ta' ? `[அழிப்பி Destructor] ${name} நினைவகத்தை விட்டு அழிக்கப்பட்டது.` : `[Destructor] ${name} memory deallocated.`, "Destructor Invoked");
+        }
+
+        function invokeBonus(objId, bonus = 5) {
+            playSound('success');
+            const target = liveStudentObjects.find(o => o.id === objId);
+            if (target) {
+                target.m1 += bonus;
+                target.m2 += bonus;
+                renderLivingObjects();
+                const card = document.getElementById(`vis-card-${objId}`);
+                if (card) card.classList.add('obj-box-highlight');
+                showToast(currentLang === 'ta' ? `போனஸ் மதிப்பெண் +${bonus} சேர்க்கப்பட்டு உறைபொதியாக்கப்பட்ட தரவு புதுப்பிக்கப்பட்டது.` : `Bonus +${bonus} applied through public method!`, "Encapsulated Method");
+            }
+        }
+
+        function flashTotal(objId) {
+            playSound('click');
+            const target = liveStudentObjects.find(o => o.id === objId);
+            if (target) {
+                const total = target.m1 + target.m2;
+                showToast(currentLang === 'ta' ? `${target.name}-ன் மொத்த மதிப்பெண் = ${total} (உறுப்புச் செயற்கூறு calculateTotal() இயங்கியது)` : `${target.name} Total = ${total} via calculateTotal()`, "Method Return");
+            }
+        }
+
+        function resetVisualizer() {
+            playSound('click');
+            liveStudentObjects = [
+                { id: 'obj_1', name: 'கவின் (Kavin)', roll: 101, m1: 92, m2: 95, address: '0x7ffd982a4b10' },
+                { id: 'obj_2', name: 'மலர் (Malar)', roll: 102, m1: 88, m2: 90, address: '0x7ffd982a4b40' }
+            ];
+            renderLivingObjects();
+        }
+
+        // ==========================================
+        // RENDER STATIC & DYNAMIC CONTENT
+        // ==========================================
+        function updateLocalizedStaticTexts() {
+            const t = UI_TEXT[currentLang];
+            document.getElementById('lbl-header-std').textContent = t.headerStd;
+            document.getElementById('lbl-header-sub').textContent = t.headerSub;
+            document.getElementById('lbl-header-title').textContent = t.headerTitle;
+            document.getElementById('lang-btn-text').textContent = t.langBtn;
+
+            document.getElementById('tab-title-concepts').textContent = t.tabConcepts;
+            document.getElementById('tab-title-visualizer').textContent = t.tabVisualizer;
+            document.getElementById('tab-title-playground').textContent = t.tabPlayground;
+            document.getElementById('tab-title-qa').textContent = t.tabQA;
+            document.getElementById('tab-title-quiz').textContent = t.tabQuiz;
+
+            document.getElementById('badge-chapter').textContent = t.badgeChapter;
+            document.getElementById('hero-title').textContent = t.heroTitle;
+            document.getElementById('hero-sub').textContent = t.heroSub;
+            document.getElementById('hero-btn-visual').textContent = t.heroBtnVisual;
+            document.getElementById('hero-btn-code').textContent = t.heroBtnCode;
+
+            document.getElementById('badge-class-type').textContent = t.badgeClassType;
+            document.getElementById('badge-obj-type').textContent = t.badgeObjType;
+            document.getElementById('card-class-head').textContent = t.cardClassHead;
+            document.getElementById('card-class-sub').textContent = t.cardClassSub;
+            document.getElementById('card-obj-head').textContent = t.cardObjHead;
+            document.getElementById('card-obj-sub').textContent = t.cardObjSub;
+
+            document.getElementById('title-pillars').textContent = t.titlePillars;
+            document.getElementById('title-access-spec').textContent = t.titleAccessSpec;
+            document.getElementById('title-constructors').textContent = t.titleConstructors;
+            document.getElementById('sub-constructors').textContent = t.subConstructors;
+
+            if (document.getElementById('lbl-tap-hint')) document.getElementById('lbl-tap-hint').textContent = t.lblTapHint;
+            if (document.getElementById('lbl-spec-hint')) document.getElementById('lbl-spec-hint').textContent = t.lblSpecHint;
+            if (document.getElementById('lbl-cd-hint')) document.getElementById('lbl-cd-hint').textContent = t.lblCdHint;
+
+            document.getElementById('lbl-modal-concept').textContent = t.modalConcept;
+            document.getElementById('lbl-modal-points').textContent = t.modalPoints;
+            document.getElementById('lbl-modal-code').textContent = t.modalCode;
+            document.getElementById('lbl-modal-copy').textContent = t.modalCopy;
+            document.getElementById('lbl-modal-prev').textContent = t.modalPrev;
+            document.getElementById('lbl-modal-next').textContent = t.modalNext;
+            document.getElementById('lbl-modal-close').textContent = t.modalClose;
+            document.getElementById('lbl-modal-run').textContent = t.modalRun;
+
+            document.getElementById('vis-heading').textContent = t.visHeading;
+            document.getElementById('vis-subheading').textContent = t.visSubheading;
+            document.getElementById('btn-vis-reset').textContent = t.btnVisReset;
+            document.getElementById('vis-code-title').textContent = t.visCodeTitle;
+            document.getElementById('vis-info-title').textContent = t.visInfoTitle;
+            document.getElementById('vis-info-desc').textContent = t.visInfoDesc;
+            document.getElementById('vis-instantiate-title').innerHTML = `<i class="fa-solid fa-plus-circle"></i> ${t.visInstantiateTitle}`;
+            document.getElementById('btn-instantiate-text').textContent = t.btnInstantiateText;
+            document.getElementById('vis-ram-heading').textContent = t.visRamHeading;
+            document.getElementById('vis-note-encaps').textContent = t.visNoteEncaps;
+
+            document.getElementById('lbl-preset-select').innerHTML = `<i class="fa-solid fa-shapes text-indigo-600"></i> ${t.lblPreset}`;
+            document.getElementById('btn-copy-code').textContent = t.btnCopy;
+            document.getElementById('btn-reset-code').textContent = t.btnReset;
+            document.getElementById('btn-run-code').textContent = t.btnRun;
+            document.getElementById('lbl-clear-term').textContent = t.clearTerm;
+            document.getElementById('lbl-editor-ready').textContent = t.lblReady;
+
+            document.getElementById('qa-heading').textContent = t.qaHeading;
+            document.getElementById('qa-subheading').textContent = t.qaSub;
+            document.getElementById('qa-btn-all').textContent = t.qaBtnAll;
+            document.getElementById('qa-btn-2m').textContent = t.qaBtn2m;
+            document.getElementById('qa-btn-3m').textContent = t.qaBtn3m;
+            document.getElementById('qa-btn-5m').textContent = t.qaBtn5m;
+
+            document.getElementById('quiz-heading').textContent = t.quizHeading;
+            document.getElementById('quiz-subheading').textContent = t.quizSub;
+            document.getElementById('lbl-score-text').textContent = t.lblScore;
+            document.getElementById('quiz-part1-title').textContent = t.quizP1Title;
+            document.getElementById('bug-part2-title').textContent = t.quizP2Title;
+            document.getElementById('bug-part2-sub').textContent = t.quizP2Sub;
+            document.getElementById('btn-quiz-reset').textContent = t.btnQuizReset;
+
+            document.getElementById('cin-modal-title').textContent = t.cinTitle;
+            document.getElementById('btn-cin-ok').textContent = t.btnCinOk;
+            document.getElementById('footer-text').textContent = t.footerText;
+
+            updateThemeLabelTexts();
+        }
+
+        function toggleLanguage() {
+            playSound('click');
+            currentLang = currentLang === 'ta' ? 'en' : 'ta';
+            try {
+                localStorage.setItem('cppOopLang', currentLang);
+            } catch(e) {}
+
+            updateLocalizedStaticTexts();
+            renderPillars();
+            renderAccessSpecifiers();
+            renderConstructorsContent();
+            renderLivingObjects();
+            renderOopPresets();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            // Refresh modal if currently open
+            if (!document.getElementById('topic-detail-modal').classList.contains('hidden')) {
+                openTopicDetail(currentModalTopicId, false);
+            }
+
+            showToast(currentLang === 'ta' ? "மொழி தமிழாக மாற்றப்பட்டது." : "Switched to English.", "Language");
+        }
+
+        function renderPillars() {
+            const container = document.getElementById('pillars-grid');
+            container.innerHTML = '';
+            oopPillarsData.forEach(p => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border bg-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between cursor-pointer group`;
+                card.onclick = () => openTopicDetail(p.id);
+                card.innerHTML = `
+                    <div>
+                        <div class="w-10 h-10 rounded-xl ${p.color} flex items-center justify-center text-lg font-bold mb-3 border group-hover:scale-110 transition-transform">
+                            <i class="fa-solid ${p.icon}"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm mb-2 group-hover:text-indigo-600 transition-colors">${p.name[currentLang]}</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">${p.desc[currentLang]}</p>
+                    </div>
+                    <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-indigo-600 group-hover:text-indigo-800">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-circle-info text-[10px]"></i> ${currentLang === 'ta' ? 'விளக்கம் & மாதிரி நிரல்' : 'Learn & Code'}</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderAccessSpecifiers() {
+            const container = document.getElementById('access-spec-grid');
+            container.innerHTML = '';
+            accessSpecifiersData.forEach(spec => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-xl border ${spec.color} hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between`;
+                card.onclick = () => openTopicDetail(spec.id);
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${spec.badgeColor}">
+                                <i class="fa-solid ${spec.icon} mr-1"></i> ${spec.badge[currentLang]}
+                            </span>
+                            <code class="text-xs font-mono font-bold text-slate-700">${spec.type}:</code>
+                        </div>
+                        <p class="text-xs text-slate-700 leading-relaxed mt-2">${spec.desc[currentLang]}</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-bold text-slate-600 group-hover:text-indigo-700">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-book-open text-[10px]"></i> ${currentLang === 'ta' ? 'விளக்கம் & ஒப்புமை' : 'Example & Analogy'}</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderConstructorsContent() {
+            const container = document.getElementById('constructors-content');
+            if (currentLang === 'ta') {
+                container.innerHTML = `
+                    <div onclick="openTopicDetail('constructor')" class="bg-indigo-50/50 hover:bg-indigo-50 p-4 rounded-xl border border-indigo-200 hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="font-bold text-indigo-900 flex items-center gap-1.5 group-hover:text-indigo-700"><i class="fa-solid fa-seedling text-indigo-600"></i> ஆக்கி (Constructor):</h5>
+                                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">தொட்டு கற்க</span>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-700">• இனக்குழுவின் அதே பெயரைப் பெற்றிருக்கும்; பொருள் உருவாகும் போது தானாகவே இயங்கும்.<br>• <strong>நோக்கம்:</strong> மாறிகளுக்குத் தொடக்க மதிப்புகளை இருத்துதல்.<br>• இதற்கு எந்த ஒரு திருப்பி அனுப்பும் வகையும் (Return type) கிடையாது.</p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-indigo-100 flex items-center justify-between text-[11px] font-bold text-indigo-600">
+                            <span><i class="fa-solid fa-lightbulb mr-1"></i> நிஜ உலக உதாரணம் & மாதிரி நிரல்</span>
+                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                    <div onclick="openTopicDetail('destructor')" class="bg-purple-50/50 hover:bg-purple-50 p-4 rounded-xl border border-purple-200 hover:border-purple-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="font-bold text-purple-900 flex items-center gap-1.5 group-hover:text-purple-700"><i class="fa-solid fa-broom text-purple-600"></i> அழிப்பி (Destructor):</h5>
+                                <span class="text-[10px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">தொட்டு கற்க</span>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-700">• இனக்குழுவின் பெயருக்கு முன்னால் <strong>டில்டே (~)</strong> குறி இட்டு அழைக்கப்படும் (எ.கா: ~Student()).<br>• <strong>நோக்கம்:</strong> பொருள் அழியும் போது நினைவகத்தை விடுவித்தல்.<br>• அழிப்பிக்கு ஒருபோதும் அளபுருக்கள் (Parameters) இருக்காது.</p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-purple-100 flex items-center justify-between text-[11px] font-bold text-purple-600">
+                            <span><i class="fa-solid fa-lightbulb mr-1"></i> நிஜ உலக உதாரணம் & மாதிரி நிரல்</span>
+                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div onclick="openTopicDetail('constructor')" class="bg-indigo-50/50 hover:bg-indigo-50 p-4 rounded-xl border border-indigo-200 hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="font-bold text-indigo-900 flex items-center gap-1.5 group-hover:text-indigo-700"><i class="fa-solid fa-seedling text-indigo-600"></i> Constructor:</h5>
+                                <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">Tap to Learn</span>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-700">• Has the exact same name as the class; automatically invoked on object creation.<br>• <strong>Purpose:</strong> Initializes member variables and establishes valid object states.<br>• Has NO return type (not even void).</p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-indigo-100 flex items-center justify-between text-[11px] font-bold text-indigo-600">
+                            <span><i class="fa-solid fa-lightbulb mr-1"></i> Analogy & Live Code</span>
+                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                    <div onclick="openTopicDetail('destructor')" class="bg-purple-50/50 hover:bg-purple-50 p-4 rounded-xl border border-purple-200 hover:border-purple-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="font-bold text-purple-900 flex items-center gap-1.5 group-hover:text-purple-700"><i class="fa-solid fa-broom text-purple-600"></i> Destructor:</h5>
+                                <span class="text-[10px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">Tap to Learn</span>
+                            </div>
+                            <p class="text-xs leading-relaxed text-slate-700">• Designated with a <strong>tilde (~)</strong> before the class name (e.g., ~Student()).<br>• <strong>Purpose:</strong> Reclaims allocated resources and performs clean-up when the object goes out of scope.<br>• Takes no parameters and cannot be overloaded.</p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-purple-100 flex items-center justify-between text-[11px] font-bold text-purple-600">
+                            <span><i class="fa-solid fa-lightbulb mr-1"></i> Analogy & Live Code</span>
+                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // ==========================================
+        // TOPIC MODAL LOGIC (விளக்கங்கள் & எடுத்துக்காட்டுகள்)
+        // ==========================================
+        function openTopicDetail(topicId, playAudio = true) {
+            const topic = topicDetails[topicId];
+            if (!topic) return;
+
+            currentModalTopicId = topicId;
+            if (playAudio) playSound('click');
+
+            document.getElementById('modal-topic-icon').className = `fa-solid ${topic.icon}`;
+            document.getElementById('modal-topic-cat').textContent = topic.category[currentLang];
+            document.getElementById('modal-topic-title').textContent = topic.title[currentLang];
+            document.getElementById('modal-topic-summary').innerHTML = topic.summary[currentLang];
+
+            document.getElementById('modal-topic-analogy-title').textContent = topic.analogy.title[currentLang];
+            document.getElementById('modal-topic-analogy-desc').textContent = topic.analogy.desc[currentLang];
+
+            const pointsContainer = document.getElementById('modal-topic-points');
+            pointsContainer.innerHTML = '';
+            topic.keyPoints[currentLang].forEach(pt => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-xs mt-1"></i> <span>${pt}</span>`;
+                pointsContainer.appendChild(li);
+            });
+
+            document.getElementById('modal-topic-code').textContent = topic.code;
+
+            document.getElementById('topic-detail-modal').classList.remove('hidden');
+        }
+
+        function closeTopicDetail() {
+            playSound('click');
+            document.getElementById('topic-detail-modal').classList.add('hidden');
+        }
+
+        function navigateTopicDetail(direction) {
+            let currentIndex = topicDetailKeys.indexOf(currentModalTopicId);
+            if (currentIndex === -1) currentIndex = 0;
+            let nextIndex = currentIndex + direction;
+            if (nextIndex < 0) nextIndex = topicDetailKeys.length - 1;
+            if (nextIndex >= topicDetailKeys.length) nextIndex = 0;
+            openTopicDetail(topicDetailKeys[nextIndex], true);
+        }
+
+        function copyModalCode() {
+            playSound('click');
+            const code = document.getElementById('modal-topic-code').textContent;
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "மாதிரி நிரல் நகலெடுக்கப்பட்டது!" : "Example code copied to clipboard!", "Copied");
+        }
+
+        function loadTopicCodeToPlayground(topicId) {
+            const topic = topicDetails[topicId];
+            if (!topic) return;
+            closeTopicDetail();
+            switchTab('playground');
+            editor.value = topic.code;
+            document.getElementById('preset-selector').value = 'blank';
+            runOopCode();
+            showToast(currentLang === 'ta' ? `'${topic.title.ta}' நிரல் ஆய்வகத்தில் ஏற்றப்பட்டது.` : `Loaded '${topic.title.en}' into Playground.`, "Playground");
+        }
+
+        // ==========================================
+        // RENDER EXAM QUESTION BANK
+        // ==========================================
+        let currentQAFilter = 'all';
+
+        function renderExamQA(filter = currentQAFilter) {
+            currentQAFilter = filter;
+            const container = document.getElementById('qa-cards-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? examQuestionsData : examQuestionsData.filter(q => q.type === filter);
+
+            filtered.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between';
+
+                const badgeColor = item.type === '2m' ? 'bg-indigo-100 text-indigo-800' : (item.type === '3m' ? 'bg-purple-100 text-purple-800' : 'bg-amber-100 text-amber-800');
+                const badgeLabel = currentLang === 'ta' 
+                    ? (item.type === '2m' ? '2 மதிப்பெண்' : (item.type === '3m' ? '3 மதிப்பெண்' : '5 மதிப்பெண்'))
+                    : (item.type === '2m' ? '2 Marks' : (item.type === '3m' ? '3 Marks' : '5 Marks'));
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs px-2.5 py-1 rounded-md font-bold ${badgeColor}">${badgeLabel}</span>
+                            <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-graduation-cap"></i> SCERT TN</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm sm:text-base mb-3 leading-snug">${item.q[currentLang]}</h4>
+                        <div class="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            ${item.ans[currentLang]}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterQA(type) {
+            playSound('click');
+            ['all', '2m', '3m', '5m'].forEach(t => {
+                const btn = document.getElementById(`qa-btn-${t}`);
+                if (t === type) {
+                    btn.className = 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-indigo-600 text-white';
+                } else {
+                    btn.className = 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+                }
+            });
+            renderExamQA(type);
+        }
+
+        // ==========================================
+        // RENDER QUIZ & BUG CHALLENGES
+        // ==========================================
+        let userQuizAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizQuestionsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm transition';
+                card.id = `q-card-${index}`;
+
+                let optionsHtml = '';
+                item.options[currentLang].forEach((opt, optIndex) => {
+                    const isChecked = userQuizAnswers[index] === optIndex ? 'checked' : '';
+                    optionsHtml += `
+                        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/50 cursor-pointer transition text-xs sm:text-sm">
+                            <input type="radio" name="question_${index}" value="${optIndex}" ${isChecked} onchange="selectQuizOption(${index}, ${optIndex})" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-slate-700 font-medium">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mb-3 flex items-start gap-2">
+                        <span>${item.q[currentLang]}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                        ${optionsHtml}
+                    </div>
+                    <div id="feedback-${index}" class="hidden text-xs p-3 rounded-xl"></div>
+                `;
+                container.appendChild(card);
+
+                if (userQuizAnswers[index] !== undefined) {
+                    highlightQuizFeedback(index, userQuizAnswers[index]);
+                }
+            });
+        }
+
+        function selectQuizOption(qIdx, selectedOpt) {
+            userQuizAnswers[qIdx] = selectedOpt;
+            highlightQuizFeedback(qIdx, selectedOpt);
+
+            let correctCount = 0;
+            quizQuestionsData.forEach((q, idx) => {
+                if (userQuizAnswers[idx] === q.answer) correctCount++;
+            });
+            document.getElementById('current-score').textContent = correctCount;
+        }
+
+        function highlightQuizFeedback(qIdx, selectedOpt) {
+            const item = quizQuestionsData[qIdx];
+            const feedbackBox = document.getElementById(`feedback-${qIdx}`);
+            if (!feedbackBox) return;
+            feedbackBox.classList.remove('hidden');
+
+            const isCorrect = selectedOpt === item.answer;
+            if (isCorrect) {
+                playSound('success');
+                feedbackBox.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                feedbackBox.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'சரியான விடை!' : 'Correct!'}</b> ${item.explanation[currentLang]}`;
+            } else {
+                playSound('error');
+                feedbackBox.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                feedbackBox.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'தவறான விடை!' : 'Incorrect!'}</b> ${currentLang === 'ta' ? 'சரியான விடை:' : 'Correct answer:'} <b>${item.options[currentLang][item.answer]}</b>.<br>${item.explanation[currentLang]}`;
+            }
+        }
+
+        function resetQuiz() {
+            playSound('click');
+            userQuizAnswers = {};
+            document.getElementById('current-score').textContent = '0';
+            renderQuiz();
+        }
+
+        function renderBugChallenges() {
+            const container = document.getElementById('bug-cards-container');
+            container.innerHTML = '';
+
+            bugChallengesData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between';
+                
+                let optHtml = '';
+                item.options[currentLang].forEach((opt, oIdx) => {
+                    optHtml += `
+                        <button onclick="checkBugChoice(${index}, ${oIdx})" id="bug-opt-${index}-${oIdx}" class="text-left p-2.5 rounded-lg border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 transition font-medium">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-slate-900 text-sm sm:text-base">${item.title[currentLang]}</span>
+                            <span class="text-xs bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">${currentLang === 'ta' ? 'OOP பிழை ஆய்வு' : 'OOP Bug Spotting'}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">${item.desc[currentLang]}</p>
+                        
+                        <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono mb-4 overflow-x-auto"><code>${item.code}</code></pre>
+                        
+                        <div class="space-y-1.5 mb-3 flex flex-col">
+                            ${optHtml}
+                        </div>
+                    </div>
+                    <div id="bug-feedback-${index}" class="hidden text-xs p-3 rounded-xl mt-2 font-medium"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function checkBugChoice(challengeIdx, choiceIdx) {
+            const ch = bugChallengesData[challengeIdx];
+            const feedback = document.getElementById(`bug-feedback-${challengeIdx}`);
+            feedback.classList.remove('hidden');
+
+            if (choiceIdx === ch.correct) {
+                playSound('success');
+                feedback.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                feedback.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'மிகச் சரி!' : 'Bingo! Correct!'}</b> ${ch.solution[currentLang]}`;
+            } else {
+                playSound('error');
+                feedback.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                feedback.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'மீண்டும் முயல்க!' : 'Try Again!'}</b> ${ch.options[currentLang][choiceIdx]} ${currentLang === 'ta' ? 'சரியான தீர்வு அல்ல.' : 'is not the actual root cause.'}`;
+            }
+        }
+
+        // ==========================================
+        // PLAYGROUND PRESETS & NAVIGATION
+        // ==========================================
+        function renderOopPresets() {
+            const selector = document.getElementById('preset-selector');
+            const currentVal = selector.value || 'basicClass';
+            selector.innerHTML = '';
+
+            for (let key in oopPresets) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = oopPresets[key].name[currentLang];
+                selector.appendChild(opt);
+            }
+            selector.value = currentVal;
+        }
+
+        function loadOopPreset(presetKey) {
+            playSound('click');
+            if (oopPresets[presetKey]) {
+                editor.value = oopPresets[presetKey].code;
+            }
+        }
+
+        const editor = document.getElementById('code-editor');
+
+        function resetEditor() {
+            playSound('click');
+            editor.value = oopPresets.basicClass.code;
+            document.getElementById('preset-selector').value = 'basicClass';
+            clearTerminal();
+        }
+
+        function clearTerminal() {
+            const colorClass = currentEditorTheme === 'light' ? 'text-slate-400' : 'text-slate-500';
+            document.getElementById('terminal-output').innerHTML = `<div class="${colorClass}">// cout வெளியீடுகள் மற்றும் ஆக்கிகளின் செயல்பாடுகள் இங்கு தோன்றும்...</div>`;
+            document.getElementById('term-exit-code').textContent = '0';
+            document.getElementById('term-exec-time').textContent = 'Execution: 0.00ms';
+        }
+
+        function copyCurrentCode() {
+            playSound('click');
+            const textarea = document.createElement('textarea');
+            textarea.value = editor.value;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "C++ குறியீடு நகலெடுக்கப்பட்டது!" : "C++ code copied to clipboard!", "Clipboard");
+        }
+
+        // ==========================================
+        // EDITOR & TERMINAL THEME SWITCHER (Dark/Light)
+        // ==========================================
+        let currentEditorTheme = 'dark';
+
+        function updateThemeLabelTexts() {
+            const t = UI_TEXT[currentLang];
+            const btnLabel = document.getElementById('theme-btn-label');
+            const badgeText = document.getElementById('editor-badge-text');
+
+            if (currentEditorTheme === 'light') {
+                btnLabel.textContent = t.themeLight;
+                badgeText.textContent = t.badgeLight;
+            } else {
+                btnLabel.textContent = t.themeDark;
+                badgeText.textContent = t.badgeDark;
+            }
+        }
+
+        function setEditorTheme(theme, notify = false) {
+            currentEditorTheme = theme;
+            try {
+                localStorage.setItem('cppOopTheme', theme);
+            } catch(e) {}
+
+            const container = document.getElementById('editor-container');
+            const header = document.getElementById('editor-header');
+            const titleText = document.getElementById('editor-title-text');
+            const textarea = document.getElementById('code-editor');
+            const footer = document.getElementById('editor-footer');
+            const statusInd = document.getElementById('editor-status-indicator');
+            const btn = document.getElementById('theme-toggle-btn');
+            const btnIcon = document.getElementById('theme-btn-icon');
+            const badge = document.getElementById('editor-badge-theme');
+
+            const termContainer = document.getElementById('terminal-container');
+            const termHeader = document.getElementById('terminal-header');
+            const termTitle = document.getElementById('terminal-title-text');
+            const termOut = document.getElementById('terminal-output');
+            const termFooter = document.getElementById('terminal-footer');
+
+            if (theme === 'light') {
+                container.className = 'lg:col-span-7 bg-white rounded-2xl p-4 shadow-xl border border-slate-300 flex flex-col h-[560px] transition-all duration-200';
+                header.className = 'flex items-center justify-between pb-3 border-b border-slate-200 text-slate-600 text-xs';
+                titleText.className = 'ml-2 font-mono text-slate-800 font-bold flex items-center gap-1.5';
+                textarea.className = 'w-full h-full bg-white text-slate-900 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 font-medium transition-colors';
+                footer.className = 'pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-[11px] text-slate-600 gap-2';
+                statusInd.className = 'text-emerald-700 font-semibold flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 shadow-sm';
+                btnIcon.className = 'fa-solid fa-sun text-amber-600';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 flex items-center gap-1';
+
+                termContainer.className = 'flex-1 bg-slate-100 rounded-2xl p-4 border border-slate-300 shadow-inner flex flex-col overflow-hidden transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-2 border-b border-slate-300 text-xs text-slate-600 font-mono';
+                termTitle.className = 'flex items-center gap-1.5 text-indigo-700 font-bold';
+                termOut.className = 'flex-grow p-3 overflow-y-auto text-xs code-font text-slate-900 space-y-1 bg-white rounded-xl mt-2 border border-slate-200 transition-colors';
+                termFooter.className = 'pt-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-600';
+            } else {
+                container.className = 'lg:col-span-7 bg-editorDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[560px] transition-all duration-200';
+                header.className = 'flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs';
+                titleText.className = 'ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1.5';
+                textarea.className = 'w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors';
+                footer.className = 'pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2';
+                statusInd.className = 'text-emerald-400 flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm';
+                btnIcon.className = 'fa-solid fa-moon text-amber-300';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1';
+
+                termContainer.className = 'flex-1 bg-slate-950 rounded-2xl p-4 border border-slate-800 shadow-2xl flex flex-col overflow-hidden transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-2 border-b border-slate-800 text-xs text-slate-400 font-mono';
+                termTitle.className = 'flex items-center gap-1.5 text-indigo-400 font-semibold';
+                termOut.className = 'flex-grow p-3 overflow-y-auto text-xs code-font text-slate-200 space-y-1 bg-black/60 rounded-xl mt-2 transition-colors';
+                termFooter.className = 'pt-2 border-t border-slate-900 flex items-center justify-between text-[11px] text-slate-500';
+            }
+
+            updateThemeLabelTexts();
+
+            if (notify) {
+                playSound('click');
+                showToast(theme === 'light' ? "வெண்மை வண்ணத் தீமிற்கு (Light Theme) மாற்றப்பட்டது." : "கருப்பு வண்ணத் தீமிற்கு (Dark Theme) மாற்றப்பட்டது.", "Theme");
+            }
+        }
+
+        function toggleEditorTheme() {
+            const nextTheme = currentEditorTheme === 'dark' ? 'light' : 'dark';
+            setEditorTheme(nextTheme, true);
+        }
+
+        // ==========================================
+        // TAB SWITCHER
+        // ==========================================
+        const allTabs = ['concepts', 'visualizer', 'playground', 'qa', 'quiz'];
+
+        function switchTab(tabId) {
+            playSound('click');
+            allTabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('active-tab');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // CIN PROMPT & TOAST SYSTEM
+        // ==========================================
+        let cinResolveHandler = null;
+
+        function customCin(promptText = "Enter value:") {
+            return new Promise((resolve) => {
+                cinResolveHandler = resolve;
+                document.getElementById('cin-message').textContent = promptText;
+                const inputField = document.getElementById('cin-input-field');
+                inputField.value = "";
+                document.getElementById('cin-modal').classList.remove('hidden');
+                setTimeout(() => inputField.focus(), 50);
+            });
+        }
+
+        function submitCin() {
+            const val = document.getElementById('cin-input-field').value;
+            document.getElementById('cin-modal').classList.add('hidden');
+            if (cinResolveHandler) {
+                cinResolveHandler(val);
+                cinResolveHandler = null;
+            }
+        }
+
+        function showToast(message, title = "OOP Console") {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-body').textContent = message;
+            toast.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                hideToast();
+            }, 3500);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast-notification');
+            toast.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+        }
+
+        // ==========================================
+        // OOP C++ CODE EXECUTION ENGINE
+        // ==========================================
+        async function runOopCode() {
+            playSound('run');
+            const startTime = performance.now();
+            const termOut = document.getElementById('terminal-output');
+            termOut.innerHTML = '';
+
+            let currentLineBuffer = '';
+            function appendTerminal(str, isError = false) {
+                const line = document.createElement('div');
+                if (isError) {
+                    line.className = 'text-rose-400 font-bold';
+                    line.textContent = str;
+                } else {
+                    line.className = currentEditorTheme === 'light' ? 'text-slate-800 font-medium' : 'text-indigo-300';
+                    line.textContent = str;
+                }
+                termOut.appendChild(line);
+                termOut.scrollTop = termOut.scrollHeight;
+            }
+
+            const rawCode = editor.value;
+
+            try {
+                // 1. Strip comments, includes and namespaces
+                let code = rawCode.replace(/\/\*[\s\S]*?\*\//g, '');
+                code = code.replace(/\/\/.*$/gm, '');
+                code = code.replace(/#include\s*[<"][^>"]+[>"]/g, '');
+                code = code.replace(/using\s+namespace\s+[a-zA-Z0-9_]+;/g, '');
+                code = code.replace(/\bstd::/g, '');
+                code = code.replace(/\bendl\b/g, '"\\n"');
+
+                // 2. Loop Protection
+                let loopProtection = `
+                    let __guard = 0;
+                    function __checkLoop() {
+                        if (++__guard > 200000) throw new Error("Infinite loop detected (>200,000 iterations).");
+                    }
+                `;
+
+                // 3. Parse Classes, Constructors, Destructors, Inheritance
+                const customClasses = new Set();
+                const classHeaderMatches = [...code.matchAll(/\bclass\s+([a-zA-Z0-9_]+)(\s*:\s*public\s+([a-zA-Z0-9_]+))?\s*\{/g)];
+                for (const m of classHeaderMatches) {
+                    customClasses.add(m[1]);
+                }
+
+                code = code.replace(/\bclass\s+([a-zA-Z0-9_]+)(\s*:\s*public\s+([a-zA-Z0-9_]+))?\s*\{([\s\S]*?)\};/g, (match, className, inheritPart, baseClass, classBody) => {
+                    let body = classBody;
+                    body = body.replace(/\b(public|private|protected)\s*:/g, '');
+
+                    const memberVars = [];
+                    const memberFuncs = [];
+
+                    // Identify all member functions defined in this class
+                    const methodHeaderMatches = [...body.matchAll(/\b(?:int|void|float|double|char|bool|string|long)\s+([a-zA-Z0-9_]+)\s*\(/g)];
+                    for (const mh of methodHeaderMatches) {
+                        if (mh[1] !== className && !['if', 'for', 'while', 'switch'].includes(mh[1])) {
+                            memberFuncs.push(mh[1]);
+                        }
+                    }
+
+                    // Collect and convert member variables
+                    body = body.replace(/\b(int|float|double|char|bool|string|long)\s+([^;]+);/g, (varMatch, type, vars) => {
+                        if (vars.includes('(')) return varMatch; // skip methods
+                        const varList = vars.split(',').map(v => v.trim());
+                        varList.forEach(v => {
+                            const vName = v.split('=')[0].trim();
+                            if (vName) memberVars.push(vName);
+                        });
+                        return varList.map(v => {
+                            if (v.includes('=')) {
+                                return v + ';';
+                            }
+                            return `${v} = 0;`;
+                        }).join('\n');
+                    });
+
+                    // Helper to accurately inject 'this.' prefix for member variables and member functions
+                    function injectThisBindings(bodyStr) {
+                        let res = bodyStr;
+                        // 1. Member functions: foo() -> this.foo() (resolves "calculateTotal is not defined")
+                        memberFuncs.forEach(fn => {
+                            res = res.replace(new RegExp(`(\\b)${fn}\\s*\\(`, 'g'), (m, b, offset) => {
+                                if (offset > 0 && res[offset - 1] === '.') return m;
+                                return `this.${fn}(`;
+                            });
+                        });
+                        // 2. Member variables: varName -> this.varName
+                        memberVars.forEach(v => {
+                            res = res.replace(new RegExp(`(\\b)${v}\\b`, 'g'), (m, b, offset) => {
+                                if (offset > 0 && res[offset - 1] === '.') return m;
+                                return `this.${v}`;
+                            });
+                        });
+                        return res;
+                    }
+
+                    // Convert Destructor: ~ClassName() { ... }
+                    body = body.replace(new RegExp(`~\\s*${className}\\s*\\(\\)\\s*\\{([\\s\\S]*?)\\}`, 'g'), (dMatch, dBody) => {
+                        return `__destructor() { ${injectThisBindings(dBody)} }`;
+                    });
+
+                    // Convert Constructor: ClassName(...) { ... }
+                    body = body.replace(new RegExp(`\\b${className}\\s*\\(([^)]*)\\)\\s*\\{([\\s\\S]*?)\\}`, 'g'), (cMatch, cParams, cBody) => {
+                        const cleanParams = cParams.split(',').map(p => p.trim().replace(/\b(int|float|double|char|bool|string|long)\s+(&)?/, '').trim()).filter(Boolean).join(', ');
+                        const superCall = baseClass ? 'super(); ' : '';
+                        return `constructor(${cleanParams}) { ${superCall}${injectThisBindings(cBody)} }`;
+                    });
+
+                    // Convert regular member methods
+                    body = body.replace(/\b(int|void|float|double|char|bool|string|long)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{([\s\S]*?)\}/g, (mMatch, retType, mName, params, mBody) => {
+                        const cleanParams = params.split(',').map(p => p.trim().replace(/\b(int|float|double|char|bool|string|long)\s+(&)?/, '').trim()).filter(Boolean).join(', ');
+                        return `${mName}(${cleanParams}) { ${injectThisBindings(mBody)} }`;
+                    });
+
+                    const extendsClause = baseClass ? ` extends ${baseClass}` : '';
+                    return `class ${className}${extendsClause} {\n${body}\n}`;
+                });
+
+                // 4. Convert Object Instantiations:
+                // e.g., Student s1; -> let s1 = new Student();
+                // e.g., Rectangle rect(10, 5); -> let rect = new Rectangle(10, 5);
+                for (const cName of customClasses) {
+                    // With arguments: ClassName obj(arg1, arg2);
+                    const reArgs = new RegExp(`\\b${cName}\\s+([a-zA-Z0-9_]+)\\s*\\(([^)]+)\\);`, 'g');
+                    code = code.replace(reArgs, `let $1 = new ${cName}($2);`);
+
+                    // Without arguments: ClassName obj1, obj2;
+                    const reSimple = new RegExp(`\\b${cName}\\s+([a-zA-Z0-9_\\s,]+);`, 'g');
+                    code = code.replace(reSimple, (match, instances) => {
+                        const list = instances.split(',').map(s => s.trim()).filter(Boolean);
+                        return list.map(s => `let ${s} = new ${cName}();`).join('\n');
+                    });
+                }
+
+                // 5. Convert Standalone Functions (before variable conversion)
+                code = code.replace(/\b(int|void|float|double|char|bool|string|long)\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g, (match, retType, fnName, params) => {
+                    if (fnName === 'main' || ['if', 'while', 'for', 'switch'].includes(fnName)) return match;
+                    const cleanParams = params.split(',').map(p => p.trim().replace(/\b(int|float|double|char|bool|string|long)\s*(&)?\s*/g, '').trim()).filter(Boolean).join(', ');
+                    return `function ${fnName}(${cleanParams}) {`;
+                });
+
+                // Convert main()
+                code = code.replace(/\b(int|void)\s+main\s*\(([^)]*)\)\s*\{/g, 'async function main($2) {');
+
+                // 6. Convert cout << ... and cin >> ...
+                code = code.replace(/cout\s*<<\s*([^;]+);/g, (match, exprs) => {
+                    const parts = exprs.split('<<').map(p => p.trim()).filter(Boolean);
+                    return `__cout(${parts.join(', ')});`;
+                });
+
+                code = code.replace(/cin\s*>>\s*([^;]+);/g, (match, vars) => {
+                    const varNames = vars.split('>>').map(v => v.trim()).filter(Boolean);
+                    return varNames.map(v => `${v} = await __cin("cin >> ${v}:");`).join('\n');
+                });
+
+                // 7. Data types to let
+                code = code.replace(/\blong\s+long\b/g, 'let');
+                code = code.replace(/\b(int|float|double|char|bool|string|long)\s+/g, 'let ');
+                code = code.replace(/\blet\s+let\b/g, 'let');
+
+                // 8. Loop protection injection
+                code = code.replace(/\b(for|while)\s*(\([^{]+\))\s*\{/g, '$1 $2 { __checkLoop(); ');
+                code = code.replace(/\bdo\s*\{/g, 'do { __checkLoop(); ');
+
+                // Auto-wrap main if omitted
+                if (!/\basync\s+function\s+main\b|\bfunction\s+main\b/.test(code)) {
+                    code = `async function main() {\n${code}\n}`;
+                }
+
+                // 9. Sandbox Script assembly
+                let fullScript = `
+                    return (async (__cout, __cin) => {
+                        ${loopProtection}
+                        ${code}
+                        if (typeof main === 'function') {
+                            const res = await main();
+                            // Call simulated destructors at end of scope if defined
+                            if (typeof rect !== 'undefined' && rect.__destructor) rect.__destructor();
+                            return res;
+                        }
+                    });
+                `;
+
+                const coutMock = (...items) => {
+                    for (let item of items) {
+                        const str = (item === undefined || item === null) ? '' : String(item);
+                        if (str.includes('\n')) {
+                            const sub = str.split('\n');
+                            for (let i = 0; i < sub.length; i++) {
+                                currentLineBuffer += sub[i];
+                                if (i < sub.length - 1) {
+                                    appendTerminal(currentLineBuffer);
+                                    currentLineBuffer = '';
+                                }
+                            }
+                        } else {
+                            currentLineBuffer += str;
+                        }
+                    }
+                };
+
+                const cinMock = async (promptMsg) => {
+                    if (currentLineBuffer.length > 0) {
+                        appendTerminal(currentLineBuffer);
+                        currentLineBuffer = '';
+                    }
+                    const input = await customCin(promptMsg);
+                    appendTerminal(`> ${input}`);
+                    if (!isNaN(input) && input.trim() !== '') return Number(input);
+                    return input;
+                };
+
+                const runner = new Function(fullScript)();
+                const exitCode = await runner(coutMock, cinMock);
+
+                if (currentLineBuffer.length > 0) {
+                    appendTerminal(currentLineBuffer);
+                    currentLineBuffer = '';
+                }
+
+                const diffTime = (performance.now() - startTime).toFixed(2);
+                document.getElementById('term-exit-code').textContent = (exitCode === undefined ? 0 : exitCode);
+                document.getElementById('term-exec-time').textContent = `Execution: ${diffTime}ms`;
+                playSound('success');
+
+            } catch (err) {
+                playSound('error');
+                appendTerminal(`[C++ OOP Error]: ${err.message}`, true);
+                document.getElementById('term-exit-code').textContent = '1 (Error)';
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('cppOopLang');
+                if (savedLang === 'en' || savedLang === 'ta') currentLang = savedLang;
+            } catch(e) {}
+
+            try {
+                const savedTheme = localStorage.getItem('cppOopTheme') || 'dark';
+                setEditorTheme(savedTheme, false);
+            } catch(e) {
+                setEditorTheme('dark', false);
+            }
+
+            updateLocalizedStaticTexts();
+            renderPillars();
+            renderAccessSpecifiers();
+            renderConstructorsContent();
+            renderLivingObjects();
+            renderOopPresets();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            editor.value = oopPresets.basicClass.code;
+            runOopCode();
+        });
+    </script>
+</body>
+</html>
