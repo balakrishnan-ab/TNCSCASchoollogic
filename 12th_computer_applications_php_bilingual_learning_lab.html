@@ -1,0 +1,3036 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th Computer Applications - PHP Fundamentals & Textbook Interactive Lab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Subtle Audio Feedback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Google Fonts for Tamil, UI & Monospace Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        tamil: ['"Mukta Malar"', 'sans-serif'],
+                        code: ['"Fira Code"', 'monospace'],
+                        inter: ['"Inter"', 'sans-serif']
+                    },
+                    colors: {
+                        phpIndigo: '#4f46e5',
+                        phpPurple: '#7c3aed',
+                        editorDark: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Mukta Malar', 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .active-tab {
+            background-color: #4f46e5 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+        @keyframes slidePop {
+            0% { transform: translateY(8px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-pop {
+            animation: slidePop 0.25s ease-out;
+        }
+        /* Rendered HTML preview styles inside PHP output */
+        .php-html-preview h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem; color: #1e1b4b; }
+        .php-html-preview h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.35rem; color: #312e81; }
+        .php-html-preview h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; color: #3730a3; }
+        .php-html-preview table { border-collapse: collapse; width: 100%; margin: 0.5rem 0; font-size: 0.8rem; }
+        .php-html-preview th, .php-html-preview td { border: 1px solid #cbd5e1; padding: 0.35rem 0.6rem; text-align: left; }
+        .php-html-preview th { background-color: #eef2ff; font-weight: 700; color: #312e81; }
+        .php-html-preview hr { border-color: #cbd5e1; margin: 0.5rem 0; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Header & Navigation -->
+    <header class="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white shadow-xl sticky top-0 z-40 border-b border-indigo-800/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white px-2.5 py-2 rounded-xl shadow-md font-black text-lg flex items-center justify-center w-12 h-11 border border-indigo-400/40 tracking-tighter">
+                    <span>&lt;?php</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-indigo-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold uppercase tracking-wider" id="lbl-header-std">12-ஆம் வகுப்பு கணினி பயன்பாடுகள்</span>
+                        <span class="text-xs text-indigo-300 font-medium hidden sm:inline" id="lbl-header-sub">SCERT பாடத்திட்டம் (அத்தியாயம் 4 – 9)</span>
+                    </div>
+                    <h1 class="text-sm sm:text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5 mt-0.5" id="lbl-header-title">
+                        PHP அடிப்படைகள் & பாடநூல் ஊடாடும் கற்றல் கருவி
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Controls: Bilingual Switcher & Tabs -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" id="lang-switch-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-indigo-950 hover:bg-indigo-900 text-amber-300 border border-indigo-700 shadow-sm" title="Switch Language / மொழியை மாற்றுக">
+                    <i class="fa-solid fa-language text-sm"></i>
+                    <span id="lang-btn-text">English மொழிக்கு மாறுக 🇬🇧</span>
+                </button>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700 overflow-x-auto text-xs sm:text-sm font-medium gap-1">
+                    <button onclick="switchTab('concepts')" id="tab-btn-concepts" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 active-tab">
+                        <i class="fa-solid fa-book-open"></i> <span id="tab-title-concepts">பாடநூல் தலைப்புகள்</span>
+                    </button>
+                    <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-sliders"></i> <span id="tab-title-simulator">வரிசை & படிவ உருவகப்படுத்தி</span>
+                    </button>
+                    <button onclick="switchTab('playground')" id="tab-btn-playground" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-code"></i> <span id="tab-title-playground">PHP கோட் ஆய்வகம்</span>
+                    </button>
+                    <button onclick="switchTab('qa')" id="tab-btn-qa" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-award"></i> <span id="tab-title-qa">பொதுத்தேர்வு வினா வங்கி</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-circle-question"></i> <span id="tab-title-quiz">சுய மதிப்பீடு</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: TEXTBOOK CONCEPTS (CHAPTERS 4 TO 9) -->
+        <!-- ========================================== -->
+        <section id="tab-concepts" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <span class="bg-indigo-500/30 text-indigo-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-indigo-400/30" id="badge-chapter">
+                        12-ஆம் வகுப்பு கணினி பயன்பாடுகள் | அத்தியாயம் 4 முதல் 9 வரை
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 flex items-center gap-2">
+                        <i class="fa-brands fa-php text-amber-400 text-3xl"></i>
+                        <span id="hero-title">PHP: ஹைப்பர்டெக்ஸ்ட் ப்ரீப்ராசஸர் (Hypertext Preprocessor)</span>
+                    </h2>
+                    <p class="text-indigo-200 text-sm mt-1 max-w-2xl leading-relaxed" id="hero-sub">
+                        ராஸ்மஸ் லெர்டோர்ஃப் (Rasmus Lerdorf) அவர்களால் 1994-இல் உருவாக்கப்பட்ட சக்திவாய்ந்த சேவையக-பக்க ஸ்கிரிப்டிங் மொழி (Server-Side Scripting Language). இயக்கநிலை வலைத்தளங்களை (Dynamic Websites) உருவாக்கப் பயன்படுகிறது.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <button onclick="switchTab('simulator')" class="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group"></i> <span id="hero-btn-sim">வரிசை & GET/POST பயிற்சி</span>
+                    </button>
+                    <button onclick="switchTab('playground')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> <span id="hero-btn-code">PHP ஆய்வகம்</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Tap Hint Banner -->
+            <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-indigo-900">
+                <div class="flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-hand-pointer text-indigo-600 text-sm"></i>
+                    <span id="lbl-tap-hint">கீழே உள்ள எந்தவொரு பாடத் தலைப்பையும் தொட்டால் (Click), அதன் எளிய விளக்கம், நிஜ உலக ஒப்புமை, தேர்வுக் குறிப்புகள் மற்றும் நேரடி PHP நிரல் திறக்கும்!</span>
+                </div>
+                <span class="bg-white text-indigo-700 font-bold px-2.5 py-0.5 rounded-full border border-indigo-200 text-[11px]" id="lbl-chapters-badge">6 அத்தியாயங்கள் • 16 தலைப்புகள்</span>
+            </div>
+
+            <!-- Chapter Filter Pills -->
+            <div class="flex flex-wrap items-center gap-2" id="chapter-filter-bar">
+                <button onclick="filterTopicsByChapter('all')" id="ch-btn-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition">அனைத்து அத்தியாயங்கள் (All)</button>
+                <button onclick="filterTopicsByChapter('ch4')" id="ch-btn-ch4" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-indigo-50 transition">அத். 4: PHP அறிமுகம்</button>
+                <button onclick="filterTopicsByChapter('ch5')" id="ch-btn-ch5" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-indigo-50 transition">அத். 5: செயற்கூறு & வரிசை</button>
+                <button onclick="filterTopicsByChapter('ch67')" id="ch-btn-ch67" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-indigo-50 transition">அத். 6 & 7: நிபந்தனை & மடக்கு</button>
+                <button onclick="filterTopicsByChapter('ch89')" id="ch-btn-ch89" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-indigo-50 transition">அத். 8 & 9: படிவம், கோப்பு & MySQLi</button>
+            </div>
+
+            <!-- Dynamic Chapters & Topic Cards Container -->
+            <div id="textbook-chapters-container" class="space-y-6">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: INTERACTIVE ARRAY & FORM SIMULATOR  -->
+        <!-- ========================================== -->
+        <section id="tab-simulator" class="hidden space-y-6">
+            
+            <!-- Header Banner -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-diagram-project text-indigo-600"></i>
+                        <span id="sim-heading">ஊடாடும் PHP வரிசை (Array) & படிவ (GET/POST) உருவகப்படுத்தி</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="sim-subheading">
+                        அத்தியாயம் 5-ன் வரிசை வகைகள் மற்றும் அத்தியாயம் 8-ன் HTML படிவத் தரவு பரிமாற்றத்தை (GET vs POST) நேரடியாக இயக்கிப் புரிந்துகொள்ளுங்கள்!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Two Interactive Simulators Side by Side -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Left (6 Cols): PHP Array Visual Builder (Chapter 5) -->
+                <div class="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-100 text-purple-800" id="sim-arr-badge">அத்தியாயம் 5</span>
+                                <h3 class="text-lg font-bold text-slate-900 mt-1" id="sim-arr-title">PHP வரிசை உருவாக்கி (Array Builder)</h3>
+                            </div>
+                            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+                                <button onclick="switchArrayMode('indexed')" id="btn-arr-indexed" class="px-2.5 py-1 rounded-lg bg-indigo-600 text-white transition">Indexed</button>
+                                <button onclick="switchArrayMode('associative')" id="btn-arr-assoc" class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">Associative</button>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-600 mt-3 leading-relaxed" id="sim-arr-desc">
+                            சுட்டெண் வரிசையில் (Indexed Array) ஒவ்வொரு உறுப்பிற்கும் தானாகவே 0, 1, 2... என எண் சுட்டெண்கள் வழங்கப்படும்.
+                        </p>
+
+                        <!-- Visual Boxes of Array Elements -->
+                        <div class="mt-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-slate-700" id="sim-arr-mem-lbl">நினைவகத்தில் வரிசை உறுப்புகள்:</span>
+                                <span class="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200" id="sim-arr-count">count($arr) = 3</span>
+                            </div>
+                            <div id="sim-array-boxes" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Add Element Form -->
+                        <div class="mt-4 grid grid-cols-12 gap-2">
+                            <input type="text" id="inp-arr-key" placeholder="திறவுகோல் (Key)" class="hidden col-span-5 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="text" id="inp-arr-val" placeholder="புதிய மதிப்பு (Value)" class="col-span-8 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500">
+                            <button onclick="addSimArrayItem()" class="col-span-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs py-1.5 transition flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-plus"></i> <span id="btn-arr-add">சேர்க்க</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Generated PHP Code Box -->
+                    <div class="pt-3 border-t border-slate-200">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs font-bold text-slate-700" id="sim-arr-code-lbl">தானாக உருவான PHP குறியீடு:</span>
+                            <button onclick="sendArrayCodeToPlayground()" class="text-xs text-emerald-700 hover:text-emerald-900 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-play"></i> <span id="btn-arr-run">ஆய்வகத்தில் இயக்கு</span>
+                            </button>
+                        </div>
+                        <pre id="sim-arr-code-preview" class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+                    </div>
+                </div>
+
+                <!-- Right (6 Cols): HTML Form -> PHP GET vs POST Simulator (Chapter 8) -->
+                <div class="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-200 shadow-md flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-100 text-emerald-800" id="sim-form-badge">அத்தியாயம் 8</span>
+                                <h3 class="text-lg font-bold text-slate-900 mt-1" id="sim-form-title">GET மற்றும் POST வழிமுறை ஒப்பீடு</h3>
+                            </div>
+                            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
+                                <button onclick="setFormMethod('GET')" id="btn-method-get" class="px-2.5 py-1 rounded-lg bg-amber-500 text-white transition">method="GET"</button>
+                                <button onclick="setFormMethod('POST')" id="btn-method-post" class="px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition">method="POST"</button>
+                            </div>
+                        </div>
+
+                        <!-- Mini HTML Form -->
+                        <div class="mt-3 bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                            <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                                <span><i class="fa-brands fa-html5 text-orange-600 mr-1"></i> student_form.html</span>
+                                <span class="font-mono text-[11px] text-indigo-600" id="form-tag-preview">&lt;form action="welcome.php" method="GET"&gt;</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1" id="lbl-form-name">மாணவர் பெயர் (name):</label>
+                                    <input type="text" id="sim-form-name" value="Kavin" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-600 font-semibold mb-1" id="lbl-form-marks">மதிப்பெண் (marks):</label>
+                                    <input type="number" id="sim-form-marks" value="98" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                            <button onclick="simulateFormSubmit()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> <span id="btn-form-submit">சேவையகத்திற்கு அனுப்பு (Submit to PHP Server)</span>
+                            </button>
+                        </div>
+
+                        <!-- Simulated Browser URL Bar & Server Response -->
+                        <div class="mt-4 space-y-2.5">
+                            <div class="bg-slate-800 text-slate-200 px-3 py-2 rounded-xl text-xs font-mono flex items-center gap-2 overflow-x-auto border border-slate-700">
+                                <i class="fa-solid fa-globe text-emerald-400"></i>
+                                <span id="sim-browser-url" class="whitespace-nowrap">http://localhost/welcome.php?name=Kavin&marks=98</span>
+                            </div>
+
+                            <div id="sim-method-explanation" class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                                <strong>GET வழிமுறை:</strong> படிவத் தரவுகள் உலாவியின் முகவரிப் பட்டையில் (URL) வெளிப்படையாக இணைக்கப்பட்டு அனுப்பப்படும். கடவுச்சொல் போன்ற இரகசியத் தரவுகளுக்குப் பாதுகாப்பற்றது.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PHP Superglobal Output -->
+                    <div class="pt-3 border-t border-slate-200">
+                        <span class="text-xs font-bold text-slate-700 block mb-1.5" id="sim-server-php-lbl">சேவையகத்தில் பெறப்பட்ட PHP சூப்பர் குளோபல் அணி:</span>
+                        <pre id="sim-server-php-out" class="bg-slate-900 text-cyan-300 p-3 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: LIVE PHP CODE PLAYGROUND            -->
+        <!-- ========================================== -->
+        <section id="tab-playground" class="hidden space-y-4">
+            
+            <!-- Controls Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5" id="lbl-preset-select">
+                        <i class="fa-brands fa-php text-indigo-600 text-xl"></i> பாடநூல் மாதிரி நிரல்:
+                    </label>
+                    <select id="preset-selector" onchange="loadPhpPreset(this.value)" class="text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none max-w-xs sm:max-w-md">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="flex items-center flex-wrap gap-2">
+                    <!-- Dark / Light Theme Toggle -->
+                    <button onclick="toggleEditorTheme()" id="theme-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm">
+                        <i id="theme-btn-icon" class="fa-solid fa-moon"></i>
+                        <span id="theme-btn-label">கருப்பு தீம் (Dark)</span>
+                    </button>
+                    <!-- Copy -->
+                    <button onclick="copyCurrentCode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-copy"></i> <span id="btn-copy-code">நகலெடு</span>
+                    </button>
+                    <!-- Reset -->
+                    <button onclick="resetEditor()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-left"></i> <span id="btn-reset-code">மீட்டமை</span>
+                    </button>
+                    <!-- Run Program -->
+                    <button onclick="runPhpCode()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-bold transition shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="btn-run-code">நிரலை இயக்கு (Run)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Editor & Output Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Left: PHP Code Editor (7 Cols) -->
+                <div id="editor-container" class="lg:col-span-7 bg-editorDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[570px] transition-all duration-200">
+                    <div id="editor-header" class="flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+                            <span id="editor-title-text" class="ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1.5">
+                                <i class="fa-brands fa-php text-indigo-400 text-base"></i> index.php
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <button onclick="toggleEditorTheme()" id="editor-badge-theme" class="text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-half-stroke"></i>
+                                <span id="editor-badge-text">தீம்: இருட்டு</span>
+                            </button>
+                            <span class="text-slate-500 text-[11px] hidden sm:inline">Apache / PHP 8.x Simulator</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow pt-3 relative">
+                        <textarea id="code-editor" spellcheck="false" class="w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors" placeholder="<?php echo 'வணக்கம்!'; ?>"></textarea>
+                    </div>
+
+                    <div id="editor-footer" class="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                        <span>ஆதரிப்பவை: <code class="text-indigo-400 font-bold">&lt;?php ?&gt;</code>, <code class="text-indigo-400 font-bold">echo</code>, <code class="text-indigo-400 font-bold">$var</code>, <code class="text-indigo-400 font-bold">array()</code>, <code class="text-indigo-400 font-bold">foreach</code>, <code class="text-indigo-400 font-bold">mysqli_*</code></span>
+                        <span id="editor-status-indicator" class="text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="lbl-editor-ready">PHP சேவையகம் தயார்</span></span>
+                    </div>
+                </div>
+
+                <!-- Right: Dual Output Panel (Browser HTML Render + Raw Console) (5 Cols) -->
+                <div class="lg:col-span-5 flex flex-col gap-3 h-[570px]">
+                    
+                    <!-- Top: Browser Rendered HTML View -->
+                    <div class="flex-1 bg-white rounded-2xl p-4 border border-slate-200 shadow-lg flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-200 text-xs text-slate-600 font-semibold">
+                            <span class="flex items-center gap-1.5 text-indigo-700 font-bold">
+                                <i class="fa-solid fa-window-maximize"></i> <span id="lbl-browser-out">உலாவி வெளியீடு (Browser HTML Output)</span>
+                            </span>
+                            <span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded font-mono text-slate-500">localhost/index.php</span>
+                        </div>
+                        <div id="browser-output" class="flex-grow p-3 overflow-y-auto text-sm text-slate-800 php-html-preview">
+                            <!-- Rendered HTML from echo/print -->
+                        </div>
+                    </div>
+
+                    <!-- Bottom: Raw Server Output / Console -->
+                    <div id="terminal-container" class="h-44 bg-slate-950 rounded-2xl p-3.5 border border-slate-800 shadow-xl flex flex-col overflow-hidden transition-all duration-200">
+                        <div id="terminal-header" class="flex items-center justify-between pb-1.5 border-b border-slate-800 text-xs text-slate-400 font-mono">
+                            <span id="terminal-title-text" class="flex items-center gap-1.5 text-amber-400 font-semibold">
+                                <i class="fa-solid fa-terminal"></i> <span id="lbl-raw-out">மூல வெளியீடு & பிழைகள் (Raw / Log)</span>
+                            </span>
+                            <button onclick="clearOutputPanels()" class="hover:text-rose-400 text-xs text-slate-400 transition">
+                                <i class="fa-solid fa-eraser"></i> <span id="lbl-clear-term">துடைக்க</span>
+                            </button>
+                        </div>
+                        <div id="terminal-output" class="flex-grow p-2 overflow-y-auto text-xs code-font text-slate-300 space-y-1 bg-black/50 rounded-xl mt-1.5">
+                            <div class="text-slate-500">// PHP execution logs...</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: BOARD EXAM QUESTION BANK            -->
+        <!-- ========================================== -->
+        <section id="tab-qa" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap text-indigo-600"></i>
+                        <span id="qa-heading">அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி (PHP அத்தியாயங்கள் 4–9)</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="qa-subheading">
+                        12-ஆம் வகுப்பு பொதுத்தேர்வில் அடிக்கடி கேட்கப்படும் 2, 3 மற்றும் 5 மதிப்பெண் வினாக்களும் தெளிவான விடைகளும்.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterQA('all')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-indigo-600 text-white" id="qa-btn-all">அனைத்தும்</button>
+                    <button onclick="filterQA('2m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-2m">2 மதிப்பெண்</button>
+                    <button onclick="filterQA('3m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-3m">3 மதிப்பெண்</button>
+                    <button onclick="filterQA('5m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-5m">5 மதிப்பெண்</button>
+                </div>
+            </div>
+
+            <!-- Questions Grid -->
+            <div id="qa-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: SELF-ASSESSMENT QUIZ & BUG HUNTER   -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-purple-600"></i>
+                        <span id="quiz-heading">PHP சுய மதிப்பீட்டு வினாடி வினா & பிழை ஆய்வு</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="quiz-subheading">
+                        பாடநூல் ஒரு மதிப்பெண் வினாக்கள் (MCQs) மற்றும் PHP நிரல் பிழைகளைக் கண்டறியும் சவால்கள்.
+                    </p>
+                </div>
+                <div class="px-4 py-2 bg-indigo-50 text-indigo-900 rounded-xl font-bold border border-indigo-200 text-sm">
+                    <span id="lbl-score-text">மதிப்பெண்:</span> <span id="current-score" class="text-indigo-600 text-lg">0</span> / 10
+                </div>
+            </div>
+
+            <!-- Part 1: MCQs -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-emerald-600"></i> <span id="quiz-part1-title">பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (10 MCQs)</span>
+                </h3>
+                <div id="quiz-container" class="space-y-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Part 2: PHP Bug Hunter -->
+            <div class="pt-6 border-t border-slate-200 space-y-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-bug text-rose-600"></i> <span id="bug-part2-title">பகுதி 2: PHP பிழையைக் கண்டுபிடி! (Spot the PHP Bug)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500" id="bug-part2-sub">கீழே உள்ள PHP நிரல் துணுக்குகளில் உள்ள தொடரியல் பிழைகளைக் கண்டறியவும்.</p>
+                </div>
+
+                <div id="bug-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="flex justify-center pt-4">
+                <button onclick="resetQuiz()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> <span id="btn-quiz-reset">வினாடி வினாவை மீண்டும் தொடங்க</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- TOPIC DEEP-DIVE INTERACTIVE MODAL          -->
+    <!-- ========================================== -->
+    <div id="topic-detail-modal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200 animate-pop">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-indigo-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-indigo-500/30 text-amber-300 border border-indigo-400/40 flex items-center justify-center text-xl font-bold">
+                        <i id="modal-topic-icon" class="fa-brands fa-php"></i>
+                    </div>
+                    <div>
+                        <span id="modal-topic-cat" class="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/40 text-indigo-200 border border-indigo-400/30">அத்தியாயம் 4</span>
+                        <h3 id="modal-topic-title" class="text-base sm:text-lg font-bold text-white mt-0.5">தலைப்பு</h3>
+                    </div>
+                </div>
+                <button onclick="closeTopicDetail()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-slate-800 text-xs sm:text-sm">
+                <!-- Concept Explanation -->
+                <div class="bg-indigo-50/70 border border-indigo-100 p-3.5 rounded-xl">
+                    <h4 class="font-bold text-indigo-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-open text-indigo-600"></i> <span id="lbl-modal-concept">பாடக் கருத்து விளக்கம் (Concept):</span>
+                    </h4>
+                    <p id="modal-topic-summary" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Real-world Analogy -->
+                <div class="bg-amber-50/80 border border-amber-200 p-3.5 rounded-xl">
+                    <h4 class="font-bold text-amber-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> <span id="modal-topic-analogy-title">எளிதில் புரியும் நிஜ உலக ஒப்புமை:</span>
+                    </h4>
+                    <p id="modal-topic-analogy-desc" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Key Exam Points -->
+                <div>
+                    <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-check-double text-emerald-600"></i> <span id="lbl-modal-points">முக்கியப் பொதுத்தேர்வு குறிப்புகள் (Exam Points):</span>
+                    </h4>
+                    <ul id="modal-topic-points" class="space-y-1.5 text-slate-700">
+                    </ul>
+                </div>
+
+                <!-- PHP Code Example -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-code text-indigo-600"></i> <span id="lbl-modal-code">PHP நிரல் எடுத்துக்காட்டு (Runnable Example):</span>
+                        </h4>
+                        <button onclick="copyModalCode()" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> <span id="lbl-modal-copy">நகலெடு</span>
+                        </button>
+                    </div>
+                    <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono overflow-x-auto border border-slate-800"><code id="modal-topic-code"></code></pre>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                    <button onclick="navigateTopicDetail(-1)" class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-chevron-left"></i> <span id="lbl-modal-prev">முந்தையது</span>
+                    </button>
+                    <button onclick="navigateTopicDetail(1)" class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1">
+                        <span id="lbl-modal-next">அடுத்தது</span> <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeTopicDetail()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs transition">
+                        <span id="lbl-modal-close">மூடுக</span>
+                    </button>
+                    <button onclick="loadTopicCodeToPlayground(currentModalTopicId)" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="lbl-modal-run">ஆய்வகத்தில் இயக்கு (Run in Lab)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="text-amber-400 text-xl pt-0.5">
+            <i class="fa-brands fa-php"></i>
+        </div>
+        <div class="flex-grow">
+            <h5 id="toast-title" class="font-bold text-sm text-indigo-300">PHP Lab</h5>
+            <p id="toast-body" class="text-xs text-slate-300 mt-1 leading-relaxed">விவரம்</p>
+        </div>
+        <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium" id="footer-text">
+            12-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடநூல் (அத்தியாயம் 4 முதல் 9 வரை) - தமிழ்நாடு பள்ளிக் கல்வித்துறை பாடத்திட்டத்தின்படி வடிவமைக்கப்பட்டது.
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT APPLICATION & PHP INTERPRETER   -->
+    <!-- ========================================== -->
+    <script>
+        // ==========================================
+        // AUDIO FEEDBACK HELPER
+        // ==========================================
+        let synth = null;
+        function getSynth() {
+            if (!synth && window.Tone) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.volume.value = -15;
+            }
+            return synth;
+        }
+
+        function playSound(type) {
+            try {
+                const s = getSynth();
+                if (!s) return;
+                Tone.start();
+                if (type === 'run') s.triggerAttackRelease(["C5", "E5"], "8n");
+                else if (type === 'success') s.triggerAttackRelease(["C5", "G5"], "16n");
+                else if (type === 'error') s.triggerAttackRelease(["F4", "Db4"], "8n");
+                else if (type === 'click') s.triggerAttackRelease("C4", "32n");
+            } catch(e) {}
+        }
+
+        // ==========================================
+        // BILINGUAL UI DICTIONARY (TAMIL & ENGLISH)
+        // ==========================================
+        let currentLang = 'ta';
+
+        const UI_TEXT = {
+            ta: {
+                headerStd: "12-ஆம் வகுப்பு கணினி பயன்பாடுகள்",
+                headerSub: "SCERT பாடத்திட்டம் (அத்தியாயம் 4 – 9)",
+                headerTitle: "PHP அடிப்படைகள் & பாடநூல் ஊடாடும் கற்றல் கருவி",
+                langBtn: "English மொழிக்கு மாறுக 🇬🇧",
+                tabConcepts: "பாடநூல் தலைப்புகள்",
+                tabSimulator: "வரிசை & படிவ உருவகப்படுத்தி",
+                tabPlayground: "PHP கோட் ஆய்வகம்",
+                tabQA: "பொதுத்தேர்வு வினா வங்கி",
+                tabQuiz: "சுய மதிப்பீடு",
+                badgeChapter: "12-ஆம் வகுப்பு கணினி பயன்பாடுகள் | அத்தியாயம் 4 முதல் 9 வரை",
+                heroTitle: "PHP: ஹைப்பர்டெக்ஸ்ட் ப்ரீப்ராசஸர் (Hypertext Preprocessor)",
+                heroSub: "ராஸ்மஸ் லெர்டோர்ஃப் (Rasmus Lerdorf) அவர்களால் 1994-இல் உருவாக்கப்பட்ட சக்திவாய்ந்த சேவையக-பக்க ஸ்கிரிப்டிங் மொழி (Server-Side Scripting Language). இயக்கநிலை வலைத்தளங்களை (Dynamic Websites) உருவாக்கப் பயன்படுகிறது.",
+                heroBtnSim: "வரிசை & GET/POST பயிற்சி",
+                heroBtnCode: "PHP ஆய்வகம்",
+                lblTapHint: "கீழே உள்ள எந்தவொரு பாடத் தலைப்பையும் தொட்டால் (Click), அதன் எளிய விளக்கம், நிஜ உலக ஒப்புமை, தேர்வுக் குறிப்புகள் மற்றும் நேரடி PHP நிரல் திறக்கும்!",
+                lblChaptersBadge: "6 அத்தியாயங்கள் • 16 தலைப்புகள்",
+                chAll: "அனைத்து அத்தியாயங்கள் (All)",
+                ch4: "அத். 4: PHP அறிமுகம்",
+                ch5: "அத். 5: செயற்கூறு & வரிசை",
+                ch67: "அத். 6 & 7: நிபந்தனை & மடக்கு",
+                ch89: "அத். 8 & 9: படிவம், கோப்பு & MySQLi",
+                simHeading: "ஊடாடும் PHP வரிசை (Array) & படிவ (GET/POST) உருவகப்படுத்தி",
+                simSubheading: "அத்தியாயம் 5-ன் வரிசை வகைகள் மற்றும் அத்தியாயம் 8-ன் HTML படிவத் தரவு பரிமாற்றத்தை (GET vs POST) நேரடியாக இயக்கிப் புரிந்துகொள்ளுங்கள்!",
+                simArrBadge: "அத்தியாயம் 5",
+                simArrTitle: "PHP வரிசை உருவாக்கி (Array Builder)",
+                simArrMemLbl: "நினைவகத்தில் வரிசை உறுப்புகள்:",
+                btnArrAdd: "சேர்க்க",
+                simArrCodeLbl: "தானாக உருவான PHP குறியீடு:",
+                btnArrRun: "ஆய்வகத்தில் இயக்கு",
+                simFormBadge: "அத்தியாயம் 8",
+                simFormTitle: "GET மற்றும் POST வழிமுறை ஒப்பீடு",
+                lblFormName: "மாணவர் பெயர் (name):",
+                lblFormMarks: "மதிப்பெண் (marks):",
+                btnFormSubmit: "சேவையகத்திற்கு அனுப்பு (Submit to PHP Server)",
+                simServerPhpLbl: "சேவையகத்தில் பெறப்பட்ட PHP சூப்பர் குளோபல் அணி:",
+                lblPreset: "பாடநூல் மாதிரி நிரல்:",
+                btnCopy: "நகலெடு",
+                btnReset: "மீட்டமை",
+                btnRun: "நிரலை இயக்கு (Run)",
+                themeDark: "கருப்பு தீம் (Dark)",
+                themeLight: "வெண்மை தீம் (Light)",
+                badgeDark: "தீம்: இருட்டு",
+                badgeLight: "தீம்: வெண்மை",
+                lblReady: "PHP சேவையகம் தயார்",
+                lblBrowserOut: "உலாவி வெளியீடு (Browser HTML Output)",
+                lblRawOut: "மூல வெளியீடு & பிழைகள் (Raw / Log)",
+                clearTerm: "துடைக்க",
+                qaHeading: "அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி (PHP அத்தியாயங்கள் 4–9)",
+                qaSubheading: "12-ஆம் வகுப்பு பொதுத்தேர்வில் அடிக்கடி கேட்கப்படும் 2, 3 மற்றும் 5 மதிப்பெண் வினாக்களும் தெளிவான விடைகளும்.",
+                qaBtnAll: "அனைத்தும்",
+                qaBtn2m: "2 மதிப்பெண்",
+                qaBtn3m: "3 மதிப்பெண்",
+                qaBtn5m: "5 மதிப்பெண்",
+                quizHeading: "PHP சுய மதிப்பீட்டு வினாடி வினா & பிழை ஆய்வு",
+                quizSubheading: "பாடநூல் ஒரு மதிப்பெண் வினாக்கள் (MCQs) மற்றும் PHP நிரல் பிழைகளைக் கண்டறியும் சவால்கள்.",
+                lblScore: "மதிப்பெண்:",
+                quizP1Title: "பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (10 MCQs)",
+                bugP2Title: "பகுதி 2: PHP பிழையைக் கண்டுபிடி! (Spot the PHP Bug)",
+                bugP2Sub: "கீழே உள்ள PHP நிரல் துணுக்குகளில் உள்ள தொடரியல் பிழைகளைக் கண்டறியவும்.",
+                btnQuizReset: "வினாடி வினாவை மீண்டும் தொடங்க",
+                modalConcept: "பாடக் கருத்து விளக்கம் (Concept):",
+                modalPoints: "முக்கியப் பொதுத்தேர்வு குறிப்புகள் (Exam Points):",
+                modalCode: "PHP நிரல் எடுத்துக்காட்டு (Runnable Example):",
+                modalCopy: "நகலெடு",
+                modalPrev: "முந்தையது",
+                modalNext: "அடுத்தது",
+                modalClose: "மூடுக",
+                modalRun: "ஆய்வகத்தில் இயக்கு (Run in Lab)",
+                footerText: "12-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடநூல் (அத்தியாயம் 4 முதல் 9 வரை) - தமிழ்நாடு பள்ளிக் கல்வித்துறை பாடத்திட்டத்தின்படி வடிவமைக்கப்பட்டது."
+            },
+            en: {
+                headerStd: "Class 12 Computer Applications",
+                headerSub: "TN SCERT Syllabus (Chapters 4 – 9)",
+                headerTitle: "PHP Fundamentals & Textbook Interactive Learning Tool",
+                langBtn: "தமிழ் மொழிக்கு மாறுக 🇮🇳",
+                tabConcepts: "Textbook Topics",
+                tabSimulator: "Array & Form Simulator",
+                tabPlayground: "PHP Code Lab",
+                tabQA: "Board Exam Q&A",
+                tabQuiz: "Self Assessment",
+                badgeChapter: "Class 12 Computer Applications | Chapters 4 to 9",
+                heroTitle: "PHP: Hypertext Preprocessor",
+                heroSub: "Created by Rasmus Lerdorf in 1994, PHP is a powerful open-source Server-Side Scripting Language embedded in HTML to build dynamic and interactive web applications.",
+                heroBtnSim: "Array & GET/POST Lab",
+                heroBtnCode: "Open PHP Lab",
+                lblTapHint: "Tap any textbook topic card below to open simple explanations, real-world analogies, board exam points, and runnable PHP examples!",
+                lblChaptersBadge: "6 Chapters • 16 Core Topics",
+                chAll: "All Chapters",
+                ch4: "Ch 4: Intro to PHP",
+                ch5: "Ch 5: Functions & Arrays",
+                ch67: "Ch 6 & 7: Conditions & Loops",
+                ch89: "Ch 8 & 9: Forms, Files & MySQLi",
+                simHeading: "Interactive PHP Array & Form (GET/POST) Simulator",
+                simSubheading: "Visually build Chapter 5 PHP Arrays and test Chapter 8 HTTP GET vs POST form submissions in real time!",
+                simArrBadge: "Chapter 5",
+                simArrTitle: "PHP Array Visual Builder",
+                simArrMemLbl: "Array Elements in Memory:",
+                btnArrAdd: "Add",
+                simArrCodeLbl: "Generated PHP Code:",
+                btnArrRun: "Run in PHP Lab",
+                simFormBadge: "Chapter 8",
+                simFormTitle: "HTTP GET vs POST Method Comparison",
+                lblFormName: "Student Name (name):",
+                lblFormMarks: "Marks (marks):",
+                btnFormSubmit: "Submit Form to PHP Server",
+                simServerPhpLbl: "PHP Superglobal Array Received on Server:",
+                lblPreset: "Textbook Program:",
+                btnCopy: "Copy Code",
+                btnReset: "Reset",
+                btnRun: "Run PHP Code",
+                themeDark: "Dark Theme",
+                themeLight: "Light Theme",
+                badgeDark: "Theme: Dark",
+                badgeLight: "Theme: Light",
+                lblReady: "PHP Server Ready",
+                lblBrowserOut: "Browser HTML Output",
+                lblRawOut: "Raw Output & Execution Log",
+                clearTerm: "Clear",
+                qaHeading: "Board Exam Question Bank (PHP Chapters 4–9)",
+                qaSubheading: "Frequently asked 2, 3, and 5-mark public examination questions with complete answers.",
+                qaBtnAll: "All",
+                qaBtn2m: "2 Marks",
+                qaBtn3m: "3 Marks",
+                qaBtn5m: "5 Marks",
+                quizHeading: "PHP Self-Assessment Quiz & Bug Hunter",
+                quizSubheading: "Test your mastery with 10 textbook 1-mark MCQs and PHP syntax debugging challenges.",
+                lblScore: "Score:",
+                quizP1Title: "Part 1: Multiple Choice Questions (10 MCQs)",
+                bugP2Title: "Part 2: Spot the PHP Bug!",
+                bugP2Sub: "Identify the syntax or logic errors in these PHP code snippets.",
+                btnQuizReset: "Restart Quiz",
+                modalConcept: "Textbook Concept Explanation:",
+                modalPoints: "Important Public Exam Points:",
+                modalCode: "Runnable PHP Code Example:",
+                modalCopy: "Copy Code",
+                modalPrev: "Previous",
+                modalNext: "Next",
+                modalClose: "Close",
+                modalRun: "Run in PHP Lab",
+                footerText: "Designed for Tamil Nadu Class 12 Computer Applications (SCERT Chapters 4–9) Students."
+            }
+        };
+
+        // ==========================================
+        // TEXTBOOK CHAPTERS & TOPICS KNOWLEDGE BASE
+        // ==========================================
+        const textbookChapters = [
+            {
+                id: 'ch4',
+                badge: { ta: "அத்தியாயம் 4", en: "Chapter 4" },
+                title: { ta: "ஹைப்பர்டெக்ஸ்ட் ப்ரீப்ராசஸர் ஓர் அறிமுகம் (Introduction to PHP)", en: "Introduction to Hypertext Pre-Processor (PHP)" },
+                topics: [
+                    {
+                        id: 'php_arch',
+                        icon: 'fa-server',
+                        color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+                        title: { ta: "சேவையக-பக்க ஸ்கிரிப்டிங் & அடிப்படை தொடரியல்", en: "Server-Side Scripting & Basic Syntax" },
+                        shortDesc: {
+                            ta: "PHP நிரல்கள் சேவையகத்தில் (Apache/IIS) இயக்கப்பட்டு தூய HTML வெளியீடாக உலாவிக்கு அனுப்பப்படுகின்றன. கோப்பு நீட்டிப்பு <code>.php</code> ஆகும்.",
+                            en: "PHP scripts execute on the web server (Apache/IIS) and return plain HTML to the client browser. Default file extension is <code>.php</code>."
+                        },
+                        summary: {
+                            ta: "PHP (Hypertext Preprocessor) என்பது HTML குறிப்புகளுக்குள் பொதிந்து எழுதப்படும் திறந்த மூல சேவையக-பக்க ஸ்கிரிப்டிங் மொழியாகும். இது <code>&lt;?php</code> என்ற குறிச்சொல்லுடன் தொடங்கி <code>?&gt;</code> என்ற குறிச்சொல்லுடன் முடிவடையும். ஒவ்வொரு கூற்றும் அரைப்புள்ளியுடன் (<code>;</code>) முடிய வேண்டும்.",
+                            en: "PHP is an open-source server-side scripting language embedded inside HTML. Scripts begin with <code>&lt;?php</code> and end with <code>?&gt;</code>. Every PHP statement must end with a semicolon (<code>;</code>)."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: உணவக சமையலறை மற்றும் பரிமாறுபவர் (Restaurant Kitchen)", en: "Real-world Analogy: Restaurant Kitchen vs Dining Table" },
+                            desc: {
+                                ta: "நீங்கள் (உலாவி/Client) உணவகத்தில் உணவு ஆர்டர் செய்கிறீர்கள். சமையலறையில் (Server) சமையல்காரர் (PHP Engine) சமைத்துவிட்டு, தயாரான உணவை (HTML Output) மட்டுமே மேஜைக்கு அனுப்புவார்; சமையல் ரகசியங்கள் (PHP Source Code) வாடிக்கையாளருக்குத் தெரியாது.",
+                                en: "You (the Browser) order a dish. The chef in the kitchen (PHP on Web Server) prepares the meal and sends only the finished plate (HTML) to your table—keeping the kitchen recipes (PHP source code) hidden."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "PHP 1994-இல் <strong>ராஸ்மஸ் லெர்டோர்ஃப் (Rasmus Lerdorf)</strong> என்பவரால் உருவாக்கப்பட்டது.",
+                                "PHP கோப்புகளின் கொடாநிலை நீட்டிப்பு (Default extension) <code>.php</code> ஆகும்.",
+                                "PHP-ஐ இயக்க <strong>Apache</strong> அல்லது <strong>IIS</strong> வலைச் சேவையகம் தேவை (XAMPP / WAMP).",
+                                "PHP குறிச்சொற்கள் எழுத்து வடிவ உணர்வு கொண்டவை அல்ல (Case-insensitive keywords), ஆனால் மாறிகள் எழுத்து வடிவ உணர்வு கொண்டவை (Case-sensitive)."
+                            ],
+                            en: [
+                                "Invented by <strong>Rasmus Lerdorf</strong> in 1994 (originally Personal Home Page).",
+                                "Default file extension is <code>.php</code>.",
+                                "Requires a web server like <strong>Apache</strong> or <strong>IIS</strong> (packaged in XAMPP/WAMP).",
+                                "Keywords like <code>echo</code>, <code>if</code> are case-insensitive, whereas variable names are strictly case-sensitive."
+                            ]
+                        },
+                        code: `<?php
+// அத்தியாயம் 4: PHP அடிப்படை தொடரியல் & வெளியீடு
+echo "<h2>வணக்கம்! PHP உலகிற்கு வரவேற்கிறோம்!</h2>";
+print "12-ஆம் வகுப்பு கணினி பயன்பாடுகள் பாடத்திட்டம்.<br>";
+echo "இன்றைய தேதி: " . date("d-m-Y");
+?>`
+                    },
+                    {
+                        id: 'php_vars_const',
+                        icon: 'fa-dollar-sign',
+                        color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+                        title: { ta: "மாறிகள் ($Variables) & மாறிலிகள் (Constants)", en: "Variables ($var) & Constants (define)" },
+                        shortDesc: {
+                            ta: "PHP-இல் அனைத்து மாறிகளும் <code>$</code> குறியுடன் தொடங்க வேண்டும். நிலையான மதிப்புகளை <code>define()</code> செயற்கூறு மூலம் மாறிலிகளாக அறிவிக்கலாம்.",
+                            en: "All variables in PHP must start with a <code>$</code> sign. Unchanging values are declared as constants using the <code>define()</code> function."
+                        },
+                        summary: {
+                            ta: "மாறி என்பது நிரல் இயக்கத்தின் போது மதிப்புகளைச் சேமித்து வைக்கும் நினைவக இடமாகும். PHP ஒரு தளர்வான வகை மொழி (Loosely Typed Language) என்பதால் மாறியின் தரவு வகையை முன்கூட்டியே அறிவிக்கத் தேவையில்லை. மாறிலிகள் <code>define(name, value)</code> மூலம் உருவாக்கப்படுகின்றன; இவற்றிற்கு <code>$</code> குறி கிடையாது.",
+                            en: "A variable stores data in memory during execution. PHP is a loosely typed language—it automatically detects data types upon assignment. Constants are created using <code>define(name, value)</code> and do not use a <code>$</code> prefix."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: பெயரிடப்பட்ட பெட்டி vs கல்வெட்டு", en: "Real-world Analogy: Labelled Storage Box vs Stone Engraving" },
+                            desc: {
+                                ta: "மாறி ($marks) என்பது ஒரு வெள்ளைப் பலகை (Whiteboard) போன்றது—மதிப்பை எப்போது வேண்டுமானாலும் அழித்து மாற்றலாம். மாறிலி (PI = 3.14) என்பது கல்வெட்டு போன்றது—ஒருமுறை செதுக்கிய பின் மாற்ற முடியாது.",
+                                en: "A variable ($marks) is like a whiteboard—you can erase and update its value anytime. A constant (PI = 3.14) is like a stone engraving—once defined, it cannot be altered."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "மாறியின் பெயர் கட்டாயமாக <code>$</code> குறியுடன் தொடங்க வேண்டும் (எ.கா: <code>$total</code>).",
+                                "<code>$</code> குறியை அடுத்து எழுத்து அல்லது அடிக்கோடு (<code>_</code>) மட்டுமே வர வேண்டும்; எண்ணுடன் தொடங்கக் கூடாது.",
+                                "மாறிகளின் பெயர்களுக்கு இடையே இடைவெளி (Space) இருக்கக் கூடாது.",
+                                "மாறிலிகள் இயல்பாகவே உலகளாவிய வரையெல்லையைக் (Global scope) கொண்டவை."
+                            ],
+                            en: [
+                                "Every variable identifier must begin with a <code>$</code> symbol (e.g., <code>$student_name</code>).",
+                                "The character immediately after <code>$</code> must be a letter or underscore (<code>_</code>), never a digit.",
+                                "Variable names are case-sensitive (<code>$age</code> and <code>$AGE</code> are different).",
+                                "Constants defined with <code>define()</code> are automatically global across the script."
+                            ]
+                        },
+                        code: `<?php
+// மாறிகள் ($) மற்றும் மாறிலிகள் (define)
+define("SCHOOL_NAME", "அரசு மேல்நிலைப் பள்ளி");
+define("PI", 3.14);
+
+$studentName = "தமிழரசன்";
+$radius = 7;
+$area = PI * $radius * $radius;
+
+echo "<b>பள்ளி:</b> " . SCHOOL_NAME . "<br>";
+echo "<b>மாணவர்:</b> " . $studentName . "<br>";
+echo "<b>வட்டத்தின் பரப்பளவு:</b> " . $area;
+?>`
+                    },
+                    {
+                        id: 'php_datatypes',
+                        icon: 'fa-cubes',
+                        color: 'text-purple-600 bg-purple-50 border-purple-200',
+                        title: { ta: "PHP-இன் 8 தரவு வகைகள் (8 Data Types)", en: "8 Built-in Data Types in PHP" },
+                        shortDesc: {
+                            ta: "String, Integer, Float, Boolean, Array, Object, NULL மற்றும் Resource ஆகிய 8 அடிப்படைத் தரவு வகைகளை PHP ஆதரிக்கிறது.",
+                            en: "PHP supports 8 primitive and compound data types: String, Integer, Float, Boolean, Array, Object, NULL, and Resource."
+                        },
+                        summary: {
+                            ta: "PHP மாறிகளில் வெவ்வேறு வகையான தரவுகளைச் சேமிக்க முடியும்: 1. சரம் (String), 2. முழு எண் (Integer), 3. மிதவைப் புள்ளி எண் (Float), 4. பூலியன் (Boolean - true/false), 5. அணி/வரிசை (Array), 6. பொருள் (Object), 7. வெற்று மதிப்பு (NULL), 8. வளம் (Resource - கோப்பு/தரவுத்தள இணைப்பு).",
+                            en: "PHP classifies data into 8 types: Scalar types (String, Integer, Float, Boolean), Compound types (Array, Object), and Special types (NULL, Resource)."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: சமையலறை ஜாடிகள் (Kitchen Containers)", en: "Real-world Analogy: Specialized Storage Jars" },
+                            desc: {
+                                ta: "தண்ணீரைப் பாட்டிலிலும், அரிசியைச் சாக்கிலும், பணத்தைப் பணப்பையிலும் வைப்பது போல, எண்களை Integer/Float-லும், பெயர்களை String-லும், பட்டியல்களை Array-லும் PHP சேமிக்கிறது.",
+                                en: "Just as liquids go in bottles, grains in sacks, and lists in notebooks, PHP categorizes text as String, whole numbers as Integer, decimals as Float, and lists as Array."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>var_dump($x)</code> செயற்கூறு ஒரு மாறியின் தரவு வகையையும் மதிப்பையும் திரையில் காட்டும்.",
+                                "சரங்களை (String) ஒற்றை மேற்கோள் <code>'...'</code> அல்லது இரட்டை மேற்கோள் <code>\"...\"</code> குறிகளுக்குள் எழுதலாம்.",
+                                "மதிப்பு எதுவும் இல்லாத மாறியின் தரவு வகை <code>NULL</code> ஆகும்."
+                            ],
+                            en: [
+                                "The built-in <code>var_dump()</code> function returns both the data type and value of a variable.",
+                                "Strings can be enclosed in single quotes <code>'...'</code> or double quotes <code>\"...\"</code>.",
+                                "A variable assigned no value automatically holds the special type <code>NULL</code>."
+                            ]
+                        },
+                        code: `<?php
+// PHP-இன் முக்கியத் தரவு வகைகள்
+$name = "கணிப்பொறி";     // String
+$marks = 99;               // Integer
+$percentage = 98.6;        // Float
+$isPassed = true;          // Boolean
+$emptyVar = null;          // NULL
+
+echo "String: " . $name . "<br>";
+echo "Integer: " . $marks . "<br>";
+echo "Float: " . $percentage . "<br>";
+echo "Boolean (Passed): " . ($isPassed ? "True (1)" : "False") . "<br>";
+var_dump($percentage);
+?>`
+                    },
+                    {
+                        id: 'php_operators',
+                        icon: 'fa-calculator',
+                        color: 'text-amber-600 bg-amber-50 border-amber-200',
+                        title: { ta: "PHP செயற்குறிகள் (Operators in PHP)", en: "Operators in PHP (Arithmetic, String, Comparison)" },
+                        shortDesc: {
+                            ta: "கணக்கீட்டு (+, -, *, /, %, **), மதிப்பிருத்து, ஒப்பீட்டு (==, ===), தருக்க மற்றும் சரச் செயற்குறிகள் (<code>.</code> மற்றும் <code>.=</code>).",
+                            en: "Arithmetic (+, -, *, /, %, **), Assignment, Comparison (==, ===), Logical, Increment/Decrement, and String operators (<code>.</code> and <code>.=</code>)."
+                        },
+                        summary: {
+                            ta: "PHP-இல் செயற்குறிகள் 6 வகைப்படும்: கணக்கீட்டுச் செயற்குறிகள், மதிப்பிருத்துச் செயற்குறிகள், ஒப்பீட்டுச் செயற்குறிகள், மிகுப்பு/குறைப்பு செயற்குறிகள் (++, --), தருக்கச் செயற்குறிகள் (&&, ||, !), மற்றும் சரச் செயற்குறிகள் (இணைப்புச் செயற்குறி <code>.</code> மற்றும் இணைப்பு மதிப்பிருத்து <code>.=</code>).",
+                            en: "PHP provides 6 major operator groups: Arithmetic, Assignment, Comparison, Increment/Decrement, Logical, and String Operators (Concatenation <code>.</code> and Concatenation Assignment <code>.=</code>)."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: கணிப்பானின் பொத்தான்கள் & பசை (Calculator & Glue)", en: "Real-world Analogy: Calculator Keys & Paper Glue" },
+                            desc: {
+                                ta: "<code>+</code> மற்றும் <code>*</code> எண்களைக் கூட்டவும் பெருக்கவும் பயன்படும் கணிப்பான் பொத்தான்கள்; <code>.</code> (புள்ளி) என்பது இரண்டு காகிதத் துண்டுகளை (Strings) ஒன்றாக ஒட்டும் பசை (Glue) போன்றது!",
+                                en: "<code>+</code> and <code>*</code> act like calculator keys for math, while the dot (<code>.</code>) operator acts like glue that joins two text strings together!"
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>==</code> என்பது மதிப்புகளை மட்டும் ஒப்பிடும்; <code>===</code> (Identical) என்பது மதிப்பு மற்றும் தரவு வகை இரண்டையும் ஒப்பிடும்.",
+                                "<code>.</code> (Dot) என்பது சர இணைப்புச் செயற்குறி (String Concatenation Operator).",
+                                "<code>**</code> என்பது அடுக்குக்குறி (Exponentiation) செயற்குறி (எ.கா: <code>2 ** 3 = 8</code>)."
+                            ],
+                            en: [
+                                "<code>==</code> checks equal value, whereas <code>===</code> (Identical) checks both equal value and exact data type.",
+                                "<code>.</code> (Dot) concatenates two strings; <code>.=</code> appends text to an existing string.",
+                                "<code>**</code> computes exponentiation (e.g., <code>2 ** 3</code> evaluates to <code>8</code>)."
+                            ]
+                        },
+                        code: `<?php
+$a = 15;
+$b = 4;
+
+echo "கூட்டல் ($a + $b) = " . ($a + $b) . "<br>";
+echo "மீதி ($a % $b) = " . ($a % $b) . "<br>";
+echo "அடுக்கு (2 ** 3) = " . (2 ** 3) . "<br>";
+
+// சரச் செயற்குறிகள் (. மற்றும் .=)
+$msg = "வணக்கம் ";
+$msg .= "மாணவர்களே!";
+echo "<b>சர இணைப்பு:</b> " . $msg;
+?>`
+                    }
+                ]
+            },
+            {
+                id: 'ch5',
+                badge: { ta: "அத்தியாயம் 5", en: "Chapter 5" },
+                title: { ta: "PHP செயற்கூறுகள் மற்றும் அணிகள் / வரிசைகள் (Functions & Arrays)", en: "PHP Functions and Arrays" },
+                topics: [
+                    {
+                        id: 'php_functions',
+                        icon: 'fa-gears',
+                        color: 'text-blue-600 bg-blue-50 border-blue-200',
+                        title: { ta: "செயற்கூறுகளின் 3 வகைகள் (Functions in PHP)", en: "3 Types of Functions in PHP" },
+                        shortDesc: {
+                            ta: "1. பயனர் வரையறுத்த செயற்கூறு (User-defined), 2. அமைப்பு வரையறுத்த செயற்கூறு (Built-in), 3. அளபுருக்களைக் கொண்ட செயற்கூறு (Parameterized).",
+                            en: "1. User-defined Functions, 2. System/Built-in Functions (round, sqrt, date), and 3. Parameterized Functions."
+                        },
+                        summary: {
+                            ta: "ஒரு குறிப்பிட்ட பணியை மீண்டும் மீண்டும் செய்வதற்காக எழுதப்படும் குறியீட்டுத் தொகுதியே செயற்கூறு (Function) ஆகும். இது <code>function</code> என்ற சிறப்புச் சொல்லுடன் தொடங்கும். அளபுருக்கள் (Parameters) மூலம் செயற்கூறுக்குத் தரவுகளை அனுப்பலாம் மற்றும் <code>return</code> மூலம் விடையைப் பெறலாம்.",
+                            en: "A function is a reusable block of code designed to perform a specific task. Declared using the <code>function</code> keyword, it executes only when called and can accept parameters and return computed values."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: பழச்சாறு பிழியும் இயந்திரம் (Juicer Machine)", en: "Real-world Analogy: Fruit Juicer Machine" },
+                            desc: {
+                                ta: "நீங்கள் இயந்திரத்திற்குள் பழங்களை (Parameters) இடுகிறீர்கள்; இயந்திரம் உள்ளே அரைத்து (Function Body) சுவையான பழச்சாற்றை (Return Value) வெளியில் தருகிறது. தேவைப்படும் போதெல்லாம் இதை இயக்கலாம்!",
+                                en: "You pass fruits (Arguments/Parameters) into the juicer, it processes them inside (Function Body), and outputs fresh juice (Return Value) whenever invoked."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "செயற்கூறு வரையறை <code>function functionName() { ... }</code> என்ற தொடரியலில் அமையும்.",
+                                "அமைப்பு வரையறுத்த செயற்கூறுகள்: <code>sqrt()</code>, <code>round()</code>, <code>strlen()</code>, <code>date()</code>.",
+                                "செயற்கூறு பெயர்கள் எழுத்து வடிவ உணர்வு கொண்டவை அல்ல (Case-insensitive)."
+                            ],
+                            en: [
+                                "Syntax: <code>function functionName($param1, $param2) { return $result; }</code>.",
+                                "Common built-in functions: <code>sqrt()</code>, <code>round()</code>, <code>strlen()</code>, <code>date()</code>.",
+                                "Function names in PHP are case-insensitive."
+                            ]
+                        },
+                        code: `<?php
+// 1. அளபுருக்களைக் கொண்ட பயனர் செயற்கூறு
+function calculateTotal($m1, $m2, $m3) {
+    $sum = $m1 + $m2 + $m3;
+    return $sum;
+}
+
+$total = calculateTotal(95, 92, 98);
+echo "மொத்த மதிப்பெண் = " . $total . "<br>";
+
+// 2. அமைப்பு வரையறுத்த செயற்கூறுகள் (Built-in)
+echo "வர்க்கமூலம் sqrt(144) = " . sqrt(144) . "<br>";
+echo "முழுமையாக்கல் round(94.68) = " . round(94.68);
+?>`
+                    },
+                    {
+                        id: 'php_indexed_array',
+                        icon: 'fa-list-ol',
+                        color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+                        title: { ta: "சுட்டெண் வரிசை (Indexed Array)", en: "Indexed Array in PHP" },
+                        shortDesc: {
+                            ta: "ஒரே மாறியின் கீழ் பல மதிப்புகளை 0, 1, 2... என்ற எண் சுட்டெண்களுடன் (Numeric Index) சேமிக்கும் வரிசை.",
+                            en: "Stores multiple elements in a single variable accessed via automatic numeric indices starting from 0."
+                        },
+                        summary: {
+                            ta: "வரிசை (Array) என்பது ஒரே பெயரில் ஒன்றுக்கு மேற்பட்ட மதிப்புகளைச் சேமிக்கும் சிறப்பு மாறியாகும். சுட்டெண் வரிசையில் <code>array()</code> செயற்கூறு மூலம் மதிப்புகள் சேமிக்கப்படும்; முதல் உறுப்பின் சுட்டெண் எப்போதும் <code>0</code> ஆகும்.",
+                            en: "An Indexed Array stores a list of values with numeric keys starting at index <code>0</code>. Created using <code>array(val1, val2, ...)</code> or square brackets <code>[...]</code>."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: தொடர்வண்டிப் பெட்டிகள் (Train Coaches)", en: "Real-world Analogy: Numbered Train Coaches" },
+                            desc: {
+                                ta: "ஒரு தொடர்வண்டியில் பெட்டிகள் 0, 1, 2, 3 என வரிசை எண் இடப்பட்டு இணைக்கப்பட்டிருப்பது போல, சுட்டெண் வரிசையில் தரவுகள் வரிசை எண்களுடன் அடுக்கப்பட்டிருக்கும்.",
+                                en: "Like numbered coaches attached sequentially to a train (Coach 0, Coach 1, Coach 2), an indexed array stores values in numbered slots."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "சுட்டெண் எப்போதும் <code>0</code>-இல் தொடங்கும் (கடைசி சுட்டெண் = <code>count($arr) - 1</code>).",
+                                "<code>count($array)</code> செயற்கூறு வரிசையில் உள்ள மொத்த உறுப்புகளின் எண்ணிக்கையைத் தரும்.",
+                                "தொடரியல்: <code>$subjects = array(\"Tamil\", \"English\", \"Computer\");</code>"
+                            ],
+                            en: [
+                                "Numeric indexing always begins at <code>0</code>.",
+                                "<code>count($array)</code> returns the total number of elements in the array.",
+                                "Syntax: <code>$subjects = array(\"Tamil\", \"English\", \"Computer\");</code>"
+                            ]
+                        },
+                        code: `<?php
+// சுட்டெண் வரிசை (Indexed Array)
+$subjects = array("தமிழ்", "ஆங்கிலம்", "கணினி பயன்பாடுகள்", "வணிகவியல்");
+
+echo "முதல் பாடம் [0]: " . $subjects[0] . "<br>";
+echo "மூன்றாவது பாடம் [2]: " . $subjects[2] . "<br>";
+echo "மொத்த பாடங்கள்: " . count($subjects) . "<br><hr>";
+
+foreach ($subjects as $index => $sub) {
+    echo "Index [$index] => $sub <br>";
+}
+?>`
+                    },
+                    {
+                        id: 'php_assoc_array',
+                        icon: 'fa-tags',
+                        color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+                        title: { ta: "தொடர்புருத்த வரிசை (Associative Array)", en: "Associative Array (Key => Value)" },
+                        shortDesc: {
+                            ta: "எண் சுட்டெண்களுக்குப் பதிலாகப் பயனர் வரையறுத்த பெயரிடப்பட்ட திறவுகோல்களை (<code>Key => Value</code>) கொண்ட வரிசை.",
+                            en: "Uses user-assigned named string keys mapped to values via the <code>=></code> symbol."
+                        },
+                        summary: {
+                            ta: "தொடர்புருத்த வரிசையில் ஒவ்வொரு மதிப்பிற்கும் ஒரு தனித்துவமான பெயரிடப்பட்ட திறவுகோல் (Named Key) <code>=></code> குறியீடு மூலம் இணைக்கப்படும். மாணவர் விவரங்கள், விலைப்பட்டியல் போன்றவற்றைச் சேமிக்க இது மிகவும் உகந்தது.",
+                            en: "Associative arrays store data as key-value pairs where each custom key is associated with a value using the <code>=></code> operator."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: அகராதி அல்லது தொலைபேசி டைரக்டரி (Dictionary)", en: "Real-world Analogy: Dictionary or Phone Contacts" },
+                            desc: {
+                                ta: "தொலைபேசியில் எண் 45 எது என்று தேடுவதற்குப் பதிலாக 'Amma' என்ற பெயரைத் தொட்டு எண்ணை எடுப்பது போல, பெயரிடப்பட்ட Key மூலம் மதிப்பை எடுப்பதே தொடர்புருத்த வரிசை!",
+                                en: "Instead of memorizing contact slot #45, you look up 'Amma' to get her phone number. Associative arrays let you look up values by meaningful names."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "திறவுகோலையும் மதிப்பையும் இணைக்க <code>=></code> செயற்குறி பயன்படுகிறது.",
+                                "தொடரியல்: <code>$marks = array(\"Tamil\" => 95, \"CS\" => 99);</code>",
+                                "இதை அணுக <code>foreach ($marks as $key => $value)</code> மடக்கு பயன்படுகிறது."
+                            ],
+                            en: [
+                                "Uses the double arrow <code>=></code> symbol to bind keys with values.",
+                                "Syntax: <code>$marks = array(\"Tamil\" => 95, \"Computer\" => 99);</code>",
+                                "Traversed cleanly using <code>foreach ($marks as $key => $value)</code>."
+                            ]
+                        },
+                        code: `<?php
+// தொடர்புருத்த வரிசை (Associative Array)
+$student = array(
+    "Name" => "கவின் (Kavin)",
+    "RollNo" => 1205,
+    "Computer" => 99,
+    "Grade" => "O+"
+);
+
+echo "மாணவர் பெயர்: " . $student["Name"] . "<br>";
+echo "கணினி மதிப்பெண்: " . $student["Computer"] . "<br><hr>";
+
+foreach ($student as $key => $val) {
+    echo "<b>$key</b> : $val <br>";
+}
+?>`
+                    },
+                    {
+                        id: 'php_multi_array',
+                        icon: 'fa-table-cells',
+                        color: 'text-purple-600 bg-purple-50 border-purple-200',
+                        title: { ta: "பலபரிமாண வரிசை (Multidimensional Array)", en: "Multidimensional Array" },
+                        shortDesc: {
+                            ta: "ஒன்று அல்லது அதற்கு மேற்பட்ட வரிசைகளைத் தனக்குள்ளே கொண்ட வரிசை (அட்டவணை / அணி வடிவம்).",
+                            en: "An array containing one or more nested arrays—ideal for representing rows and columns like a matrix or table."
+                        },
+                        summary: {
+                            ta: "பலபரிமாண வரிசை என்பது வரிசைகளுக்குள் வரிசைகளைக் கொண்ட அமைப்பாகும். இருபரிமாண வரிசையில் (2D Array) தரவுகளை அணுக இரண்டு சுட்டெண்கள் <code>$arr[row][col]</code> தேவைப்படுகின்றன.",
+                            en: "A multidimensional array contains nested arrays inside a main array. A 2D array models rows and columns, accessed via two indices: <code>$arr[row][column]</code>."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: வகுப்பறை இருக்கை வரிசைகள் (Classroom Rows & Columns)", en: "Real-world Analogy: Classroom Seating Grid" },
+                            desc: {
+                                ta: "வகுப்பறையில் 3-வது வரிசையில் 2-வது இருக்கையில் அமர்ந்திருக்கும் மாணவரைக் கண்டறிவது போல, <code>$class[2][1]</code> என வரிசை மற்றும் நெடுவரிசை எண் கொண்டு தரவை அணுகலாம்.",
+                                en: "Finding a student seated at Row 3, Bench 2 in a classroom works just like accessing a 2D array element via <code>$seats[2][1]</code>."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "அணி (Matrix) மற்றும் அட்டவணைத் தரவுகளைச் சேமிக்கப் பயன்படுகிறது.",
+                                "இருபரிமாண வரிசையை அணுக இரண்டு சுட்டெண்கள் <code>[வரிசை][நெடுவரிசை]</code> பயன்படும்.",
+                                "பொதுவாக பின்னலான <code>for</code> மடக்குகள் (Nested loops) மூலம் இயக்கப்படும்."
+                            ],
+                            en: [
+                                "Stores tabular or matrix-style structured records.",
+                                "Accessed using multiple bracket indices: <code>$students[0][1]</code>.",
+                                "Typically iterated using nested <code>for</code> or <code>foreach</code> loops."
+                            ]
+                        },
+                        code: `<?php
+// இருபரிமாண வரிசை (2D Multidimensional Array)
+$students = array(
+    array("கவின்", 95, 98),
+    array("மலர்", 92, 96),
+    array("அருண்", 88, 91)
+);
+
+echo "<h3>மாணவர் மதிப்பெண் அட்டவணை</h3>";
+echo "<table><tr><th>பெயர்</th><th>தமிழ்</th><th>கணினி</th></tr>";
+for ($r = 0; $r < count($students); $r++) {
+    echo "<tr>";
+    echo "<td>" . $students[$r][0] . "</td>";
+    echo "<td>" . $students[$r][1] . "</td>";
+    echo "<td>" . $students[$r][2] . "</td>";
+    echo "</tr>";
+}
+echo "</table>";
+?>`
+                    }
+                ]
+            },
+            {
+                id: 'ch67',
+                badge: { ta: "அத்தியாயம் 6 & 7", en: "Chapters 6 & 7" },
+                title: { ta: "நிபந்தனைக் கூற்றுகள் & மடக்கு அமைப்புகள் (Conditionals & Loops)", en: "PHP Conditional Statements & Looping Structures" },
+                topics: [
+                    {
+                        id: 'php_if_else',
+                        icon: 'fa-code-branch',
+                        color: 'text-rose-600 bg-rose-50 border-rose-200',
+                        title: { ta: "நிபந்தனைக் கூற்றுகள் (if, if...else, elseif)", en: "Conditional Statements (if, if...else, elseif)" },
+                        shortDesc: {
+                            ta: "வெவ்வேறு நிபந்தனைகளின் அடிப்படையில் வெவ்வேறு செயல்களைச் செய்ய <code>if</code>, <code>if...else</code> மற்றும் <code>if...elseif...else</code> பயன்படுகின்றன.",
+                            en: "Executes different code blocks depending on whether specified boolean conditions evaluate to true or false."
+                        },
+                        summary: {
+                            ta: "நிபந்தனைக் கூற்றுகள் நிரலின் பாய்வைத் தீர்மானிக்கின்றன. ஒன்றுக்கு மேற்பட்ட நிபந்தனைகளைச் சோதிக்க <code>if...elseif...else</code> பயன்படுகிறது (PHP-இல் <code>elseif</code> ஒரே சொல்லாகவோ அல்லது பிரித்தோ எழுதலாம்).",
+                            en: "Conditional statements control decision-making in PHP. Use <code>if...elseif...else</code> to test multiple sequential conditions such as student grade classification."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: போக்குவரத்து சிக்னல் விளக்குகள் (Traffic Signal)", en: "Real-world Analogy: Traffic Signal Lights" },
+                            desc: {
+                                ta: "விளக்கு சிவப்பாக இருந்தால் (if) நில்; மஞ்சளாக இருந்தால் (elseif) தயாராகு; இல்லையெனில் (else - பச்சை) செல்! இதுவே நிபந்தனைக் கூற்றின் அடிப்படை.",
+                                en: "If light is Red -> Stop; elseif Yellow -> Get Ready; else (Green) -> Go! That's exact conditional branching."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "நிபந்தனை மெய்யாக (True) இருந்தால் மட்டுமே <code>if</code> தொகுதி இயங்கும்.",
+                                "பல நிபந்தனைகளைச் சரிபார்க்க <code>elseif</code> பயன்படுகிறது.",
+                                "எந்த நிபந்தனையும் பொருந்தாவிட்டால் இறுதியாக <code>else</code> தொகுதி இயங்கும்."
+                            ],
+                            en: [
+                                "<code>if</code> executes its block only when the condition evaluates to <code>true</code>.",
+                                "<code>elseif</code> chains multiple alternative conditions cleanly.",
+                                "<code>else</code> acts as the fallback default branch when all conditions fail."
+                            ]
+                        },
+                        code: `<?php
+// அத்தியாயம் 6: மாணவர் தரம் காணும் நிரல் (if...elseif...else)
+$mark = 86;
+echo "பெற்ற மதிப்பெண்: <b>$mark</b><br>";
+
+if ($mark >= 90) {
+    echo "தரம் (Grade): <b>O (மிகச் சிறப்பு)</b>";
+} elseif ($mark >= 75) {
+    echo "தரம் (Grade): <b>A (முதல் வகுப்பு)</b>";
+} elseif ($mark >= 35) {
+    echo "தரம் (Grade): <b>B (தேர்ச்சி)</b>";
+} else {
+    echo "தரம் (Grade): <b>மறுதேர்வு (Reappear)</b>";
+}
+?>`
+                    },
+                    {
+                        id: 'php_switch',
+                        icon: 'fa-signs-post',
+                        color: 'text-amber-600 bg-amber-50 border-amber-200',
+                        title: { ta: "Switch கூற்று (Switch...Case Statement)", en: "Switch...Case Statement" },
+                        shortDesc: {
+                            ta: "பல தேர்வுகளில் (Multiple Cases) ஒன்றைத் தேர்ந்தெடுத்து இயக்க <code>switch</code>, <code>case</code>, <code>break</code> மற்றும் <code>default</code> பயன்படுகின்றன.",
+                            en: "Selects one of many code blocks to execute based on matching a single expression value against multiple cases."
+                        },
+                        summary: {
+                            ta: "பல <code>elseif</code> கூற்றுகளுக்கு மாற்றாக <code>switch</code> கூற்று பயன்படுகிறது. ஒவ்வொரு <code>case</code> முடிவிலும் <code>break</code> கூற்று இடப்பட வேண்டும்; இல்லையெனில் அடுத்தடுத்த case-களும் இயங்கிவிடும் (Fall-through).",
+                            en: "The <code>switch</code> statement compares a variable against several <code>case</code> values. The <code>break</code> keyword prevents execution from falling through into the next case."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: தொலைக்காட்சி ரிமோட் எண் பொத்தான்கள் (TV Remote)", en: "Real-world Analogy: TV Remote Channel Buttons" },
+                            desc: {
+                                ta: "ரிமோட்டில் 1 அழுத்தினால் பொதிகை, 2 அழுத்தினால் கல்வித் தொலைக்காட்சி, வேறு எண் அழுத்தினால் (default) 'சேனல் இல்லை' எனக் காட்டுவது போலவே switch செயல்படுகிறது.",
+                                en: "Pressing 1 tunes to Channel 1, pressing 2 tunes to Channel 2, and pressing an unmapped button triggers the default 'Invalid Channel' message."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>break</code> கூற்று switch தொகுதியை விட்டு வெளியேற உதவுகிறது.",
+                                "எந்த <code>case</code> மதிப்பும் பொருந்தாவிட்டால் <code>default</code> பகுதி இயங்கும்.",
+                                "சமத்துவ ஒப்பீடுகளுக்கு (Equality checks) <code>if-elseif</code>-ஐ விட வேகமானது மற்றும் தெளிவானது."
+                            ],
+                            en: [
+                                "<code>break</code> terminates the current case block and exits the switch.",
+                                "<code>default</code> runs if none of the specified case labels match.",
+                                "Ideal for menu-driven programs and discrete value matching."
+                            ]
+                        },
+                        code: `<?php
+// அத்தியாயம் 6: Switch...Case எடுத்துக்காட்டு
+$day = 3;
+
+switch ($day) {
+    case 1:
+        echo "திங்கட்கிழமை (Monday)";
+        break;
+    case 2:
+        echo "செவ்வாய்க்கிழமை (Tuesday)";
+        break;
+    case 3:
+        echo "புதன்கிழமை (Wednesday)";
+        break;
+    default:
+        echo "மற்ற நாள் (Other Day)";
+}
+?>`
+                    },
+                    {
+                        id: 'php_for_foreach',
+                        icon: 'fa-repeat',
+                        color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+                        title: { ta: "for மற்றும் foreach மடக்குகள் (for & foreach Loops)", en: "for and foreach Loops in PHP" },
+                        shortDesc: {
+                            ta: "குறிப்பிட்ட எண்ணிக்கை தெரிந்தால் <code>for</code> மடக்கும், வரிசை (Array) உறுப்புகளை ஒவ்வொன்றாக அணுக <code>foreach</code> மடக்கும் பயன்படுகின்றன.",
+                            en: "Use <code>for</code> when the exact iteration count is known, and <code>foreach</code> exclusively to loop through every element in an array."
+                        },
+                        summary: {
+                            ta: "<code>for (தொடக்கம்; நிபந்தனை; மிகுப்பு)</code> என்பது நுழைவுச் சோதிப்பு மடக்காகும். <code>foreach ($array as $value)</code> என்பது PHP-இல் வரிசைகளை எளிதாகக் கையாள வடிவமைக்கப்பட்ட பிரத்யேக மடக்காகும்.",
+                            en: "The <code>for</code> loop runs a block a predetermined number of times. The <code>foreach</code> loop works exclusively on arrays, iterating over every key-value pair automatically."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: வருகைப் பதிவேடு வாசித்தல் (Attendance Roll Call)", en: "Real-world Analogy: Teacher Calling Class Attendance" },
+                            desc: {
+                                ta: "ஆசிரியர் வரிசை எண் 1 முதல் 40 வரை எண்ணுவது <code>for</code> மடக்கு; வருகைப் பதிவேட்டில் உள்ள ஒவ்வொரு மாணவர் பெயரையும் வரிசையாக வாசிப்பது <code>foreach</code> மடக்கு!",
+                                en: "Counting roll numbers from 1 to 40 is a <code>for</code> loop; reading every student's name listed inside the attendance register is a <code>foreach</code> loop."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>foreach</code> மடக்கு வரிசைகளில் (Arrays) மட்டுமே செயல்படும்.",
+                                "<code>foreach ($arr as $key => $val)</code> மூலம் திறவுகோல் மற்றும் மதிப்பு இரண்டையும் பெறலாம்.",
+                                "மடக்குகளின் எண்ணிக்கை முன்கூட்டியே தெரிந்தால் <code>for</code> மடக்கு சிறந்தது."
+                            ],
+                            en: [
+                                "<code>foreach</code> works strictly on arrays and objects.",
+                                "<code>foreach ($arr as $key => $val)</code> extracts both key and value simultaneously.",
+                                "<code>for</code> loop combines initialization, condition, and increment in one header."
+                            ]
+                        },
+                        code: `<?php
+// 1. for மடக்கு - 5-ஆம் வாய்ப்பாடு
+echo "<b>5-ஆம் வாய்ப்பாடு (for loop):</b><br>";
+for ($i = 1; $i <= 5; $i++) {
+    echo "$i x 5 = " . ($i * 5) . "<br>";
+}
+
+// 2. foreach மடக்கு - வரிசை உறுப்புகள்
+echo "<hr><b>கணினி பாகங்கள் (foreach loop):</b><br>";
+$parts = array("CPU", "RAM", "Monitor", "Keyboard");
+foreach ($parts as $p) {
+    echo "• $p <br>";
+}
+?>`
+                    },
+                    {
+                        id: 'php_while_dowhile',
+                        icon: 'fa-rotate',
+                        color: 'text-teal-600 bg-teal-50 border-teal-200',
+                        title: { ta: "while மற்றும் do...while மடக்குகள்", en: "while and do...while Loops" },
+                        shortDesc: {
+                            ta: "<code>while</code> என்பது நுழைவுச் சோதிப்பு மடக்கு (Entry-check); <code>do...while</code> என்பது வெளியேறுச் சோதிப்பு மடக்கு (Exit-check).",
+                            en: "<code>while</code> is an entry-controlled loop, whereas <code>do...while</code> is an exit-controlled loop that executes at least once."
+                        },
+                        summary: {
+                            ta: "<code>while</code> மடக்கில் முதலில் நிபந்தனை சோதிக்கப்பட்டு, மெய்யானால் மட்டுமே உடற்பகுதி இயங்கும். <code>do...while</code> மடக்கில் முதலில் உடற்பகுதி ஒரு முறை இயங்கிய பிறகே நிபந்தனை சோதிக்கப்படும்.",
+                            en: "A <code>while</code> loop evaluates its condition before executing each iteration. A <code>do...while</code> loop executes its body once before checking the condition at the end."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: ஏடிஎம் பின் சரிபார்ப்பு (ATM PIN Prompt)", en: "Real-world Analogy: ATM PIN Entry Prompt" },
+                            desc: {
+                                ta: "ஏடிஎம் இயந்திரம் முதலில் கடவுச்சொல்லை உள்ளிடச் சொல்லிவிட்டு (do), பிறகு சரியா எனச் சோதிப்பது (while) <code>do...while</code> மடக்கிற்குச் சிறந்த உதாரணம்!",
+                                en: "An ATM machine first asks you to enter your PIN (do) and then checks whether it is valid (while)—a classic <code>do...while</code> exit-check behavior."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>while</code> = நுழைவுச் சோதிப்பு மடக்கு (நிபந்தனை தவறானால் 0 முறை இயங்கும்).",
+                                "<code>do...while</code> = வெளியேறுச் சோதிப்பு மடக்கு (நிபந்தனை தவறானாலும் குறைந்தது 1 முறை இயங்கும்).",
+                                "<code>do...while</code> முடிவில் அரைப்புள்ளி (<code>;</code>) கட்டாயம் இட வேண்டும்."
+                            ],
+                            en: [
+                                "<code>while</code> checks the condition at entry (runs 0 times if initially false).",
+                                "<code>do...while</code> checks the condition at exit (guaranteed to run at least 1 time).",
+                                "<code>do...while</code> requires a semicolon after <code>while(condition);</code>."
+                            ]
+                        },
+                        code: `<?php
+// while மடக்கு: 1 முதல் 5 வரை கூடுதல்
+$n = 1;
+$sum = 0;
+while ($n <= 5) {
+    $sum += $n;
+    $n++;
+}
+echo "1 முதல் 5 வரை கூடுதல் (while) = <b>$sum</b><br>";
+
+// do...while மடக்கு
+$x = 10;
+do {
+    echo "do...while குறைந்தது ஒருமுறை இயங்கும் (x = $x)";
+    $x++;
+} while ($x < 5);
+?>`
+                    }
+                ]
+            },
+            {
+                id: 'ch89',
+                badge: { ta: "அத்தியாயம் 8 & 9", en: "Chapters 8 & 9" },
+                title: { ta: "படிவங்கள், கோப்பு கையாளுதல் & MySQLi இணைப்பு (Forms, Files & MySQLi)", en: "Forms, File Handling & Connecting PHP with MySQL" },
+                topics: [
+                    {
+                        id: 'php_forms',
+                        icon: 'fa-wpforms',
+                        color: 'text-orange-600 bg-orange-50 border-orange-200',
+                        title: { ta: "HTML படிவங்கள்: $_GET மற்றும் $_POST", en: "HTML Forms: $_GET vs $_POST Superglobals" },
+                        shortDesc: {
+                            ta: "HTML படிவத் தரவுகளை PHP சேவையகத்தில் பெற <code>$_GET</code> மற்றும் <code>$_POST</code> சூப்பர் குளோபல் அணிகள் பயன்படுகின்றன.",
+                            en: "<code>$_GET</code> and <code>$_POST</code> superglobal associative arrays collect form data submitted from HTML forms."
+                        },
+                        summary: {
+                            ta: "HTML <code>&lt;form&gt;</code> குறிச்சொல்லில் உள்ள <code>action</code> பண்புக்கூறு தரவைப் பெறும் PHP கோப்பையும், <code>method</code> பண்புக்கூறு <code>GET</code> அல்லது <code>POST</code> வழிமுறையையும் குறிப்பிடுகிறது. <code>POST</code> வழிமுறை பாதுகாப்பானது மற்றும் வரம்பற்ற தரவை அனுப்ப வல்லது.",
+                            en: "The HTML <code>&lt;form&gt;</code> tag uses <code>action</code> to specify the target PHP script and <code>method</code> (<code>GET</code> or <code>POST</code>) to transmit data. <code>POST</code> sends data securely in the HTTP body with no size limits."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: அஞ்சல் அட்டை vs மூடிய உறை (Postcard vs Sealed Envelope)", en: "Real-world Analogy: Postcard vs Sealed Envelope" },
+                            desc: {
+                                ta: "<code>GET</code> என்பது அஞ்சல் அட்டை (Postcard) போன்றது—செய்தி அனைவருக்கும் (URL-இல்) தெரியும். <code>POST</code> என்பது முத்திரையிடப்பட்ட மூடிய கடித உறை (Sealed Envelope)—உள்ளே உள்ள தகவல் பாதுகாப்பானது!",
+                                en: "<code>GET</code> is like sending a Postcard—anyone looking at the URL can read your message. <code>POST</code> is like a Sealed Envelope—the contents travel privately inside the HTTP body."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>$_GET</code>: URL வழியே தரவை அனுப்பும்; அதிகபட்சம் ~2048 எழுத்துக்கள் மட்டுமே; Bookmark செய்யலாம்.",
+                                "<code>$_POST</code>: HTTP Request Body வழியே பாதுகாப்பாக அனுப்பும்; தரவு அளவு வரம்பு இல்லை; கடவுச்சொல்லுக்கு உகந்தது.",
+                                "படிவ சரிபார்ப்பிற்கு <code>empty()</code>, <code>isset()</code>, <code>htmlspecialchars()</code> பயன்படுகின்றன."
+                            ],
+                            en: [
+                                "<code>$_GET</code> appends data to the URL query string (~2048 char limit, bookmarkable).",
+                                "<code>$_POST</code> embeds data in the HTTP request body (unlimited size, secure for passwords).",
+                                "Validation uses <code>empty()</code>, <code>isset()</code>, and <code>htmlspecialchars()</code>."
+                            ]
+                        },
+                        code: `<?php
+// அத்தியாயம் 8: படிவத் தரவு பெறுதல் & சரிபார்த்தல் ($_POST மாதிரி)
+$_POST["student_name"] = "கார்த்திக் (Karthik)";
+$_POST["email"] = "karthik@tnschools.gov.in";
+
+if (!empty($_POST["student_name"])) {
+    $name = htmlspecialchars($_POST["student_name"]);
+    $email = htmlspecialchars($_POST["email"]);
+    echo "<h3>படிவம் வெற்றிகரமாகப் பெறப்பட்டது!</h3>";
+    echo "மாணவர் பெயர்: <b>$name</b><br>";
+    echo "மின்னஞ்சல்: <b>$email</b>";
+} else {
+    echo "பிழை: பெயர் காலியாக இருக்கக் கூடாது!";
+}
+?>`
+                    },
+                    {
+                        id: 'php_files',
+                        icon: 'fa-file-lines',
+                        color: 'text-cyan-600 bg-cyan-50 border-cyan-200',
+                        title: { ta: "PHP கோப்பு கையாளுதல் (File Handling Functions)", en: "PHP File Handling (fopen, fread, fwrite, fclose)" },
+                        shortDesc: {
+                            ta: "சேவையகத்தில் உள்ள கோப்புகளைத் திறக்க <code>fopen()</code>, எழுத <code>fwrite()</code>, படிக்க <code>fread()</code> மற்றும் மூட <code>fclose()</code> பயன்படுகின்றன.",
+                            en: "Manage server files using <code>fopen()</code>, <code>fwrite()</code>, <code>fread()</code>, <code>file_exists()</code>, and <code>fclose()</code>."
+                        },
+                        summary: {
+                            ta: "PHP-இல் கோப்புகளைக் கையாள 4 முக்கியப் படிகள் உள்ளன: 1. கோப்பினைத் திறத்தல் (<code>fopen</code> - r, w, a முறைகள்), 2. கோப்பினைப் படித்தல் (<code>fread</code>) அல்லது எழுதுதல் (<code>fwrite</code>), 3. கோப்பினை மூடுதல் (<code>fclose</code>).",
+                            en: "File handling in PHP follows four core steps: Opening a file with <code>fopen($filename, $mode)</code> (modes: <code>'r'</code> read, <code>'w'</code> write, <code>'a'</code> append), reading/writing with <code>fread()</code> / <code>fwrite()</code>, and closing with <code>fclose()</code>."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: குறிப்பேட்டைத் திறந்து எழுதி மூடுதல் (Notebook)", en: "Real-world Analogy: Opening, Writing & Closing a Notebook" },
+                            desc: {
+                                ta: "ஒரு குறிப்பேட்டில் எழுத வேண்டுமெனில் முதலில் அதைத் திறக்க வேண்டும் (fopen), பேனாவால் எழுத வேண்டும் (fwrite), பிறகு பத்திரமாக மூடி வைக்க வேண்டும் (fclose)!",
+                                en: "To record notes in a diary, you first open it (<code>fopen</code>), write your lines (<code>fwrite</code>), and close the cover (<code>fclose</code>) so pages stay safe."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>'r'</code> = படிக்க மட்டும் (Read only), <code>'w'</code> = எழுத மட்டும் (Write - பழையதை அழிக்கும்), <code>'a'</code> = இறுதியில் சேர்க்க (Append).",
+                                "<code>filesize($filename)</code> கோப்பின் மொத்த அளவை பைட்டுகளில் தரும்.",
+                                "நினைவகத்தை விடுவிக்க <code>fclose($file)</code> கட்டாயம் அழைக்கப்பட வேண்டும்."
+                            ],
+                            en: [
+                                "Modes: <code>'r'</code> (Read), <code>'w'</code> (Write/Overwrite), <code>'a'</code> (Append).",
+                                "<code>filesize($filename)</code> returns the file size in bytes for <code>fread()</code>.",
+                                "Always release the file pointer resource using <code>fclose($fp)</code>."
+                            ]
+                        },
+                        code: `<?php
+// அத்தியாயம் 8: PHP கோப்பு கையாளுதல் (File Handling)
+$file = fopen("student_note.txt", "w");
+fwrite($file, "12-ஆம் வகுப்பு கணினி பயன்பாடுகள் - PHP கோப்பு சோதனை வெற்றி!");
+fclose($file);
+
+// கோப்பினைப் படித்தல்
+$readFile = fopen("student_note.txt", "r");
+$content = fread($readFile, filesize("student_note.txt"));
+fclose($readFile);
+
+echo "<b>கோப்பிலிருந்து படிக்கப்பட்ட தகவல்:</b><br>" . $content;
+?>`
+                    },
+                    {
+                        id: 'php_mysqli',
+                        icon: 'fa-database',
+                        color: 'text-violet-600 bg-violet-50 border-violet-200',
+                        title: { ta: "PHP மற்றும் MySQL இணைப்பு (MySQLi Functions)", en: "Connecting PHP and MySQL (MySQLi Extension)" },
+                        shortDesc: {
+                            ta: "<code>mysqli_connect()</code>, <code>mysqli_query()</code>, <code>mysqli_fetch_assoc()</code> மற்றும் <code>mysqli_close()</code> செயற்கூறுகள்.",
+                            en: "Connect PHP to MySQL databases using <code>mysqli_connect()</code>, <code>mysqli_query()</code>, <code>mysqli_fetch_assoc()</code>, and <code>mysqli_close()</code>."
+                        },
+                        summary: {
+                            ta: "MySQLi (MySQL Improved) நீட்டிப்பு PHP-யையும் MySQL தரவுத்தளத்தையும் இணைக்கிறது. <code>mysqli_connect(Server, User, Password, DB_Name)</code> என்ற 4 அளபுருக்களைக் கொண்டு இணைப்பை ஏற்படுத்தி, <code>mysqli_query()</code> மூலம் SQL வினவல்களை இயக்கலாம்.",
+                            en: "The MySQLi extension connects PHP scripts to MySQL databases. <code>mysqli_connect($host, $user, $pass, $db)</code> takes 4 arguments to establish a connection, <code>mysqli_query()</code> executes SQL commands, and <code>mysqli_close()</code> closes the link."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: வங்கி லாக்கர் திறவுகோல் (Bank Vault Access)", en: "Real-world Analogy: Bank Vault Access & Retrieval" },
+                            desc: {
+                                ta: "வங்கி லாக்கரைத் திறக்க முகவரி, பயனர் பெயர், கடவுச்சொல், லாக்கர் எண் (4 அளபுருக்கள் - mysqli_connect) கொடுத்துத் திறந்து, தேவையான கோப்பை எடுத்துவிட்டு (mysqli_query), பூட்டிவிடுவது (mysqli_close) போன்றதாகும்.",
+                                en: "Accessing a bank vault requires 4 credentials (Server, Username, Password, Vault/DB Name) to unlock (<code>mysqli_connect</code>), retrieve records (<code>mysqli_query</code>), and lock up (<code>mysqli_close</code>)."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>mysqli_connect()</code> செயற்கூறுக்கு <strong>4 அளபுருக்கள்</strong> தேவை: Server Name, Username, Password, Database Name.",
+                                "<code>mysqli_query($conn, $sql)</code> SQL கட்டளைகளை (SELECT, INSERT, UPDATE) இயக்கும்.",
+                                "<code>mysqli_fetch_assoc($result)</code> வினவல் வெளியீட்டை தொடர்புருத்த வரிசையாக (Associative array) தரும்."
+                            ],
+                            en: [
+                                "<code>mysqli_connect()</code> requires <strong>4 parameters</strong>: Server Name, User Name, Password, and DB Name.",
+                                "<code>mysqli_query($conn, $sql)</code> executes SQL queries against the active connection.",
+                                "<code>mysqli_fetch_assoc($result)</code> fetches a result row as an associative array."
+                            ]
+                        },
+                        code: `<?php
+// அத்தியாயம் 9: PHP மற்றும் MySQLi இணைப்பு நிரல்
+$conn = mysqli_connect("localhost", "root", "", "Student_DB");
+
+if (!$conn) {
+    die("இணைப்பு தோல்வி: " . mysqli_connect_error());
+}
+
+$sql = "SELECT roll_no, name, marks FROM students";
+$result = mysqli_query($conn, $sql);
+
+echo "<h3>MySQL தரவுத்தள மாணவர் பட்டியல்</h3>";
+echo "<table><tr><th>Roll No</th><th>மாணவர் பெயர்</th><th>மதிப்பெண்</th></tr>";
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr><td>" . $row["roll_no"] . "</td><td>" . $row["name"] . "</td><td>" . $row["marks"] . "</td></tr>";
+}
+echo "</table>";
+
+mysqli_close($conn);
+?>`
+                    },
+                    {
+                        id: 'php_string_builtin',
+                        icon: 'fa-font',
+                        color: 'text-pink-600 bg-pink-50 border-pink-200',
+                        title: { ta: "சரச் செயற்கூறுகள் (Built-in String Functions)", en: "Important Built-in String Functions" },
+                        shortDesc: {
+                            ta: "<code>strlen()</code>, <code>strrev()</code>, <code>strtoupper()</code>, <code>strtolower()</code> மற்றும் <code>str_replace()</code> போன்ற முக்கிய சரச் செயற்கூறுகள்.",
+                            en: "Manipulate text strings effortlessly with <code>strlen()</code>, <code>strrev()</code>, <code>strtoupper()</code>, <code>strtolower()</code>, and <code>str_replace()</code>."
+                        },
+                        summary: {
+                            ta: "சரங்களைக் கையாள PHP-இல் பல உள்ளமைந்த செயற்கூறுகள் உள்ளன: <code>strlen()</code> சரத்தின் நீளத்தையும், <code>strrev()</code> சரத்தைத் தலைகீழாகவும், <code>strtoupper()</code> பெரிய எழுத்துக்களாகவும் மாற்றும்.",
+                            en: "PHP includes dedicated string manipulation functions: <code>strlen($s)</code> counts character length, <code>strrev($s)</code> reverses text, and <code>strtoupper($s)</code> / <code>strtolower($s)</code> convert letter casing."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: சொல் செயலி கருவிகள் (Word Processor Tools)", en: "Real-world Analogy: Word Processor Formatting Toolbar" },
+                            desc: {
+                                ta: "ஆவணத்தில் எழுத்துக்களின் எண்ணிக்கையைக் கணக்கிடுவது (Word Count = strlen) மற்றும் எழுத்துக்களை UPPERCASE / lowercase மாற்றுவது போல PHP சரச் செயற்கூறுகள் செயல்படுகின்றன.",
+                                en: "Just like Word's Character Count tool (<code>strlen</code>) and Change Case buttons (<code>strtoupper</code> / <code>strtolower</code>), PHP provides instant text transformers."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>strlen(\"Hello\")</code> -> <code>5</code> என சரத்தின் நீளத்தைத் தரும்.",
+                                "<code>strrev(\"PHP\")</code> -> <code>\"PHP\"</code> / <code>strrev(\"ABC\")</code> -> <code>\"CBA\"</code>.",
+                                "<code>str_replace(\"old\", \"new\", $str)</code> குறிப்பிட்ட வார்த்தையை மாற்றும்."
+                            ],
+                            en: [
+                                "<code>strlen($str)</code> returns the integer length of a string.",
+                                "<code>strrev($str)</code> reverses the characters in a string.",
+                                "<code>str_replace($find, $replace, $str)</code> replaces matching substrings."
+                            ]
+                        },
+                        code: `<?php
+$text = "Computer Applications";
+
+echo "மூலச் சரம்: <b>$text</b><br>";
+echo "நீளம் strlen(): " . strlen($text) . "<br>";
+echo "தலைகீழ் strrev(): " . strrev($text) . "<br>";
+echo "பெரிய எழுத்து strtoupper(): " . strtoupper($text) . "<br>";
+echo "சிறிய எழுத்து strtolower(): " . strtolower($text);
+?>`
+                    }
+                ]
+            }
+        ];
+
+        // Build lookup map & ordered list for modal navigation
+        const topicLookup = {};
+        const orderedTopicIds = [];
+        textbookChapters.forEach(ch => {
+            ch.topics.forEach(t => {
+                t.chapterBadge = ch.badge;
+                topicLookup[t.id] = t;
+                orderedTopicIds.push(t.id);
+            });
+        });
+
+        // ==========================================
+        // RENDER TEXTBOOK CHAPTERS & CARDS
+        // ==========================================
+        let activeChapterFilter = 'all';
+
+        function renderTextbookChapters(filter = activeChapterFilter) {
+            activeChapterFilter = filter;
+            const container = document.getElementById('textbook-chapters-container');
+            container.innerHTML = '';
+
+            const chaptersToShow = filter === 'all'
+                ? textbookChapters
+                : textbookChapters.filter(c => c.id === filter);
+
+            chaptersToShow.forEach(ch => {
+                const section = document.createElement('div');
+                section.className = 'bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4';
+
+                let cardsHtml = '';
+                ch.topics.forEach(topic => {
+                    cardsHtml += `
+                        <div onclick="openTopicDetail('${topic.id}')" class="p-4 rounded-2xl border border-slate-200 bg-slate-50/40 hover:bg-white hover:border-indigo-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-xl ${topic.color} flex items-center justify-center text-lg font-bold border group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid ${topic.icon}"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                        ${currentLang === 'ta' ? 'தொட்டு கற்க' : 'Tap to Explore'}
+                                    </span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm mb-1.5 group-hover:text-indigo-600 transition-colors">${topic.title[currentLang]}</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">${topic.shortDesc[currentLang]}</p>
+                            </div>
+                            <div class="mt-3 pt-2.5 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-bold text-indigo-600 group-hover:text-indigo-800">
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-lightbulb text-amber-500"></i> ${currentLang === 'ta' ? 'விளக்கம், ஒப்புமை & நிரல்' : 'Analogy & Live Code'}</span>
+                                <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                section.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-200 gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <span class="bg-indigo-600 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg">${ch.badge[currentLang]}</span>
+                            <h3 class="text-base sm:text-lg font-extrabold text-slate-900">${ch.title[currentLang]}</h3>
+                        </div>
+                        <span class="text-xs text-slate-500 font-semibold">${ch.topics.length} ${currentLang === 'ta' ? 'தலைப்புகள்' : 'Topics'}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        ${cardsHtml}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+        }
+
+        function filterTopicsByChapter(chId) {
+            playSound('click');
+            ['all', 'ch4', 'ch5', 'ch67', 'ch89'].forEach(id => {
+                const btn = document.getElementById(`ch-btn-${id}`);
+                if (!btn) return;
+                if (id === chId) {
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition';
+                } else {
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-indigo-50 transition';
+                }
+            });
+            renderTextbookChapters(chId);
+        }
+
+        // ==========================================
+        // TOPIC DEEP-DIVE MODAL LOGIC
+        // ==========================================
+        let currentModalTopicId = 'php_arch';
+
+        function openTopicDetail(topicId, playAudio = true) {
+            const topic = topicLookup[topicId];
+            if (!topic) return;
+
+            currentModalTopicId = topicId;
+            if (playAudio) playSound('click');
+
+            document.getElementById('modal-topic-icon').className = `fa-solid ${topic.icon}`;
+            document.getElementById('modal-topic-cat').textContent = topic.chapterBadge[currentLang];
+            document.getElementById('modal-topic-title').textContent = topic.title[currentLang];
+            document.getElementById('modal-topic-summary').innerHTML = topic.summary[currentLang];
+
+            document.getElementById('modal-topic-analogy-title').textContent = topic.analogy.title[currentLang];
+            document.getElementById('modal-topic-analogy-desc').textContent = topic.analogy.desc[currentLang];
+
+            const pointsContainer = document.getElementById('modal-topic-points');
+            pointsContainer.innerHTML = '';
+            topic.keyPoints[currentLang].forEach(pt => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-xs mt-1"></i> <span>${pt}</span>`;
+                pointsContainer.appendChild(li);
+            });
+
+            document.getElementById('modal-topic-code').textContent = topic.code;
+            document.getElementById('topic-detail-modal').classList.remove('hidden');
+        }
+
+        function closeTopicDetail() {
+            playSound('click');
+            document.getElementById('topic-detail-modal').classList.add('hidden');
+        }
+
+        function navigateTopicDetail(direction) {
+            let idx = orderedTopicIds.indexOf(currentModalTopicId);
+            if (idx === -1) idx = 0;
+            idx = (idx + direction + orderedTopicIds.length) % orderedTopicIds.length;
+            openTopicDetail(orderedTopicIds[idx], true);
+        }
+
+        function copyModalCode() {
+            playSound('click');
+            const code = document.getElementById('modal-topic-code').textContent;
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "PHP நிரல் நகலெடுக்கப்பட்டது!" : "PHP code copied to clipboard!", "Copied");
+        }
+
+        function loadTopicCodeToPlayground(topicId) {
+            const topic = topicLookup[topicId];
+            if (!topic) return;
+            closeTopicDetail();
+            switchTab('playground');
+            editor.value = topic.code;
+            runPhpCode();
+            showToast(currentLang === 'ta' ? `'${topic.title.ta}' நிரல் ஆய்வகத்தில் இயக்கப்பட்டது.` : `Running '${topic.title.en}' in PHP Lab.`, "PHP Lab");
+        }
+
+        // ==========================================
+        // INTERACTIVE ARRAY & FORM SIMULATOR (TAB 2)
+        // ==========================================
+        let simArrayMode = 'indexed';
+        let simIndexedList = ['Tamil', 'English', 'Computer'];
+        let simAssocMap = { Name: 'Kavin', RollNo: 1201, Marks: 98 };
+        let simFormMethod = 'GET';
+
+        function switchArrayMode(mode) {
+            playSound('click');
+            simArrayMode = mode;
+            const btnIdx = document.getElementById('btn-arr-indexed');
+            const btnAssoc = document.getElementById('btn-arr-assoc');
+            const keyInp = document.getElementById('inp-arr-key');
+            const valInp = document.getElementById('inp-arr-val');
+
+            if (mode === 'indexed') {
+                btnIdx.className = 'px-2.5 py-1 rounded-lg bg-indigo-600 text-white transition';
+                btnAssoc.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition';
+                keyInp.classList.add('hidden');
+                valInp.className = 'col-span-8 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500';
+                document.getElementById('sim-arr-desc').textContent = currentLang === 'ta'
+                    ? "சுட்டெண் வரிசையில் (Indexed Array) ஒவ்வொரு உறுப்பிற்கும் தானாகவே 0, 1, 2... என எண் சுட்டெண்கள் வழங்கப்படும்."
+                    : "In an Indexed Array, PHP automatically assigns numeric keys starting from 0, 1, 2...";
+            } else {
+                btnAssoc.className = 'px-2.5 py-1 rounded-lg bg-indigo-600 text-white transition';
+                btnIdx.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition';
+                keyInp.classList.remove('hidden');
+                valInp.className = 'col-span-3 bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono outline-none focus:ring-2 focus:ring-indigo-500';
+                document.getElementById('sim-arr-desc').textContent = currentLang === 'ta'
+                    ? "தொடர்புருத்த வரிசையில் (Associative Array) பயனர் வரையறுத்த திறவுகோல்கள் (Key => Value) பயன்படுகின்றன."
+                    : "In an Associative Array, custom named keys are mapped to values using the => operator.";
+            }
+            renderSimArray();
+        }
+
+        function renderSimArray() {
+            const boxContainer = document.getElementById('sim-array-boxes');
+            boxContainer.innerHTML = '';
+
+            if (simArrayMode === 'indexed') {
+                document.getElementById('sim-arr-count').textContent = `count($arr) = ${simIndexedList.length}`;
+                simIndexedList.forEach((val, idx) => {
+                    const box = document.createElement('div');
+                    box.className = 'bg-white p-2.5 rounded-xl border border-indigo-200 shadow-2xs flex items-center justify-between';
+                    box.innerHTML = `
+                        <div>
+                            <span class="text-[10px] font-mono font-bold text-indigo-600 block">Index [${idx}]</span>
+                            <span class="text-xs font-bold text-slate-800">"${val}"</span>
+                        </div>
+                        <button onclick="removeSimArrayItem(${idx})" class="text-slate-400 hover:text-rose-500 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                    `;
+                    boxContainer.appendChild(box);
+                });
+
+                const itemsStr = simIndexedList.map(v => `"${v}"`).join(', ');
+                document.getElementById('sim-arr-code-preview').textContent = `<?php\n$subjects = array(${itemsStr});\necho "Count: " . count($subjects) . "<br>";\nforeach ($subjects as $idx => $val) {\n    echo "[$idx] => $val <br>";\n}\n?>`;
+            } else {
+                const keys = Object.keys(simAssocMap);
+                document.getElementById('sim-arr-count').textContent = `count($student) = ${keys.length}`;
+                keys.forEach(k => {
+                    const v = simAssocMap[k];
+                    const box = document.createElement('div');
+                    box.className = 'bg-white p-2.5 rounded-xl border border-emerald-200 shadow-2xs flex items-center justify-between';
+                    box.innerHTML = `
+                        <div class="truncate">
+                            <span class="text-[10px] font-mono font-bold text-emerald-700 block">["${k}"] =></span>
+                            <span class="text-xs font-bold text-slate-800">${typeof v === 'number' ? v : `"${v}"`}</span>
+                        </div>
+                        <button onclick="removeSimAssocItem('${k}')" class="text-slate-400 hover:text-rose-500 text-xs ml-1"><i class="fa-solid fa-xmark"></i></button>
+                    `;
+                    boxContainer.appendChild(box);
+                });
+
+                const pairsStr = keys.map(k => `"${k}" => ${typeof simAssocMap[k] === 'number' ? simAssocMap[k] : `"${simAssocMap[k]}"`}`).join(', ');
+                document.getElementById('sim-arr-code-preview').textContent = `<?php\n$student = array(${pairsStr});\nforeach ($student as $key => $val) {\n    echo "<b>$key</b> : $val <br>";\n}\n?>`;
+            }
+        }
+
+        function addSimArrayItem() {
+            playSound('click');
+            const val = document.getElementById('inp-arr-val').value.trim();
+            if (!val) return;
+
+            if (simArrayMode === 'indexed') {
+                simIndexedList.push(val);
+            } else {
+                const key = document.getElementById('inp-arr-key').value.trim() || 'Item';
+                simAssocMap[key] = isNaN(val) ? val : Number(val);
+                document.getElementById('inp-arr-key').value = '';
+            }
+            document.getElementById('inp-arr-val').value = '';
+            renderSimArray();
+        }
+
+        function removeSimArrayItem(idx) {
+            if (simIndexedList.length <= 1) return;
+            simIndexedList.splice(idx, 1);
+            renderSimArray();
+        }
+
+        function removeSimAssocItem(key) {
+            if (Object.keys(simAssocMap).length <= 1) return;
+            delete simAssocMap[key];
+            renderSimArray();
+        }
+
+        function sendArrayCodeToPlayground() {
+            const code = document.getElementById('sim-arr-code-preview').textContent;
+            switchTab('playground');
+            editor.value = code;
+            runPhpCode();
+        }
+
+        // Form Simulator (GET vs POST)
+        function setFormMethod(method) {
+            playSound('click');
+            simFormMethod = method;
+            const btnGet = document.getElementById('btn-method-get');
+            const btnPost = document.getElementById('btn-method-post');
+            const expBox = document.getElementById('sim-method-explanation');
+
+            document.getElementById('form-tag-preview').textContent = `<form action="welcome.php" method="${method}">`;
+
+            if (method === 'GET') {
+                btnGet.className = 'px-2.5 py-1 rounded-lg bg-amber-500 text-white transition';
+                btnPost.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition';
+                expBox.className = 'p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed';
+                expBox.innerHTML = currentLang === 'ta'
+                    ? `<strong>GET வழிமுறை:</strong> படிவத் தரவுகள் உலாவியின் முகவரிப் பட்டையில் (URL) வெளிப்படையாக இணைக்கப்பட்டு அனுப்பப்படும். கடவுச்சொல் போன்ற இரகசியத் தரவுகளுக்குப் பாதுகாப்பற்றது.`
+                    : `<strong>GET Method:</strong> Form inputs are appended visibly to the URL query string. Bookmarkable, ~2048 character limit, NOT secure for passwords.`;
+            } else {
+                btnPost.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white transition';
+                btnGet.className = 'px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition';
+                expBox.className = 'p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 leading-relaxed';
+                expBox.innerHTML = currentLang === 'ta'
+                    ? `<strong>POST வழிமுறை:</strong> படிவத் தரவுகள் HTTP Request Body-க்குள் மறைமுகமாகப் பாதுகாப்பாக அனுப்பப்படும். URL-இல் தெரியாது; தரவு அளவிற்கு வரம்பு கிடையாது.`
+                    : `<strong>POST Method:</strong> Form inputs travel invisibly inside the HTTP Request Body. Secure for sensitive data and supports unlimited payload sizes.`;
+            }
+            simulateFormSubmit(false);
+        }
+
+        function simulateFormSubmit(playAudio = true) {
+            if (playAudio) playSound('success');
+            const name = document.getElementById('sim-form-name').value.trim() || 'Kavin';
+            const marks = document.getElementById('sim-form-marks').value.trim() || '98';
+
+            if (simFormMethod === 'GET') {
+                document.getElementById('sim-browser-url').textContent = `http://localhost/welcome.php?name=${encodeURIComponent(name)}&marks=${encodeURIComponent(marks)}`;
+                document.getElementById('sim-server-php-out').textContent = `// welcome.php\n$_GET = array(\n    "name"  => "${name}",\n    "marks" => "${marks}"\n);\necho "Welcome " . $_GET["name"];`;
+            } else {
+                document.getElementById('sim-browser-url').textContent = `http://localhost/welcome.php   [Data hidden in HTTP POST Body]`;
+                document.getElementById('sim-server-php-out').textContent = `// welcome.php\n$_POST = array(\n    "name"  => "${name}",\n    "marks" => "${marks}"\n);\necho "Welcome " . $_POST["name"];`;
+            }
+        }
+
+        // ==========================================
+        // PHP PLAYGROUND PRESET PROGRAMS (CH 4 - CH 9)
+        // ==========================================
+        const phpPresets = {
+            ch4Intro: {
+                name: { ta: "1. அத். 4: PHP அடிப்படை, மாறிகள் & மாறிலிகள்", en: "1. Ch 4: PHP Basics, Variables & Constants" },
+                code: `<?php
+// அத்தியாயம் 4: PHP அடிப்படைகள் & மாறிகள்
+define("BOARD", "தமிழ்நாடு மாநிலப் பாடத்திட்டம்");
+$student = "கார்த்திகேயன்";
+$m1 = 96;
+$m2 = 98;
+$total = $m1 + $m2;
+
+echo "<h2>" . BOARD . "</h2>";
+echo "மாணவர் பெயர்: <b>" . $student . "</b><br>";
+echo "மொத்த மதிப்பெண் ($m1 + $m2) = <b>" . $total . "</b>";
+?>`
+            },
+            ch5Func: {
+                name: { ta: "2. அத். 5: பயனர் வரையறுத்த செயற்கூறு (Functions)", en: "2. Ch 5: User-Defined & Built-in Functions" },
+                code: `<?php
+// அத்தியாயம் 5: அளபுருக்களைக் கொண்ட செயற்கூறு
+function findAverage($a, $b, $c) {
+    $avg = ($a + $b + $c) / 3;
+    return round($avg, 2);
+}
+
+echo "<h3>செயற்கூறு வெளியீடு</h3>";
+echo "சராசரி மதிப்பெண் (92, 95, 99) = <b>" . findAverage(92, 95, 99) . "%</b><br>";
+echo "வர்க்கமூலம் sqrt(81) = <b>" . sqrt(81) . "</b>";
+?>`
+            },
+            ch5Array: {
+                name: { ta: "3. அத். 5: தொடர்புருத்த வரிசை (Associative Array)", en: "3. Ch 5: Associative & Indexed Arrays" },
+                code: `<?php
+// அத்தியாயம் 5: தொடர்புருத்த வரிசை (Key => Value)
+$subjectMarks = array(
+    "தமிழ் (Tamil)" => 95,
+    "ஆங்கிலம் (English)" => 91,
+    "கணினி பயன்பாடுகள் (CA)" => 99,
+    "பொருளியல் (Economics)" => 94
+);
+
+echo "<h3>பாடவாரியான மதிப்பெண் பட்டியல்</h3>";
+echo "<table><tr><th>பாடம் (Subject)</th><th>மதிப்பெண் (Marks)</th></tr>";
+foreach ($subjectMarks as $sub => $mark) {
+    echo "<tr><td>$sub</td><td><b>$mark</b></td></tr>";
+}
+echo "</table>";
+?>`
+            },
+            ch6Cond: {
+                name: { ta: "4. அத். 6: நிபந்தனைக் கூற்றுகள் (if...elseif & switch)", en: "4. Ch 6: Conditional Statements (if & switch)" },
+                code: `<?php
+// அத்தியாயம் 6: நிபந்தனைக் கூற்றுகள்
+$percentage = 92;
+
+if ($percentage >= 90) {
+    $grade = "O (Outstanding)";
+} elseif ($percentage >= 75) {
+    $grade = "A (Distinction)";
+} else {
+    $grade = "B (First Class)";
+}
+
+echo "சதவீதம்: <b>$percentage%</b> | தரம்: <b>$grade</b><br><hr>";
+
+$choice = 2;
+switch ($choice) {
+    case 1: echo "தேர்வு 1: தமிழ் வழி"; break;
+    case 2: echo "தேர்வு 2: ஆங்கில வழி"; break;
+    default: echo "தவறான தேர்வு";
+}
+?>`
+            },
+            ch7Loops: {
+                name: { ta: "5. அத். 7: மடக்கு அமைப்புகள் (for & while Loops)", en: "5. Ch 7: Looping Structures (for & while)" },
+                code: `<?php
+// அத்தியாயம் 7: for மடக்கு - பெருக்கல் வாய்ப்பாடு
+$num = 7;
+echo "<h3>$num-ஆம் பெருக்கல் வாய்ப்பாடு</h3>";
+
+for ($i = 1; $i <= 5; $i++) {
+    $ans = $i * $num;
+    echo "$i x $num = <b>$ans</b><br>";
+}
+
+// while மடக்கு: 1 முதல் 10 வரை இரட்டை எண்கள்
+echo "<hr><b>இரட்டை எண்கள் (while):</b> ";
+$k = 2;
+while ($k <= 10) {
+    echo "$k ";
+    $k += 2;
+}
+?>`
+            },
+            ch8FileForm: {
+                name: { ta: "6. அத். 8: கோப்பு கையாளுதல் (File Handling)", en: "6. Ch 8: File Handling (fopen, fwrite, fread)" },
+                code: `<?php
+// அத்தியாயம் 8: கோப்பினை உருவாக்கி எழுதுதல் & படித்தல்
+$fp = fopen("class12_ca.txt", "w");
+fwrite($fp, "வணக்கம்! இது PHP கோப்பு கையாளுதல் (File Handling) செயல்முறை.");
+fclose($fp);
+
+$fpRead = fopen("class12_ca.txt", "r");
+$data = fread($fpRead, filesize("class12_ca.txt"));
+fclose($fpRead);
+
+echo "<h3>கோப்பு வெளியீடு (class12_ca.txt)</h3>";
+echo "<p>" . $data . "</p>";
+?>`
+            },
+            ch9Mysqli: {
+                name: { ta: "7. அத். 9: PHP மற்றும் MySQLi தரவுத்தள இணைப்பு", en: "7. Ch 9: Connecting PHP & MySQL (MySQLi)" },
+                code: `<?php
+// அத்தியாயம் 9: MySQLi செயற்கூறுகள் மூலம் தரவுத்தள இணைப்பு
+$conn = mysqli_connect("localhost", "root", "", "Student_DB");
+
+if (!$conn) {
+    die("Connection Failed: " . mysqli_connect_error());
+}
+
+$sql = "SELECT roll_no, name, marks FROM students";
+$result = mysqli_query($conn, $sql);
+
+echo "<h3>Student_DB அட்டவணைத் தரவுகள்</h3>";
+echo "<table><tr><th>Roll No</th><th>பெயர் (Name)</th><th>மதிப்பெண்</th></tr>";
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr><td>" . $row["roll_no"] . "</td><td>" . $row["name"] . "</td><td><b>" . $row["marks"] . "</b></td></tr>";
+}
+echo "</table>";
+
+mysqli_close($conn);
+?>`
+            }
+        };
+
+        // ==========================================
+        // EXAM QUESTION BANK (2, 3, 5 MARKS)
+        // ==========================================
+        const examQuestionsData = [
+            {
+                type: '2m',
+                q: {
+                    ta: "1. PHP என்றால் என்ன? அதன் கொடாநிலை கோப்பு நீட்டிப்பு யாது?",
+                    en: "1. What is PHP? What is its default file extension?"
+                },
+                ans: {
+                    ta: "PHP (Hypertext Preprocessor) என்பது இயக்கநிலை வலைப்பக்கங்களை உருவாக்கப் பயன்படும் திறந்த மூல சேவையக-பக்க ஸ்கிரிப்டிங் மொழியாகும். இதன் கொடாநிலை கோப்பு நீட்டிப்பு <b><code>.php</code></b> ஆகும்.",
+                    en: "PHP (Hypertext Preprocessor) is an open-source server-side scripting language used to create dynamic web pages. Its default file extension is <b><code>.php</code></b>."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "2. PHP-இல் மாறிகளைப் பெயரிடுவதற்கான விதிமுறைகள் யாவை?",
+                    en: "2. List the rules for naming variables in PHP."
+                },
+                ans: {
+                    ta: "1. மாறியின் பெயர் <code>$</code> குறியுடன் தொடங்க வேண்டும்.<br>2. <code>$</code> குறியை அடுத்து எழுத்து அல்லது அடிக்கோடு (<code>_</code>) மட்டுமே வர வேண்டும் (எண்ணுடன் தொடங்கக் கூடாது).<br>3. மாறிகள் எழுத்து வடிவ உணர்வு கொண்டவை (Case-sensitive).",
+                    en: "1. Must start with a <code>$</code> sign.<br>2. Must be followed by a letter or underscore (<code>_</code>), never a number.<br>3. Variable names are case-sensitive."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "3. PHP-இல் உள்ள அணிகள் (Arrays) வகைகளைப் பட்டியலிடுக.",
+                    en: "3. List the types of Arrays in PHP."
+                },
+                ans: {
+                    ta: "PHP-இல் அணிகள் 3 வகைப்படும்:<br>1. <b>சுட்டெண் வரிசை (Indexed Array)</b><br>2. <b>தொடர்புருத்த வரிசை (Associative Array)</b><br>3. <b>பலபரிமாண வரிசை (Multidimensional Array)</b>",
+                    en: "There are 3 types of arrays in PHP:<br>1. <b>Indexed Arrays</b><br>2. <b>Associative Arrays</b><br>3. <b>Multidimensional Arrays</b>"
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "4. PHP-இல் உள்ள மடக்கு அமைப்புகள் (Looping Structures) யாவை?",
+                    en: "4. What are the looping structures available in PHP?"
+                },
+                ans: {
+                    ta: "1. <code>for</code> மடக்கு<br>2. <code>foreach</code> மடக்கு<br>3. <code>while</code> மடக்கு<br>4. <code>do...while</code> மடக்கு",
+                    en: "1. <code>for</code> loop<br>2. <code>foreach</code> loop<br>3. <code>while</code> loop<br>4. <code>do...while</code> loop"
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "5. echo மற்றும் print கூற்றுகளுக்கு இடையேயான வேறுபாடுகள் யாவை?",
+                    en: "5. Differentiate between echo and print statements in PHP."
+                },
+                ans: {
+                    ta: "• <b>echo:</b> ஒன்றுக்கு மேற்பட்ட சரங்களை (காற்புள்ளியால் பிரித்து) வெளியிட முடியும்; எந்த மதிப்பையும் திருப்பி அனுப்பாது; <code>print</code>-ஐ விட சற்று வேகமானது.<br>• <b>print:</b> ஒரே ஒரு சரத்தை மட்டுமே வெளியிட முடியும்; எப்போதும் <code>1</code> என்ற மதிப்பைத் திருப்பி அனுப்பும்.",
+                    en: "• <b>echo:</b> Can output multiple comma-separated strings, has no return value, and is marginally faster.<br>• <b>print:</b> Accepts only one argument and always returns the integer <code>1</code>."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "6. GET மற்றும் POST வழிமுறைகளை ஒப்பிடுக.",
+                    en: "6. Compare GET and POST methods in HTML/PHP forms."
+                },
+                ans: {
+                    ta: "• <b>GET:</b> தரவுகள் URL முகவரிப் பட்டையில் வெளிப்படையாக அனுப்பப்படும்; ~2048 எழுத்துக்கள் வரை மட்டுமே அனுப்ப இயலும்; பாதுகாப்பற்றது.<br>• <b>POST:</b> தரவுகள் HTTP Request Body-க்குள் மறைமுகமாக அனுப்பப்படும்; தரவு அளவிற்கு வரம்பு இல்லை; கடவுச்சொல் போன்ற இரகசியத் தரவுகளுக்குப் பாதுகாப்பானது.",
+                    en: "• <b>GET:</b> Appends form data to the URL visibly, limited to ~2048 characters, unsuitable for passwords.<br>• <b>POST:</b> Sends data inside the HTTP request body invisibly, has no size limits, and is secure for sensitive inputs."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "7. PHP கோப்பு கையாளுதலில் பயன்படும் முக்கிய செயற்கூறுகளை விளக்குக.",
+                    en: "7. Explain the key file handling functions in PHP."
+                },
+                ans: {
+                    ta: "1. <code>fopen($file, $mode)</code>: கோப்பினை r (படிக்க), w (எழுத), a (சேர்க்க) ஆகிய முறைகளில் திறக்க.<br>2. <code>fwrite($fp, $text)</code>: கோப்பினுள் தரவை எழுத.<br>3. <code>fread($fp, $size)</code>: கோப்பிலிருந்து தரவைப் படிக்க.<br>4. <code>fclose($fp)</code>: திறக்கப்பட்ட கோப்பினை மூட.",
+                    en: "1. <code>fopen($file, $mode)</code>: Opens a file in 'r', 'w', or 'a' mode.<br>2. <code>fwrite($fp, $text)</code>: Writes data into a file.<br>3. <code>fread($fp, $size)</code>: Reads content from an open file.<br>4. <code>fclose($fp)</code>: Closes an open file pointer."
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "8. PHP-இல் உள்ள அணிகளின் (Arrays) வகைகளை எடுத்துக்காட்டுகளுடன் விரிவாக விளக்குக.",
+                    en: "8. Explain the types of Arrays in PHP with syntax and examples."
+                },
+                ans: {
+                    ta: "<b>1. சுட்டெண் வரிசை (Indexed Array):</b> 0, 1, 2... என்ற எண் சுட்டெண்களைக் கொண்டது.<br><code>$a = array(\"Tamil\", \"English\");</code><br><br><b>2. தொடர்புருத்த வரிசை (Associative Array):</b> பயனர் வரையறுத்த திறவுகோல்களை (<code>=></code>) கொண்டது.<br><code>$m = array(\"Tamil\" => 95, \"CS\" => 99);</code><br><br><b>3. பலபரிமாண வரிசை (Multidimensional Array):</b> வரிசைகளுக்குள் வரிசைகளைக் கொண்ட அட்டவணை அமைப்பு.<br><code>$s = array(array(\"Kavin\", 98), array(\"Malar\", 96));</code>",
+                    en: "<b>1. Indexed Array:</b> Uses numeric indices starting at 0.<br><code>$a = array(\"Tamil\", \"English\");</code><br><br><b>2. Associative Array:</b> Maps named keys to values using <code>=></code>.<br><code>$m = array(\"Tamil\" => 95, \"CS\" => 99);</code><br><br><b>3. Multidimensional Array:</b> Nested arrays forming rows and columns.<br><code>$s = array(array(\"Kavin\", 98), array(\"Malar\", 96));</code>"
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "9. PHP-யையும் MySQL தரவுத்தளத்தையும் இணைக்கும் MySQLi செயற்கூறுகளை விளக்குக.",
+                    en: "9. Explain MySQLi functions used to connect PHP with a MySQL database."
+                },
+                ans: {
+                    ta: "1. <b><code>mysqli_connect(\"Server\", \"User\", \"Password\", \"DB_Name\")</code>:</b> 4 அளபுருக்களைக் கொண்டு MySQL சேவையகத்துடன் இணைப்பை ஏற்படுத்தும்.<br>2. <b><code>mysqli_query($conn, $sql)</code>:</b> SELECT, INSERT போன்ற SQL கட்டளைகளை இயக்கும்.<br>3. <b><code>mysqli_fetch_assoc($result)</code>:</b> வினவல் வெளியீட்டிலிருந்து ஒவ்வொரு வரிசையையும் தொடர்புருத்த வரிசையாகப் பெறும்.<br>4. <b><code>mysqli_close($conn)</code>:</b> தரவுத்தள இணைப்பைத் துண்டிக்கும்.",
+                    en: "1. <b><code>mysqli_connect(\"Server\", \"User\", \"Password\", \"DB_Name\")</code>:</b> Opens a database connection using 4 parameters.<br>2. <b><code>mysqli_query($conn, $sql)</code>:</b> Executes SQL statements on the database.<br>3. <b><code>mysqli_fetch_assoc($result)</code>:</b> Fetches each result row as an associative array.<br>4. <b><code>mysqli_close($conn)</code>:</b> Closes the active database connection."
+                }
+            }
+        ];
+
+        // ==========================================
+        // 1-MARK QUIZ MCQs & BUG HUNTER DATA
+        // ==========================================
+        const quizQuestionsData = [
+            {
+                q: { ta: "1. PHP என்பதன் விரிவாக்கம் என்ன?", en: "1. What does PHP stand for?" },
+                options: {
+                    ta: ["Personal Home Page", "Hypertext Preprocessor", "Pretext Hypertext Processor", "Private Hosting Page"],
+                    en: ["Personal Home Page", "Hypertext Preprocessor", "Pretext Hypertext Processor", "Private Hosting Page"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "PHP என்பது 'Hypertext Preprocessor' என்பதன் சுருக்கமாகும்.",
+                    en: "PHP stands for 'Hypertext Preprocessor'."
+                }
+            },
+            {
+                q: { ta: "2. PHP கோப்புகளின் கொடாநிலை (Default) கோப்பு நீட்டிப்பு எது?", en: "2. What is the default file extension for PHP files?" },
+                options: { ta: [".html", ".xml", ".php", ".ph"], en: [".html", ".xml", ".php", ".ph"] },
+                answer: 2,
+                explanation: {
+                    ta: "அனைத்து PHP நிரல் கோப்புகளும் .php என்ற நீட்டிப்புடன் சேமிக்கப்பட வேண்டும்.",
+                    en: "All PHP script files use the .php extension."
+                }
+            },
+            {
+                q: { ta: "3. PHP-இல் அனைத்து மாறிகளும் எந்தக் குறியீட்டுடன் தொடங்க வேண்டும்?", en: "3. All variables in PHP must start with which symbol?" },
+                options: { ta: ["!", "&", "$", "#"], en: ["!", "&", "$", "#"] },
+                answer: 2,
+                explanation: {
+                    ta: "PHP-இல் ஒவ்வொரு மாறியும் $ (Dollar) குறியுடன் தொடங்க வேண்டும் (எ.கா: $marks).",
+                    en: "Every PHP variable identifier starts with the $ symbol."
+                }
+            },
+            {
+                q: { ta: "4. PHP-இல் சரங்களை இணைக்கப் பயன்படும் செயற்குறி எது?", en: "4. Which operator is used for string concatenation in PHP?" },
+                options: { ta: ["+ (Plus)", ". (Dot)", "& (Ampersand)", "* (Asterisk)"], en: ["+ (Plus)", ". (Dot)", "& (Ampersand)", "* (Asterisk)"] },
+                answer: 1,
+                explanation: {
+                    ta: "இரண்டு சரங்களை ஒன்றாக இணைக்க புள்ளி செயற்குறி (.) பயன்படுகிறது.",
+                    en: "The dot (.) operator joins two strings together in PHP."
+                }
+            },
+            {
+                q: { ta: "5. தொடர்புருத்த வரிசையில் (Associative Array) திறவுகோலையும் மதிப்பையும் இணைக்கும் குறியீடு எது?", en: "5. Which symbol associates keys with values in an Associative Array?" },
+                options: { ta: ["->", "=>", "::", "=="], en: ["->", "=>", "::", "=="] },
+                answer: 1,
+                explanation: {
+                    ta: "தொடர்புருத்த வரிசையில் \"Key\" => \"Value\" என => குறியீடு பயன்படுகிறது.",
+                    en: "The double arrow => associates named keys with their values."
+                }
+            },
+            {
+                q: { ta: "6. வரிசைகளில் (Arrays) மட்டுமே செயல்படும் மடக்கு எது?", en: "6. Which loop works exclusively on arrays in PHP?" },
+                options: { ta: ["for", "while", "do...while", "foreach"], en: ["for", "while", "do...while", "foreach"] },
+                answer: 3,
+                explanation: {
+                    ta: "foreach மடக்கு வரிசையின் ஒவ்வொரு உறுப்பையும் எளிதாக அணுகப் பயன்படுகிறது.",
+                    en: "The foreach loop is specifically built to iterate through array elements."
+                }
+            },
+            {
+                q: { ta: "7. வரிசையில் உள்ள மொத்த உறுப்புகளின் எண்ணிக்கையைக் கண்டறியும் செயற்கூறு எது?", en: "7. Which function returns the number of elements in a PHP array?" },
+                options: { ta: ["len()", "count()", "total()", "items()"], en: ["len()", "count()", "total()", "items()"] },
+                answer: 1,
+                explanation: {
+                    ta: "count($array) செயற்கூறு வரிசையின் மொத்த உறுப்புகளின் எண்ணிக்கையைத் தரும்.",
+                    en: "count($array) returns the total count of elements in an array."
+                }
+            },
+            {
+                q: { ta: "8. கடவுச்சொல் போன்ற பாதுகாப்பான படிவத் தரவுகளை அனுப்ப உகந்த வழிமுறை எது?", en: "8. Which form submission method is secure for sending passwords?" },
+                options: { ta: ["GET", "POST", "URL", "HEAD"], en: ["GET", "POST", "URL", "HEAD"] },
+                answer: 1,
+                explanation: {
+                    ta: "POST வழிமுறை தரவுகளை URL-இல் காட்டாமல் HTTP Body வழியே பாதுகாப்பாக அனுப்பும்.",
+                    en: "POST transmits data inside the HTTP request body rather than exposing it in the URL."
+                }
+            },
+            {
+                q: { ta: "9. PHP-இல் ஒரு கோப்பினைத் திறக்கப் பயன்படும் செயற்கூறு எது?", en: "9. Which PHP function is used to open a file?" },
+                options: { ta: ["file_open()", "open()", "fopen()", "readfile()"], en: ["file_open()", "open()", "fopen()", "readfile()"] },
+                answer: 2,
+                explanation: {
+                    ta: "fopen($filename, $mode) கோப்பினைத் திறக்கப் பயன்படுகிறது.",
+                    en: "fopen() opens a file in read, write, or append mode."
+                }
+            },
+            {
+                q: { ta: "10. mysqli_connect() செயற்கூறுக்கு எத்தனை அளபுருக்கள் (Parameters) தேவை?", en: "10. How many parameters does mysqli_connect() require?" },
+                options: { ta: ["2", "3", "4", "5"], en: ["2", "3", "4", "5"] },
+                answer: 2,
+                explanation: {
+                    ta: "Server Name, User Name, Password, DB Name ஆகிய 4 அளபுருக்கள் தேவை.",
+                    en: "It requires 4 parameters: Server Name, Username, Password, and Database Name."
+                }
+            }
+        ];
+
+        const bugChallengesData = [
+            {
+                title: { ta: "சவால் 1: மாறி அறிவிப்பில் பிழை", en: "Challenge 1: Variable Syntax Bug" },
+                desc: { ta: "கீழே உள்ள PHP குறியீட்டில் உள்ள தொடரியல் பிழையைக் கண்டறியவும்:", en: "Identify the syntax error in this PHP snippet:" },
+                code: "<?php\nmarks = 95;\necho \"Marks: \" . $marks;\n?>",
+                options: {
+                    ta: ["marks மாறிக்கு முன்னால் $ குறி ($marks) விடுபட்டுள்ளது", "echo தவறானது", "95-க்கு மேற்கோள் குறி வேண்டும்", "?> வரக்கூடாது"],
+                    en: ["Missing $ sign before variable name ($marks)", "echo keyword is invalid", "95 must be in quotes", "Closing tag is invalid"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "PHP-இல் அனைத்து மாறிகளும் $ குறியுடன் தொடங்க வேண்டும்: `$marks = 95;`",
+                    en: "All PHP variables must begin with a `$` prefix: `$marks = 95;`."
+                }
+            },
+            {
+                title: { ta: "சவால் 2: சர இணைப்புச் செயற்குறி பிழை", en: "Challenge 2: String Concatenation Bug" },
+                desc: { ta: "இரண்டு சரங்களை இணைக்கும் போது ஏற்பட்டுள்ள பிழை எது?", en: "What is wrong with joining these two strings in PHP?" },
+                code: "<?php\n$first = \"Tamil\";\n$second = \"Nadu\";\necho $first + \" \" + $second;\n?>",
+                options: {
+                    ta: ["PHP-இல் சரங்களை இணைக்க + பதிலாக புள்ளி (.) செயற்குறி பயன்படுத்த வேண்டும்", "$first தவறானது", "echo-வில் அடைப்புக்குறி வேண்டும்", "நிரலில் பிழையில்லை"],
+                    en: ["Use dot (.) instead of + to concatenate strings in PHP", "$first is invalid", "echo requires parentheses", "No error"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "PHP-இல் `+` எண்களை மட்டுமே கூட்டும்; சரங்களை இணைக்க புள்ளி (`.`) பயன்படுத்த வேண்டும்: `$first . \" \" . $second`.",
+                    en: "In PHP, `+` performs numeric addition; use `.` for string concatenation."
+                }
+            },
+            {
+                title: { ta: "சவால் 3: தொடர்புருத்த வரிசை பிழை", en: "Challenge 3: Associative Array Operator Bug" },
+                desc: { ta: "கீழே உள்ள தொடர்புருத்த வரிசை அறிவிப்பில் உள்ள பிழை எது?", en: "Spot the syntax bug in this Associative Array:" },
+                code: "<?php\n$age = array(\"Kavin\" -> 17, \"Malar\" -> 16);\necho $age[\"Kavin\"];\n?>",
+                options: {
+                    ta: ["திறவுகோல்-மதிப்பு இணைக்க -> பதிலாக => செயற்குறி வர வேண்டும்", "array() தவறானது", "17 சரமாக இருக்க வேண்டும்", "$age[\"Kavin\"] தவறு"],
+                    en: ["Use => instead of -> to map keys to values in arrays", "array() is deprecated", "17 must be a string", "$age['Kavin'] is wrong"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "தொடர்புருத்த வரிசையில் திறவுகோலையும் மதிப்பையும் இணைக்க `=>` பயன்படுத்த வேண்டும்: `\"Kavin\" => 17`.",
+                    en: "Associative arrays require the double arrow `=>` operator: `\"Kavin\" => 17`."
+                }
+            },
+            {
+                title: { ta: "சவால் 4: கூற்று முடிவில் அரைப்புள்ளி பிழை", en: "Challenge 4: Missing Semicolon Bug" },
+                desc: { ta: "இந்த PHP நிரல் இயக்கப்படும்போது Parse Error ஏன் வருகிறது?", en: "Why does PHP throw a Parse Error on line 3?" },
+                code: "<?php\n$city = \"Erode\"\necho \"City: \" . $city;\n?>",
+                options: {
+                    ta: ["$city = \"Erode\" கூற்றின் முடிவில் அரைப்புள்ளி (;) விடுபட்டுள்ளது", "echo தவறாக எழுதப்பட்டுள்ளது", "$city பெயர் தவறானது", "<?php தவறானது"],
+                    en: ["Missing semicolon (;) at the end of $city = \"Erode\"", "echo is misspelled", "$city is a reserved word", "Opening tag is invalid"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "PHP-இல் ஒவ்வொரு கூற்றின் இறுதியிலும் அரைப்புள்ளி (`;`) கட்டாயம் இடப்பட வேண்டும்.",
+                    en: "Every PHP statement must terminate with a semicolon (`;`)."
+                }
+            }
+        ];
+
+        // ==========================================
+        // RENDER EXAM Q&A, QUIZ & BUGS
+        // ==========================================
+        let currentQAFilter = 'all';
+
+        function renderExamQA(filter = currentQAFilter) {
+            currentQAFilter = filter;
+            const container = document.getElementById('qa-cards-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? examQuestionsData : examQuestionsData.filter(q => q.type === filter);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between';
+
+                const badgeColor = item.type === '2m' ? 'bg-indigo-100 text-indigo-800' : (item.type === '3m' ? 'bg-purple-100 text-purple-800' : 'bg-amber-100 text-amber-800');
+                const badgeLabel = currentLang === 'ta'
+                    ? (item.type === '2m' ? '2 மதிப்பெண்' : (item.type === '3m' ? '3 மதிப்பெண்' : '5 மதிப்பெண்'))
+                    : (item.type === '2m' ? '2 Marks' : (item.type === '3m' ? '3 Marks' : '5 Marks'));
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs px-2.5 py-1 rounded-md font-bold ${badgeColor}">${badgeLabel}</span>
+                            <span class="text-xs text-slate-400 font-semibold"><i class="fa-solid fa-graduation-cap"></i> Class 12 CA</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm sm:text-base mb-3 leading-snug">${item.q[currentLang]}</h4>
+                        <div class="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            ${item.ans[currentLang]}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterQA(type) {
+            playSound('click');
+            ['all', '2m', '3m', '5m'].forEach(t => {
+                const btn = document.getElementById(`qa-btn-${t}`);
+                btn.className = t === type
+                    ? 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-indigo-600 text-white'
+                    : 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+            });
+            renderExamQA(type);
+        }
+
+        let userQuizAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizQuestionsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm transition';
+
+                let optionsHtml = '';
+                item.options[currentLang].forEach((opt, optIndex) => {
+                    const isChecked = userQuizAnswers[index] === optIndex ? 'checked' : '';
+                    optionsHtml += `
+                        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/50 cursor-pointer transition text-xs sm:text-sm">
+                            <input type="radio" name="question_${index}" value="${optIndex}" ${isChecked} onchange="selectQuizOption(${index}, ${optIndex})" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-slate-700 font-medium">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q[currentLang]}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">${optionsHtml}</div>
+                    <div id="feedback-${index}" class="hidden text-xs p-3 rounded-xl"></div>
+                `;
+                container.appendChild(card);
+
+                if (userQuizAnswers[index] !== undefined) {
+                    highlightQuizFeedback(index, userQuizAnswers[index]);
+                }
+            });
+        }
+
+        function selectQuizOption(qIdx, selectedOpt) {
+            userQuizAnswers[qIdx] = selectedOpt;
+            highlightQuizFeedback(qIdx, selectedOpt);
+
+            let score = 0;
+            quizQuestionsData.forEach((q, idx) => {
+                if (userQuizAnswers[idx] === q.answer) score++;
+            });
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function highlightQuizFeedback(qIdx, selectedOpt) {
+            const item = quizQuestionsData[qIdx];
+            const box = document.getElementById(`feedback-${qIdx}`);
+            if (!box) return;
+            box.classList.remove('hidden');
+
+            if (selectedOpt === item.answer) {
+                playSound('success');
+                box.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                box.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'சரியான விடை!' : 'Correct!'}</b> ${item.explanation[currentLang]}`;
+            } else {
+                playSound('error');
+                box.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                box.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'தவறான விடை!' : 'Incorrect!'}</b> ${currentLang === 'ta' ? 'சரியான விடை:' : 'Correct answer:'} <b>${item.options[currentLang][item.answer]}</b>.<br>${item.explanation[currentLang]}`;
+            }
+        }
+
+        function resetQuiz() {
+            playSound('click');
+            userQuizAnswers = {};
+            document.getElementById('current-score').textContent = '0';
+            renderQuiz();
+        }
+
+        function renderBugChallenges() {
+            const container = document.getElementById('bug-cards-container');
+            container.innerHTML = '';
+
+            bugChallengesData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between';
+
+                let optHtml = '';
+                item.options[currentLang].forEach((opt, oIdx) => {
+                    optHtml += `
+                        <button onclick="checkBugChoice(${index}, ${oIdx})" class="text-left p-2.5 rounded-lg border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 transition font-medium">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-slate-900 text-sm sm:text-base">${item.title[currentLang]}</span>
+                            <span class="text-xs bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">${currentLang === 'ta' ? 'PHP பிழை ஆய்வு' : 'PHP Bug Hunt'}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">${item.desc[currentLang]}</p>
+                        <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono mb-4 overflow-x-auto"><code>${item.code}</code></pre>
+                        <div class="space-y-1.5 mb-3 flex flex-col">${optHtml}</div>
+                    </div>
+                    <div id="bug-feedback-${index}" class="hidden text-xs p-3 rounded-xl mt-2 font-medium"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function checkBugChoice(cIdx, choiceIdx) {
+            const ch = bugChallengesData[cIdx];
+            const fb = document.getElementById(`bug-feedback-${cIdx}`);
+            fb.classList.remove('hidden');
+
+            if (choiceIdx === ch.correct) {
+                playSound('success');
+                fb.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                fb.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'மிகச் சரி!' : 'Spot On!'}</b> ${ch.solution[currentLang]}`;
+            } else {
+                playSound('error');
+                fb.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                fb.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'மீண்டும் முயல்க!' : 'Try Again!'}</b> ${ch.solution[currentLang]}`;
+            }
+        }
+
+        // ==========================================
+        // EDITOR PRESETS & DARK/LIGHT THEME SWITCHER
+        // ==========================================
+        const editor = document.getElementById('code-editor');
+        let currentEditorTheme = 'dark';
+
+        function renderPhpPresets() {
+            const sel = document.getElementById('preset-selector');
+            const cur = sel.value || 'ch4Intro';
+            sel.innerHTML = '';
+            for (let key in phpPresets) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = phpPresets[key].name[currentLang];
+                sel.appendChild(opt);
+            }
+            sel.value = cur;
+        }
+
+        function loadPhpPreset(key) {
+            playSound('click');
+            if (phpPresets[key]) {
+                editor.value = phpPresets[key].code;
+                runPhpCode();
+            }
+        }
+
+        function resetEditor() {
+            playSound('click');
+            editor.value = phpPresets.ch4Intro.code;
+            document.getElementById('preset-selector').value = 'ch4Intro';
+            runPhpCode();
+        }
+
+        function clearOutputPanels() {
+            document.getElementById('browser-output').innerHTML = '';
+            document.getElementById('terminal-output').innerHTML = '<div class="text-slate-500">// Output cleared.</div>';
+        }
+
+        function copyCurrentCode() {
+            playSound('click');
+            const textarea = document.createElement('textarea');
+            textarea.value = editor.value;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "PHP நிரல் நகலெடுக்கப்பட்டது!" : "PHP code copied!", "Clipboard");
+        }
+
+        function updateThemeLabelTexts() {
+            const t = UI_TEXT[currentLang];
+            document.getElementById('theme-btn-label').textContent = currentEditorTheme === 'light' ? t.themeLight : t.themeDark;
+            document.getElementById('editor-badge-text').textContent = currentEditorTheme === 'light' ? t.badgeLight : t.badgeDark;
+        }
+
+        function setEditorTheme(theme, notify = false) {
+            currentEditorTheme = theme;
+            try { localStorage.setItem('phpLabTheme', theme); } catch(e) {}
+
+            const container = document.getElementById('editor-container');
+            const header = document.getElementById('editor-header');
+            const titleText = document.getElementById('editor-title-text');
+            const textarea = document.getElementById('code-editor');
+            const footer = document.getElementById('editor-footer');
+            const statusInd = document.getElementById('editor-status-indicator');
+            const btn = document.getElementById('theme-toggle-btn');
+            const btnIcon = document.getElementById('theme-btn-icon');
+            const badge = document.getElementById('editor-badge-theme');
+
+            const termContainer = document.getElementById('terminal-container');
+            const termHeader = document.getElementById('terminal-header');
+            const termOut = document.getElementById('terminal-output');
+
+            if (theme === 'light') {
+                container.className = 'lg:col-span-7 bg-white rounded-2xl p-4 shadow-xl border border-slate-300 flex flex-col h-[570px] transition-all duration-200';
+                header.className = 'flex items-center justify-between pb-3 border-b border-slate-200 text-slate-600 text-xs';
+                titleText.className = 'ml-2 font-mono text-slate-800 font-bold flex items-center gap-1.5';
+                textarea.className = 'w-full h-full bg-white text-slate-900 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 font-medium transition-colors';
+                footer.className = 'pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-[11px] text-slate-600 gap-2';
+                statusInd.className = 'text-emerald-700 font-semibold flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 shadow-sm';
+                btnIcon.className = 'fa-solid fa-sun text-amber-600';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 flex items-center gap-1';
+
+                termContainer.className = 'h-44 bg-slate-100 rounded-2xl p-3.5 border border-slate-300 shadow-inner flex flex-col overflow-hidden transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-1.5 border-b border-slate-300 text-xs text-slate-700 font-mono';
+                termOut.className = 'flex-grow p-2 overflow-y-auto text-xs code-font text-slate-800 space-y-1 bg-white rounded-xl mt-1.5 border border-slate-200';
+            } else {
+                container.className = 'lg:col-span-7 bg-editorDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[570px] transition-all duration-200';
+                header.className = 'flex items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs';
+                titleText.className = 'ml-2 font-mono text-slate-300 font-semibold flex items-center gap-1.5';
+                textarea.className = 'w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors';
+                footer.className = 'pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2';
+                statusInd.className = 'text-emerald-400 flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm';
+                btnIcon.className = 'fa-solid fa-moon text-amber-300';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1';
+
+                termContainer.className = 'h-44 bg-slate-950 rounded-2xl p-3.5 border border-slate-800 shadow-xl flex flex-col overflow-hidden transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-1.5 border-b border-slate-800 text-xs text-slate-400 font-mono';
+                termOut.className = 'flex-grow p-2 overflow-y-auto text-xs code-font text-slate-300 space-y-1 bg-black/50 rounded-xl mt-1.5';
+            }
+
+            updateThemeLabelTexts();
+
+            if (notify) {
+                playSound('click');
+                showToast(theme === 'light' ? "வெண்மை தீமிற்கு (Light Theme) மாற்றப்பட்டது." : "கருப்பு தீமிற்கு (Dark Theme) மாற்றப்பட்டது.", "Theme");
+            }
+        }
+
+        function toggleEditorTheme() {
+            setEditorTheme(currentEditorTheme === 'dark' ? 'light' : 'dark', true);
+        }
+
+        // ==========================================
+        // LANGUAGE TOGGLE & NAVIGATION
+        // ==========================================
+        function updateLocalizedStaticTexts() {
+            const t = UI_TEXT[currentLang];
+            document.getElementById('lbl-header-std').textContent = t.headerStd;
+            document.getElementById('lbl-header-sub').textContent = t.headerSub;
+            document.getElementById('lbl-header-title').textContent = t.headerTitle;
+            document.getElementById('lang-btn-text').textContent = t.langBtn;
+
+            document.getElementById('tab-title-concepts').textContent = t.tabConcepts;
+            document.getElementById('tab-title-simulator').textContent = t.tabSimulator;
+            document.getElementById('tab-title-playground').textContent = t.tabPlayground;
+            document.getElementById('tab-title-qa').textContent = t.tabQA;
+            document.getElementById('tab-title-quiz').textContent = t.tabQuiz;
+
+            document.getElementById('badge-chapter').textContent = t.badgeChapter;
+            document.getElementById('hero-title').textContent = t.heroTitle;
+            document.getElementById('hero-sub').textContent = t.heroSub;
+            document.getElementById('hero-btn-sim').textContent = t.heroBtnSim;
+            document.getElementById('hero-btn-code').textContent = t.heroBtnCode;
+            document.getElementById('lbl-tap-hint').textContent = t.lblTapHint;
+            document.getElementById('lbl-chapters-badge').textContent = t.lblChaptersBadge;
+
+            document.getElementById('ch-btn-all').textContent = t.chAll;
+            document.getElementById('ch-btn-ch4').textContent = t.ch4;
+            document.getElementById('ch-btn-ch5').textContent = t.ch5;
+            document.getElementById('ch-btn-ch67').textContent = t.ch67;
+            document.getElementById('ch-btn-ch89').textContent = t.ch89;
+
+            document.getElementById('sim-heading').textContent = t.simHeading;
+            document.getElementById('sim-subheading').textContent = t.simSubheading;
+            document.getElementById('sim-arr-badge').textContent = t.simArrBadge;
+            document.getElementById('sim-arr-title').textContent = t.simArrTitle;
+            document.getElementById('sim-arr-mem-lbl').textContent = t.simArrMemLbl;
+            document.getElementById('btn-arr-add').textContent = t.btnArrAdd;
+            document.getElementById('sim-arr-code-lbl').textContent = t.simArrCodeLbl;
+            document.getElementById('btn-arr-run').textContent = t.btnArrRun;
+            document.getElementById('sim-form-badge').textContent = t.simFormBadge;
+            document.getElementById('sim-form-title').textContent = t.simFormTitle;
+            document.getElementById('lbl-form-name').textContent = t.lblFormName;
+            document.getElementById('lbl-form-marks').textContent = t.lblFormMarks;
+            document.getElementById('btn-form-submit').textContent = t.btnFormSubmit;
+            document.getElementById('sim-server-php-lbl').textContent = t.simServerPhpLbl;
+
+            document.getElementById('lbl-preset-select').innerHTML = `<i class="fa-brands fa-php text-indigo-600 text-xl"></i> ${t.lblPreset}`;
+            document.getElementById('btn-copy-code').textContent = t.btnCopy;
+            document.getElementById('btn-reset-code').textContent = t.btnReset;
+            document.getElementById('btn-run-code').textContent = t.btnRun;
+            const readyEl = document.getElementById('lbl-editor-ready');
+            if (readyEl) readyEl.textContent = t.lblReady;
+            document.getElementById('lbl-browser-out').textContent = t.lblBrowserOut;
+            document.getElementById('lbl-raw-out').textContent = t.lblRawOut;
+            document.getElementById('lbl-clear-term').textContent = t.clearTerm;
+
+            document.getElementById('qa-heading').textContent = t.qaHeading;
+            document.getElementById('qa-subheading').textContent = t.qaSubheading;
+            document.getElementById('qa-btn-all').textContent = t.qaBtnAll;
+            document.getElementById('qa-btn-2m').textContent = t.qaBtn2m;
+            document.getElementById('qa-btn-3m').textContent = t.qaBtn3m;
+            document.getElementById('qa-btn-5m').textContent = t.qaBtn5m;
+
+            document.getElementById('quiz-heading').textContent = t.quizHeading;
+            document.getElementById('quiz-subheading').textContent = t.quizSubheading;
+            document.getElementById('lbl-score-text').textContent = t.lblScore;
+            document.getElementById('quiz-part1-title').textContent = t.quizP1Title;
+            document.getElementById('bug-part2-title').textContent = t.bugP2Title;
+            document.getElementById('bug-part2-sub').textContent = t.bugP2Sub;
+            document.getElementById('btn-quiz-reset').textContent = t.btnQuizReset;
+
+            document.getElementById('lbl-modal-concept').textContent = t.modalConcept;
+            document.getElementById('lbl-modal-points').textContent = t.modalPoints;
+            document.getElementById('lbl-modal-code').textContent = t.modalCode;
+            document.getElementById('lbl-modal-copy').textContent = t.modalCopy;
+            document.getElementById('lbl-modal-prev').textContent = t.modalPrev;
+            document.getElementById('lbl-modal-next').textContent = t.modalNext;
+            document.getElementById('lbl-modal-close').textContent = t.modalClose;
+            document.getElementById('lbl-modal-run').textContent = t.modalRun;
+            document.getElementById('footer-text').textContent = t.footerText;
+
+            updateThemeLabelTexts();
+        }
+
+        function toggleLanguage() {
+            playSound('click');
+            currentLang = currentLang === 'ta' ? 'en' : 'ta';
+            try { localStorage.setItem('phpLabLang', currentLang); } catch(e) {}
+
+            updateLocalizedStaticTexts();
+            renderTextbookChapters();
+            switchArrayMode(simArrayMode);
+            setFormMethod(simFormMethod);
+            renderPhpPresets();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            if (!document.getElementById('topic-detail-modal').classList.contains('hidden')) {
+                openTopicDetail(currentModalTopicId, false);
+            }
+
+            showToast(currentLang === 'ta' ? "மொழி தமிழாக மாற்றப்பட்டது." : "Language switched to English.", "Language");
+        }
+
+        const allTabs = ['concepts', 'simulator', 'playground', 'qa', 'quiz'];
+        function switchTab(tabId) {
+            playSound('click');
+            allTabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('active-tab');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // TOAST SYSTEM
+        // ==========================================
+        function showToast(message, title = "PHP Lab") {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-body').textContent = message;
+            toast.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+            setTimeout(hideToast, 3200);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast-notification');
+            toast.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+        }
+
+        // ==========================================
+        // IN-BROWSER PHP INTERPRETER & RUNTIME ENGINE
+        // ==========================================
+        function transpilePhpBlock(phpCode) {
+            let code = phpCode;
+
+            // 1. Protect string literals ("..." and '...') so comments/operators inside them aren't corrupted
+            const stringLiterals = [];
+            code = code.replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/g, (match) => {
+                const token = `__STR_TOK_${stringLiterals.length}__`;
+                stringLiterals.push(match);
+                return token;
+            });
+
+            // 2. Remove PHP single-line (// and #) and multi-line (/* ... */) comments
+            code = code.replace(/\/\*[\s\S]*?\*\//g, '');
+            code = code.replace(/\/\/.*$/gm, '');
+            code = code.replace(/#.*$/gm, '');
+
+            // 3. Convert PHP array(...) calls to JS arrays/objects
+            function transformArrayConstructs(str) {
+                let res = str;
+                let idx;
+                while ((idx = res.search(/\barray\s*\(/i)) !== -1) {
+                    const openParen = res.indexOf('(', idx);
+                    let depth = 1;
+                    let i = openParen + 1;
+                    while (i < res.length && depth > 0) {
+                        if (res[i] === '(') depth++;
+                        else if (res[i] === ')') depth--;
+                        i++;
+                    }
+                    const inner = res.slice(openParen + 1, i - 1);
+                    const replacement = inner.includes('=>')
+                        ? `{ ${inner.replace(/=>/g, ':')} }`
+                        : `[ ${inner} ]`;
+                    res = res.slice(0, idx) + replacement + res.slice(i);
+                }
+                return res;
+            }
+            code = transformArrayConstructs(code);
+
+            // Convert square-bracket associative arrays ["k" => "v"] -> {"k": "v"}
+            code = code.replace(/\[([^\[\]]*=>[^\[\]]*)\]/g, (m, inner) => `{ ${inner.replace(/=>/g, ':')} }`);
+
+            // 4. Convert elseif -> else if
+            code = code.replace(/\belseif\b/gi, 'else if');
+
+            // 5. Convert foreach loops:
+            // foreach ($arr as $k => $v) -> for (let [$k, $v] of __phpEntries($arr))
+            code = code.replace(/\bforeach\s*\(\s*(\$[a-zA-Z0-9_]+(?:\[[^\]]+\])?)\s+as\s+(\$[a-zA-Z0-9_]+)\s*=>\s*(\$[a-zA-Z0-9_]+)\s*\)/gi,
+                'for (let [$2, $3] of __phpEntries($1))');
+            // foreach ($arr as $v) -> for (let $v of __phpValues($arr))
+            code = code.replace(/\bforeach\s*\(\s*(\$[a-zA-Z0-9_]+(?:\[[^\]]+\])?)\s+as\s+(\$[a-zA-Z0-9_]+)\s*\)/gi,
+                'for (let $2 of __phpValues($1))');
+
+            // 6. Convert echo and print statements
+            code = code.replace(/\becho\s+([^;]+);/gi, '__echo($1);');
+            code = code.replace(/\bprint\s+([^;]+);/gi, '__echo($1);');
+
+            // 7. Convert die(...) / exit(...)
+            code = code.replace(/\b(die|exit)\s*\(([^)]*)\)\s*;/gi, '{ __echo($2); return; }');
+
+            // 8. Protect decimal numbers (e.g., 3.14) before converting '.' string concatenation
+            const floatLiterals = [];
+            code = code.replace(/\b\d+\.\d+\b/g, (match) => {
+                const tok = `__FLT_TOK_${floatLiterals.length}__`;
+                floatLiterals.push(match);
+                return tok;
+            });
+
+            // Convert .= to += and binary . to + "" +
+            code = code.replace(/\.=/g, '+=');
+            code = code.replace(/\./g, ' + "" + ');
+
+            // Restore float literals
+            floatLiterals.forEach((flt, i) => {
+                code = code.replace(`__FLT_TOK_${i}__`, flt);
+            });
+
+            // 9. Collect variable names assigned in script to hoist 'var $x;' cleanly
+            const assignedVars = new Set();
+            const superGlobals = new Set(['$_GET', '$_POST', '$_SERVER', '$_SESSION', '$_COOKIE', '$_REQUEST', '$_FILES']);
+            const assignMatches = [...code.matchAll(/(\$[a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=|\+=|-=|\*=|\/=)/g)];
+            assignMatches.forEach(m => {
+                if (!superGlobals.has(m[1])) assignedVars.add(m[1]);
+            });
+            const varDeclLine = assignedVars.size > 0 ? `var ${[...assignedVars].join(', ')};\n` : '';
+
+            // 10. Restore string literals (expanding $var interpolation inside double-quoted strings!)
+            stringLiterals.forEach((rawStr, i) => {
+                let processedStr = rawStr;
+                if (rawStr.startsWith('"')) {
+                    const inner = rawStr.slice(1, -1);
+                    if (/\$[a-zA-Z_][a-zA-Z0-9_]*/.test(inner)) {
+                        const escapedBackticks = inner.replace(/`/g, '\\`');
+                        const interpolated = escapedBackticks.replace(/(\$[a-zA-Z_][a-zA-Z0-9_]*(?:\[[^\]]+\])?)/g, '${$1}');
+                        processedStr = '`' + interpolated + '`';
+                    }
+                }
+                code = code.replace(`__STR_TOK_${i}__`, processedStr);
+            });
+
+            // 11. Inject loop protection
+            code = code.replace(/\b(for|while)\s*(\([^{]+\))\s*\{/g, '$1 $2 { __checkLoop(); ');
+            code = code.replace(/\bdo\s*\{/g, 'do { __checkLoop(); ');
+
+            return varDeclLine + code;
+        }
+
+        function runPhpCode() {
+            playSound('run');
+            const startTime = performance.now();
+            const browserOut = document.getElementById('browser-output');
+            const termOut = document.getElementById('terminal-output');
+            browserOut.innerHTML = '';
+            termOut.innerHTML = '';
+
+            let htmlBuffer = '';
+            let rawLogs = [];
+
+            function appendLog(msg, isError = false) {
+                const div = document.createElement('div');
+                div.className = isError ? 'text-rose-400 font-bold' : (currentEditorTheme === 'light' ? 'text-slate-700' : 'text-emerald-300');
+                div.textContent = msg;
+                termOut.appendChild(div);
+            }
+
+            const rawSource = editor.value;
+
+            try {
+                // Split source into HTML segments and <?php ... ?> blocks
+                const parts = rawSource.split(/(<\?php[\s\S]*?(?:\?>|$))/gi);
+                let assembledJs = '';
+
+                parts.forEach(part => {
+                    if (!part) return;
+                    if (/^<\?php/i.test(part)) {
+                        const innerPhp = part.replace(/^<\?php/i, '').replace(/\?>$/, '');
+                        assembledJs += transpilePhpBlock(innerPhp) + '\n';
+                    } else {
+                        // Plain HTML outside <?php ?> tags
+                        assembledJs += `__echo(${JSON.stringify(part)});\n`;
+                    }
+                });
+
+                // Build PHP Standard Library Runtime Helpers
+                const runtimeHelpers = `
+                    let __guard = 0;
+                    function __checkLoop() {
+                        if (++__guard > 150000) throw new Error("Infinite loop detected (>150,000 iterations).");
+                    }
+                    function __echo(...args) {
+                        for (let a of args) {
+                            if (a !== undefined && a !== null) {
+                                htmlBuffer += String(a);
+                            }
+                        }
+                    }
+                    function __phpEntries(arr) {
+                        if (!arr || typeof arr !== 'object') return [];
+                        return Array.isArray(arr) ? Array.from(arr.entries()) : Object.entries(arr);
+                    }
+                    function __phpValues(arr) {
+                        if (!arr || typeof arr !== 'object') return [];
+                        return Array.isArray(arr) ? arr : Object.values(arr);
+                    }
+                    function define(name, val) {
+                        globalThis[name] = val;
+                        return true;
+                    }
+                    function count(arr) {
+                        if (!arr) return 0;
+                        return Array.isArray(arr) ? arr.length : Object.keys(arr).length;
+                    }
+                    const sizeof = count;
+                    function strlen(s) { return String(s).length; }
+                    function strrev(s) { return String(s).split('').reverse().join(''); }
+                    function strtoupper(s) { return String(s).toUpperCase(); }
+                    function strtolower(s) { return String(s).toLowerCase(); }
+                    function str_replace(find, rep, subj) { return String(subj).split(find).join(rep); }
+                    function trim(s) { return String(s).trim(); }
+                    function sqrt(n) { return Math.sqrt(Number(n)); }
+                    function round(n, p = 0) {
+                        const f = Math.pow(10, p);
+                        return Math.round(Number(n) * f) / f;
+                    }
+                    function abs(n) { return Math.abs(Number(n)); }
+                    function pow(b, e) { return Math.pow(Number(b), Number(e)); }
+                    function max(...a) { return Math.max(...a.flat()); }
+                    function min(...a) { return Math.min(...a.flat()); }
+                    function rand(minVal = 0, maxVal = 100) {
+                        return Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+                    }
+                    function date(fmt = "Y-m-d") {
+                        const now = new Date();
+                        const pad = (n) => String(n).padStart(2, '0');
+                        return fmt
+                            .replace('Y', now.getFullYear())
+                            .replace('m', pad(now.getMonth() + 1))
+                            .replace('d', pad(now.getDate()))
+                            .replace('H', pad(now.getHours()))
+                            .replace('i', pad(now.getMinutes()))
+                            .replace('s', pad(now.getSeconds()));
+                    }
+                    function empty(v) {
+                        return v === undefined || v === null || v === '' || v === 0 || v === false || (Array.isArray(v) && v.length === 0);
+                    }
+                    function isset(v) { return v !== undefined && v !== null; }
+                    function is_array(v) { return Array.isArray(v) || (typeof v === 'object' && v !== null); }
+                    function htmlspecialchars(s) {
+                        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                    }
+                    function var_dump(v) {
+                        const t = Array.isArray(v) ? 'array' : typeof v;
+                        __echo(\`<span class="font-mono text-xs text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">\${t}(\${JSON.stringify(v)})</span><br>\`);
+                    }
+                    function print_r(v) {
+                        __echo(\`<pre class="text-xs font-mono bg-slate-100 p-2 rounded">\${JSON.stringify(v, null, 2)}</pre>\`);
+                    }
+
+                    // Virtual File System for Chapter 8 File Handling
+                    const __vfs = {};
+                    function fopen(filename, mode) {
+                        if (mode === 'w') __vfs[filename] = '';
+                        else if (!(filename in __vfs)) __vfs[filename] = '';
+                        return { filename, mode, pos: 0 };
+                    }
+                    function fwrite(fp, text) {
+                        if (!fp) return 0;
+                        __vfs[fp.filename] = (__vfs[fp.filename] || '') + String(text);
+                        return String(text).length;
+                    }
+                    function fread(fp, length) {
+                        if (!fp) return '';
+                        const content = __vfs[fp.filename] || '';
+                        return content.slice(0, length);
+                    }
+                    function filesize(filename) {
+                        return (__vfs[filename] || '').length;
+                    }
+                    function fclose(fp) { return true; }
+                    function file_exists(filename) { return filename in __vfs; }
+
+                    // Simulated MySQLi Engine for Chapter 9 PHP + MySQL
+                    const __mockDbRows = [
+                        { roll_no: 1201, name: "கவின் (Kavin)", marks: 98 },
+                        { roll_no: 1202, name: "மலர் (Malar)", marks: 96 },
+                        { roll_no: 1203, name: "அருண் (Arun)", marks: 91 },
+                        { roll_no: 1204, name: "திவ்யா (Divya)", marks: 99 }
+                    ];
+                    function mysqli_connect(host, user, pass, db) {
+                        return { connected: true, host, user, db: db || "Student_DB" };
+                    }
+                    function mysqli_connect_error() { return ""; }
+                    function mysqli_query(conn, sql) {
+                        return { rows: [...__mockDbRows], cursor: 0 };
+                    }
+                    function mysqli_fetch_assoc(res) {
+                        if (!res || res.cursor >= res.rows.length) return null;
+                        return res.rows[res.cursor++];
+                    }
+                    function mysqli_num_rows(res) { return res ? res.rows.length : 0; }
+                    function mysqli_close(conn) { return true; }
+
+                    // Superglobals
+                    var $_GET = {};
+                    var $_POST = {};
+                    var $_SERVER = { REQUEST_METHOD: "POST", SERVER_NAME: "localhost" };
+                `;
+
+                const executor = new Function('htmlBufferRef', `
+                    let htmlBuffer = "";
+                    ${runtimeHelpers}
+                    (function() {
+                        ${assembledJs}
+                    })();
+                    return htmlBuffer;
+                `);
+
+                htmlBuffer = executor();
+                browserOut.innerHTML = htmlBuffer || '<span class="text-slate-400 italic text-xs">// No HTML output generated.</span>';
+
+                const plainText = browserOut.innerText.trim();
+                const elapsed = (performance.now() - startTime).toFixed(2);
+                appendLog(`[OK] PHP 8.2 Executed in ${elapsed}ms`);
+                if (plainText) appendLog(plainText);
+                playSound('success');
+
+            } catch (err) {
+                playSound('error');
+                browserOut.innerHTML = `<div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono"><b>PHP Parse / Runtime Error:</b> ${err.message}</div>`;
+                appendLog(`[PHP Error]: ${err.message}`, true);
+            }
+        }
+
+        // ==========================================
+        // INITIALIZATION ON LOAD
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('phpLabLang');
+                if (savedLang === 'en' || savedLang === 'ta') currentLang = savedLang;
+            } catch(e) {}
+
+            try {
+                const savedTheme = localStorage.getItem('phpLabTheme') || 'dark';
+                setEditorTheme(savedTheme, false);
+            } catch(e) {
+                setEditorTheme('dark', false);
+            }
+
+            updateLocalizedStaticTexts();
+            renderTextbookChapters();
+            switchArrayMode('indexed');
+            setFormMethod('GET');
+            renderPhpPresets();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            editor.value = phpPresets.ch4Intro.code;
+            runPhpCode();
+        });
+    </script>
+</body>
+</html>
