@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>12th Computer Science Memory Challenge (தமிழ் & English)</title>
+
+  <!-- Google Fonts for crisp Tamil & English Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tamil: ['"Mukta Malar"', 'Latha', 'system-ui', 'sans-serif'],
+            display: ['"Outfit"', '"Mukta Malar"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: 'Mukta Malar', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      background-color: #070b13;
+      color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 3D Perspective Card Flip */
+    .perspective-container {
+      perspective: 900px;
+    }
+    .card-flip-inner {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .card-flip-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .card-face-front, .card-face-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .card-face-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Exploding and disappearing card animation */
+    @keyframes cardBurstDisappear {
+      0% {
+        transform: rotateY(180deg) scale(1);
+        filter: brightness(1);
+        opacity: 1;
+      }
+      35% {
+        transform: rotateY(180deg) scale(1.15);
+        filter: brightness(1.8) drop-shadow(0 0 25px rgba(52, 211, 153, 0.9));
+      }
+      100% {
+        transform: rotateY(180deg) scale(0.02);
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+    .card-exploded {
+      animation: cardBurstDisappear 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+      pointer-events: none !important;
+    }
+    .card-vacant-slot {
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+
+    /* Hint Highlight Glow */
+    @keyframes hintPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.85); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+    }
+    .hint-highlight {
+      animation: hintPulse 0.5s ease-in-out 3;
+      border-color: #fbbf24 !important;
+      z-index: 25;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col justify-between min-h-screen">
+
+  <!-- TOP HEADER & CONTROLS -->
+  <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-3 py-2 sm:px-5 sm:py-2.5 shadow-xl w-full">
+    <div class="w-full flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+      
+      <!-- Brand Details -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-base sm:text-lg shadow-lg shadow-cyan-500/25 border border-cyan-400/30">
+            💻
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 id="appTitle" class="font-extrabold text-sm sm:text-base md:text-lg text-white tracking-wide">
+                12-ஆம் வகுப்பு கணினி அறிவியல் மெமரி சேலஞ்ச்
+              </h1>
+              <span id="appBadge" class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-700/60">
+                10 வினாக்கள் பயிற்சி
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Quick Icons -->
+        <div class="lg:hidden flex items-center gap-1.5">
+          <button onclick="toggleLanguage()" class="px-2 py-1 rounded-lg bg-cyan-700 text-white font-bold text-xs shadow">🌐 EN/தமிழ்</button>
+          <button onclick="toggleInstructionsModal()" class="p-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 text-xs">ℹ️</button>
+          <button onclick="downloadSelfHtml()" class="p-1.5 rounded-lg bg-emerald-700 text-white font-bold text-xs">📥</button>
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="flex items-center flex-wrap gap-1.5 sm:gap-2">
+        
+        <!-- BILINGUAL TOGGLE BUTTON -->
+        <button id="langToggleBtn" onclick="toggleLanguage()" 
+                class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border border-cyan-300/50 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold shadow-md transition active:scale-95 flex items-center gap-1.5">
+          <span>🌐</span>
+          <span id="langToggleLabel">English Mode</span>
+        </button>
+
+        <!-- Level Dropdown Selector (All 5 Levels) -->
+        <div class="relative flex-1 sm:flex-none">
+          <select id="levelSelect" onchange="changeLevel(parseInt(this.value))" 
+                  class="w-full sm:w-auto bg-slate-800 text-cyan-300 border border-cyan-500/50 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-bold focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer shadow-inner">
+            <!-- Populated dynamically based on selected language -->
+          </select>
+        </div>
+
+        <!-- Hint Button -->
+        <button id="hintBtn" onclick="triggerHint()" 
+                class="flex items-center gap-1 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition active:scale-95 shadow-sm">
+          <span id="hintLabel">💡 உதவி</span>
+          <span id="hintCountBadge" class="bg-amber-400 text-slate-950 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center">3</span>
+        </button>
+
+        <!-- Revision Sheet Modal Toggle -->
+        <button id="studyBtn" onclick="openStudyModal()" 
+                class="bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/40 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition">
+          📖 வினாக்குறிப்புகள்
+        </button>
+
+        <!-- Sound Toggle -->
+        <button id="soundToggle" onclick="toggleSound()" 
+                class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition">
+          <span id="soundIcon">🔊 ஒலி: ஆன்</span>
+        </button>
+
+        <!-- Fullscreen Button -->
+        <button id="fullscreenBtn" onclick="toggleFullscreen()" 
+                class="hidden lg:inline-flex bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2 sm:px-2.5 py-1 rounded-lg text-xs font-bold transition">
+          ⛶ முழுத்திரை
+        </button>
+
+        <!-- Direct Save HTML Button -->
+        <button id="downloadBtn" onclick="downloadSelfHtml()" 
+                class="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-extrabold shadow-md transition active:scale-95 flex items-center gap-1">
+          <span>📥 பதிவிறக்கு</span>
+        </button>
+
+        <!-- Restart Button -->
+        <button id="resetBtn" onclick="restartGame()" 
+                class="bg-rose-600 hover:bg-rose-500 text-white px-2.5 sm:px-3 py-1 rounded-lg text-xs font-bold shadow-md transition active:scale-95">
+          🔄 ரீசெட்
+        </button>
+      </div>
+    </div>
+
+    <!-- QUICK STATS BAR -->
+    <div class="mt-2 pt-1.5 border-t border-slate-800/80 flex items-center justify-between sm:justify-end gap-3 sm:gap-6 text-xs sm:text-sm font-mono">
+      <div class="flex items-center gap-1 text-slate-400">
+        <span id="statTimeLabel">⏱️ நேரம்:</span>
+        <span id="timerDisplay" class="font-bold text-cyan-300">00:00</span>
+      </div>
+      <div class="flex items-center gap-1 text-slate-400">
+        <span id="statMovesLabel">🎯 நகர்வுகள்:</span>
+        <span id="movesDisplay" class="font-bold text-white">0</span>
+      </div>
+      <div class="flex items-center gap-1 text-slate-400">
+        <span id="statMatchesLabel">✅ பொருத்தங்கள்:</span>
+        <span id="matchesDisplay" class="font-bold text-emerald-400">0 / 10</span>
+      </div>
+      <div class="flex items-center gap-1 text-slate-400">
+        <span id="statScoreLabel">⭐ மதிப்பெண்:</span>
+        <span id="scoreDisplay" class="font-bold text-amber-300">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN PLAY AREA: EXPANDED LARGE Q&A ON LEFT, COMPACT CARDS ON RIGHT -->
+  <main class="w-full px-2 sm:px-4 py-2.5 flex-1 flex flex-col lg:flex-row gap-3 sm:gap-4 items-start">
+
+    <!-- LEFT SIDE: HIGHLY EXPANDED QUESTION & ANSWER SECTION -->
+    <aside class="w-full lg:w-[68%] xl:w-[72%] flex flex-col gap-3 flex-1 order-2 lg:order-1">
+
+      <!-- QUESTION DISPLAY CONTAINER (PROMINENT & LARGE) -->
+      <div id="qBox" 
+           class="w-full bg-gradient-to-br from-slate-900 via-indigo-950/30 to-slate-900 border-2 border-indigo-500/40 hover:border-indigo-400/80 rounded-2xl p-4 sm:p-5 shadow-2xl transition-all duration-300 relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-cyan-400 to-indigo-500 opacity-60"></div>
+        
+        <div class="flex items-start gap-3 sm:gap-4">
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-indigo-600/30 border border-indigo-400/50 flex items-center justify-center text-xl sm:text-2xl shadow-inner shrink-0 text-indigo-300">
+            ❓
+          </div>
+          <div class="flex-1 min-w-0">
+            <span id="qBoxHeading" class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-indigo-400/90 mb-1 block">வினா விவரம் (QUESTION)</span>
+            <div id="qCardText" class="text-sm sm:text-lg md:text-xl font-bold text-slate-100 leading-relaxed break-words">
+              வலது பலகையிலுள்ள ஏதேனும் ஓர் அட்டையைத் தேர்ந்தெடுக்கவும்...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANSWER DISPLAY CONTAINER (PROMINENT & LARGE) -->
+      <div id="aBox" 
+           class="w-full bg-gradient-to-br from-slate-900 via-emerald-950/30 to-slate-900 border-2 border-emerald-500/40 hover:border-emerald-400/80 rounded-2xl p-4 sm:p-5 shadow-2xl transition-all duration-300 relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-300 to-emerald-500 opacity-60"></div>
+
+        <div class="flex items-start gap-3 sm:gap-4">
+          <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-600/30 border border-emerald-400/50 flex items-center justify-center text-xl sm:text-2xl shadow-inner shrink-0 text-emerald-300">
+            💡
+          </div>
+          <div class="flex-1 min-w-0">
+            <span id="aBoxHeading" class="text-[10px] sm:text-xs font-black uppercase tracking-wider text-emerald-400/90 mb-1 block">பொருத்தமான விடை (ANSWER)</span>
+            <div id="aCardText" class="text-sm sm:text-lg md:text-xl font-bold text-emerald-200 leading-relaxed break-words">
+              அதற்குப் பொருத்தமான மற்றொரு விடை அட்டையைத் திறக்கவும்...
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT SIDE: COMPACT 20-CARDS GRID (4 ROWS × 5 COLUMNS) -->
+    <section class="w-full lg:w-[32%] xl:w-[28%] bg-slate-900/85 p-2 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-start order-1 lg:order-2">
+      <div class="flex items-center justify-between mb-2 px-1">
+        <div class="flex items-center gap-1.5">
+          <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span id="gridTitle" class="font-bold text-[11px] sm:text-xs text-slate-300">அட்டைகள் (4 × 5 = 20)</span>
+        </div>
+        <span id="gridPairsBadge" class="text-[10px] font-bold text-cyan-300 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800/60">10 ஜோடிகள்</span>
+      </div>
+
+      <!-- Compact 4x5 Cards Grid -->
+      <div id="cardsGrid" 
+           class="grid grid-cols-5 gap-1.5 select-none w-full">
+        <!-- Cards injected dynamically via JavaScript -->
+      </div>
+      <p id="gridSubNote" class="text-[9.5px] text-slate-500 text-center mt-2 font-medium">பொருந்திய ஜோடிகள் வெடித்து வெற்றிடமாகும்</p>
+    </section>
+
+  </main>
+
+  <!-- INSTRUCTIONS MODAL -->
+  <div id="instructionModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-cyan-500/60 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🎮</span>
+          <h3 id="instTitle" class="font-extrabold text-base sm:text-lg text-cyan-300">விளையாடும் முறை</h3>
+        </div>
+        <button onclick="toggleInstructionsModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+      </div>
+      <ul id="instList" class="text-xs sm:text-sm text-slate-300 space-y-2.5 leading-relaxed">
+        <!-- Populated dynamically -->
+      </ul>
+      <div class="mt-4 pt-3 border-t border-slate-800 flex justify-end">
+        <button id="instStartBtn" onclick="toggleInstructionsModal()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-extrabold py-2 px-4 rounded-xl text-xs sm:text-sm transition shadow-lg shadow-cyan-600/30">
+          விளையாட்டைத் தொடங்கு!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VICTORY MODAL -->
+  <div id="winModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-amber-400 rounded-2xl max-w-md w-full p-6 text-center shadow-2xl relative overflow-hidden">
+      <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-full flex items-center justify-center text-3xl shadow-lg shadow-amber-400/30">
+        🏆
+      </div>
+      
+      <h3 class="text-xl sm:text-2xl font-black text-white" id="modalTitle">அற்புதம்! முழு வெற்றி!</h3>
+      <p class="text-sm text-cyan-300 mt-1 font-bold" id="modalLevelName">படிநிலை 1 நிறைவுற்றது</p>
+      
+      <div class="grid grid-cols-3 gap-2 my-5 bg-slate-950 p-3 rounded-xl border border-slate-800">
+        <div>
+          <span id="modalTimeLabel" class="block text-xs text-slate-400">நேரம்</span>
+          <span id="modalTime" class="font-mono font-bold text-white text-sm sm:text-base">00:00</span>
+        </div>
+        <div>
+          <span id="modalMovesLabel" class="block text-xs text-slate-400">நகர்வுகள்</span>
+          <span id="modalMoves" class="font-bold text-cyan-400 text-sm sm:text-base">0</span>
+        </div>
+        <div>
+          <span id="modalScoreLabel" class="block text-xs text-slate-400">மதிப்பெண்</span>
+          <span id="modalScore" class="font-bold text-amber-400 text-sm sm:text-base">0</span>
+        </div>
+      </div>
+
+      <p id="modalDesc" class="text-xs text-slate-300 mb-5 leading-relaxed">
+        அனைத்து 10 வினா-விடைகளையும் மிகச் சரியாகப் பொருத்தி சாதனை படைத்துவிட்டீர்கள்!
+      </p>
+
+      <div class="flex items-center justify-center gap-3">
+        <button id="modalReplayBtn" onclick="restartGame()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition">
+          மீண்டும் ஆட 🔄
+        </button>
+        <button id="nextLevelBtn" onclick="goToNextLevel()" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs sm:text-sm shadow-lg shadow-emerald-500/30 transition">
+          அடுத்த படிநிலை ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVISION STUDY SHEET MODAL -->
+  <div id="studyModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 hidden">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-3 sm:p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/80">
+        <div>
+          <h3 id="studyModalTitle" class="font-bold text-sm sm:text-base md:text-lg text-cyan-300">வினா-விடை விரைவுப் பார்வை</h3>
+          <p id="studyModalSub" class="text-[11px] text-slate-400">தேர்வுக்கு முன் விரைவாக வாசித்துத் திருப்புதல் செய்ய</p>
+        </div>
+        <button onclick="closeStudyModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-base flex items-center justify-center">
+          ✕
+        </button>
+      </div>
+
+      <div id="studyModalBody" class="p-3 sm:p-4 overflow-y-auto space-y-2.5 flex-1">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="p-3 border-t border-slate-800 bg-slate-950/90 flex justify-end gap-2">
+        <button id="printBtn" onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200">
+          🖨️ அச்சிடு (Print)
+        </button>
+        <button id="closeStudyBtn" onclick="closeStudyModal()" class="px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-xs font-extrabold text-white">
+          விளையாட்டிற்கு திரும்பு
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 border-t border-slate-900 py-2 px-4 text-center text-[10.5px] text-slate-500">
+    <p id="footerText">12-ஆம் வகுப்பு கணினி அறிவியல் • தமிழ்நாடு அரசுப் பாடத்திட்டம் (தமிழ் & English) • 10 வினாக்கள் வீதம் 5 படிநிலைகள்</p>
+  </footer>
+
+  <script>
+    // UI Localization Dictionary (Tamil & English)
+    const UI_STRINGS = {
+      ta: {
+        appTitle: "12-ஆம் வகுப்பு கணினி அறிவியல் மெமரி சேலஞ்ச்",
+        appBadge: "10 வினாக்கள் பயிற்சி",
+        langToggleLabel: "English Mode",
+        hintLabel: "💡 உதவி",
+        studyBtn: "📖 வினாக்குறிப்புகள்",
+        soundOn: "🔊 ஒலி: ஆன்",
+        soundOff: "🔇 ஒலி: ஆஃப்",
+        fullscreenBtn: "⛶ முழுத்திரை",
+        downloadBtn: "📥 பதிவிறக்கு",
+        resetBtn: "🔄 ரீசெட்",
+        statTimeLabel: "⏱️ நேரம்:",
+        statMovesLabel: "🎯 நகர்வுகள்:",
+        statMatchesLabel: "✅ பொருத்தங்கள்:",
+        statScoreLabel: "⭐ மதிப்பெண்:",
+        qBoxHeading: "வினா விவரம் (QUESTION)",
+        aBoxHeading: "பொருத்தமான விடை (ANSWER)",
+        qPlaceholder: "வலது பலகையிலுள்ள ஏதேனும் ஓர் அட்டையைத் தேர்ந்தெடுக்கவும்...",
+        aPlaceholder: "அதற்குப் பொருத்தமான மற்றொரு விடை அட்டையைத் திறக்கவும்...",
+        gridTitle: "அட்டைகள் (4 × 5 = 20)",
+        gridPairsBadge: "10 ஜோடிகள்",
+        gridSubNote: "பொருந்திய ஜோடிகள் வெடித்து வெற்றிடமாகும்",
+        cardQLabel: "வினா",
+        cardALabel: "விடை",
+        cardMatchPrompt: "பொருத்துக",
+        cardMatchedOk: "✓ சரி",
+        instTitle: "விளையாடும் முறை",
+        instItems: [
+          "ஒவ்வொரு நிலையிலும் 10 வினாக்களும் 10 விடைகளும் கலந்து மொத்தம் <strong>20 அட்டைகளாக (4 × 5)</strong> இருக்கும்.",
+          "வலது பலகையிலுள்ள ஏதேனும் ஓர் அட்டையைத் திருப்பியதும், இடதுபுறம் வினா/விடை பெரிதாகத் தெளிவாகக் காட்சி தரும்.",
+          "சரியான வினா மற்றும் விடை ஜோடி பொருந்தினால், மலர்கள் சிதறி வெடித்து அவ்விரு அட்டைகளும் வெற்றிடமாகும்.",
+          "மேல் பட்டையிலுள்ள <strong>'🌐 English Mode'</strong> பொத்தானை அழுத்தி எப்போது வேண்டுமானாலும் மொழியை மாற்றலாம்."
+        ],
+        instStartBtn: "விளையாட்டைத் தொடங்கு!",
+        modalTitle: "அற்புதம்! முழு வெற்றி!",
+        modalLevelSuffix: "நிறைவுற்றது!",
+        modalTimeLabel: "நேரம்",
+        modalMovesLabel: "நகர்வுகள்",
+        modalScoreLabel: "மதிப்பெண்",
+        modalDesc: "அனைத்து 10 வினா-விடைகளையும் மிகச் சரியாகப் பொருத்தி சாதனை படைத்துவிட்டீர்கள்!",
+        modalReplayBtn: "மீண்டும் ஆட 🔄",
+        modalNextBtn: "அடுத்த படிநிலை",
+        modalRestartFirstBtn: "மீண்டும் முதல் படிநிலைக்கு 🔁",
+        studyModalSuffix: "10 வினா & விடைக் குறிப்புகள்",
+        studyModalSub: "தேர்வுக்கு முன் விரைவாக வாசித்துத் திருப்புதல் செய்ய",
+        studyQPrefix: "வினா",
+        studyAPrefix: "விடை:",
+        printBtn: "🖨️ அச்சிடு (Print)",
+        closeStudyBtn: "விளையாட்டிற்கு திரும்பு",
+        footerText: "12-ஆம் வகுப்பு கணினி அறிவியல் • தமிழ்நாடு அரசுப் பாடத்திட்டம் (தமிழ் & English) • 10 வினாக்கள் வீதம் 5 படிநிலைகள்"
+      },
+      en: {
+        appTitle: "12th Computer Science Memory Challenge",
+        appBadge: "10 Questions Practice",
+        langToggleLabel: "தமிழ் வழி",
+        hintLabel: "💡 Hint",
+        studyBtn: "📖 Study Notes",
+        soundOn: "🔊 Sound: ON",
+        soundOff: "🔇 Sound: OFF",
+        fullscreenBtn: "⛶ Fullscreen",
+        downloadBtn: "📥 Download",
+        resetBtn: "🔄 Reset",
+        statTimeLabel: "⏱️ Time:",
+        statMovesLabel: "🎯 Moves:",
+        statMatchesLabel: "✅ Matches:",
+        statScoreLabel: "⭐ Score:",
+        qBoxHeading: "QUESTION DETAILS",
+        aBoxHeading: "MATCHING ANSWER",
+        qPlaceholder: "Select any card from the right-hand grid...",
+        aPlaceholder: "Flip another card to find its matching answer...",
+        gridTitle: "Cards Grid (4 × 5 = 20)",
+        gridPairsBadge: "10 Pairs",
+        gridSubNote: "Matched pairs burst and leave vacant slots",
+        cardQLabel: "Q",
+        cardALabel: "Ans",
+        cardMatchPrompt: "Match",
+        cardMatchedOk: "✓ Done",
+        instTitle: "How to Play",
+        instItems: [
+          "Each level contains 10 questions and 10 answers shuffled into <strong>20 cards (4 × 5 grid)</strong>.",
+          "Click any card on the right grid to flip it; the full question or answer appears clearly on the left.",
+          "When a matching question and answer pair is found, flowers burst and the slots become vacant.",
+          "Click <strong>'🌐 தமிழ் வழி'</strong> anytime on the top bar to switch between Tamil and English instantly."
+        ],
+        instStartBtn: "Start Playing!",
+        modalTitle: "Awesome! Level Cleared!",
+        modalLevelSuffix: "Completed!",
+        modalTimeLabel: "Time",
+        modalMovesLabel: "Moves",
+        modalScoreLabel: "Score",
+        modalDesc: "You have accurately matched all 10 question-answer pairs!",
+        modalReplayBtn: "Play Again 🔄",
+        modalNextBtn: "Next Level",
+        modalRestartFirstBtn: "Back to Level 1 🔁",
+        studyModalSuffix: "10 Q&A Quick Revision",
+        studyModalSub: "Quickly read and revise before your exam",
+        studyQPrefix: "Q",
+        studyAPrefix: "Ans:",
+        printBtn: "🖨️ Print Notes",
+        closeStudyBtn: "Back to Game",
+        footerText: "12th Standard Computer Science • Tamil Nadu State Board (Tamil & English) • 5 Levels (10 Questions Each)"
+      }
+    };
+
+    // 12th Standard Computer Science Bilingual Q&A Dataset (Tamil & English)
+    const LEVELS_DATA = {
+      1: {
+        name: {
+          ta: "படிநிலை 1: 1-மதிப்பெண் (10 வினாக்கள்)",
+          en: "Level 1: 1-Mark Questions (10 Qs)"
+        },
+        pairs: [
+          {
+            id: 1,
+            q: { ta: "ஒரு குறிப்பிட்ட செயலைச் செய்வதற்காக வடிவமைக்கப்பட்ட நிரலின் சிறிய பகுதி எது?", en: "What are small sections of code designed to perform a particular task?" },
+            a: { ta: "துணை நிரல்கள் (Subroutines)", en: "Subroutines" }
+          },
+          {
+            id: 2,
+            q: { ta: "மாறியின் பெயரை ஒரு பொருளுடன் இணைக்கும் செயல்முறை எவ்வாறு அழைக்கப்படும்?", en: "What is the process of binding a variable name with an object called?" },
+            a: { ta: "மேப்பிங் (Mapping)", en: "Mapping" }
+          },
+          {
+            id: 3,
+            q: { ta: "பைத்தானில் அடுக்குச் செயல்பாட்டிற்கான (Exponentiation) செயற்குறி எது?", en: "Which operator is used for Exponentiation in Python?" },
+            a: { ta: "** (இரட்டைப் பெருக்கல் செயற்குறி)", en: "** (Double Asterisk Operator)" }
+          },
+          {
+            id: 4,
+            q: { ta: "லீனியர் சர்ச் (Linear Search) நெறிமுறையின் மிகச்சிறந்த நேரச் சிக்கல் என்ன?", en: "What is the best-case time complexity of Linear Search algorithm?" },
+            a: { ta: "O(1)", en: "O(1)" }
+          },
+          {
+            id: 5,
+            q: { ta: "பைத்தானில் பயனர் வரையறுக்கும் செயற்கூறை உருவாக்கப் பயன்படும் சிறப்புச் சொல் எது?", en: "Which keyword is used to define a user-defined function in Python?" },
+            a: { ta: "def", en: "def" }
+          },
+          {
+            id: 6,
+            q: { ta: "சரம் ஒன்று தனக்குள் மற்றொரு சரத்தைக் கொண்டுள்ளதா எனப் பார்க்க உதவும் செயற்குறி எது?", en: "Which operator checks whether a string contains another substring?" },
+            a: { ta: "in / not in (உறுப்பினர் செயற்குறி)", en: "in / not in (Membership Operators)" }
+          },
+          {
+            id: 7,
+            q: { ta: "range(2, 10, 2) என்பதன் சரியான பட்டியல் வெளியீடு எது?", en: "What is the exact list output of range(2, 10, 2) in Python?" },
+            a: { ta: "[2, 4, 6, 8]", en: "[2, 4, 6, 8]" }
+          },
+          {
+            id: 8,
+            q: { ta: "பைத்தானில் மாற்றியமைக்க முடியாத (Immutable) அடைப்புக் குறியீட்டுத் தொடர் தரவுவகை எது?", en: "Which sequence data type in Python is enclosed in parentheses and immutable?" },
+            a: { ta: "Tuple (டியூப்பிள்)", en: "Tuple" }
+          },
+          {
+            id: 9,
+            q: { ta: "இனக்குழுவின் பொருளை உருவாக்கும்போது தானாகவே இயக்கப்படும் சிறப்புக் கன்ஸ்ட்ரக்டர் முறை எது?", en: "Which special constructor method is automatically executed when an object is created?" },
+            a: { ta: "__init__()", en: "__init__()" }
+          },
+          {
+            id: 10,
+            q: { ta: "மடக்கின் தற்போதைய சுழற்சியை மட்டும் தவிர்த்துவிட்டு அடுத்த சுழற்சிக்குச் செல்லும் தாவல் கூற்று எது?", en: "Which jump statement skips the remaining part of the current loop iteration and moves to the next?" },
+            a: { ta: "continue", en: "continue" }
+          }
+        ]
+      },
+      2: {
+        name: {
+          ta: "படிநிலை 2: 2-மதிப்பெண் (10 வினாக்கள்)",
+          en: "Level 2: 2-Mark Questions (10 Qs)"
+        },
+        pairs: [
+          {
+            id: 1,
+            q: { ta: "இடைமுகம் (Interface) மற்றும் செயல்படுத்துதல் (Implementation) - வேறுபடுத்துக.", en: "Differentiate Interface and Implementation." },
+            a: { ta: "இடைமுகம்: என்ன செய்ய வேண்டும் என்பதை அறிவிக்கும். செயல்படுத்துதல்: எவ்வாறு நிறைவேற்ற வேண்டும் என்ற நிரலைக் கொண்டிருக்கும்.", en: "Interface defines what an object can do, whereas Implementation carries out the instructions defined in the interface." }
+          },
+          {
+            id: 2,
+            q: { ta: "சுழற்சி (Recursion) என்றால் என்ன?", en: "What is Recursion?" },
+            a: { ta: "ஒரு செயற்கூறு தனக்குத்தானே மீண்டும் மீண்டும் அழைத்துக் கொள்ளும் நிரலாக்க முறை. இதற்கு அடிப்படை நிபந்தனை அவசியம்.", en: "A programming technique where a function calls itself repeatedly until a base condition is met." }
+          },
+          {
+            id: 3,
+            q: { ta: "தரவு அருவமாக்கம் (Data Abstraction) என்றால் என்ன?", en: "What is Data Abstraction?" },
+            a: { ta: "செயல்படுத்தும் நுணுக்கங்களை மறைத்து, பயனருக்குத் தேவையான இன்றியமையாத தகவல்களை மட்டும் வழங்கும் முறை.", en: "Hiding internal implementation details and exposing only essential features to the user." }
+          },
+          {
+            id: 4,
+            q: { ta: "ஆக்கி (Constructor) மற்றும் செலக்டார் (Selector) - குறிப்பு வரைக.", en: "Define Constructor and Selector." },
+            a: { ta: "ஆக்கி: அருவத் தரவு வகையை (ADT) உருவாக்கப் பயன்படும். செலக்டார்: அத்தரவிலிருந்து தகவல்களைப் பிரித்தெடுக்க உதவும்.", en: "Constructors are functions that build the Abstract Data Type (ADT); Selectors retrieve information from the data type." }
+          },
+          {
+            id: 5,
+            q: { ta: "உள்ளூர் எல்லை (Local Scope) என்றால் என்ன?", en: "What is Local Scope?" },
+            a: { ta: "ஒரு செயற்கூறின் எல்லைக்குள் வரையறுக்கப்பட்டு, அச்செயற்கூறுக்குள் மட்டுமே அணுக முடிகின்ற மாறிகள் ஆகும்.", en: "Variables defined inside a function that can be accessed only within that specific function." }
+          },
+          {
+            id: 6,
+            q: { ta: "நெறிமுறை (Algorithm) என்றால் என்ன?", en: "What is an Algorithm?" },
+            a: { ta: "ஒரு குறிப்பிட்ட சிக்கலைத் தீர்ப்பதற்காக வரையறுக்கப்பட்ட, வரிசைப்படியான படிநிலைக் கட்டளைகளின் தொகுப்பு.", en: "A finite set of step-by-step instructions designed to accomplish a specific task or solve a problem." }
+          },
+          {
+            id: 7,
+            q: { ta: "நேரச் சிக்கல் (Time Complexity) என்றால் என்ன?", en: "What is Time Complexity?" },
+            a: { ta: "ஒரு நெறிமுறையை முழுமையாகச் செயல்படுத்தி முடிக்க அது எடுத்துக்கொள்ளும் மொத்தச் செயல்பாடுகளின் கால அளவு.", en: "The total number of elementary operations or time taken by an algorithm to run to completion." }
+          },
+          {
+            id: 8,
+            q: { ta: "பைத்தானில் உள்ள வரம்புகாட்டிகள் (Delimiters) இரண்டினை எழுதுக.", en: "Write any two Delimiters used in Python." },
+            a: { ta: "அடைப்புக்குறிகள் ( ), [ ], { }, காற்புள்ளி (,), முக்காற்புள்ளி (:) போன்றவை.", en: "Parentheses ( ), Square brackets [ ], Curly braces { }, Comma (,), and Colon (:)." }
+          },
+          {
+            id: 9,
+            q: { ta: "pass கூற்றின் முதன்மைப் பயன்பாடு என்ன?", en: "What is the primary use of the pass statement in Python?" },
+            a: { ta: "இது ஒரு வெற்றுச் செயல் கூற்றாகும் (Null Statement); நிரல் அமைப்பில் எதுவும் செய்யாமல் இருக்க உதவும்.", en: "It is a null statement used as a placeholder when a statement is syntactically required but no action is needed." }
+          },
+          {
+            id: 10,
+            q: { ta: "List மற்றும் Tuple - இரண்டு முக்கிய வேறுபாடுகள் யாவை?", en: "State two key differences between List and Tuple." },
+            a: { ta: "பட்டியல் (List): சதுர அடைப்புக்குறி [ ], மாற்றக்கூடியது. டியூப்பிள் (Tuple): பிறை அடைப்புக்குறி ( ), மாற்ற முடியாதது.", en: "List uses square brackets [ ] and is mutable; Tuple uses parentheses ( ) and is immutable." }
+          }
+        ]
+      },
+      3: {
+        name: {
+          ta: "படிநிலை 3: 3-மதிப்பெண் (10 வினாக்கள்)",
+          en: "Level 3: 3-Mark Questions (10 Qs)"
+        },
+        pairs: [
+          {
+            id: 1,
+            q: { ta: "தூய செயற்கூறு (Pure Function) என்றால் என்ன? எ.கா தருக.", en: "What is a Pure Function? Give an example." },
+            a: { ta: "ஒரே உள்ளீட்டிற்கு எப்போதும் ஒரே வெளியீட்டைத் தரும், பக்கவிளைவுகள் (Side effects) இல்லாத செயற்கூறு. எ.கா: strlen(), square(x).", en: "A function that always returns the exact same output for the same input without any side effects. Ex: strlen(), square(x)." }
+          },
+          {
+            id: 2,
+            q: { ta: "நிரலில் ஜோடி (Pair) என்றால் என்ன? எ.கா தருக.", en: "What is a Pair in programming? Give an example." },
+            a: { ta: "இரண்டு உருப்படிகளை ஒன்றாக இணைத்துச் சேமிக்கும் கலப்புத் தரவு வடிவம். எ.கா: pair = [10, 20].", en: "A compound data structure that bundles two values together as a single unit. Ex: pair = [10, 20]." }
+          },
+          {
+            id: 3,
+            q: { ta: "நெறிமுறையின் முக்கியப் பண்பியல்புகள் மூன்றை விளக்குக.", en: "Explain any three key characteristics of an Algorithm." },
+            a: { ta: "1. Finiteness (முடிவுறு தன்மை) 2. Definiteness (தெளிவுத்தன்மை) 3. Input (பூஜ்ஜியம் அல்லது மேற்பட்ட உள்ளீடுகள்).", en: "1. Finiteness (terminates after finite steps), 2. Definiteness (clear instructions), 3. Input (zero or more inputs)." }
+          },
+          {
+            id: 4,
+            q: { ta: "நெறிமுறை மற்றும் நிரல் (Algorithm vs Program) - வேறுபடுத்துக.", en: "Differentiate Algorithm and Program." },
+            a: { ta: "நெறிமுறை: சிக்கலைத் தீர்க்கும் தர்க்க வழிமுறை (நேரடியாக இயங்காது). நிரல்: கணினி மொழியில் எழுதப்பட்டு நேரடியாக இயங்குவது.", en: "Algorithm is a logical step-by-step method to solve a problem; Program is its implementation written in a programming language." }
+          },
+          {
+            id: 5,
+            q: { ta: "டைனமிக் புரோகிராமிங் (Dynamic Programming) என்றால் என்ன?", en: "What is Dynamic Programming?" },
+            a: { ta: "சிக்கலை சிறிய துணைச் சிக்கல்களாகப் பிரித்து, அவற்றின் தீர்வுகளை சேமித்து வைத்து (Memoization) மீண்டும் பயன்படுத்தும் உத்தி.", en: "An algorithmic technique that breaks a complex problem into overlapping subproblems and stores their results (Memoization)." }
+          },
+          {
+            id: 6,
+            q: { ta: "பைத்தானில் பயன்படும் தர்க்க செயற்குறிகளை (Logical Operators) விளக்குக.", en: "Explain the Logical Operators used in Python." },
+            a: { ta: "and (இரண்டும் மெய்), or (ஏதேனும் ஒன்று மெய்), not (மெய்யை பொய்யாகவும் பொய்யை மெய்யாகவும் மாற்றும்).", en: "and (True if both are true), or (True if at least one is true), not (reverses the boolean state)." }
+          },
+          {
+            id: 7,
+            q: { ta: "அநாமதேய அல்லது லேம்ப்டா (Lambda) செயற்கூறு என்றால் என்ன?", en: "What is an Anonymous or Lambda Function?" },
+            a: { ta: "def என்ற சொல் இல்லாமல், lambda என்ற சிறப்புச் சொல்லைப் பயன்படுத்தி ஒற்றை வரியில் உருவாக்கப்படும் பெயரில்லா செயற்கூறு.", en: "An unnamed single-line function defined using the 'lambda' keyword instead of 'def'." }
+          },
+          {
+            id: 8,
+            q: { ta: "மாறிகளின் உலகளாவிய எல்லை (Global Scope) பற்றி குறிப்பு வரைக.", en: "Write a note on Global Scope of variables." },
+            a: { ta: "செயற்கூறுகளுக்கு வெளியே அறிவிக்கப்படும் மாறிகள்; நிரலின் எந்தப் பகுதியிலிருந்தும் இந்த மாறிகளை அணுக முடியும்.", en: "Variables declared outside all functions at the top level of a program, accessible throughout the entire code." }
+          },
+          {
+            id: 9,
+            q: { ta: "append() மற்றும் extend() பட்டியலின் செயற்கூறுகளை வேறுபடுத்துக.", en: "Differentiate append() and extend() list methods." },
+            a: { ta: "append(): பட்டியலின் இறுதியில் ஒரே ஒரு புதிய உறுப்பை சேர்க்கும். extend(): மற்றொரு முழுப் பட்டியலை அல்லது பல உறுப்புகளை இணைக்கும்.", en: "append() adds a single element to the end of a list; extend() adds multiple elements from another list." }
+          },
+          {
+            id: 10,
+            q: { ta: "பைத்தானில் உள்ள Set (கணம்) தரவு வகையின் முக்கியப் பண்புகள் யாவை?", en: "What are the main properties of Set data type in Python?" },
+            a: { ta: "வரிசைப்படுத்தப்படாத, மாற்றக்கூடிய மற்றும் நகல் உறுப்புகள் இல்லாத (No duplicates) நெளிவு அடைப்புக்குள் { } எழுதப்படும் தொகுப்பு.", en: "An unordered, mutable collection enclosed in curly braces { } that does not allow duplicate elements." }
+          }
+        ]
+      },
+      4: {
+        name: {
+          ta: "படிநிலை 4: 5-மதிப்பெண் (10 வினாக்கள்)",
+          en: "Level 4: 5-Mark Questions (10 Qs)"
+        },
+        pairs: [
+          {
+            id: 1,
+            q: { ta: "LEGB விதியை விரிவாக விளக்குக.", en: "Explain the LEGB Rule in detail." },
+            a: { ta: "மாறிகளின் எல்லை அணுகல் வரிசை: Local (உள் செயற்கூறு), Enclosed (வெளி செயற்கூறு), Global (நிரலின் உயர் மட்டம்), Built-in (உள்ளிணைந்த நூலக மாறிகள்).", en: "Scope lookup hierarchy: Local (inside function), Enclosed (outer nested function), Global (module level), Built-in (Python pre-assigned names)." }
+          },
+          {
+            id: 2,
+            q: { ta: "நெறிமுறையின் பண்பியல்புகளை (Characteristics of Algorithm) விளக்குக.", en: "Explain the Characteristics of an Algorithm." },
+            a: { ta: "1. உள்ளீடு (Input) 2. வெளியீடு (Output) 3. முடிவுறு தன்மை (Finiteness) 4. வரையறை (Definiteness) 5. செயல்திறன் 6. எளிமை.", en: "1. Input, 2. Output, 3. Finiteness, 4. Definiteness, 5. Effectiveness, 6. Correctness, and 7. Simplicity." }
+          },
+          {
+            id: 3,
+            q: { ta: "பைத்தானின் டோக்கன்களைப் (Tokens in Python) பட்டியலிட்டு விளக்குக.", en: "List and explain Tokens in Python." },
+            a: { ta: "1. குறிச்சொற்கள் (Keywords) 2. அடையாளங்காட்டிகள் (Identifiers) 3. மாறிலிகள் (Literals) 4. செயற்குறிகள் 5. வரம்புகாட்டிகள்.", en: "1. Keywords (if, def), 2. Identifiers (variable names), 3. Literals (numbers, strings), 4. Operators (+, *), 5. Delimiters ((), {}, :)." }
+          },
+          {
+            id: 4,
+            q: { ta: "பைத்தானின் மாற்று அல்லது கிளைப்பிரிவு கூற்றுகளை (Control Statements) விளக்குக.", en: "Explain Alternative or Branching Control Statements in Python." },
+            a: { ta: "1. எளிய if (நிபந்தனை மெய்யானால் இயங்கும்) 2. if-else (மெய் மற்றும் பொய்க்கான வழிகள்) 3. if-elif-else (பல நிபந்தனைகளைச் சோதிக்க).", en: "1. Simple if (executes if true), 2. if-else (two-way branching), 3. if-elif-else (multi-way conditional branching)." }
+          },
+          {
+            id: 5,
+            q: { ta: "செயற்கூறு செயலுருபுகளின் (Function Arguments) நான்கு வகைகளை விளக்குக.", en: "Explain the four types of Function Arguments in Python." },
+            a: { ta: "1. தேவையான செயலுருபுகள் 2. விசைச்சொல் செயலுருபுகள் 3. முன்னிருப்பு செயலுருபுகள் 4. மாறும் நீள செயலுருபுகள் (*args).", en: "1. Required arguments, 2. Keyword arguments, 3. Default arguments, and 4. Variable-length arguments (*args)." }
+          },
+          {
+            id: 6,
+            q: { ta: "பைனரி தேடல் (Binary Search) நெறிமுறையை விளக்குக.", en: "Explain the Binary Search algorithm." },
+            a: { ta: "வரிசைப்படுத்தப்பட்ட பட்டியலின் நடு உறுப்பைக் (mid) கண்டறிந்து பாதியாகப் பிரித்து ஒப்பிட்டுத் தேடும் முறை; நேரச் சிக்கல் O(log n).", en: "Works on sorted arrays by repeatedly dividing the search interval in half using the middle element (mid); Time complexity: O(log n)." }
+          },
+          {
+            id: 7,
+            q: { ta: "குமிழி வரிசையாக்க (Bubble Sort) நெறிமுறையின் செயல்பாட்டை விவரி.", en: "Describe the working of Bubble Sort algorithm." },
+            a: { ta: "அருகருகே உள்ள உறுப்புகளை ஒப்பிட்டு இடமாற்றம் செய்யும் முறை; ஒவ்வொரு சுற்றிலும் பெரிய உறுப்பு இறுதிக்குச் செல்லும்; நேரச் சிக்கல் O(n²).", en: "Repeatedly compares adjacent elements and swaps them if they are in the wrong order; Time complexity: O(n²)." }
+          },
+          {
+            id: 8,
+            q: { ta: "சரங்களைக் கையாளும் ஏதேனும் 5 உள்ளிணைந்த செயற்கூறுகளை விளக்குக.", en: "Explain any 5 built-in String functions in Python." },
+            a: { ta: "len() நீளம் அறிய, upper() பெரிய எழுத்தாக்க, lower() சிறிய எழுத்தாக்க, capitalize() முதல் எழுத்தைப் பெரிதாக்க, title() தலைப்பு எழுத்தமைக்க.", en: "len() finds length, upper() converts to uppercase, lower() to lowercase, capitalize() capitalizes first char, title() capitalizes each word." }
+          },
+          {
+            id: 9,
+            q: { ta: "பட்டியலிலிருந்து உறுப்புகளை நீக்கப் பயன்படும் பல்வேறு வழிகள் யாவை?", en: "What are the different ways to delete elements from a List?" },
+            a: { ta: "del கூற்று, clear() வெற்றுப் பட்டியலாக்க, pop(index) குறிப்பிட்ட சுட்டெண் உறுப்பை நீக்கித் தர, remove(value) குறிப்பிட்ட மதிப்பை நீக்க.", en: "del statement (by index/slice), clear() (empties list), pop(index) (removes & returns item), remove(value) (removes first matching value)." }
+          },
+          {
+            id: 10,
+            q: { ta: "பைத்தானில் ஒரு இனக்குழுவை (Class) வரையறுத்து பொருளை உருவாக்கும் முறையை விவரி.", en: "Explain how to define a Class and create an Object in Python." },
+            a: { ta: "class ClassName: என வரையறுக்க வேண்டும். பொருளை உருவாக்க obj = ClassName() என அழைக்க வேண்டும். obj.variable என அணுகலாம்.", en: "Defined using 'class ClassName:'. Objects are instantiated using 'obj = ClassName()' and members are accessed via dot operator (obj.var)." }
+          }
+        ]
+      },
+      5: {
+        name: {
+          ta: "படிநிலை 5: மெகா பினாலே மிக்ஸ் (10 வினாக்கள்)",
+          en: "Level 5: Mega Grand Finale Mix (10 Qs)"
+        },
+        pairs: [
+          {
+            id: 1,
+            q: { ta: "பைத்தானில் பயனர் வரையறுக்கும் செயற்கூறை உருவாக்கப் பயன்படும் சிறப்புச் சொல் எது?", en: "Which keyword creates a user-defined function in Python?" },
+            a: { ta: "def", en: "def" }
+          },
+          {
+            id: 2,
+            q: { ta: "ஒரு மாறி நினைவகத்தில் இருக்கும் கால அளவு எவ்வாறு அழைக்கப்படும்?", en: "What is the duration for which a variable exists in memory called?" },
+            a: { ta: "ஆயுட்காலம் (Lifetime)", en: "Lifetime" }
+          },
+          {
+            id: 3,
+            q: { ta: "சரத்திலுள்ள எழுத்துகளின் எண்ணிக்கையைக் காணும் செயற்கூறு எது?", en: "Which built-in function returns the number of characters in a string?" },
+            a: { ta: "len()", en: "len()" }
+          },
+          {
+            id: 4,
+            q: { ta: "ஆக்கி (Constructor) மற்றும் செலக்டார் (Selector) வேறுபாடு யாது?", en: "What is the difference between Constructor and Selector?" },
+            a: { ta: "ஆக்கி அருவத் தரவை உருவாக்கும்; செலக்டார் அதிலிருந்து தகவலைப் பிரித்தெடுக்கும்.", en: "Constructor builds the Abstract Data Type; Selector extracts individual pieces of information from it." }
+          },
+          {
+            id: 5,
+            q: { ta: "இடைமுகம் மற்றும் செயல்படுத்துதல் - வேறுபடுத்துக.", en: "Differentiate Interface and Implementation." },
+            a: { ta: "இடைமுகம் என்ன செய்ய வேண்டும் என்பதை அறிவிக்கும்; செயல்படுத்துதல் அதை எவ்வாறு நிறைவேற்ற வேண்டும் என்ற நிரலைக் கொண்டிருக்கும்.", en: "Interface declares what action is to be done; Implementation contains the code that executes it." }
+          },
+          {
+            id: 6,
+            q: { ta: "பைத்தானில் pass கூற்றின் செயல்பாடு என்ன?", en: "What is the function of 'pass' statement in Python?" },
+            a: { ta: "இது ஒரு வெற்றுச் செயல் கூற்றாகும் (Null statement); நிரல் அமைப்பில் தற்காலிகமாக எதுவும் செய்யாமல் இருக்கப் பயன்படும்.", en: "It acts as a null placeholder statement where syntax requires a block but no operation is executed." }
+          },
+          {
+            id: 7,
+            q: { ta: "தூய செயற்கூறு (Pure Function) என்றால் என்ன?", en: "What is a Pure Function?" },
+            a: { ta: "ஒரே உள்ளீட்டிற்கு எப்போதும் ஒரே வெளியீட்டைத் தரும், எந்தப் பக்கவிளைவுகளும் இல்லாத செயற்கூறு.", en: "A deterministic function returning identical output for identical inputs without side effects." }
+          },
+          {
+            id: 8,
+            q: { ta: "append() மற்றும் extend() பட்டியலின் செயல்பாடுகளை வேறுபடுத்துக.", en: "Differentiate append() and extend() in Python lists." },
+            a: { ta: "append() ஒரு உறுப்பைச் சேர்க்கும்; extend() பல உறுப்புகளைக் கொண்ட பட்டியலை இணைக்கும்.", en: "append() inserts a single item at the end; extend() merges all items of another iterable/list." }
+          },
+          {
+            id: 9,
+            q: { ta: "LEGB விதியை விரிவாகக் கூறுக.", en: "State the LEGB Rule." },
+            a: { ta: "உள்ளூர் (Local), உள்ளடக்கிய (Enclosed), உலகளாவிய (Global), உள்விணைந்த (Built-in) என்ற வரிசைப்படி மாறிகளை அணுகும் நெறிமுறை.", en: "Variable scope resolution order: Local → Enclosed → Global → Built-in." }
+          },
+          {
+            id: 10,
+            q: { ta: "பைனரி தேடல் (Binary Search) நெறிமுறை எவ்வாறு செயல்படுகிறது?", en: "How does Binary Search algorithm work?" },
+            a: { ta: "பட்டியலின் மைய உறுப்பைக் கண்டறிந்து பாதியாகப் பிரித்து தேடும் முறை; இதன் சிக்கல் O(log n).", en: "Finds the middle element of a sorted list and halves the search space each step; complexity O(log n)." }
+          }
+        ]
+      }
+    };
+
+    // State Variables
+    let currentLang = 'ta'; // 'ta' for Tamil, 'en' for English
+    let currentLevel = 1;
+    let cards = [];
+    let flippedCards = [];
+    let matchedPairsCount = 0;
+    let moves = 0;
+    let score = 0;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    let hasTimerStarted = false;
+    let isBoardLocked = false;
+    let hintAvailable = 3;
+    let isSoundEnabled = true;
+
+    // Track last active cards shown in Q&A preview panels
+    let activeQuestionPairId = null;
+    let activeAnswerPairId = null;
+
+    // DOM References
+    const cardsGrid = document.getElementById('cardsGrid');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const movesDisplay = document.getElementById('movesDisplay');
+    const matchesDisplay = document.getElementById('matchesDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const levelSelect = document.getElementById('levelSelect');
+    const hintCountBadge = document.getElementById('hintCountBadge');
+    const winModal = document.getElementById('winModal');
+    const studyModal = document.getElementById('studyModal');
+    const studyModalTitle = document.getElementById('studyModalTitle');
+    const studyModalBody = document.getElementById('studyModalBody');
+    const qCardText = document.getElementById('qCardText');
+    const aCardText = document.getElementById('aCardText');
+
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!isSoundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'flip') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'match') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.09);
+          osc.frequency.setValueAtTime(783.99, now + 0.18);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'mismatch') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(260, now);
+          osc.frequency.setValueAtTime(180, now + 0.12);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'victory') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const nOsc = ctx.createOscillator();
+            const nGain = ctx.createGain();
+            nOsc.connect(nGain);
+            nGain.connect(ctx.destination);
+            nOsc.type = 'triangle';
+            nOsc.frequency.setValueAtTime(freq, now + idx * 0.12);
+            nGain.gain.setValueAtTime(0.22, now + idx * 0.12);
+            nGain.gain.linearRampToValueAtTime(0.01, now + idx * 0.12 + 0.3);
+            nOsc.start(now + idx * 0.12);
+            nOsc.stop(now + idx * 0.12 + 0.3);
+          });
+        }
+      } catch (err) {
+        console.log("Audio waiting for user gesture:", err);
+      }
+    }
+
+    // Switch dynamically between Tamil ('ta') and English ('en') without resetting progress
+    function toggleLanguage() {
+      currentLang = currentLang === 'ta' ? 'en' : 'ta';
+      document.documentElement.lang = currentLang;
+      applyLanguageUI();
+      renderGrid();
+      refreshSidePreviewLanguage();
+      if (!studyModal.classList.contains('hidden')) {
+        openStudyModal();
+      }
+    }
+
+    function applyLanguageUI() {
+      const s = UI_STRINGS[currentLang];
+
+      document.getElementById('appTitle').innerText = s.appTitle;
+      document.getElementById('appBadge').innerText = s.appBadge;
+      document.getElementById('langToggleLabel').innerText = s.langToggleLabel;
+      document.getElementById('hintLabel').innerText = s.hintLabel;
+      document.getElementById('studyBtn').innerText = s.studyBtn;
+      document.getElementById('soundIcon').innerText = isSoundEnabled ? s.soundOn : s.soundOff;
+      document.getElementById('fullscreenBtn').innerText = s.fullscreenBtn;
+      document.getElementById('downloadBtn').innerText = s.downloadBtn;
+      document.getElementById('resetBtn').innerText = s.resetBtn;
+
+      document.getElementById('statTimeLabel').innerText = s.statTimeLabel;
+      document.getElementById('statMovesLabel').innerText = s.statMovesLabel;
+      document.getElementById('statMatchesLabel').innerText = s.statMatchesLabel;
+      document.getElementById('statScoreLabel').innerText = s.statScoreLabel;
+
+      document.getElementById('qBoxHeading').innerText = s.qBoxHeading;
+      document.getElementById('aBoxHeading').innerText = s.aBoxHeading;
+
+      document.getElementById('gridTitle').innerText = s.gridTitle;
+      document.getElementById('gridPairsBadge').innerText = s.gridPairsBadge;
+      document.getElementById('gridSubNote').innerText = s.gridSubNote;
+
+      // Update Level Selector Options
+      levelSelect.innerHTML = '';
+      for (let lvl = 1; lvl <= 5; lvl++) {
+        const opt = document.createElement('option');
+        opt.value = lvl;
+        opt.innerText = LEVELS_DATA[lvl].name[currentLang];
+        if (lvl === currentLevel) opt.selected = true;
+        levelSelect.appendChild(opt);
+      }
+
+      // Update Instructions Modal
+      document.getElementById('instTitle').innerText = s.instTitle;
+      const instList = document.getElementById('instList');
+      instList.innerHTML = s.instItems.map((item, i) => `
+        <li class="flex items-start gap-2">
+          <span class="text-cyan-400 font-bold">${i + 1}.</span>
+          <span>${item}</span>
+        </li>
+      `).join('');
+      document.getElementById('instStartBtn').innerText = s.instStartBtn;
+
+      // Update Victory Modal Labels
+      document.getElementById('modalTitle').innerText = s.modalTitle;
+      document.getElementById('modalLevelName').innerText = `${LEVELS_DATA[currentLevel].name[currentLang]} ${s.modalLevelSuffix}`;
+      document.getElementById('modalTimeLabel').innerText = s.modalTimeLabel;
+      document.getElementById('modalMovesLabel').innerText = s.modalMovesLabel;
+      document.getElementById('modalScoreLabel').innerText = s.modalScoreLabel;
+      document.getElementById('modalDesc').innerText = s.modalDesc;
+      document.getElementById('modalReplayBtn').innerText = s.modalReplayBtn;
+      const nextLevelBtn = document.getElementById('nextLevelBtn');
+      if (nextLevelBtn) {
+        nextLevelBtn.innerText = currentLevel >= 5 ? s.modalRestartFirstBtn : `${s.modalNextBtn} ${currentLevel + 1} ➔`;
+      }
+
+      // Update Study Modal Buttons
+      document.getElementById('studyModalSub').innerText = s.studyModalSub;
+      document.getElementById('printBtn').innerText = s.printBtn;
+      document.getElementById('closeStudyBtn').innerText = s.closeStudyBtn;
+      document.getElementById('footerText').innerText = s.footerText;
+    }
+
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      const s = UI_STRINGS[currentLang];
+      document.getElementById('soundIcon').innerText = isSoundEnabled ? s.soundOn : s.soundOff;
+    }
+
+    function initializeGame(levelNum) {
+      currentLevel = levelNum;
+      applyLanguageUI();
+
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      hasTimerStarted = false;
+      if (timerDisplay) timerDisplay.innerText = "00:00";
+      moves = 0;
+      if (movesDisplay) movesDisplay.innerText = "0";
+      matchedPairsCount = 0;
+      if (matchesDisplay) matchesDisplay.innerText = "0 / 10";
+      score = 0;
+      if (scoreDisplay) scoreDisplay.innerText = "0";
+      flippedCards = [];
+      isBoardLocked = false;
+      hintAvailable = 3;
+      if (hintCountBadge) hintCountBadge.innerText = "3";
+      document.getElementById('hintBtn')?.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      activeQuestionPairId = null;
+      activeAnswerPairId = null;
+      resetPreviewPanel();
+
+      const levelData = LEVELS_DATA[levelNum];
+      const cardDeck = [];
+      levelData.pairs.forEach(pair => {
+        cardDeck.push({
+          uid: `q-${pair.id}`,
+          pairId: pair.id,
+          type: 'question',
+          content: pair.q, // stores { ta: ..., en: ... }
+          isFlipped: false,
+          isMatched: false
+        });
+        cardDeck.push({
+          uid: `a-${pair.id}`,
+          pairId: pair.id,
+          type: 'answer',
+          content: pair.a, // stores { ta: ..., en: ... }
+          isFlipped: false,
+          isMatched: false
+        });
+      });
+
+      // Fisher-Yates Card Shuffle
+      for (let i = cardDeck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cardDeck[i], cardDeck[j]] = [cardDeck[j], cardDeck[i]];
+      }
+
+      cards = cardDeck;
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const s = UI_STRINGS[currentLang];
+      cardsGrid.innerHTML = '';
+      cards.forEach((card, index) => {
+        const cardContainer = document.createElement('div');
+        cardContainer.id = `card-slot-${index}`;
+        cardContainer.className = `perspective-container h-12 sm:h-14 md:h-16 lg:h-13 xl:h-15 w-full select-none ${card.isMatched ? 'card-vacant-slot' : 'cursor-pointer'}`;
+        cardContainer.setAttribute('data-index', index);
+        cardContainer.onclick = () => onCardClick(index);
+
+        const isQ = card.type === 'question';
+        const typeBadgeColor = isQ ? 'bg-indigo-900 text-indigo-200 border-indigo-500/50' : 'bg-emerald-900 text-emerald-200 border-emerald-500/50';
+        const typeIcon = isQ ? '❓' : '💡';
+        const typeLabel = isQ ? s.cardQLabel : s.cardALabel;
+        const textContent = card.content[currentLang];
+
+        cardContainer.innerHTML = `
+          <div class="card-flip-inner relative w-full h-full rounded-lg shadow-md transition-all duration-300 ${card.isFlipped ? 'is-flipped' : ''}" id="card-inner-${index}">
+            
+            <!-- CARD FRONT -->
+            <div class="card-face-front absolute inset-0 w-full h-full rounded-lg bg-gradient-to-br from-slate-800 via-slate-850 to-slate-900 border border-slate-700/80 hover:border-cyan-400 flex flex-col items-center justify-center p-0.5 text-center transition-all">
+              <span class="text-[10px] sm:text-xs mb-0.5">🎴</span>
+              <span class="text-[9px] sm:text-[11px] font-black text-slate-300">#${index + 1}</span>
+            </div>
+
+            <!-- CARD BACK -->
+            <div class="card-face-back absolute inset-0 w-full h-full rounded-lg ${isQ ? 'bg-slate-900 border border-indigo-400' : 'bg-slate-900 border border-emerald-400'} flex flex-col justify-between p-1 text-center shadow-lg overflow-hidden">
+              <div class="flex items-center justify-between w-full">
+                <span class="text-[7.5px] sm:text-[8.5px] px-1 py-0.2 rounded border font-bold ${typeBadgeColor}">${typeIcon} ${typeLabel}</span>
+                <span class="text-[8px] font-mono text-slate-400 font-black">#${card.pairId}</span>
+              </div>
+              <div class="flex-1 flex items-center justify-center overflow-hidden my-0.5">
+                <p class="text-[8px] sm:text-[9.5px] font-semibold text-slate-100 line-clamp-2 leading-tight">
+                  ${textContent}
+                </p>
+              </div>
+              <div class="text-[6.5px] sm:text-[7.5px] text-slate-400 text-right font-medium">
+                ${card.isMatched ? s.cardMatchedOk : s.cardMatchPrompt}
+              </div>
+            </div>
+
+          </div>
+        `;
+        cardsGrid.appendChild(cardContainer);
+      });
+    }
+
+    function onCardClick(index) {
+      if (isBoardLocked) return;
+      const clickedCard = cards[index];
+
+      if (clickedCard.isFlipped || clickedCard.isMatched) return;
+
+      if (!hasTimerStarted) {
+        startTimer();
+        hasTimerStarted = true;
+      }
+
+      clickedCard.isFlipped = true;
+      playSound('flip');
+      updateCardUI(index);
+      updateSidePreview(clickedCard);
+
+      flippedCards.push({ card: clickedCard, index: index });
+
+      if (flippedCards.length === 2) {
+        moves++;
+        if (movesDisplay) movesDisplay.innerText = moves;
+        evaluatePair();
+      }
+    }
+
+    function updateCardUI(index) {
+      const inner = document.getElementById(`card-inner-${index}`);
+      if (!inner) return;
+      if (cards[index].isFlipped) {
+        inner.classList.add('is-flipped');
+      } else {
+        inner.classList.remove('is-flipped');
+      }
+    }
+
+    function burstFlowerConfetti(x, y) {
+      const flowerSymbols = ['🌸', '🌺', '🌼', '🌻', '🌷', '✨', '💐', '🎉'];
+      const particleCount = 18;
+      for (let i = 0; i < particleCount; i++) {
+        const p = document.createElement('div');
+        const symbol = flowerSymbols[Math.floor(Math.random() * flowerSymbols.length)];
+        p.innerText = symbol;
+        p.className = 'fixed pointer-events-none z-50 select-none';
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.fontSize = `${Math.random() * 16 + 16}px`;
+        p.style.transition = 'transform 0.9s cubic-bezier(0.12, 0.82, 0.35, 1), opacity 0.9s ease-out';
+        p.style.transform = 'translate(-50%, -50%) scale(0.3)';
+        p.style.opacity = '1';
+        document.body.appendChild(p);
+
+        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.4;
+        const distance = Math.random() * 100 + 45;
+        const destX = Math.cos(angle) * distance;
+        const destY = Math.sin(angle) * distance - (Math.random() * 30);
+        const rotate = (Math.random() - 0.5) * 720;
+
+        requestAnimationFrame(() => {
+          p.style.transform = `translate(calc(-50% + ${destX}px), calc(-50% + ${destY}px)) rotate(${rotate}deg) scale(1.25)`;
+          p.style.opacity = '0';
+        });
+
+        setTimeout(() => {
+          p.remove();
+        }, 950);
+      }
+    }
+
+    function evaluatePair() {
+      isBoardLocked = true;
+      const [first, second] = flippedCards;
+      const isSamePairId = first.card.pairId === second.card.pairId;
+      const isDifferentType = first.card.type !== second.card.type;
+
+      if (isSamePairId && isDifferentType) {
+        // MATCH SUCCESS
+        setTimeout(() => {
+          playSound('match');
+          first.card.isMatched = true;
+          second.card.isMatched = true;
+
+          const el1 = document.getElementById(`card-inner-${first.index}`);
+          const el2 = document.getElementById(`card-inner-${second.index}`);
+
+          if (el1) {
+            const rect1 = el1.getBoundingClientRect();
+            burstFlowerConfetti(rect1.left + rect1.width / 2, rect1.top + rect1.height / 2);
+            el1.classList.add('card-exploded');
+          }
+          if (el2) {
+            const rect2 = el2.getBoundingClientRect();
+            burstFlowerConfetti(rect2.left + rect2.width / 2, rect2.top + rect2.height / 2);
+            el2.classList.add('card-exploded');
+          }
+
+          setTimeout(() => {
+            const slot1 = document.getElementById(`card-slot-${first.index}`);
+            const slot2 = document.getElementById(`card-slot-${second.index}`);
+            if (slot1) slot1.classList.add('card-vacant-slot');
+            if (slot2) slot2.classList.add('card-vacant-slot');
+          }, 520);
+
+          matchedPairsCount++;
+          if (matchesDisplay) matchesDisplay.innerText = `${matchedPairsCount} / 10`;
+
+          score += 100;
+          if (scoreDisplay) scoreDisplay.innerText = `${score}`;
+
+          flippedCards = [];
+          isBoardLocked = false;
+
+          if (matchedPairsCount === 10) {
+            handleVictory();
+          }
+        }, 300);
+
+      } else {
+        // MISMATCH
+        setTimeout(() => {
+          playSound('mismatch');
+        }, 300);
+
+        setTimeout(() => {
+          first.card.isFlipped = false;
+          second.card.isFlipped = false;
+          updateCardUI(first.index);
+          updateCardUI(second.index);
+
+          flippedCards = [];
+          isBoardLocked = false;
+        }, 1100);
+      }
+    }
+
+    function updateSidePreview(card) {
+      if (card.type === 'question') {
+        activeQuestionPairId = card.pairId;
+        qCardText.innerText = card.content[currentLang];
+      } else {
+        activeAnswerPairId = card.pairId;
+        aCardText.innerText = card.content[currentLang];
+      }
+    }
+
+    function refreshSidePreviewLanguage() {
+      const s = UI_STRINGS[currentLang];
+      const pairs = LEVELS_DATA[currentLevel].pairs;
+
+      if (activeQuestionPairId !== null) {
+        const pair = pairs.find(p => p.id === activeQuestionPairId);
+        if (pair) qCardText.innerText = pair.q[currentLang];
+      } else {
+        qCardText.innerText = s.qPlaceholder;
+      }
+
+      if (activeAnswerPairId !== null) {
+        const pair = pairs.find(p => p.id === activeAnswerPairId);
+        if (pair) aCardText.innerText = pair.a[currentLang];
+      } else {
+        aCardText.innerText = s.aPlaceholder;
+      }
+    }
+
+    function resetPreviewPanel() {
+      const s = UI_STRINGS[currentLang];
+      qCardText.innerText = s.qPlaceholder;
+      aCardText.innerText = s.aPlaceholder;
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        if (timerDisplay) {
+          const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+          const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+          timerDisplay.innerText = `${mins}:${secs}`;
+        }
+      }, 1000);
+    }
+
+    function triggerHint() {
+      if (hintAvailable <= 0 || isBoardLocked) return;
+
+      const unmatchedQ = cards.find(c => !c.isMatched && c.type === 'question');
+      if (!unmatchedQ) return;
+
+      const matchingA = cards.find(c => !c.isMatched && c.type === 'answer' && c.pairId === unmatchedQ.pairId);
+      if (!matchingA) return;
+
+      hintAvailable--;
+      if (hintCountBadge) hintCountBadge.innerText = hintAvailable;
+      if (hintAvailable === 0) {
+        document.getElementById('hintBtn')?.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+
+      const qIndex = cards.indexOf(unmatchedQ);
+      const aIndex = cards.indexOf(matchingA);
+
+      const qEl = document.getElementById(`card-inner-${qIndex}`);
+      const aEl = document.getElementById(`card-inner-${aIndex}`);
+
+      if (qEl && aEl) {
+        qEl.classList.add('hint-highlight');
+        aEl.classList.add('hint-highlight');
+        setTimeout(() => {
+          qEl.classList.remove('hint-highlight');
+          aEl.classList.remove('hint-highlight');
+        }, 1500);
+      }
+    }
+
+    function toggleInstructionsModal() {
+      const modal = document.getElementById('instructionModal');
+      modal?.classList.toggle('hidden');
+    }
+
+    function handleVictory() {
+      clearInterval(timerInterval);
+      playSound('victory');
+      const s = UI_STRINGS[currentLang];
+
+      const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+      const formattedTime = `${mins}:${secs}`;
+
+      document.getElementById('modalTitle').innerText = s.modalTitle;
+      document.getElementById('modalLevelName').innerText = `${LEVELS_DATA[currentLevel].name[currentLang]} ${s.modalLevelSuffix}`;
+      document.getElementById('modalTime').innerText = formattedTime;
+      document.getElementById('modalMoves').innerText = moves;
+      document.getElementById('modalScore').innerText = score;
+
+      const nextLevelBtn = document.getElementById('nextLevelBtn');
+      if (nextLevelBtn) {
+        nextLevelBtn.innerText = currentLevel >= 5 ? s.modalRestartFirstBtn : `${s.modalNextBtn} ${currentLevel + 1} ➔`;
+      }
+
+      winModal?.classList.remove('hidden');
+    }
+
+    function goToNextLevel() {
+      winModal.classList.add('hidden');
+      if (currentLevel < 5) {
+        initializeGame(currentLevel + 1);
+      } else {
+        initializeGame(1);
+      }
+    }
+
+    function changeLevel(newLevel) {
+      initializeGame(newLevel);
+    }
+
+    function restartGame() {
+      winModal.classList.add('hidden');
+      initializeGame(currentLevel);
+    }
+
+    function openStudyModal() {
+      const data = LEVELS_DATA[currentLevel];
+      const s = UI_STRINGS[currentLang];
+      studyModalTitle.innerText = `${data.name[currentLang]} - ${s.studyModalSuffix}`;
+      studyModalBody.innerHTML = '';
+
+      data.pairs.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'p-3 bg-slate-950 rounded-xl border border-slate-800 flex flex-col gap-1.5 text-xs sm:text-sm';
+        row.innerHTML = `
+          <div class="flex items-start gap-2">
+            <span class="bg-indigo-600/40 text-indigo-300 font-bold px-2 py-0.5 rounded text-xs shrink-0">${s.studyQPrefix} #${item.id}</span>
+            <p class="font-bold text-white leading-relaxed">${item.q[currentLang]}</p>
+          </div>
+          <div class="flex items-start gap-2 pl-2 border-l-2 border-emerald-500/50 mt-1">
+            <span class="text-emerald-400 font-bold text-xs shrink-0">${s.studyAPrefix}</span>
+            <p class="text-emerald-200 leading-relaxed">${item.a[currentLang]}</p>
+          </div>
+        `;
+        studyModalBody.appendChild(row);
+      });
+
+      studyModal.classList.remove('hidden');
+    }
+
+    function closeStudyModal() {
+      studyModal.classList.add('hidden');
+    }
+
+    // Direct HTML File Download functionality
+    function downloadSelfHtml() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.href = url;
+      downloadAnchor.download = "12 cs game1.html";
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      document.body.removeChild(downloadAnchor);
+      URL.revokeObjectURL(url);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((e) => {
+          console.log("Fullscreen not permitted:", e);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeStudyModal();
+        winModal.classList.add('hidden');
+        document.getElementById('instructionModal')?.classList.add('hidden');
+      }
+    });
+
+    // Auto-launch immediately on page load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initializeGame(1));
+    } else {
+      initializeGame(1);
+    }
+  </script>
+</body>
+</html>
