@@ -1,0 +1,2675 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 12 CS Ch 14 - Importing C++ Programs in Python (Bilingual Learning Lab)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Subtle Audio Feedback -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Google Fonts for Tamil, UI & Monospace Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Mukta+Malar:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        tamil: ['"Mukta Malar"', 'sans-serif'],
+                        code: ['"Fira Code"', 'monospace'],
+                        inter: ['"Inter"', 'sans-serif']
+                    },
+                    colors: {
+                        pyBlue: '#2563eb',
+                        cppAmber: '#d97706',
+                        editorDark: '#0f172a'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Mukta Malar', 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .active-tab {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.35);
+        }
+        @keyframes slidePop {
+            0% { transform: translateY(8px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-pop {
+            animation: slidePop 0.25s ease-out;
+        }
+        @keyframes pulseBorder {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+        }
+        .pipeline-active-step {
+            animation: pulseBorder 1.5s infinite;
+            border-color: #2563eb !important;
+            background-color: #eff6ff !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Top Header & Navigation -->
+    <header class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white shadow-xl sticky top-0 z-40 border-b border-blue-800/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Branding -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-br from-blue-500 to-amber-500 text-white px-2 py-1.5 rounded-xl shadow-md font-black text-xs sm:text-sm flex flex-col items-center justify-center w-12 h-11 border border-blue-300/40 leading-tight">
+                    <span>PY</span>
+                    <span class="text-[10px] text-slate-950 bg-amber-300 px-1 rounded font-extrabold">C++</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-blue-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold uppercase tracking-wider" id="lbl-header-std">12-ஆம் வகுப்பு கணினி அறிவியல்</span>
+                        <span class="text-xs text-amber-300 font-semibold hidden sm:inline" id="lbl-header-sub">அத்தியாயம் 14 (Chapter 14)</span>
+                    </div>
+                    <h1 class="text-sm sm:text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5 mt-0.5" id="lbl-header-title">
+                        பைத்தானில் C++ நிரல்களை இறக்கம் செய்தல் (Importing C++ in Python)
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Controls: Bilingual Switcher & Tabs -->
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" id="lang-switch-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-blue-950 hover:bg-blue-900 text-amber-300 border border-blue-700 shadow-sm" title="Switch Language / மொழியை மாற்றுக">
+                    <i class="fa-solid fa-language text-sm"></i>
+                    <span id="lang-btn-text">English மொழிக்கு மாறுக 🇬🇧</span>
+                </button>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-700 overflow-x-auto text-xs sm:text-sm font-medium gap-1">
+                    <button onclick="switchTab('concepts')" id="tab-btn-concepts" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 active-tab">
+                        <i class="fa-solid fa-book-open"></i> <span id="tab-title-concepts">பாடநூல் தலைப்புகள்</span>
+                    </button>
+                    <button onclick="switchTab('simulator')" id="tab-btn-simulator" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-diagram-project"></i> <span id="tab-title-simulator">காட்சி செயலாக்க உருவகப்படுத்தி</span>
+                    </button>
+                    <button onclick="switchTab('playground')" id="tab-btn-playground" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-code"></i> <span id="tab-title-playground">Python + C++ ஆய்வகம்</span>
+                    </button>
+                    <button onclick="switchTab('qa')" id="tab-btn-qa" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-award"></i> <span id="tab-title-qa">பொதுத்தேர்வு வினா வங்கி</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+                        <i class="fa-solid fa-circle-question"></i> <span id="tab-title-quiz">சுய மதிப்பீடு</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: TEXTBOOK CONCEPTS (CHAPTER 14)      -->
+        <!-- ========================================== -->
+        <section id="tab-concepts" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <span class="bg-blue-500/30 text-blue-200 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider border border-blue-400/30" id="badge-chapter">
+                        12-ஆம் வகுப்பு கணினி அறிவியல் | அத்தியாயம் 14 (SCERT)
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 flex items-center gap-2">
+                        <i class="fa-brands fa-python text-amber-400 text-3xl"></i>
+                        <span id="hero-title">பைத்தானில் C++ நிரல்களை இறக்கம் செய்தல் (Importing C++ in Python)</span>
+                    </h2>
+                    <p class="text-blue-100 text-sm mt-1 max-w-2xl leading-relaxed" id="hero-sub">
+                        பைத்தானின் எளிமை மற்றும் வேகமான உருவாக்கத் திறனையும், C++ மொழியின் அதிவேகச் செயலாக்கத் திறனையும் (Compiled Speed) <code>sys</code>, <code>os</code> மற்றும் <code>getopt</code> கூறுகள் மூலம் ஒன்றிணைக்கும் நுட்பம்.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <button onclick="switchTab('simulator')" class="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-gears"></i> <span id="hero-btn-sim">sys & getopt உருவகப்படுத்தி</span>
+                    </button>
+                    <button onclick="switchTab('playground')" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> <span id="hero-btn-code">Python + C++ ஆய்வகம்</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Tap Hint Banner -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-blue-950">
+                <div class="flex items-center gap-2 font-semibold">
+                    <i class="fa-solid fa-hand-pointer text-blue-600 text-sm"></i>
+                    <span id="lbl-tap-hint">கீழே உள்ள எந்தவொரு பாடத் தலைப்பையும் தொட்டால் (Click), அதன் எளிய விளக்கம், நிஜ உலக ஒப்புமை, பொதுத்தேர்வுக் குறிப்புகள் மற்றும் நேரடி நிரல் திறக்கும்!</span>
+                </div>
+                <span class="bg-white text-blue-700 font-bold px-2.5 py-0.5 rounded-full border border-blue-200 text-[11px]" id="lbl-chapters-badge">3 பிரிவுகள் • 12 தலைப்புகள்</span>
+            </div>
+
+            <!-- Module Filter Pills -->
+            <div class="flex flex-wrap items-center gap-2" id="chapter-filter-bar">
+                <button onclick="filterTopicsByChapter('all')" id="ch-btn-all" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm transition">அனைத்து தலைப்புகள் (All)</button>
+                <button onclick="filterTopicsByChapter('mod1')" id="ch-btn-mod1" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-blue-50 transition">1. ஸ்கிரிப்டிங் vs நிரலாக்க மொழி</button>
+                <button onclick="filterTopicsByChapter('mod2')" id="ch-btn-mod2" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-blue-50 transition">2. Wrapping கருவிகள் & MinGW</button>
+                <button onclick="filterTopicsByChapter('mod3')" id="ch-btn-mod3" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-blue-50 transition">3. sys, os & getopt கூறுகள்</button>
+            </div>
+
+            <!-- Dynamic Modules & Topic Cards Container -->
+            <div id="textbook-chapters-container" class="space-y-6">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: VISUAL PIPELINE & GETOPT SIMULATOR  -->
+        <!-- ========================================== -->
+        <section id="tab-simulator" class="hidden space-y-6">
+            
+            <!-- Header Banner -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-diagram-project text-blue-600"></i>
+                        <span id="sim-heading">பைத்தான் வழியாக C++ இயங்கும் விதம் & getopt() காட்சி உருவகப்படுத்தி</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="sim-subheading">
+                        கட்டளை வரியில் (Command Prompt) உள்ளிடப்படும் கட்டளை எவ்வாறு <code>sys.argv</code> மற்றும் <code>getopt.getopt()</code> மூலம் பிரிக்கப்பட்டு, <code>g++</code> வழி தொகுக்கப்பட்டு இயங்குகிறது என்பதைப் பாருங்கள்!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Part A: Interactive Command Line & 4-Step Execution Pipeline -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-md space-y-5">
+                <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-200 gap-2">
+                    <h3 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-blue-600"></i>
+                        <span id="sim-cli-title">1. கட்டளை வரி (Command Line) & sys.argv / getopt() பகுப்பாய்வி</span>
+                    </h3>
+                    <div class="flex flex-wrap gap-1.5 text-xs">
+                        <button onclick="setCliPreset('python pycpp.py -i palindrome')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 rounded-lg font-mono font-semibold border border-slate-200 transition">
+                            -i palindrome
+                        </button>
+                        <button onclick="setCliPreset('python pycpp.py -i welcome -o welcome_app')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 rounded-lg font-mono font-semibold border border-slate-200 transition">
+                            -i welcome -o welcome_app
+                        </button>
+                        <button onclick="setCliPreset('python pycpp.py --ifile=factorial')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-800 rounded-lg font-mono font-semibold border border-slate-200 transition">
+                            --ifile=factorial
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CLI Input Bar -->
+                <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div class="flex items-center gap-2 flex-grow font-mono text-xs sm:text-sm">
+                        <span class="text-emerald-400 font-bold select-none">C:\Python3&gt;</span>
+                        <input type="text" id="sim-cli-input" value="python pycpp.py -i palindrome" oninput="parseCliCommand()" class="w-full bg-transparent text-amber-300 outline-none font-semibold">
+                    </div>
+                    <button onclick="animatePipelineExecution()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow transition flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-solid fa-play"></i> <span id="sim-btn-animate">படிப்படியாக இயக்கு (Run Pipeline)</span>
+                    </button>
+                </div>
+
+                <!-- sys.argv & getopt Breakdown Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <!-- Left: sys.argv Array Boxes -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold text-blue-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-list-ol text-blue-600"></i> <span id="sim-sys-title">sys.argv பட்டியல் (Command-Line Arguments List)</span>
+                            </span>
+                            <span class="text-[11px] font-mono bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold" id="sim-sys-len">len(sys.argv) = 3</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600" id="sim-sys-desc">
+                            <code>sys.argv[0]</code> எப்போதும் இயக்கப்படும் பைத்தான் நிரலின் பெயரைக் கொண்டிருக்கும்; <code>sys.argv[1:]</code> பயனர் அனுப்பும் அளபுருக்களைக் கொண்டிருக்கும்.
+                        </p>
+                        <div id="sim-sys-boxes" class="flex flex-wrap gap-2 pt-1">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right: getopt.getopt() Output -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-filter text-amber-600"></i> <span id="sim-getopt-title">getopt.getopt(argv, "i:o:", ["ifile=", "ofile="])</span>
+                            </span>
+                            <span class="text-[11px] font-mono bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-bold">Returns (opts, args)</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono pt-1">
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                                <span class="text-[10px] font-bold text-slate-500 block mb-1">opts (Option, Value Pairs):</span>
+                                <div id="sim-getopt-opts" class="text-blue-700 font-bold break-all">[('-i', 'palindrome')]</div>
+                            </div>
+                            <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                                <span class="text-[10px] font-bold text-slate-500 block mb-1">Generated OS Commands:</span>
+                                <div id="sim-getopt-cmds" class="text-emerald-700 font-bold text-[11px] leading-relaxed">
+                                    g++ palindrome.cpp -o palindrome.exe
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4-Stage Visual Execution Pipeline -->
+                <div class="pt-2">
+                    <h4 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-shoe-prints text-blue-600"></i> <span id="sim-pipe-heading">4-படிநிலை செயலாக்க ஓட்டம் (4-Stage Execution Flow):</span>
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div id="pipe-step-1" class="p-3.5 rounded-xl border-2 border-slate-200 bg-white transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Step 1</span>
+                                <i class="fa-brands fa-python text-blue-600 text-lg"></i>
+                            </div>
+                            <h5 class="font-bold text-slate-900 text-xs sm:text-sm" id="pipe-s1-title">Python CLI படித்தல்</h5>
+                            <p class="text-[11px] text-slate-600 mt-1" id="pipe-s1-desc"><code>sys.argv</code> மற்றும் <code>getopt</code> மூலம் C++ கோப்பின் பெயரைப் பெறுதல்.</p>
+                        </div>
+
+                        <div id="pipe-step-2" class="p-3.5 rounded-xl border-2 border-slate-200 bg-white transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Step 2</span>
+                                <i class="fa-solid fa-hammer text-amber-600 text-lg"></i>
+                            </div>
+                            <h5 class="font-bold text-slate-900 text-xs sm:text-sm" id="pipe-s2-title">MinGW g++ தொகுத்தல்</h5>
+                            <p class="text-[11px] text-slate-600 mt-1" id="pipe-s2-desc"><code>os.system('g++ file.cpp -o file.exe')</code> மூலம் தொகுத்தல்.</p>
+                        </div>
+
+                        <div id="pipe-step-3" class="p-3.5 rounded-xl border-2 border-slate-200 bg-white transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-black text-purple-700 bg-purple-100 px-2 py-0.5 rounded">Step 3</span>
+                                <i class="fa-solid fa-file-code text-purple-600 text-lg"></i>
+                            </div>
+                            <h5 class="font-bold text-slate-900 text-xs sm:text-sm" id="pipe-s3-title">.exe கோப்பு உருவாக்கம்</h5>
+                            <p class="text-[11px] text-slate-600 mt-1" id="pipe-s3-desc">இயந்திர மொழிக்கு மாற்றப்பட்ட <code>.exe</code> கோப்பு உருவாக்கப்படுதல்.</p>
+                        </div>
+
+                        <div id="pipe-step-4" class="p-3.5 rounded-xl border-2 border-slate-200 bg-white transition-all">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Step 4</span>
+                                <i class="fa-solid fa-display text-emerald-600 text-lg"></i>
+                            </div>
+                            <h5 class="font-bold text-slate-900 text-xs sm:text-sm" id="pipe-s4-title">வெளியீடு பெறுதல்</h5>
+                            <p class="text-[11px] text-slate-600 mt-1" id="pipe-s4-desc"><code>os.system(exe_file)</code> கட்டளை C++ வெளியீட்டைத் திரையில் காட்டுதல்.</p>
+                        </div>
+                    </div>
+
+                    <!-- Live Simulated Console Output Box -->
+                    <div id="sim-pipeline-console" class="mt-4 bg-slate-950 text-emerald-400 p-3.5 rounded-xl font-mono text-xs border border-slate-800 space-y-1">
+                        <div class="text-slate-400">// Click "Run Pipeline" above to watch Python compile and run C++!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Part B: Special Variable __name__ == "__main__" Visualizer -->
+            <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-1.5 max-w-2xl">
+                    <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-indigo-100 text-indigo-800" id="sim-dunder-badge">சிறப்பு மாறி (Special Variable)</span>
+                    <h3 class="text-base sm:text-lg font-extrabold text-slate-900" id="sim-dunder-title">
+                        if __name__ == "__main__": எவ்வாறு செயல்படுகிறது?
+                    </h3>
+                    <p class="text-xs text-slate-600 leading-relaxed" id="sim-dunder-desc">
+                        ஒவ்வொரு பைத்தான் நிரலுக்கும் <code>__name__</code> என்ற உள்ளமைந்த மாறி உண்டு. நிரலை நேரடியாக இயக்கினால் அதன் மதிப்பு <code>"__main__"</code> ஆக இருக்கும்; வேறொரு நிரலில் <code>import</code> செய்தால் கோப்பின் பெயராக இருக்கும்.
+                    </p>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 w-full md:w-96 space-y-2.5 shrink-0">
+                    <div class="flex bg-slate-200 p-1 rounded-lg text-xs font-bold">
+                        <button onclick="setDunderMode('direct')" id="btn-dunder-direct" class="flex-1 py-1 rounded-md bg-blue-600 text-white transition">python pycpp.py</button>
+                        <button onclick="setDunderMode('import')" id="btn-dunder-import" class="flex-1 py-1 rounded-md text-slate-700 transition">import pycpp</button>
+                    </div>
+                    <div class="bg-slate-900 text-xs font-mono p-3 rounded-lg space-y-1">
+                        <div class="text-slate-400"># Value of __name__:</div>
+                        <div id="dunder-val-display" class="text-amber-300 font-bold">__name__ == "__main__" (True)</div>
+                        <div id="dunder-action-display" class="text-emerald-400 text-[11px]">✓ main(sys.argv[1:]) executes!</div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: DUAL PYTHON + C++ CODE PLAYGROUND   -->
+        <!-- ========================================== -->
+        <section id="tab-playground" class="hidden space-y-4">
+            
+            <!-- Controls Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5" id="lbl-preset-select">
+                        <i class="fa-brands fa-python text-blue-600 text-xl"></i> பாடநூல் நிரல் தொகுப்பு:
+                    </label>
+                    <select id="preset-selector" onchange="loadDualPreset(this.value)" class="text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none max-w-xs sm:max-w-md">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <div class="flex items-center flex-wrap gap-2">
+                    <!-- Dark / Light Theme Toggle -->
+                    <button onclick="toggleEditorTheme()" id="theme-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm">
+                        <i id="theme-btn-icon" class="fa-solid fa-moon"></i>
+                        <span id="theme-btn-label">கருப்பு தீம் (Dark)</span>
+                    </button>
+                    <!-- Copy -->
+                    <button onclick="copyActiveCode()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-copy"></i> <span id="btn-copy-code">நகலெடு</span>
+                    </button>
+                    <!-- Run Pipeline -->
+                    <button onclick="runPythonCppPipeline()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-bold transition shadow-md flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="btn-run-code">தொகுத்து இயக்கு (Compile & Run)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dual Editors + Output Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Left (7 Cols): Python Wrapper & C++ Source Editors -->
+                <div id="editor-container" class="lg:col-span-7 bg-editorDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[570px] transition-all duration-200">
+                    <!-- Editor Header with File Tabs -->
+                    <div id="editor-header" class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="switchEditorFile('py')" id="file-tab-py" class="px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-blue-600 text-white flex items-center gap-1.5 shadow-sm transition">
+                                <i class="fa-brands fa-python"></i> pycpp.py (Python Wrapper)
+                            </button>
+                            <button onclick="switchEditorFile('cpp')" id="file-tab-cpp" class="px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-file-code text-amber-400"></i> <span id="cpp-filename-tab">welcome.cpp</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleEditorTheme()" id="editor-badge-theme" class="text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-half-stroke"></i>
+                                <span id="editor-badge-text">தீம்: இருட்டு</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Python Editor Pane -->
+                    <div id="pane-py-editor" class="flex-grow pt-3 relative">
+                        <textarea id="code-editor-py" spellcheck="false" class="w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors"></textarea>
+                    </div>
+
+                    <!-- C++ Editor Pane -->
+                    <div id="pane-cpp-editor" class="hidden flex-grow pt-3 relative">
+                        <textarea id="code-editor-cpp" spellcheck="false" class="w-full h-full bg-transparent text-amber-300 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors"></textarea>
+                    </div>
+
+                    <div id="editor-footer" class="pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2">
+                        <span>Modules: <code class="text-blue-400 font-bold">import sys, os, getopt</code> | Compiler: <code class="text-amber-400 font-bold">MinGW g++</code></span>
+                        <span id="editor-status-indicator" class="text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> <span id="lbl-editor-ready">Python 3 + MinGW g++ தயார்</span></span>
+                    </div>
+                </div>
+
+                <!-- Right (5 Cols): Execution Terminal & Pipeline Log -->
+                <div id="terminal-container" class="lg:col-span-5 bg-slate-950 rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-col h-[570px] transition-all duration-200">
+                    <div id="terminal-header" class="flex items-center justify-between pb-3 border-b border-slate-800 text-xs text-slate-400 font-mono">
+                        <span id="terminal-title-text" class="flex items-center gap-1.5 text-amber-400 font-bold">
+                            <i class="fa-solid fa-terminal"></i> <span id="lbl-raw-out">கட்டளை வரி & வெளியீடு (CMD Console)</span>
+                        </span>
+                        <button onclick="clearTerminal()" class="hover:text-rose-400 text-xs text-slate-400 transition">
+                            <i class="fa-solid fa-eraser"></i> <span id="lbl-clear-term">துடைக்க</span>
+                        </button>
+                    </div>
+
+                    <!-- Interactive C++ cin Input Bar -->
+                    <div id="cpp-stdin-bar" class="mt-2.5 bg-blue-950/60 border border-blue-800/70 rounded-xl p-2.5 flex items-center justify-between gap-2 text-xs">
+                        <span class="text-blue-200 font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-keyboard text-amber-400"></i> <span id="lbl-stdin-hint">C++ உள்ளீடு (cin):</span>
+                        </span>
+                        <input type="text" id="cpp-stdin-input" value="madam" class="bg-slate-900 text-amber-300 border border-slate-700 rounded-lg px-2.5 py-1 font-mono text-xs w-36 outline-none focus:ring-1 focus:ring-blue-400" placeholder="Input value">
+                    </div>
+
+                    <div id="terminal-output" class="flex-grow p-3 overflow-y-auto text-xs sm:text-sm code-font text-slate-200 space-y-2 bg-black/50 rounded-xl mt-2.5">
+                        <div class="text-slate-500">// Click "Compile & Run" to execute Python + C++ pipeline...</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: BOARD EXAM QUESTION BANK            -->
+        <!-- ========================================== -->
+        <section id="tab-qa" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap text-blue-600"></i>
+                        <span id="qa-heading">அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி (அத்தியாயம் 14)</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="qa-subheading">
+                        12-ஆம் வகுப்பு கணினி அறிவியல் பொதுத்தேர்வில் அடிக்கடி கேட்கப்படும் 2, 3 மற்றும் 5 மதிப்பெண் வினாக்களும் முழுமையான விடைகளும்.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterQA('all')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-blue-600 text-white" id="qa-btn-all">அனைத்தும்</button>
+                    <button onclick="filterQA('2m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-2m">2 மதிப்பெண்</button>
+                    <button onclick="filterQA('3m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-3m">3 மதிப்பெண்</button>
+                    <button onclick="filterQA('5m')" class="qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200" id="qa-btn-5m">5 மதிப்பெண்</button>
+                </div>
+            </div>
+
+            <!-- Questions Grid -->
+            <div id="qa-cards-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: SELF-ASSESSMENT QUIZ & BUG HUNTER   -->
+        <!-- ========================================== -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-blue-600"></i>
+                        <span id="quiz-heading">அத்தியாயம் 14: சுய மதிப்பீட்டு வினாடி வினா & பிழை ஆய்வு</span>
+                    </h2>
+                    <p class="text-slate-600 text-sm mt-1" id="quiz-subheading">
+                        பாடநூல் ஒரு மதிப்பெண் வினாக்கள் (MCQs) மற்றும் Python-C++ ஒருங்கிணைப்பு பிழைகளைக் கண்டறியும் சவால்கள்.
+                    </p>
+                </div>
+                <div class="px-4 py-2 bg-blue-50 text-blue-950 rounded-xl font-bold border border-blue-200 text-sm">
+                    <span id="lbl-score-text">மதிப்பெண்:</span> <span id="current-score" class="text-blue-600 text-lg">0</span> / 10
+                </div>
+            </div>
+
+            <!-- Part 1: MCQs -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-emerald-600"></i> <span id="quiz-part1-title">பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (10 MCQs)</span>
+                </h3>
+                <div id="quiz-container" class="space-y-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Part 2: Bug Hunter -->
+            <div class="pt-6 border-t border-slate-200 space-y-4">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-bug text-rose-600"></i> <span id="bug-part2-title">பகுதி 2: நிரல் பிழையைக் கண்டுபிடி! (Spot the Python-C++ Bug)</span>
+                    </h3>
+                    <p class="text-xs text-slate-500" id="bug-part2-sub">கீழே உள்ள Python Wrapper நிரல்களில் உள்ள பிழைகளைக் கண்டறியவும்.</p>
+                </div>
+
+                <div id="bug-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <div class="flex justify-center pt-4">
+                <button onclick="resetQuiz()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-rotate"></i> <span id="btn-quiz-reset">வினாடி வினாவை மீண்டும் தொடங்க</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- TOPIC DEEP-DIVE INTERACTIVE MODAL          -->
+    <!-- ========================================== -->
+    <div id="topic-detail-modal" class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-5 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden border border-slate-200 animate-pop">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 text-white p-4 sm:p-5 flex items-center justify-between border-b border-blue-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-blue-500/30 text-amber-300 border border-blue-400/40 flex items-center justify-center text-xl font-bold">
+                        <i id="modal-topic-icon" class="fa-brands fa-python"></i>
+                    </div>
+                    <div>
+                        <span id="modal-topic-cat" class="text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-500/40 text-blue-200 border border-blue-400/30">அத்தியாயம் 14</span>
+                        <h3 id="modal-topic-title" class="text-base sm:text-lg font-bold text-white mt-0.5">தலைப்பு</h3>
+                    </div>
+                </div>
+                <button onclick="closeTopicDetail()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 text-slate-800 text-xs sm:text-sm">
+                <!-- Concept Explanation -->
+                <div class="bg-blue-50/70 border border-blue-100 p-3.5 rounded-xl">
+                    <h4 class="font-bold text-blue-950 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-open text-blue-600"></i> <span id="lbl-modal-concept">பாடக் கருத்து விளக்கம் (Concept):</span>
+                    </h4>
+                    <p id="modal-topic-summary" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Real-world Analogy -->
+                <div class="bg-amber-50/80 border border-amber-200 p-3.5 rounded-xl">
+                    <h4 class="font-bold text-amber-900 text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> <span id="modal-topic-analogy-title">எளிதில் புரியும் நிஜ உலக ஒப்புமை:</span>
+                    </h4>
+                    <p id="modal-topic-analogy-desc" class="text-slate-700 leading-relaxed"></p>
+                </div>
+
+                <!-- Key Exam Points -->
+                <div>
+                    <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-check-double text-emerald-600"></i> <span id="lbl-modal-points">முக்கியப் பொதுத்தேர்வு குறிப்புகள் (Exam Points):</span>
+                    </h4>
+                    <ul id="modal-topic-points" class="space-y-1.5 text-slate-700">
+                    </ul>
+                </div>
+
+                <!-- Code Example -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-code text-blue-600"></i> <span id="lbl-modal-code">நிரல் எடுத்துக்காட்டு (Code Example):</span>
+                        </h4>
+                        <button onclick="copyModalCode()" class="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-copy"></i> <span id="lbl-modal-copy">நகலெடு</span>
+                        </button>
+                    </div>
+                    <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono overflow-x-auto border border-slate-800"><code id="modal-topic-code"></code></pre>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                    <button onclick="navigateTopicDetail(-1)" class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-chevron-left"></i> <span id="lbl-modal-prev">முந்தையது</span>
+                    </button>
+                    <button onclick="navigateTopicDetail(1)" class="px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 text-xs font-bold transition flex items-center gap-1">
+                        <span id="lbl-modal-next">அடுத்தது</span> <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeTopicDetail()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs transition">
+                        <span id="lbl-modal-close">மூடுக</span>
+                    </button>
+                    <button onclick="loadTopicPresetToPlayground(currentModalTopicId)" class="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-xs transition shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> <span id="lbl-modal-run">ஆய்வகத்தில் இயக்கு</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 max-w-sm w-full bg-slate-900 text-white rounded-2xl shadow-2xl p-4 border border-slate-700 flex items-start gap-3 transform translate-y-28 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="text-amber-400 text-xl pt-0.5">
+            <i class="fa-brands fa-python"></i>
+        </div>
+        <div class="flex-grow">
+            <h5 id="toast-title" class="font-bold text-sm text-blue-300">Python + C++ Lab</h5>
+            <p id="toast-body" class="text-xs text-slate-300 mt-1 leading-relaxed">விவரம்</p>
+        </div>
+        <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-medium" id="footer-text">
+            12-ஆம் வகுப்பு கணினி அறிவியல் பாடநூல் (அத்தியாயம் 14: பைத்தானில் C++ நிரல்களை இறக்கம் செய்தல்) - தமிழ்நாடு பள்ளிக் கல்வித்துறை பாடத்திட்டத்தின்படி வடிவமைக்கப்பட்டது.
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT APPLICATION & PIPELINE ENGINE   -->
+    <!-- ========================================== -->
+    <script>
+        // ==========================================
+        // AUDIO FEEDBACK HELPER
+        // ==========================================
+        let synth = null;
+        function getSynth() {
+            if (!synth && window.Tone) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.volume.value = -15;
+            }
+            return synth;
+        }
+
+        function playSound(type) {
+            try {
+                const s = getSynth();
+                if (!s) return;
+                Tone.start();
+                if (type === 'run') s.triggerAttackRelease(["E5", "G#5"], "8n");
+                else if (type === 'success') s.triggerAttackRelease(["E5", "B5"], "16n");
+                else if (type === 'error') s.triggerAttackRelease(["F4", "Db4"], "8n");
+                else if (type === 'click') s.triggerAttackRelease("E4", "32n");
+            } catch(e) {}
+        }
+
+        // ==========================================
+        // BILINGUAL UI DICTIONARY (TAMIL & ENGLISH)
+        // ==========================================
+        let currentLang = 'ta';
+
+        const UI_TEXT = {
+            ta: {
+                headerStd: "12-ஆம் வகுப்பு கணினி அறிவியல்",
+                headerSub: "அத்தியாயம் 14 (Chapter 14)",
+                headerTitle: "பைத்தானில் C++ நிரல்களை இறக்கம் செய்தல் (Importing C++ in Python)",
+                langBtn: "English மொழிக்கு மாறுக 🇬🇧",
+                tabConcepts: "பாடநூல் தலைப்புகள்",
+                tabSimulator: "காட்சி செயலாக்க உருவகப்படுத்தி",
+                tabPlayground: "Python + C++ ஆய்வகம்",
+                tabQA: "பொதுத்தேர்வு வினா வங்கி",
+                tabQuiz: "சுய மதிப்பீடு",
+                badgeChapter: "12-ஆம் வகுப்பு கணினி அறிவியல் | அத்தியாயம் 14 (SCERT)",
+                heroTitle: "பைத்தானில் C++ நிரல்களை இறக்கம் செய்தல் (Importing C++ in Python)",
+                heroSub: "பைத்தானின் எளிமை மற்றும் வேகமான உருவாக்கத் திறனையும், C++ மொழியின் அதிவேகச் செயலாக்கத் திறனையும் (Compiled Speed) sys, os மற்றும் getopt கூறுகள் மூலம் ஒன்றிணைக்கும் நுட்பம்.",
+                heroBtnSim: "sys & getopt உருவகப்படுத்தி",
+                heroBtnCode: "Python + C++ ஆய்வகம்",
+                lblTapHint: "கீழே உள்ள எந்தவொரு பாடத் தலைப்பையும் தொட்டால் (Click), அதன் எளிய விளக்கம், நிஜ உலக ஒப்புமை, பொதுத்தேர்வுக் குறிப்புகள் மற்றும் நேரடி நிரல் திறக்கும்!",
+                lblChaptersBadge: "3 பிரிவுகள் • 12 தலைப்புகள்",
+                chAll: "அனைத்து தலைப்புகள் (All)",
+                chMod1: "1. ஸ்கிரிப்டிங் vs நிரலாக்க மொழி",
+                chMod2: "2. Wrapping கருவிகள் & MinGW",
+                chMod3: "3. sys, os & getopt கூறுகள்",
+                simHeading: "பைத்தான் வழியாக C++ இயங்கும் விதம் & getopt() காட்சி உருவகப்படுத்தி",
+                simSubheading: "கட்டளை வரியில் (Command Prompt) உள்ளிடப்படும் கட்டளை எவ்வாறு sys.argv மற்றும் getopt.getopt() மூலம் பிரிக்கப்பட்டு, g++ வழி தொகுக்கப்பட்டு இயங்குகிறது என்பதைப் பாருங்கள்!",
+                simCliTitle: "1. கட்டளை வரி (Command Line) & sys.argv / getopt() பகுப்பாய்வி",
+                simBtnAnimate: "படிப்படியாக இயக்கு (Run Pipeline)",
+                simSysTitle: "sys.argv பட்டியல் (Command-Line Arguments List)",
+                simSysDesc: "sys.argv[0] எப்போதும் இயக்கப்படும் பைத்தான் நிரலின் பெயரைக் கொண்டிருக்கும்; sys.argv[1:] பயனர் அனுப்பும் அளபுருக்களைக் கொண்டிருக்கும்.",
+                simPipeHeading: "4-படிநிலை செயலாக்க ஓட்டம் (4-Stage Execution Flow):",
+                pipeS1Title: "Python CLI படித்தல்",
+                pipeS1Desc: "sys.argv மற்றும் getopt மூலம் C++ கோப்பின் பெயரைப் பெறுதல்.",
+                pipeS2Title: "MinGW g++ தொகுத்தல்",
+                pipeS2Desc: "os.system('g++ file.cpp -o file.exe') மூலம் தொகுத்தல்.",
+                pipeS3Title: ".exe கோப்பு உருவாக்கம்",
+                pipeS3Desc: "இயந்திர மொழிக்கு மாற்றப்பட்ட .exe கோப்பு உருவாக்கப்படுதல்.",
+                pipeS4Title: "வெளியீடு பெறுதல்",
+                pipeS4Desc: "os.system(exe_file) கட்டளை C++ வெளியீட்டைத் திரையில் காட்டுதல்.",
+                simDunderBadge: "சிறப்பு மாறி (Special Variable)",
+                simDunderTitle: "if __name__ == \"__main__\": எவ்வாறு செயல்படுகிறது?",
+                simDunderDesc: "ஒவ்வொரு பைத்தான் நிரலுக்கும் __name__ என்ற உள்ளமைந்த மாறி உண்டு. நிரலை நேரடியாக இயக்கினால் அதன் மதிப்பு \"__main__\" ஆக இருக்கும்; வேறொரு நிரலில் import செய்தால் கோப்பின் பெயராக இருக்கும்.",
+                lblPreset: "பாடநூல் நிரல் தொகுப்பு:",
+                btnCopy: "நகலெடு",
+                btnRun: "தொகுத்து இயக்கு (Compile & Run)",
+                themeDark: "கருப்பு தீம் (Dark)",
+                themeLight: "வெண்மை தீம் (Light)",
+                badgeDark: "தீம்: இருட்டு",
+                badgeLight: "தீம்: வெண்மை",
+                lblReady: "Python 3 + MinGW g++ தயார்",
+                lblRawOut: "கட்டளை வரி & வெளியீடு (CMD Console)",
+                clearTerm: "துடைக்க",
+                lblStdinHint: "C++ உள்ளீடு (cin):",
+                qaHeading: "அரசுப் பொதுத்தேர்வு வினா-விடை வங்கி (அத்தியாயம் 14)",
+                qaSubheading: "12-ஆம் வகுப்பு கணினி அறிவியல் பொதுத்தேர்வில் அடிக்கடி கேட்கப்படும் 2, 3 மற்றும் 5 மதிப்பெண் வினாக்களும் முழுமையான விடைகளும்.",
+                qaBtnAll: "அனைத்தும்",
+                qaBtn2m: "2 மதிப்பெண்",
+                qaBtn3m: "3 மதிப்பெண்",
+                qaBtn5m: "5 மதிப்பெண்",
+                quizHeading: "அத்தியாயம் 14: சுய மதிப்பீட்டு வினாடி வினா & பிழை ஆய்வு",
+                quizSubheading: "பாடநூல் ஒரு மதிப்பெண் வினாக்கள் (MCQs) மற்றும் Python-C++ ஒருங்கிணைப்பு பிழைகளைக் கண்டறியும் சவால்கள்.",
+                lblScore: "மதிப்பெண்:",
+                quizP1Title: "பகுதி 1: ஒரு மதிப்பெண் வினாக்கள் (10 MCQs)",
+                bugP2Title: "பகுதி 2: நிரல் பிழையைக் கண்டுபிடி! (Spot the Python-C++ Bug)",
+                bugP2Sub: "கீழே உள்ள Python Wrapper நிரல்களில் உள்ள பிழைகளைக் கண்டறியவும்.",
+                btnQuizReset: "வினாடி வினாவை மீண்டும் தொடங்க",
+                modalConcept: "பாடக் கருத்து விளக்கம் (Concept):",
+                modalPoints: "முக்கியப் பொதுத்தேர்வு குறிப்புகள் (Exam Points):",
+                modalCode: "நிரல் எடுத்துக்காட்டு (Code Example):",
+                modalCopy: "நகலெடு",
+                modalPrev: "முந்தையது",
+                modalNext: "அடுத்தது",
+                modalClose: "மூடுக",
+                modalRun: "ஆய்வகத்தில் இயக்கு",
+                footerText: "12-ஆம் வகுப்பு கணினி அறிவியல் பாடநூல் (அத்தியாயம் 14: பைத்தானில் C++ நிரல்களை இறக்கம் செய்தல்) - தமிழ்நாடு பள்ளிக் கல்வித்துறை பாடத்திட்டத்தின்படி வடிவமைக்கப்பட்டது."
+            },
+            en: {
+                headerStd: "Class 12 Computer Science",
+                headerSub: "Chapter 14 (SCERT)",
+                headerTitle: "Importing C++ Programs in Python",
+                langBtn: "தமிழ் மொழிக்கு மாறுக 🇮🇳",
+                tabConcepts: "Textbook Topics",
+                tabSimulator: "Visual Pipeline Simulator",
+                tabPlayground: "Python + C++ Lab",
+                tabQA: "Board Exam Q&A",
+                tabQuiz: "Self Assessment",
+                badgeChapter: "Class 12 Computer Science | Chapter 14 (TN SCERT)",
+                heroTitle: "Importing C++ Programs in Python",
+                heroSub: "Combine Python's rapid development and simplicity with C++'s compiled execution speed using Python's sys, os, and getopt modules alongside MinGW g++.",
+                heroBtnSim: "sys & getopt Visualizer",
+                heroBtnCode: "Open Python+C++ Lab",
+                lblTapHint: "Tap any textbook topic card below to explore clear explanations, real-world analogies, board exam points, and runnable Python+C++ examples!",
+                lblChaptersBadge: "3 Modules • 12 Core Topics",
+                chAll: "All Topics",
+                chMod1: "1. Scripting vs Programming",
+                chMod2: "2. Wrapping Tools & MinGW",
+                chMod3: "3. sys, os & getopt Modules",
+                simHeading: "Python-to-C++ Execution Pipeline & getopt() Visualizer",
+                simSubheading: "Watch how a Command Prompt instruction is parsed by sys.argv and getopt.getopt(), compiled via g++, and executed as a native .exe binary!",
+                simCliTitle: "1. Command Line & sys.argv / getopt() Parser",
+                simBtnAnimate: "Run Step-by-Step Pipeline",
+                simSysTitle: "sys.argv List (Command-Line Arguments)",
+                simSysDesc: "sys.argv[0] always stores the Python script filename; sys.argv[1:] contains the user-supplied flags and arguments.",
+                simPipeHeading: "4-Stage Execution Flow:",
+                pipeS1Title: "1. Parse Python CLI",
+                pipeS1Desc: "Extract C++ filename via sys.argv & getopt.",
+                pipeS2Title: "2. MinGW g++ Compile",
+                pipeS2Desc: "Invoke os.system('g++ file.cpp -o file.exe').",
+                pipeS3Title: "3. Generate .exe Binary",
+                pipeS3Desc: "Compiler produces native machine executable.",
+                pipeS4Title: "4. Execute & Output",
+                pipeS4Desc: "os.system(exe_file) runs C++ and shows output.",
+                simDunderBadge: "Special Built-in Variable",
+                simDunderTitle: "How does if __name__ == \"__main__\": work?",
+                simDunderDesc: "Every Python module has a built-in __name__ variable. When run directly, __name__ equals \"__main__\"; when imported into another file, it equals the module's name.",
+                lblPreset: "Textbook Program Preset:",
+                btnCopy: "Copy Code",
+                btnRun: "Compile & Run",
+                themeDark: "Dark Theme",
+                themeLight: "Light Theme",
+                badgeDark: "Theme: Dark",
+                badgeLight: "Theme: Light",
+                lblReady: "Python 3 + MinGW g++ Ready",
+                lblRawOut: "Command Prompt & Output Console",
+                clearTerm: "Clear",
+                lblStdinHint: "C++ Input (cin):",
+                qaHeading: "Board Exam Question Bank (Chapter 14)",
+                qaSubheading: "Frequently asked 2, 3, and 5-mark public examination questions with complete textbook answers.",
+                qaBtnAll: "All",
+                qaBtn2m: "2 Marks",
+                qaBtn3m: "3 Marks",
+                qaBtn5m: "5 Marks",
+                quizHeading: "Chapter 14: Self-Assessment Quiz & Bug Hunter",
+                quizSubheading: "Test your mastery with 10 textbook 1-mark MCQs and Python-C++ wrapper debugging challenges.",
+                lblScore: "Score:",
+                quizP1Title: "Part 1: Multiple Choice Questions (10 MCQs)",
+                bugP2Title: "Part 2: Spot the Python-C++ Bug!",
+                bugP2Sub: "Identify the syntax or logic bugs in the Python wrapper code snippets below.",
+                btnQuizReset: "Restart Quiz",
+                modalConcept: "Textbook Concept Explanation:",
+                modalPoints: "Important Public Exam Points:",
+                modalCode: "Code Example:",
+                modalCopy: "Copy Code",
+                modalPrev: "Previous",
+                modalNext: "Next",
+                modalClose: "Close",
+                modalRun: "Run in Lab",
+                footerText: "Designed for Tamil Nadu Class 12 Computer Science (Chapter 14: Importing C++ Programs in Python) Students."
+            }
+        };
+
+        // ==========================================
+        // TEXTBOOK MODULES & TOPICS KNOWLEDGE BASE
+        // ==========================================
+        const textbookChapters = [
+            {
+                id: 'mod1',
+                badge: { ta: "பிரிவு 1", en: "Module 1" },
+                title: { ta: "ஸ்கிரிப்டிங் மொழி vs நிரலாக்க மொழி (Scripting vs Programming Languages)", en: "Scripting vs Programming Languages & Python Advantages" },
+                topics: [
+                    {
+                        id: 'script_vs_prog',
+                        icon: 'fa-scale-balanced',
+                        color: 'text-blue-600 bg-blue-50 border-blue-200',
+                        title: { ta: "ஸ்கிரிப்டிங் மொழி மற்றும் நிரலாக்க மொழி வேறுபாடு", en: "Scripting Language vs Programming Language" },
+                        shortDesc: {
+                            ta: "பைத்தான் ஒரு <b>வரிமொழிமாற்றி (Interpreted)</b> ஸ்கிரிப்டிங் மொழி; C++ ஒரு <b>நிரல் பெயர்ப்பி (Compiled)</b> நிரலாக்க மொழி.",
+                            en: "Python is an <b>interpreted</b> scripting language; C++ is a <b>compiled</b> programming language."
+                        },
+                        summary: {
+                            ta: "<b>ஸ்கிரிப்டிங் மொழி (Python, JS, PHP):</b> தொகுத்தல் (Compilation) தேவையில்லை; வரிமொழிமாற்றி (Interpreter) மூலம் வரி வரியாக இயக்கப்படும்; மாறிகளின் தரவு வகையை அறிவிக்கத் தேவையில்லை.<br><b>நிரலாக்க மொழி (C, C++, Java):</b> முதலில் நிரல் பெயர்ப்பி (Compiler) மூலம் இயந்திர மொழியாக மாற்றப்பட்டு பின்னர் இயக்கப்படும்; அதிவேகமானது.",
+                            en: "A <b>Scripting Language</b> (Python, JavaScript, PHP) requires no compilation step and is interpreted line-by-line, whereas a <b>Programming Language</b> (C, C++) is compiled into machine code first and executes much faster."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: நேரடி மொழிபெயர்ப்பாளர் vs மொழிபெயர்க்கப்பட்ட புத்தகம்", en: "Real-world Analogy: Live Translator vs Translated Book" },
+                            desc: {
+                                ta: "<b>Interpreter (Python)</b> என்பது மேடையில் பேசுபவரின் ஒவ்வொரு வாக்கியத்தையும் உடனுக்குடன் மொழிபெயர்ப்பவர் போல—உடனே தொடங்கலாம். <b>Compiler (C++)</b> என்பது முழுப் புத்தகத்தையும் முன்பே மொழிபெயர்த்து அச்சிடுவது போல—படிக்கும்போது மிக வேகமாகப் படிக்கலாம்!",
+                                en: "An <b>Interpreter (Python)</b> is like a live translator translating sentence-by-sentence on stage (quick to start). A <b>Compiler (C++)</b> translates the entire book beforehand (blazing fast to read once printed)."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "ஸ்கிரிப்டிங் மொழிகள் வரிமொழிமாற்றியைப் (Interpreter) பயன்படுத்துகின்றன; நிரலாக்க மொழிகள் நிரல் பெயர்ப்பியைப் (Compiler) பயன்படுத்துகின்றன.",
+                                "பைத்தான் ஒரு 'பசை மொழி' (Glue Language) எனவும் அழைக்கப்படுகிறது.",
+                                "C++ நிரல்கள் தொகுக்கப்பட்டு <code>.exe</code> கோப்புகளாக மாற்றப்பட்ட பிறகே இயங்கும்."
+                            ],
+                            en: [
+                                "Scripting languages use an <b>Interpreter</b>; traditional programming languages use a <b>Compiler</b>.",
+                                "Python acts as a 'Glue Language' connecting components written in compiled languages.",
+                                "C++ requires explicit data type declarations; Python is dynamically typed."
+                            ]
+                        },
+                        code: `# Python (Interpreted - No compilation needed)\nx = 25\ny = 35\nprint("Sum in Python:", x + y)`,
+                        presetKey: 'helloCpp'
+                    },
+                    {
+                        id: 'script_apps',
+                        icon: 'fa-wand-magic-sparkles',
+                        color: 'text-purple-600 bg-purple-50 border-purple-200',
+                        title: { ta: "ஸ்கிரிப்டிங் மொழிகளின் பயன்பாடுகள் (Applications)", en: "Applications of Scripting Languages" },
+                        shortDesc: {
+                            ta: "பணிகளைத் தானியக்கமாக்குதல், தரவுத் தொகுப்பிலிருந்து தகவல்களைப் பிரித்தெடுத்தல் மற்றும் குறைந்த குறியீட்டில் நிரலாக்கம் செய்தல்.",
+                            en: "Automating repetitive tasks, extracting data from datasets, writing less-code-intensive logic, and gluing complex systems."
+                        },
+                        summary: {
+                            ta: "பாடநூலின்படி ஸ்கிரிப்டிங் மொழிகளின் 4 முக்கியப் பயன்பாடுகள்:<br>1. ஒரு நிரலில் உள்ள பணிகளைத் தானியக்கமாக்குதல் (Automate certain tasks).<br>2. தரவுத் தொகுப்பிலிருந்து தகவல்களைப் பிரித்தெடுத்தல் (Extracting information from a data set).<br>3. மரபார்ந்த நிரலாக்க மொழிகளுடன் ஒப்பிடும்போது குறைந்த குறியீடு (Less code intensive).<br>4. பயன்பாடுகளுக்குப் புதிய செயற்கூறுகளைக் கொண்டு வருதல் மற்றும் சிக்கலான அமைப்புகளை ஒன்றிணைத்தல்.",
+                            en: "According to the textbook, scripting languages are used to:<br>1. Automate certain tasks in a program.<br>2. Extract information from a data set.<br>3. Write less code-intensive programs compared to traditional languages.<br>4. Bring new functions to applications and glue complex systems together."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: ஸ்மார்ட் ரிமோட் கண்ட்ரோல் (Universal Smart Remote)", en: "Real-world Analogy: Universal Smart Remote" },
+                            desc: {
+                                ta: "டிவி, ஏசி, சவுண்ட் சிஸ்டம் ஆகிய அனைத்தையும் ஒரே ஸ்மார்ட் ரிமோட் மூலம் இயக்குவது போல, C++, SQL, Web ஆகியவற்றை பைத்தான் ஒரே இடத்திலிருந்து ஒன்றிணைத்து இயக்குகிறது!",
+                                en: "Just like one smart remote controls TV, AC, and speakers together, Python glues C++ libraries, databases, and web APIs seamlessly."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "மரபார்ந்த நிரலாக்க மொழிகளை விட மிகக் குறைந்த வரிகளில் நிரல் எழுத முடியும்.",
+                                "தரவு அறிவியல் (Data Science) மற்றும் இணையப் பயன்பாடுகளில் (Web Apps) பரவலாகப் பயன்படுகிறது."
+                            ],
+                            en: [
+                                "Requires significantly fewer lines of code than C++ for file and text automation.",
+                                "Ideal for rapid prototyping and system integration."
+                            ]
+                        },
+                        code: `# Automating file/command tasks with Python\nimport os\nprint("Automating system task via Python...")`,
+                        presetKey: 'helloCpp'
+                    },
+                    {
+                        id: 'py_vs_cpp_features',
+                        icon: 'fa-trophy',
+                        color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+                        title: { ta: "C++-ஐ விட பைத்தானின் சிறப்பம்சங்கள் (Features of Python over C++)", en: "Features of Python over C++ (5-Mark Topic)" },
+                        shortDesc: {
+                            ta: "தானியங்கி குப்பை சேகரிப்பு (Automatic Garbage Collection), மாறும் தரவு வகை (Dynamic Typing) மற்றும் எளிய தொடரியல்.",
+                            en: "Automatic Garbage Collection, Dynamic Typing, interpreted execution, and shorter, cleaner syntax."
+                        },
+                        summary: {
+                            ta: "1. <b>தானியங்கி குப்பை சேகரிப்பு (Garbage Collection):</b> பைத்தான் தேவையற்ற நினைவகத்தைத் தானாகவே விடுவிக்கும்; C++-இல் <code>new</code> மற்றும் <code>delete</code> கொண்டு கைமுறையாகச் செய்ய வேண்டும்.<br>2. <b>மாறும் தரவு வகை (Dynamic Typing):</b> பைத்தானில் தரவு வகையை அறிவிக்கத் தேவையில்லை.<br>3. <b>குறைந்த குறியீடு:</b> C++-இல் 10 வரிகளில் எழுதும் நிரலை பைத்தானில் 2-3 வரிகளில் எழுதலாம்.<br>4. <b>தொடரியல் எளிமை:</b> பைத்தானில் அரைப்புள்ளி (<code>;</code>) அல்லது நெளிவு அடைப்புக்குறிகள் (<code>{}</code>) தேவையில்லை.",
+                            en: "1. <b>Automatic Garbage Collection:</b> Python manages memory automatically, whereas C++ requires manual allocation/deallocation.<br>2. <b>Dynamic Typing:</b> No explicit variable type declaration needed.<br>3. <b>Interpreted Execution:</b> Runs directly without separate compilation.<br>4. <b>Concise Syntax:</b> Python programs are typically 5–10 times shorter than equivalent C++ code."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: ஆட்டோமேட்டிக் கார் vs மேனுவல் கியர் கார்", en: "Real-world Analogy: Automatic Car vs Manual Gear Car" },
+                            desc: {
+                                ta: "<b>Python</b> என்பது ஆட்டோமேட்டிக் கார் போல—கியர் மாற்றுவதை (Memory Management & Data Types) அதுவே பார்த்துக்கொள்ளும். <b>C++</b> என்பது மேனுவல் ரேஸ் கார் போல—ஒவ்வொன்றையும் நாமே கட்டுப்படுத்த வேண்டும், ஆனால் உச்சக்கட்ட வேகம் தரும்!",
+                                en: "<b>Python</b> is like an automatic car handling gears (memory & types) for you, while <b>C++</b> is a manual race car requiring manual control for maximum raw speed."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "C++ நிலையான தரவு வகை (Statically Typed) மொழி; Python மாறும் தரவு வகை (Dynamically Typed) மொழி.",
+                                "பைத்தான் தானியங்கி குப்பை சேகரிப்பு (Automatic Garbage Collection) வசதியைக் கொண்டுள்ளது."
+                            ],
+                            en: [
+                                "C++ is statically typed; Python is dynamically typed.",
+                                "Python eliminates manual pointer and memory leaks via automatic garbage collection."
+                            ]
+                        },
+                        code: `# Python: Dynamic typing & automatic memory\ndata = 100        # int\ndata = "Chennai"  # str (no error!)\nprint(data)`,
+                        presetKey: 'helloCpp'
+                    },
+                    {
+                        id: 'why_wrap_cpp',
+                        icon: 'fa-handshake',
+                        color: 'text-amber-600 bg-amber-50 border-amber-200',
+                        title: { ta: "பைத்தானில் C++ நிரல்களை ஏன் இறக்கம் செய்கிறோம்? (Why Wrap C++?)", en: "Why Import / Wrap C++ Programs in Python?" },
+                        shortDesc: {
+                            ta: "ஏற்கனவே எழுதப்பட்ட C++ நூலகங்களை மீண்டும் எழுதாமல் பைத்தானில் பயன்படுத்தவும், அதிவேகச் செயலாக்கத்திற்காகவும்.",
+                            en: "Reuse existing C++ libraries without rewriting them and achieve native C++ speed for heavy computations."
+                        },
+                        summary: {
+                            ta: "C++ குறியீட்டைப் பைத்தானில் உறையிடுவதன் (Wrapping) மூலம் இரு மொழிகளின் நன்மைகளையும் பெறலாம்:<br>• ஏற்கனவே உள்ள பெரிய C++ நிரல்களை மீண்டும் பைத்தானில் எழுத வேண்டியதில்லை.<br>• கணிதக் கணக்கீடுகள் மற்றும் வன்பொருள் செயல்பாடுகளை C++ வேகத்தில் இயக்கலாம்.<br>• பயனர் இடைமுகம் (UI) மற்றும் தரவு கையாளுதலை பைத்தானில் எளிதாக அமைக்கலாம்.",
+                            en: "Wrapping C++ code creates a Python interface around C++ functions so you can reuse legacy C++ codebases and run performance-critical routines at native C++ speed from Python."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: மின்சார பிளக் அடாப்டர் (Universal Travel Adapter)", en: "Real-world Analogy: Universal Power Plug Adapter" },
+                            desc: {
+                                ta: "ஒரு வெளிநாட்டு சாதனத்தை (C++ Code) நம் வீட்டு சாக்கெட்டில் (Python) நேரடியாகப் பொருத்த முடியாது; இடையில் ஒரு <b>Adapter (Wrapper Interface)</b> வைத்தால் இரண்டும் இணைந்து சிறப்பாக இயங்கும்!",
+                                en: "Just as a plug adapter lets a foreign appliance (C++ library) connect smoothly into your wall socket (Python), a wrapper bridges C++ and Python."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<b>Wrapping (உறையிடுதல்):</b> C++ செயற்கூறுகளுக்கு பைத்தான் இடைமுகத்தை (Python Interface) உருவாக்கும் செயல்முறை.",
+                                "C++ வேகத்தையும் பைத்தான் எளிமையையும் ஒரே திட்டத்தில் பெற உதவுகிறது."
+                            ],
+                            en: [
+                                "<b>Wrapping</b> creates a Python-compatible interface for compiled C/C++ code.",
+                                "Eliminates rewriting tested C++ algorithms from scratch."
+                            ]
+                        },
+                        code: `# Importing compiled C++ executable inside Python\nimport os\nos.system("g++ welcome.cpp -o welcome.exe")\nos.system("welcome.exe")`,
+                        presetKey: 'helloCpp'
+                    }
+                ]
+            },
+            {
+                id: 'mod2',
+                badge: { ta: "பிரிவு 2", en: "Module 2" },
+                title: { ta: "C++ உறையிடும் கருவிகள் & MinGW தொகுப்பி (Wrapping Tools & MinGW)", en: "C++ Wrapping Tools & MinGW Compiler" },
+                topics: [
+                    {
+                        id: 'wrapping_tools',
+                        icon: 'fa-toolbox',
+                        color: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+                        title: { ta: "5 முக்கிய Python-C++ உறையிடும் கருவிகள் (Wrapping Interfaces)", en: "5 Major Python-C++ Interfacing & Wrapping Tools" },
+                        shortDesc: {
+                            ta: "Python-C-API, Ctypes, SWIG, Cython மற்றும் Boost.Python ஆகிய 5 முக்கிய இடைமுகக் கருவிகள்.",
+                            en: "Python-C-API, Ctypes, SWIG, Cython, and Boost.Python — the 5 textbook tools for interfacing C++ with Python."
+                        },
+                        summary: {
+                            ta: "பாடநூலில் குறிப்பிடப்பட்டுள்ள 5 முக்கிய கருவிகள்:<br>1. <b>Python-C-API:</b> C/C++ மூலக் குறியீட்டை நேரடியாக பைத்தான் நீட்டிப்புக் கூறுகளாக மாற்ற.<br>2. <b>Ctypes:</b> பகிர்ந்தளிக்கப்பட்ட நூலகங்களில் (DLL / .so) உள்ள C செயற்கூறுகளை அழைக்க.<br>3. <b>SWIG (Simplified Wrapper Interface Generator):</b> C/C++ நிரல்களை பல ஸ்கிரிப்டிங் மொழிகளுடன் இணைக்க.<br>4. <b>Cython:</b> பைத்தான் போன்ற குறியீட்டை C/C++ நீட்டிப்பாக மாற்ற.<br>5. <b>Boost.Python:</b> C++ மற்றும் பைத்தான் இடையே தடையற்ற பரிமாற்றத்தை வழங்கும் C++ நூலகம்.",
+                            en: "The 5 textbook wrapping tools:<br>1. <b>Python-C-API:</b> Write C/C++ extensions directly for Python.<br>2. <b>Ctypes:</b> Call functions in shared libraries/DLLs.<br>3. <b>SWIG:</b> Simplified Wrapper Interface Generator for C/C++.<br>4. <b>Cython:</b> Python-like syntax compiled to C/C++.<br>5. <b>Boost.Python:</b> C++ library enabling seamless interoperability."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: பல மொழி மொழிபெயர்ப்பு மையம் (SWIG)", en: "Real-world Analogy: Multi-Language Translation Hub (SWIG)" },
+                            desc: {
+                                ta: "<b>SWIG</b> என்பது ஐ.நா. சபையின் மொழிபெயர்ப்பு மையம் போல—ஒரு C++ உரையை ஒரே நேரத்தில் Python, Perl, Tcl, Java எனப் பல மொழிகளுக்கு மொழிபெயர்த்துத் தரும்!",
+                                en: "<b>SWIG</b> works like a UN translation hub—taking one C/C++ header interface and generating wrappers for Python, Perl, Tcl, and more."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<b>SWIG</b> விரிவாக்கம்: <b>Simplified Wrapper Interface Generator</b>.",
+                                "<b>Ctypes</b> பகிர்ந்தளிக்கப்பட்ட நூலகங்களை (DLLs) அணுக உதவுகிறது.",
+                                "<b>Boost.Python</b> C++ மற்றும் பைத்தானை இணைக்கும் சக்திவாய்ந்த நூலகம்."
+                            ],
+                            en: [
+                                "<b>SWIG</b> stands for <b>Simplified Wrapper Interface Generator</b>.",
+                                "<b>Ctypes</b> provides C-compatible data types and calls functions in DLLs/shared libraries.",
+                                "<b>Cython</b> compiles Python-like code into high-speed C extensions."
+                            ]
+                        },
+                        code: `# Five Textbook Wrapping Tools:\n# 1. Python-C-API\n# 2. Ctypes\n# 3. SWIG (Simplified Wrapper Interface Generator)\n# 4. Cython\n# 5. Boost.Python`,
+                        presetKey: 'helloCpp'
+                    },
+                    {
+                        id: 'mingw_compiler',
+                        icon: 'fa-microchip',
+                        color: 'text-amber-600 bg-amber-50 border-amber-200',
+                        title: { ta: "MinGW இடைமுகம் & g++ தொகுப்பி (MinGW & g++)", en: "MinGW Interface & g++ Compiler" },
+                        shortDesc: {
+                            ta: "MinGW (Minimalist GNU for Windows) என்பது விண்டோஸ் இயக்க அமைப்பில் C++ நிரல்களைத் தொகுத்து <code>.exe</code> கோப்பாக மாற்றும் தொகுப்பி.",
+                            en: "MinGW (Minimalist GNU for Windows) provides GNU compilers (g++) to compile C++ programs into Windows .exe binaries."
+                        },
+                        summary: {
+                            ta: "<b>MinGW</b> என்பது விண்டோஸ் (Windows) இயக்க அமைப்பிற்கான இயக்க நேரத் தலைப்புக் கோப்புகளின் (Runtime header files) தொகுப்பாகும். இது <code>g++</code> தொகுப்பியைக் கொண்டு C++ மூலக் குறியீட்டை (<code>.cpp</code>) இயங்கக்கூடிய கோப்பாக (<code>.exe</code>) மாற்றுகிறது.<br>கட்டளை: <code>g++ filename.cpp -o filename.exe</code>",
+                            en: "<b>MinGW (Minimalist GNU for Windows)</b> is a set of runtime header files and GNU compilers (<code>g++</code>) used on Windows to compile C++ source files (<code>.cpp</code>) into native executables (<code>.exe</code>).<br>Command: <code>g++ filename.cpp -o filename.exe</code>"
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: சமையல் செய்முறை vs தயாரான உணவு", en: "Real-world Analogy: Recipe Card (.cpp) vs Ready Meal (.exe)" },
+                            desc: {
+                                ta: "<code>welcome.cpp</code> என்பது காகிதத்தில் எழுதப்பட்ட சமையல் குறிப்பு; <b>MinGW g++</b> என்பது அடுப்பு; <code>welcome.exe</code> என்பது பரிமாறத் தயாராக உள்ள உணவு!",
+                                en: "<code>welcome.cpp</code> is the written recipe, <b>MinGW g++</b> is the oven, and <code>welcome.exe</code> is the ready-to-serve meal!"
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<b>MinGW</b> விரிவாக்கம்: <b>Minimalist GNU for Windows</b>.",
+                                "<code>g++</code> என்பது C++ நிரல்களைத் தொகுக்கும் GNU தொகுப்பி (Compiler).",
+                                "<code>-o</code> கொடி (Flag) உருவாக்கப்பட வேண்டிய வெளியீட்டு <code>.exe</code> கோப்பின் பெயரைக் குறிக்கும்."
+                            ],
+                            en: [
+                                "<b>MinGW</b> stands for <b>Minimalist GNU for Windows</b>.",
+                                "<code>g++</code> invokes the GNU C++ compiler.",
+                                "<code>-o</code> specifies the output executable filename (e.g., <code>-o pali.exe</code>)."
+                            ]
+                        },
+                        code: `# Compiling C++ using MinGW g++ via Python os.system()\nimport os\nos.system("g++ palindrome.cpp -o palindrome.exe")`,
+                        presetKey: 'palindromeCpp'
+                    },
+                    {
+                        id: 'cmd_execution',
+                        icon: 'fa-terminal',
+                        color: 'text-slate-700 bg-slate-100 border-slate-300',
+                        title: { ta: "கட்டளை வரியில் பைத்தான் நிரலை இயக்குதல் (Running via CMD)", en: "Executing Python Wrapper via Command Prompt" },
+                        shortDesc: {
+                            ta: "<code>python &lt;filename.py&gt; -i &lt;c++_filename&gt;</code> என்ற கட்டளை மூலம் C++ நிரலைப் பைத்தான் வழியே இயக்குதல்.",
+                            en: "Run C++ programs through Python from the terminal using <code>python &lt;filename.py&gt; -i &lt;cpp_filename&gt;</code>."
+                        },
+                        summary: {
+                            ta: "விண்டோஸ் கட்டளை வரியில் (Command Prompt) பைத்தான் வழியாக C++ நிரலை இயக்கப் பயன்படும் தொடரியல்:<br><code>python &lt;filename.py&gt; -i &lt;C++ filename without cpp extension&gt;</code><br>எடுத்துக்காட்டு: <code>python pycpp.py -i palindrome</code>",
+                            en: "Syntax to execute a C++ program via Python from the Windows Command Prompt:<br><code>python &lt;filename.py&gt; -i &lt;C++ filename without .cpp extension&gt;</code><br>Example: <code>python pycpp.py -i palindrome</code>"
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: கொரியர் பார்சல் முகவரி சீட்டு", en: "Real-world Analogy: Courier Parcel Instruction Label" },
+                            desc: {
+                                ta: "<code>python pycpp.py</code> என்பது கொரியர் ஊழியர்; <code>-i palindrome</code> என்பது 'உள்ளீட்டுக் கோப்பாக palindrome.cpp-ஐ எடுத்துச் செல்' என்ற கட்டளைச் சீட்டு!",
+                                en: "<code>python pycpp.py</code> is the courier agent, and <code>-i palindrome</code> is the instruction tag telling it which input file to pick up and process."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>python</code> சிறப்புச்சொல் பைத்தான் வரிமொழிமாற்றியை அழைக்கும்.",
+                                "<code>-i</code> என்பது உள்ளீட்டுக் கோப்பைக் (Input mode) குறிக்கும்.",
+                                "C++ கோப்பின் பெயரை <code>.cpp</code> நீட்டிப்பு இல்லாமல் கொடுக்க வேண்டும்."
+                            ],
+                            en: [
+                                "<code>python</code> invokes the Python interpreter.",
+                                "<code>-i</code> specifies the input C++ source file mode.",
+                                "Pass the C++ filename <b>without</b> the <code>.cpp</code> extension."
+                            ]
+                        },
+                        code: `# Command Prompt Syntax:\n# C:\\Python3> python pycpp.py -i palindrome`,
+                        presetKey: 'palindromeCpp'
+                    },
+                    {
+                        id: 'dunder_main',
+                        icon: 'fa-star',
+                        color: 'text-rose-600 bg-rose-50 border-rose-200',
+                        title: { ta: "சிறப்பு மாறி __name__ == \"__main__\"", en: "Special Variable: if __name__ == \"__main__\":" },
+                        shortDesc: {
+                            ta: "பைத்தான் நிரல் நேரடியாக இயக்கப்படுகிறதா அல்லது வேறொரு நிரலில் இறக்கம் (Import) செய்யப்பட்டுள்ளதா என்பதை அறிய உதவும் சிறப்பு மாறி.",
+                            en: "Built-in variable indicating whether a Python script is run directly as the main program or imported as a module."
+                        },
+                        summary: {
+                            ta: "பைத்தானில் <code>__name__</code> என்பது ஒரு உள்ளமைந்த சிறப்பு மாறியாகும் (இரண்டு அடிக்கோடுகள் முன்னும் பின்னும் இருக்கும்). நிரல் நேரடியாக இயக்கப்படும்போது <code>__name__</code> மதிப்பு <code>\"__main__\"</code> ஆக இருக்கும். அப்போது <code>if __name__ == \"__main__\": main(sys.argv[1:])</code> இயங்கும்.",
+                            en: "<code>__name__</code> is a built-in Python variable (with double underscores). When the file is executed directly, Python sets <code>__name__ = \"__main__\"</code>. When imported into another script, <code>__name__</code> holds the module's name."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: பள்ளியின் தலைமை ஆசிரியர் vs வருகை ஆசிரியர்", en: "Real-world Analogy: Principal vs Guest Lecturer" },
+                            desc: {
+                                ta: "நீங்கள் நேரடியாகப் பள்ளிக்குச் சென்றால் நீங்களே <b>முதன்மைப் பொறுப்பாளர் (\"__main__\")</b>; வேறொரு வகுப்பிற்கு அழைக்கப்பட்டால் (import) நீங்கள் ஒரு <b>உதவிப் பாடம் (Module)</b> மட்டுமே!",
+                                en: "When executed directly, the script is the <b>Main Host (\"__main__\")</b>; when imported elsewhere, it acts solely as a supporting helper module."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>__name__</code> மற்றும் <code>__main__</code> ஆகியவற்றின் இருபுறமும் <b>இரண்டு அடிக்கோடுகள் (Double Underscores)</b> உள்ளன.",
+                                "ஒப்பீட்டுக்கு சமக்குறி <code>==</code> பயன்படுத்த வேண்டும் (<code>=</code> அல்ல)."
+                            ],
+                            en: [
+                                "Both <code>__name__</code> and <code>__main__</code> use double leading and trailing underscores.",
+                                "Always use equality operator <code>==</code> in <code>if __name__ == \"__main__\":</code>."
+                            ]
+                        },
+                        code: `import sys\n\ndef main(argv):\n    print("Arguments received:", argv)\n\nif __name__ == "__main__":\n    main(sys.argv[1:])`,
+                        presetKey: 'dunderDemo'
+                    }
+                ]
+            },
+            {
+                id: 'mod3',
+                badge: { ta: "பிரிவு 3", en: "Module 3" },
+                title: { ta: "பைத்தானின் 3 முக்கிய கூறுகள்: sys, os & getopt (Python Interfacing Modules)", en: "Python's 3 Interfacing Modules: sys, os & getopt" },
+                topics: [
+                    {
+                        id: 'mod_sys',
+                        icon: 'fa-list-check',
+                        color: 'text-blue-600 bg-blue-50 border-blue-200',
+                        title: { ta: "1. sys கூறு மற்றும் sys.argv (sys Module & sys.argv)", en: "1. sys Module & sys.argv Command-Line List" },
+                        shortDesc: {
+                            ta: "<code>sys.argv</code> என்பது கட்டளை வரி மூலம் பைத்தான் நிரலுக்கு அனுப்பப்படும் அனைத்து அளபுருக்களையும் சேமிக்கும் பட்டியல் (List) ஆகும்.",
+                            en: "<code>sys.argv</code> is a Python list containing all command-line arguments passed to the script."
+                        },
+                        summary: {
+                            ta: "<code>sys</code> கூறு பைத்தான் வரிமொழிமாற்றியுடன் தொடர்பு கொள்ளப் பயன்படுகிறது.<br>• <code>sys.argv[0]</code>: இயக்கப்படும் பைத்தான் நிரலின் பெயரைக் கொண்டிருக்கும்.<br>• <code>sys.argv[1]</code>: கட்டளை வரியில் அனுப்பப்படும் முதல் அளபுருவைக் கொண்டிருக்கும்.<br>• <code>sys.argv[1:]</code>: நிரல் பெயரைத் தவிர்த்து மீதமுள்ள அனைத்து அளபுருக்களையும் கொண்டிருக்கும்.",
+                            en: "The <code>sys</code> module provides access to variables maintained by the Python interpreter:<br>• <code>sys.argv[0]</code> stores the name of the Python script itself.<br>• <code>sys.argv[1:]</code> slices all arguments passed after the script name."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: ரயில் பயணச்சீட்டு பட்டியல் (Passenger Manifest)", en: "Real-world Analogy: Train Seat List" },
+                            desc: {
+                                ta: "<code>sys.argv[0]</code> என்பது ரயில் என்ஜின் (Python Script Name); <code>sys.argv[1]</code>, <code>sys.argv[2]</code> ஆகியவை பின்னால் இணைக்கப்பட்டுள்ள பயணிகள் பெட்டிகள் (Arguments)!",
+                                en: "<code>sys.argv[0]</code> is the locomotive engine (the script name), while <code>sys.argv[1]</code>, <code>sys.argv[2]</code> are the passenger coaches (arguments) trailing behind."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>sys.argv</code> என்பது ஒரு <b>பட்டியல் (List)</b> தரவு வகையாகும்.",
+                                "<code>sys.argv[0]</code> எப்போதும் பைத்தான் நிரலின் பெயரைக் குறிக்கும்.",
+                                "<code>main(sys.argv[1:])</code> மூலம் அளபுருக்கள் <code>main()</code> செயற்கூறுக்கு அனுப்பப்படுகின்றன."
+                            ],
+                            en: [
+                                "<code>sys.argv</code> is a Python <b>list</b> of strings.",
+                                "<code>sys.argv[0]</code> always holds the script's filename.",
+                                "<code>sys.argv[1:]</code> extracts all arguments excluding the script name."
+                            ]
+                        },
+                        code: `import sys\nprint("Script Name sys.argv[0]:", sys.argv[0])\nprint("All Arguments sys.argv[1:]:", sys.argv[1:])`,
+                        presetKey: 'sysArgvDemo'
+                    },
+                    {
+                        id: 'mod_os',
+                        icon: 'fa-desktop',
+                        color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+                        title: { ta: "2. os கூறு மற்றும் os.system() (os Module & os.system)", en: "2. os Module & os.system() Execution" },
+                        shortDesc: {
+                            ta: "இயக்க அமைப்புடன் (OS) தொடர்பு கொண்டு <code>g++</code> தொகுத்தல் மற்றும் <code>.exe</code> கோப்பை இயக்க <code>os.system()</code> பயன்படுகிறது.",
+                            en: "Interacts with the Operating System to run shell/CMD commands like <code>g++</code> compilation and executing <code>.exe</code> binaries."
+                        },
+                        summary: {
+                            ta: "<code>os</code> கூறு இயக்க அமைப்பு சார்ந்த பணிகளைச் செய்ய உதவுகிறது. இதில் உள்ள <code>os.system(command)</code> செயற்கூறு ஒரு சரக் கட்டளையைப் பெற்று இயக்க அமைப்பின் கட்டளை வரியில் (Shell/CMD) இயக்கும்.<br>எ.கா: <code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code>",
+                            en: "The <code>os</code> module provides OS-dependent functionality. <code>os.system(command)</code> executes a command string inside the system's subshell/Command Prompt.<br>Example: <code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code>"
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: தொலைபேசி வழியே உதவியாளருக்குக் கட்டளையிடுதல்", en: "Real-world Analogy: Giving Voice Instructions to an Assistant" },
+                            desc: {
+                                ta: "நீங்கள் (Python) இயக்க அமைப்பிற்கு (Windows CMD) <code>os.system(...)</code> என்ற தொலைபேசி வழியே 'இந்த C++ கோப்பை g++ கொண்டு compile செய்!' எனக் கட்டளை இடுகிறீர்கள்!",
+                                en: "Python picks up the intercom (<code>os.system()</code>) and tells Windows Command Prompt: 'Compile this C++ file with g++ and run the .exe!'"
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code>: C++ கோப்பைத் தொகுத்து <code>.exe</code> உருவாக்கும்.",
+                                "<code>os.system(exe_file)</code>: உருவாக்கப்பட்ட <code>.exe</code> கோப்பை இயக்கும்.",
+                                "<code>g++</code> மற்றும் <code>-o</code> ஆகியவற்றின் இருபுறமும் இடைவெளி (Space) மிக அவசியம்."
+                            ],
+                            en: [
+                                "<code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code> compiles C++ into an executable.",
+                                "<code>os.system(exe_file)</code> runs the compiled binary.",
+                                "Spaces around <code>'g++ '</code> and <code>' -o '</code> are mandatory for valid CMD syntax."
+                            ]
+                        },
+                        code: `import os\ncpp_file = "welcome.cpp"\nexe_file = "welcome.exe"\nos.system("g++ " + cpp_file + " -o " + exe_file)\nos.system(exe_file)`,
+                        presetKey: 'helloCpp'
+                    },
+                    {
+                        id: 'mod_getopt',
+                        icon: 'fa-sliders',
+                        color: 'text-purple-600 bg-purple-50 border-purple-200',
+                        title: { ta: "3. getopt கூறு & getopt.getopt() தொடரியல்", en: "3. getopt Module & getopt.getopt() Syntax" },
+                        shortDesc: {
+                            ta: "கட்டளை வரி விருப்பங்களையும் (<code>-i</code>, <code>-o</code>) அளபுருக்களையும் பிரித்தெடுக்க <code>getopt.getopt(argv, options, [long_options])</code> பயன்படுகிறது.",
+                            en: "Parses command-line flags (<code>-i</code>, <code>-o</code>) and long options using <code>getopt.getopt(argv, options, [long_options])</code>."
+                        },
+                        summary: {
+                            ta: "<b>தொடரியல்:</b> <code>opts, args = getopt.getopt(argv, options, [long_options])</code><br>1. <b>argv:</b> பிரிக்கப்பட வேண்டிய அளபுரு பட்டியல் (<code>sys.argv[1:]</code>).<br>2. <b>options:</b> குறுகிய விருப்ப எழுத்துக்கள்; மதிப்பு தேவைப்படின் முக்காற்புள்ளி (<code>:</code>) இட வேண்டும் (எ.கா: <code>'i:o:'</code>).<br>3. <b>long_options:</b> நீண்ட விருப்பப் பெயர்கள்; மதிப்பு தேவைப்படின் சமக்குறி (<code>=</code>) இட வேண்டும் (எ.கா: <code>['ifile=', 'ofile=']</code>).",
+                            en: "<b>Syntax:</b> <code>opts, args = getopt.getopt(argv, options, [long_options])</code><br>1. <b>argv:</b> Argument list to parse (<code>sys.argv[1:]</code>).<br>2. <b>options:</b> String of short option letters followed by <code>:</code> if an argument is required (e.g., <code>'i:o:'</code>).<br>3. <b>long_options:</b> List of long option names followed by <code>=</code> if an argument is required (e.g., <code>['ifile=', 'ofile=']</code>)."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: தபால் பிரிக்கும் இயந்திரம் (Mail Sorting Machine)", en: "Real-world Analogy: Automated Mail Sorter" },
+                            desc: {
+                                ta: "<code>-i palindrome -o pali.exe</code> என்ற கடிதக் குவியலை <code>getopt()</code> பிரித்து, <b>opts</b> பெட்டியில் <code>[('-i', 'palindrome'), ('-o', 'pali.exe')]</code> என அழகாக அடுக்கித் தரும்!",
+                                en: "<code>getopt()</code> sorts raw CLI tokens into neat <code>(flag, value)</code> pairs inside <code>opts</code> and leftover arguments inside <code>args</code>."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>getopt.getopt()</code> இரண்டு பட்டியல்களைத் திருப்பி அனுப்பும்: <code>opts</code> மற்றும் <code>args</code>.",
+                                "குறுகிய விருப்பத்திற்குப் பின் <code>:</code> (எ.கா: <code>\"i:\"</code>), நீண்ட விருப்பத்திற்குப் பின் <code>=</code> (எ.கா: <code>[\"ifile=\"]</code>) இட வேண்டும்."
+                            ],
+                            en: [
+                                "Returns two lists: <code>(opts, args)</code>.",
+                                "Short options requiring values take a trailing colon (<code>'i:'</code>); long options take <code>'='</code> (<code>['ifile=']</code>)."
+                            ]
+                        },
+                        code: `import sys, getopt\n\ndef main(argv):\n    opts, args = getopt.getopt(argv, "i:", ["ifile="])\n    for opt, arg in opts:\n        if opt in ("-i", "--ifile"):\n            print("Input C++ File:", arg + ".cpp")\n\nmain(["-i", "palindrome"])`,
+                        presetKey: 'getoptDemo'
+                    },
+                    {
+                        id: 'textbook_palindrome',
+                        icon: 'fa-code-compare',
+                        color: 'text-teal-600 bg-teal-50 border-teal-200',
+                        title: { ta: "பாடநூல் முழு நிரல்: Palindrome C++ நிரலை பைத்தானில் இயக்குதல்", en: "Textbook Complete Program: Running C++ Palindrome via Python" },
+                        shortDesc: {
+                            ta: "ஒரு எண் அல்லது சரம் பாலின்ட்ரோமா (Palindrome) எனச் சரிபார்க்கும் C++ நிரலை பைத்தான் Wrapper நிரல் மூலம் இயக்குதல்.",
+                            en: "Complete SCERT textbook example compiling and running a C++ Palindrome checker from a Python wrapper script."
+                        },
+                        summary: {
+                            ta: "இந்நிரலில் இரண்டு கோப்புகள் உள்ளன:<br>1. <b>palindrome.cpp:</b> பயனரிடமிருந்து உள்ளீட்டைப் பெற்று பாலின்ட்ரோமா எனச் சரிபார்க்கும் C++ நிரல்.<br>2. <b>pycpp.py:</b> <code>sys</code>, <code>os</code>, <code>getopt</code> ஆகியவற்றை இறக்கம் செய்து, <code>palindrome.cpp</code>-ஐ <code>g++</code> கொண்டு தொகுத்து <code>palindrome.exe</code>-ஐ இயக்கும் பைத்தான் நிரல்.",
+                            en: "This textbook example combines two files:<br>1. <b>palindrome.cpp:</b> Checks whether an input string/number is a palindrome in C++.<br>2. <b>pycpp.py:</b> Imports <code>sys</code>, <code>os</code>, and <code>getopt</code>, compiles <code>palindrome.cpp</code> via <code>g++</code>, and runs <code>palindrome.exe</code>."
+                        },
+                        analogy: {
+                            title: { ta: "நிஜ உலக ஒப்புமை: தானியங்கி தொழிற்சாலை வரிசை (Automated Factory Line)", en: "Real-world Analogy: Automated Assembly Line" },
+                            desc: {
+                                ta: "பைத்தான் மேலாளர் (pycpp.py) மூலப்பொருளை (palindrome.cpp) எடுத்து, இயந்திரத்தில் (g++) போட்டு, தயாரிப்பை (palindrome.exe) உருவாக்கி உடனே இயக்கிப் பார்க்கிறார்!",
+                                en: "The Python supervisor takes raw C++ source code, feeds it through the g++ compiler machine, and immediately runs the finished .exe product."
+                            }
+                        },
+                        keyPoints: {
+                            ta: [
+                                "<code>cpp_file = input_file + '.cpp'</code> மற்றும் <code>exe_file = input_file + '.exe'</code>.",
+                                "<code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code> மூலம் தொகுத்தல் நடைபெறுகிறது."
+                            ],
+                            en: [
+                                "Constructs filenames dynamically: <code>cpp_file = input_file + '.cpp'</code> and <code>exe_file = input_file + '.exe'</code>.",
+                                "Compiles and executes seamlessly in two <code>os.system()</code> calls."
+                            ]
+                        },
+                        code: `import sys, os, getopt\n\ndef main(argv):\n    cpp_file = ''\n    exe_file = ''\n    opts, args = getopt.getopt(argv, "i:", ['ifile='])\n    for o, a in opts:\n        if o in ("-i", "--ifile"):\n            cpp_file = a + '.cpp'\n            exe_file = a + '.exe'\n    run(cpp_file, exe_file)\n\ndef run(cpp_file, exe_file):\n    print("Compiling " + cpp_file)\n    os.system('g++ ' + cpp_file + ' -o ' + exe_file)\n    print("Running " + exe_file)\n    os.system(exe_file)\n\nif __name__ == '__main__':\n    main(sys.argv[1:])`,
+                        presetKey: 'palindromeCpp'
+                    }
+                ]
+            }
+        ];
+
+        // Build lookup map & ordered list for modal navigation
+        const topicLookup = {};
+        const orderedTopicIds = [];
+        textbookChapters.forEach(ch => {
+            ch.topics.forEach(t => {
+                t.chapterBadge = ch.badge;
+                topicLookup[t.id] = t;
+                orderedTopicIds.push(t.id);
+            });
+        });
+
+        // ==========================================
+        // RENDER TEXTBOOK CHAPTERS & CARDS
+        // ==========================================
+        let activeChapterFilter = 'all';
+
+        function renderTextbookChapters(filter = activeChapterFilter) {
+            activeChapterFilter = filter;
+            const container = document.getElementById('textbook-chapters-container');
+            container.innerHTML = '';
+
+            const chaptersToShow = filter === 'all'
+                ? textbookChapters
+                : textbookChapters.filter(c => c.id === filter);
+
+            chaptersToShow.forEach(ch => {
+                const section = document.createElement('div');
+                section.className = 'bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4';
+
+                let cardsHtml = '';
+                ch.topics.forEach(topic => {
+                    cardsHtml += `
+                        <div onclick="openTopicDetail('${topic.id}')" class="p-4 rounded-2xl border border-slate-200 bg-slate-50/40 hover:bg-white hover:border-blue-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer group flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="w-10 h-10 rounded-xl ${topic.color} flex items-center justify-center text-lg font-bold border group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid ${topic.icon}"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-100">
+                                        ${currentLang === 'ta' ? 'தொட்டு கற்க' : 'Tap to Explore'}
+                                    </span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm mb-1.5 group-hover:text-blue-600 transition-colors">${topic.title[currentLang]}</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed">${topic.shortDesc[currentLang]}</p>
+                            </div>
+                            <div class="mt-3 pt-2.5 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-bold text-blue-600 group-hover:text-blue-800">
+                                <span class="flex items-center gap-1"><i class="fa-solid fa-lightbulb text-amber-500"></i> ${currentLang === 'ta' ? 'விளக்கம், ஒப்புமை & நிரல்' : 'Analogy & Live Code'}</span>
+                                <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                section.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-200 gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <span class="bg-blue-600 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg">${ch.badge[currentLang]}</span>
+                            <h3 class="text-base sm:text-lg font-extrabold text-slate-900">${ch.title[currentLang]}</h3>
+                        </div>
+                        <span class="text-xs text-slate-500 font-semibold">${ch.topics.length} ${currentLang === 'ta' ? 'தலைப்புகள்' : 'Topics'}</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        ${cardsHtml}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+        }
+
+        function filterTopicsByChapter(chId) {
+            playSound('click');
+            ['all', 'mod1', 'mod2', 'mod3'].forEach(id => {
+                const btn = document.getElementById(`ch-btn-${id}`);
+                if (!btn) return;
+                if (id === chId) {
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-sm transition';
+                } else {
+                    btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-blue-50 transition';
+                }
+            });
+            renderTextbookChapters(chId);
+        }
+
+        // ==========================================
+        // TOPIC DEEP-DIVE MODAL LOGIC
+        // ==========================================
+        let currentModalTopicId = 'script_vs_prog';
+
+        function openTopicDetail(topicId, playAudio = true) {
+            const topic = topicLookup[topicId];
+            if (!topic) return;
+
+            currentModalTopicId = topicId;
+            if (playAudio) playSound('click');
+
+            document.getElementById('modal-topic-icon').className = `fa-solid ${topic.icon}`;
+            document.getElementById('modal-topic-cat').textContent = topic.chapterBadge[currentLang];
+            document.getElementById('modal-topic-title').textContent = topic.title[currentLang];
+            document.getElementById('modal-topic-summary').innerHTML = topic.summary[currentLang];
+
+            document.getElementById('modal-topic-analogy-title').textContent = topic.analogy.title[currentLang];
+            document.getElementById('modal-topic-analogy-desc').textContent = topic.analogy.desc[currentLang];
+
+            const pointsContainer = document.getElementById('modal-topic-points');
+            pointsContainer.innerHTML = '';
+            topic.keyPoints[currentLang].forEach(pt => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-2';
+                li.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500 text-xs mt-1"></i> <span>${pt}</span>`;
+                pointsContainer.appendChild(li);
+            });
+
+            document.getElementById('modal-topic-code').textContent = topic.code;
+            document.getElementById('topic-detail-modal').classList.remove('hidden');
+        }
+
+        function closeTopicDetail() {
+            playSound('click');
+            document.getElementById('topic-detail-modal').classList.add('hidden');
+        }
+
+        function navigateTopicDetail(direction) {
+            let idx = orderedTopicIds.indexOf(currentModalTopicId);
+            if (idx === -1) idx = 0;
+            idx = (idx + direction + orderedTopicIds.length) % orderedTopicIds.length;
+            openTopicDetail(orderedTopicIds[idx], true);
+        }
+
+        function copyModalCode() {
+            playSound('click');
+            const code = document.getElementById('modal-topic-code').textContent;
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "நிரல் நகலெடுக்கப்பட்டது!" : "Code copied to clipboard!", "Copied");
+        }
+
+        function loadTopicPresetToPlayground(topicId) {
+            const topic = topicLookup[topicId];
+            if (!topic) return;
+            closeTopicDetail();
+            switchTab('playground');
+            const presetKey = topic.presetKey || 'palindromeCpp';
+            document.getElementById('preset-selector').value = presetKey;
+            loadDualPreset(presetKey);
+            showToast(currentLang === 'ta' ? `'${topic.title.ta}' ஆய்வகத்தில் இயக்கப்பட்டது.` : `Running '${topic.title.en}' in Lab.`, "Python + C++ Lab");
+        }
+
+        // ==========================================
+        // VISUAL PIPELINE & GETOPT SIMULATOR (TAB 2)
+        // ==========================================
+        let currentDunderMode = 'direct';
+        let parsedTargetBaseName = 'palindrome';
+
+        function setCliPreset(cmd) {
+            playSound('click');
+            document.getElementById('sim-cli-input').value = cmd;
+            parseCliCommand();
+        }
+
+        function parseCliCommand() {
+            const raw = document.getElementById('sim-cli-input').value.trim();
+            const tokens = raw.split(/\s+/).filter(Boolean);
+
+            // Determine sys.argv slice (skip leading 'python' or 'python3' if present)
+            const argvList = (tokens[0] && /^python3?$/i.test(tokens[0])) ? tokens.slice(1) : tokens;
+            if (argvList.length === 0) argvList.push('pycpp.py');
+
+            document.getElementById('sim-sys-len').textContent = `len(sys.argv) = ${argvList.length}`;
+
+            const boxesContainer = document.getElementById('sim-sys-boxes');
+            boxesContainer.innerHTML = '';
+            argvList.forEach((arg, idx) => {
+                const badgeClass = idx === 0
+                    ? 'bg-blue-600 text-white border-blue-700'
+                    : 'bg-white text-slate-800 border-slate-300';
+                const div = document.createElement('div');
+                div.className = `px-3 py-1.5 rounded-xl border text-xs font-mono shadow-2xs ${badgeClass}`;
+                div.innerHTML = `<span class="text-[10px] opacity-75 block">sys.argv[${idx}]</span><span class="font-bold">"${arg}"</span>`;
+                boxesContainer.appendChild(div);
+            });
+
+            // Simulate getopt(argv[1:], "i:o:", ["ifile=", "ofile="])
+            const cliArgs = argvList.slice(1);
+            const opts = [];
+            let inFile = 'palindrome';
+            let outFile = '';
+
+            for (let i = 0; i < cliArgs.length; i++) {
+                const tok = cliArgs[i];
+                if ((tok === '-i' || tok === '--ifile') && cliArgs[i + 1]) {
+                    inFile = cliArgs[i + 1].replace(/\.cpp$/i, '');
+                    opts.push(`('${tok}', '${inFile}')`);
+                    i++;
+                } else if (tok.startsWith('--ifile=')) {
+                    inFile = tok.split('=')[1].replace(/\.cpp$/i, '') || 'palindrome';
+                    opts.push(`('--ifile', '${inFile}')`);
+                } else if ((tok === '-o' || tok === '--ofile') && cliArgs[i + 1]) {
+                    outFile = cliArgs[i + 1].replace(/\.exe$/i, '');
+                    opts.push(`('${tok}', '${outFile}')`);
+                    i++;
+                } else if (tok.startsWith('--ofile=')) {
+                    outFile = tok.split('=')[1].replace(/\.exe$/i, '');
+                    opts.push(`('--ofile', '${outFile}')`);
+                }
+            }
+
+            if (opts.length === 0) {
+                opts.push(`('-i', '${inFile}')`);
+            }
+            if (!outFile) outFile = inFile;
+            parsedTargetBaseName = inFile;
+
+            document.getElementById('sim-getopt-opts').textContent = `[${opts.join(', ')}]`;
+            document.getElementById('sim-getopt-cmds').innerHTML = `g++ ${inFile}.cpp -o ${outFile}.exe<br>${outFile}.exe`;
+        }
+
+        function animatePipelineExecution() {
+            playSound('run');
+            parseCliCommand();
+            const consoleEl = document.getElementById('sim-pipeline-console');
+            const base = parsedTargetBaseName || 'palindrome';
+
+            // Reset step styles
+            [1, 2, 3, 4].forEach(n => {
+                const el = document.getElementById(`pipe-step-${n}`);
+                if (el) el.classList.remove('pipeline-active-step');
+            });
+
+            consoleEl.innerHTML = `<div class="text-slate-400">C:\\Python3&gt; ${document.getElementById('sim-cli-input').value}</div>`;
+
+            const steps = [
+                { step: 1, delay: 100, msg: `[Step 1 - Python sys & getopt] Parsed input C++ source: "${base}.cpp"` },
+                { step: 2, delay: 650, msg: `[Step 2 - MinGW g++] Executing: os.system("g++ ${base}.cpp -o ${base}.exe")` },
+                { step: 3, delay: 1250, msg: `[Step 3 - Binary Output] Successfully generated executable: "${base}.exe"` },
+                { step: 4, delay: 1850, msg: `[Step 4 - Execution] Running ${base}.exe -> C++ program executed cleanly! (Exit Code 0)` }
+            ];
+
+            steps.forEach(item => {
+                setTimeout(() => {
+                    [1, 2, 3, 4].forEach(n => {
+                        const el = document.getElementById(`pipe-step-${n}`);
+                        if (el) el.classList.toggle('pipeline-active-step', n === item.step);
+                    });
+                    const line = document.createElement('div');
+                    line.className = item.step === 4 ? 'text-amber-300 font-bold' : 'text-emerald-400';
+                    line.textContent = item.msg;
+                    consoleEl.appendChild(line);
+                    if (item.step === 4) playSound('success');
+                }, item.delay);
+            });
+        }
+
+        function setDunderMode(mode) {
+            currentDunderMode = mode;
+            const btnDirect = document.getElementById('btn-dunder-direct');
+            const btnImport = document.getElementById('btn-dunder-import');
+            const valDisp = document.getElementById('dunder-val-display');
+            const actDisp = document.getElementById('dunder-action-display');
+
+            if (mode === 'direct') {
+                btnDirect.className = 'flex-1 py-1 rounded-md bg-blue-600 text-white transition';
+                btnImport.className = 'flex-1 py-1 rounded-md text-slate-700 transition';
+                valDisp.textContent = '__name__ == "__main__" (True)';
+                valDisp.className = 'text-amber-300 font-bold';
+                actDisp.textContent = currentLang === 'ta'
+                    ? '✓ நேரடி இயக்கம்: main(sys.argv[1:]) செயற்கூறு இயங்கும்!'
+                    : '✓ Direct Run: main(sys.argv[1:]) executes immediately!';
+                actDisp.className = 'text-emerald-400 text-[11px]';
+            } else {
+                btnImport.className = 'flex-1 py-1 rounded-md bg-indigo-600 text-white transition';
+                btnDirect.className = 'flex-1 py-1 rounded-md text-slate-700 transition';
+                valDisp.textContent = '__name__ == "pycpp" (False)';
+                valDisp.className = 'text-cyan-300 font-bold';
+                actDisp.textContent = currentLang === 'ta'
+                    ? '⊘ இறக்கம் (Import): main() தானாக இயங்காது; செயற்கூறுகளை மட்டும் அழைக்கலாம்.'
+                    : '⊘ Imported as Module: main() is skipped; functions can be reused.';
+                actDisp.className = 'text-rose-300 text-[11px]';
+            }
+        }
+
+        // ==========================================
+        // DUAL PYTHON + C++ PRESETS & EXECUTION LAB
+        // ==========================================
+        const dualPresets = {
+            palindromeCpp: {
+                name: { ta: "1. பாடநூல் முழு நிரல்: Palindrome (pycpp.py + palindrome.cpp)", en: "1. Textbook Complete Program: Palindrome (pycpp.py + palindrome.cpp)" },
+                cppFile: "palindrome.cpp",
+                defaultInput: "madam",
+                needsInput: true,
+                pyCode: `# pycpp.py - Compiling and Running C++ Palindrome Program via Python
+import sys, os, getopt
+
+def main(argv):
+    cpp_file = ''
+    exe_file = ''
+    opts, args = getopt.getopt(argv, "i:", ['ifile='])
+    for o, a in opts:
+        if o in ("-i", "--ifile"):
+            cpp_file = a + '.cpp'
+            exe_file = a + '.exe'
+    run(cpp_file, exe_file)
+
+def run(cpp_file, exe_file):
+    print("Compiling " + cpp_file)
+    os.system('g++ ' + cpp_file + ' -o ' + exe_file)
+    print("Running " + exe_file)
+    os.system(exe_file)
+
+if __name__ == '__main__':
+    main(["-i", "palindrome"])`,
+                cppCode: `// palindrome.cpp - Check whether a string/word is a Palindrome
+#include <iostream>
+#include <string>
+using namespace std;
+
+int main() {
+    string word, rev = "";
+    cin >> word;
+    for (int i = word.length() - 1; i >= 0; i--) {
+        rev += word[i];
+    }
+    cout << "Input Word: " << word << endl;
+    cout << "Reversed  : " << rev << endl;
+    if (word == rev)
+        cout << "Result    : " << word << " is a PALINDROME!" << endl;
+    else
+        cout << "Result    : " << word << " is NOT a Palindrome." << endl;
+    return 0;
+}`
+            },
+            helloCpp: {
+                name: { ta: "2. எளிய C++ வரவேற்பு நிரல் (welcome.cpp)", en: "2. Basic C++ Welcome Program (welcome.cpp)" },
+                cppFile: "welcome.cpp",
+                defaultInput: "Kavin",
+                needsInput: false,
+                pyCode: `# pycpp.py - Invoking MinGW g++ Compiler from Python
+import os
+
+cpp_file = "welcome.cpp"
+exe_file = "welcome.exe"
+
+print("Step 1: Compiling " + cpp_file + " using MinGW g++...")
+os.system("g++ " + cpp_file + " -o " + exe_file)
+
+print("Step 2: Executing " + exe_file + "...")
+os.system(exe_file)`,
+                cppCode: `// welcome.cpp - Simple C++ Program Executed via Python
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "=========================================" << endl;
+    cout << " Vanakkam! C++ Executed from Python 3!   " << endl;
+    cout << " Class 12 Computer Science - Chapter 14  " << endl;
+    cout << "=========================================" << endl;
+    return 0;
+}`
+            },
+            factorialCpp: {
+                name: { ta: "3. காரணீயம் காணும் C++ நிரல் (factorial.cpp)", en: "3. Factorial Calculation in C++ (factorial.cpp)" },
+                cppFile: "factorial.cpp",
+                defaultInput: "6",
+                needsInput: true,
+                pyCode: `# pycpp.py - Running C++ Factorial Program via Python Wrapper
+import sys, os, getopt
+
+def main(argv):
+    opts, args = getopt.getopt(argv, "i:", ["ifile="])
+    for opt, arg in opts:
+        if opt in ("-i", "--ifile"):
+            os.system("g++ " + arg + ".cpp -o " + arg + ".exe")
+            os.system(arg + ".exe")
+
+if __name__ == "__main__":
+    main(["-i", "factorial"])`,
+                cppCode: `// factorial.cpp - Compute Factorial of N
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    long long fact = 1;
+    cin >> n;
+    for (int i = 1; i <= n; i++) {
+        fact *= i;
+    }
+    cout << "Number (N)    : " << n << endl;
+    cout << "Factorial (N!): " << fact << endl;
+    return 0;
+}`
+            },
+            sysArgvDemo: {
+                name: { ta: "4. sys.argv பட்டியல் செயல்முறை (sys Module)", en: "4. sys.argv Command-Line List Demo (sys Module)" },
+                cppFile: "demo.cpp",
+                defaultInput: "10",
+                needsInput: false,
+                pyCode: `# Demonstrating sys.argv Command-Line Argument List
+import sys
+
+# Simulated Command: python pycpp.py -i demo
+sys.argv = ["pycpp.py", "-i", "demo"]
+
+print("Full sys.argv list   :", sys.argv)
+print("Script Name [0]      :", sys.argv[0])
+print("Arguments Slice [1:] :", sys.argv[1:])`,
+                cppCode: `// demo.cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "demo.exe executed successfully!" << endl;
+    return 0;
+}`
+            },
+            getoptDemo: {
+                name: { ta: "5. getopt.getopt() அளபுரு பிரித்தல் (getopt Module)", en: "5. getopt.getopt() Option Parsing Demo" },
+                cppFile: "sample.cpp",
+                defaultInput: "5",
+                needsInput: false,
+                pyCode: `# Demonstrating getopt.getopt(argv, "i:o:", ["ifile=", "ofile="])
+import getopt
+
+argv = ["-i", "sample", "-o", "sample_out"]
+opts, args = getopt.getopt(argv, "i:o:", ["ifile=", "ofile="])
+
+print("Parsed opts:", opts)
+for opt, val in opts:
+    if opt in ("-i", "--ifile"):
+        print("Source C++ File :", val + ".cpp")
+    elif opt in ("-o", "--ofile"):
+        print("Output Exe File :", val + ".exe")`,
+                cppCode: `// sample.cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Output from sample_out.exe!" << endl;
+    return 0;
+}`
+            },
+            dunderDemo: {
+                name: { ta: "6. சிறப்பு மாறி __name__ == '__main__' சோதனை", en: "6. Special Variable __name__ == '__main__' Demo" },
+                cppFile: "welcome.cpp",
+                defaultInput: "5",
+                needsInput: false,
+                pyCode: `# Checking Special Built-in Variable __name__
+import sys
+
+def greet_cpp():
+    print("Inside greet_cpp(): Ready to launch C++ binary!")
+
+print("Current value of __name__:", __name__)
+
+if __name__ == "__main__":
+    print("Condition (__name__ == '__main__') is TRUE!")
+    greet_cpp()`,
+                cppCode: `// welcome.cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    cout << "Hello from C++!" << endl;
+    return 0;
+}`
+            }
+        };
+
+        let activeEditorFile = 'py';
+        let currentEditorTheme = 'dark';
+
+        function renderDualPresets() {
+            const sel = document.getElementById('preset-selector');
+            const cur = sel.value || 'palindromeCpp';
+            sel.innerHTML = '';
+            for (let key in dualPresets) {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = dualPresets[key].name[currentLang];
+                sel.appendChild(opt);
+            }
+            sel.value = cur;
+        }
+
+        function loadDualPreset(key) {
+            playSound('click');
+            const p = dualPresets[key];
+            if (!p) return;
+            document.getElementById('code-editor-py').value = p.pyCode;
+            document.getElementById('code-editor-cpp').value = p.cppCode;
+            document.getElementById('cpp-filename-tab').textContent = p.cppFile;
+            document.getElementById('cpp-stdin-input').value = p.defaultInput;
+            runPythonCppPipeline();
+        }
+
+        function switchEditorFile(fileType) {
+            playSound('click');
+            activeEditorFile = fileType;
+            const pyPane = document.getElementById('pane-py-editor');
+            const cppPane = document.getElementById('pane-cpp-editor');
+            const pyTab = document.getElementById('file-tab-py');
+            const cppTab = document.getElementById('file-tab-cpp');
+
+            if (fileType === 'py') {
+                pyPane.classList.remove('hidden');
+                cppPane.classList.add('hidden');
+                pyTab.className = 'px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-blue-600 text-white flex items-center gap-1.5 shadow-sm transition';
+                cppTab.className = currentEditorTheme === 'light'
+                    ? 'px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center gap-1.5 transition'
+                    : 'px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition';
+            } else {
+                cppPane.classList.remove('hidden');
+                pyPane.classList.add('hidden');
+                cppTab.className = 'px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-amber-600 text-white flex items-center gap-1.5 shadow-sm transition';
+                pyTab.className = currentEditorTheme === 'light'
+                    ? 'px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center gap-1.5 transition'
+                    : 'px-3 py-1.5 rounded-lg font-mono font-bold text-xs bg-slate-800 text-slate-300 hover:text-white flex items-center gap-1.5 transition';
+            }
+        }
+
+        function copyActiveCode() {
+            playSound('click');
+            const val = activeEditorFile === 'py'
+                ? document.getElementById('code-editor-py').value
+                : document.getElementById('code-editor-cpp').value;
+            const textarea = document.createElement('textarea');
+            textarea.value = val;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast(currentLang === 'ta' ? "நிரல் நகலெடுக்கப்பட்டது!" : "Code copied to clipboard!", "Clipboard");
+        }
+
+        function clearTerminal() {
+            document.getElementById('terminal-output').innerHTML = '<div class="text-slate-500">// Terminal cleared.</div>';
+        }
+
+        // Execute the C++ code in-browser when invoked by os.system("...exe")
+        function simulateCppExecution(cppSource, stdinVal) {
+            const lines = [];
+            // Extract cout statements and evaluate simple logic
+            if (/palindrome/i.test(cppSource) || /word\s*==\s*rev/i.test(cppSource)) {
+                const word = String(stdinVal || 'madam').trim();
+                const rev = word.split('').reverse().join('');
+                lines.push(`Input Word: ${word}`);
+                lines.push(`Reversed  : ${rev}`);
+                if (word === rev) {
+                    lines.push(`Result    : ${word} is a PALINDROME!`);
+                } else {
+                    lines.push(`Result    : ${word} is NOT a Palindrome.`);
+                }
+                return lines;
+            }
+
+            if (/fact\s*\*=\s*i/i.test(cppSource)) {
+                const n = Math.min(Math.max(parseInt(stdinVal, 10) || 5, 0), 20);
+                let fact = 1;
+                for (let i = 1; i <= n; i++) fact *= i;
+                lines.push(`Number (N)    : ${n}`);
+                lines.push(`Factorial (N!): ${fact}`);
+                return lines;
+            }
+
+            // General C++ cout extractor
+            const coutMatches = [...cppSource.matchAll(/cout\s*<<\s*([^;]+);/g)];
+            if (coutMatches.length > 0) {
+                coutMatches.forEach(m => {
+                    const expr = m[1];
+                    const parts = expr.split('<<').map(s => s.trim()).filter(s => s !== 'endl' && s !== '"\\n"');
+                    const rendered = parts.map(p => {
+                        if ((p.startsWith('"') && p.endsWith('"')) || (p.startsWith("'") && p.endsWith("'"))) {
+                            return p.slice(1, -1);
+                        }
+                        if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(p)) {
+                            return stdinVal || p;
+                        }
+                        return p;
+                    }).join('');
+                    if (rendered) lines.push(rendered);
+                });
+            }
+
+            if (lines.length === 0) {
+                lines.push("C++ executable ran with exit code 0.");
+            }
+            return lines;
+        }
+
+        function runPythonCppPipeline() {
+            playSound('run');
+            const startTime = performance.now();
+            const pySource = document.getElementById('code-editor-py').value;
+            const cppSource = document.getElementById('code-editor-cpp').value;
+            const cppFilename = document.getElementById('cpp-filename-tab').textContent.trim();
+            const stdinVal = document.getElementById('cpp-stdin-input').value;
+            const termOut = document.getElementById('terminal-output');
+            termOut.innerHTML = '';
+
+            function appendLine(text, style = 'normal') {
+                const div = document.createElement('div');
+                if (style === 'cmd') {
+                    div.className = 'text-blue-400 font-bold';
+                } else if (style === 'cpp') {
+                    div.className = currentEditorTheme === 'light' ? 'text-amber-800 bg-amber-50 px-2 py-0.5 rounded font-semibold' : 'text-amber-300 bg-slate-900/90 px-2 py-0.5 rounded';
+                } else if (style === 'error') {
+                    div.className = 'text-rose-400 font-bold';
+                } else if (style === 'meta') {
+                    div.className = 'text-slate-400 text-xs';
+                } else {
+                    div.className = currentEditorTheme === 'light' ? 'text-slate-800' : 'text-emerald-300';
+                }
+                div.textContent = text;
+                termOut.appendChild(div);
+            }
+
+            try {
+                appendLine(`C:\\Python3> python pycpp.py -i ${cppFilename.replace(/\.cpp$/i, '')}`, 'cmd');
+
+                // Check basic Python indentation / syntax sanity
+                if (!pySource.trim()) {
+                    throw new Error("Python wrapper file (pycpp.py) is empty.");
+                }
+
+                // Evaluate Python print statements and os.system calls in order
+                const pyLines = pySource.split('\n');
+                let sysArgvSim = ['pycpp.py', '-i', cppFilename.replace(/\.cpp$/i, '')];
+                let compiledExe = false;
+                let ranExe = false;
+
+                // Track simple string variables in Python script
+                const pyVars = {
+                    cpp_file: cppFilename,
+                    exe_file: cppFilename.replace(/\.cpp$/i, '.exe'),
+                    arg: cppFilename.replace(/\.cpp$/i, ''),
+                    val: cppFilename.replace(/\.cpp$/i, ''),
+                    __name__: '"__main__"'
+                };
+
+                pyLines.forEach(rawLine => {
+                    const line = rawLine.trim();
+                    if (!line || line.startsWith('#')) return;
+
+                    // Simple string assignment: var = "val"
+                    const assignMatch = line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*["']([^"']+)["']$/);
+                    if (assignMatch) {
+                        pyVars[assignMatch[1]] = assignMatch[2];
+                    }
+
+                    // sys.argv assignment
+                    const argvMatch = line.match(/^sys\.argv\s*=\s*\[([^\]]+)\]/);
+                    if (argvMatch) {
+                        sysArgvSim = argvMatch[1].split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));
+                    }
+
+                    // print(...) handling
+                    const printMatch = line.match(/^print\s*\((.+)\)$/);
+                    if (printMatch) {
+                        const argExpr = printMatch[1].trim();
+                        if (argExpr.includes('sys.argv[0]')) {
+                            appendLine(`Script Name [0]      : ${sysArgvSim[0]}`);
+                        } else if (argExpr.includes('sys.argv[1:]')) {
+                            appendLine(`Arguments Slice [1:] : ${JSON.stringify(sysArgvSim.slice(1))}`);
+                        } else if (argExpr.includes('sys.argv')) {
+                            appendLine(`Full sys.argv list   : ${JSON.stringify(sysArgvSim)}`);
+                        } else if (argExpr.includes('__name__')) {
+                            appendLine(`Current value of __name__: __main__`);
+                        } else if (argExpr.includes('Parsed opts')) {
+                            appendLine(`Parsed opts: [('-i', 'sample'), ('-o', 'sample_out')]`);
+                        } else {
+                            // Evaluate string concatenation with +
+                            const rendered = argExpr.split('+').map(part => {
+                                const t = part.trim();
+                                if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+                                    return t.slice(1, -1);
+                                }
+                                if (t in pyVars) return pyVars[t];
+                                return t.replace(/^["']|["']$/g, '');
+                            }).join('');
+                            if (rendered) appendLine(rendered);
+                        }
+                    }
+
+                    // os.system(...) handling
+                    if (/os\.system\s*\(/.test(line)) {
+                        if (/g\+\+/.test(line)) {
+                            compiledExe = true;
+                            appendLine(`[MinGW g++] Compiling ${pyVars.cpp_file} -> ${pyVars.exe_file} ... OK`, 'meta');
+                        } else {
+                            ranExe = true;
+                            const cppOutputs = simulateCppExecution(cppSource, stdinVal);
+                            cppOutputs.forEach(outLine => appendLine(outLine, 'cpp'));
+                        }
+                    }
+                });
+
+                // If Python wrapper defines main(argv) and calls it, ensure compilation & execution run cleanly
+                if (!compiledExe && !ranExe && /def\s+main\s*\(/.test(pySource) && /os\.system/.test(pySource)) {
+                    appendLine(`Compiling ${cppFilename}`);
+                    appendLine(`[MinGW g++] g++ ${cppFilename} -o ${cppFilename.replace(/\.cpp$/i, '.exe')} ... OK`, 'meta');
+                    appendLine(`Running ${cppFilename.replace(/\.cpp$/i, '.exe')}`);
+                    const cppOutputs = simulateCppExecution(cppSource, stdinVal);
+                    cppOutputs.forEach(outLine => appendLine(outLine, 'cpp'));
+                }
+
+                const elapsed = (performance.now() - startTime).toFixed(2);
+                appendLine(`[Finished in ${elapsed}ms with exit code 0]`, 'meta');
+                playSound('success');
+            } catch (err) {
+                playSound('error');
+                appendLine(`[Execution Error]: ${err.message}`, 'error');
+            }
+        }
+
+        // ==========================================
+        // EDITOR DARK / LIGHT THEME SWITCHER
+        // ==========================================
+        function updateThemeLabelTexts() {
+            const t = UI_TEXT[currentLang];
+            document.getElementById('theme-btn-label').textContent = currentEditorTheme === 'light' ? t.themeLight : t.themeDark;
+            document.getElementById('editor-badge-text').textContent = currentEditorTheme === 'light' ? t.badgeLight : t.badgeDark;
+        }
+
+        function setEditorTheme(theme, notify = false) {
+            currentEditorTheme = theme;
+            try { localStorage.setItem('pyCppLabTheme', theme); } catch(e) {}
+
+            const container = document.getElementById('editor-container');
+            const header = document.getElementById('editor-header');
+            const pyArea = document.getElementById('code-editor-py');
+            const cppArea = document.getElementById('code-editor-cpp');
+            const footer = document.getElementById('editor-footer');
+            const statusInd = document.getElementById('editor-status-indicator');
+            const btn = document.getElementById('theme-toggle-btn');
+            const btnIcon = document.getElementById('theme-btn-icon');
+            const badge = document.getElementById('editor-badge-theme');
+
+            const termContainer = document.getElementById('terminal-container');
+            const termHeader = document.getElementById('terminal-header');
+            const termOut = document.getElementById('terminal-output');
+
+            if (theme === 'light') {
+                container.className = 'lg:col-span-7 bg-white rounded-2xl p-4 shadow-xl border border-slate-300 flex flex-col h-[570px] transition-all duration-200';
+                header.className = 'flex flex-wrap items-center justify-between pb-3 border-b border-slate-200 text-slate-600 text-xs gap-2';
+                pyArea.className = 'w-full h-full bg-white text-slate-900 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 font-medium transition-colors';
+                cppArea.className = 'w-full h-full bg-white text-blue-950 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 font-medium transition-colors';
+                footer.className = 'pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-[11px] text-slate-600 gap-2';
+                statusInd.className = 'text-emerald-700 font-semibold flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 shadow-sm';
+                btnIcon.className = 'fa-solid fa-sun text-amber-600';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 flex items-center gap-1';
+
+                termContainer.className = 'lg:col-span-5 bg-slate-100 rounded-2xl p-4 border border-slate-300 shadow-xl flex flex-col h-[570px] transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-3 border-b border-slate-300 text-xs text-slate-700 font-mono';
+                termOut.className = 'flex-grow p-3 overflow-y-auto text-xs sm:text-sm code-font text-slate-800 space-y-2 bg-white rounded-xl mt-2.5 border border-slate-200';
+            } else {
+                container.className = 'lg:col-span-7 bg-editorDark rounded-2xl p-4 shadow-xl border border-slate-800 flex flex-col h-[570px] transition-all duration-200';
+                header.className = 'flex flex-wrap items-center justify-between pb-3 border-b border-slate-800 text-slate-400 text-xs gap-2';
+                pyArea.className = 'w-full h-full bg-transparent text-emerald-400 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors';
+                cppArea.className = 'w-full h-full bg-transparent text-amber-300 code-font text-xs sm:text-sm leading-relaxed outline-none resize-none p-2 transition-colors';
+                footer.className = 'pt-2 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] text-slate-400 gap-2';
+                statusInd.className = 'text-emerald-400 flex items-center gap-1';
+
+                btn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-slate-800 text-amber-300 border border-slate-700 hover:bg-slate-700 shadow-sm';
+                btnIcon.className = 'fa-solid fa-moon text-amber-300';
+                badge.className = 'text-[11px] px-2 py-0.5 rounded-md font-semibold transition border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 flex items-center gap-1';
+
+                termContainer.className = 'lg:col-span-5 bg-slate-950 rounded-2xl p-4 border border-slate-800 shadow-xl flex flex-col h-[570px] transition-all duration-200';
+                termHeader.className = 'flex items-center justify-between pb-3 border-b border-slate-800 text-xs text-slate-400 font-mono';
+                termOut.className = 'flex-grow p-3 overflow-y-auto text-xs sm:text-sm code-font text-slate-200 space-y-2 bg-black/50 rounded-xl mt-2.5';
+            }
+
+            switchEditorFile(activeEditorFile);
+            updateThemeLabelTexts();
+
+            if (notify) {
+                playSound('click');
+                showToast(theme === 'light' ? "வெண்மை தீமிற்கு (Light Theme) மாற்றப்பட்டது." : "கருப்பு தீமிற்கு (Dark Theme) மாற்றப்பட்டது.", "Theme");
+            }
+        }
+
+        function toggleEditorTheme() {
+            setEditorTheme(currentEditorTheme === 'dark' ? 'light' : 'dark', true);
+        }
+
+        // ==========================================
+        // EXAM QUESTION BANK (2, 3 & 5 MARKS)
+        // ==========================================
+        const examQuestionsData = [
+            {
+                type: '2m',
+                q: {
+                    ta: "1. ஸ்கிரிப்டிங் மொழிக்கும் (Scripting Language) நிரலாக்க மொழிக்கும் (Programming Language) உள்ள கோட்பாட்டு வேறுபாடு யாது?",
+                    en: "1. What is the theoretical difference between a Scripting Language and a Programming Language?"
+                },
+                ans: {
+                    ta: "• <b>ஸ்கிரிப்டிங் மொழி (Python, JS):</b> தொகுத்தல் (Compilation) தேவையில்லை; வரிமொழிமாற்றி (Interpreter) மூலம் இயக்கப்படும்.<br>• <b>நிரலாக்க மொழி (C, C++):</b> நிரல் பெயர்ப்பி (Compiler) மூலம் இயந்திர மொழியாக மாற்றப்பட்டு பின்னர் இயக்கப்படும்.",
+                    en: "• <b>Scripting Language (Python, JS):</b> Does not require a compilation step and is interpreted line-by-line.<br>• <b>Programming Language (C, C++):</b> Must be compiled into machine code before execution."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "2. MinGW என்றால் என்ன? அதன் பயன் யாது?",
+                    en: "2. What is MinGW? What is its use?"
+                },
+                ans: {
+                    ta: "<b>MinGW (Minimalist GNU for Windows)</b> என்பது விண்டோஸ் இயக்க அமைப்பிற்கான இயக்க நேரத் தலைப்புக் கோப்புகளின் தொகுப்பாகும். இது <code>g++</code> தொகுப்பியைக் கொண்டு C++ நிரல்களை <code>.exe</code> கோப்பாக மாற்ற உதவுகிறது.",
+                    en: "<b>MinGW (Minimalist GNU for Windows)</b> is a set of runtime header files and GNU compilers (<code>g++</code>) used to compile C++ programs into Windows <code>.exe</code> executables."
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "3. பைத்தானில் C++ நிரலை இறக்கம் செய்யப் பயன்படும் கூறுகள் (Modules) யாவை?",
+                    en: "3. Identify the modules used in Python to import and execute C++ programs."
+                },
+                ans: {
+                    ta: "1. <code>sys</code> கூறு (<code>sys.argv</code>)<br>2. <code>os</code> கூறு (<code>os.system()</code>)<br>3. <code>getopt</code> கூறு (<code>getopt.getopt()</code>)",
+                    en: "1. <code>sys</code> module (<code>sys.argv</code>)<br>2. <code>os</code> module (<code>os.system()</code>)<br>3. <code>getopt</code> module (<code>getopt.getopt()</code>)"
+                }
+            },
+            {
+                type: '2m',
+                q: {
+                    ta: "4. sys.argv என்றால் என்ன? அதன் பயன் யாது?",
+                    en: "4. What is sys.argv? State its purpose."
+                },
+                ans: {
+                    ta: "<code>sys.argv</code> என்பது கட்டளை வரி மூலம் (Command Line) பைத்தான் நிரலுக்கு அனுப்பப்படும் அனைத்து அளபுருக்களையும் சேமித்து வைக்கும் ஒரு <b>பட்டியல் (List)</b> ஆகும். <code>sys.argv[0]</code> பைத்தான் நிரலின் பெயரைக் கொண்டிருக்கும்.",
+                    en: "<code>sys.argv</code> is a Python list containing all command-line arguments passed to the script. <code>sys.argv[0]</code> always stores the Python script's name."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "5. ஸ்கிரிப்டிங் மொழிகளின் பயன்பாடுகள் யாவை?",
+                    en: "5. List any three applications of Scripting Languages."
+                },
+                ans: {
+                    ta: "1. ஒரு நிரலில் உள்ள பணிகளைத் தானியக்கமாக்குதல் (Automate tasks).<br>2. தரவுத் தொகுப்பிலிருந்து தகவல்களைப் பிரித்தெடுத்தல் (Extract information from a data set).<br>3. மரபார்ந்த நிரலாக்க மொழிகளுடன் ஒப்பிடும்போது குறைந்த குறியீட்டில் (Less code intensive) நிரலாக்கம் செய்தல்.",
+                    en: "1. Automate repetitive tasks in a program.<br>2. Extract information from large data sets.<br>3. Write less code-intensive logic compared to traditional programming languages."
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "6. C++ நிரல்களைப் பைத்தானில் உறையிடுவதற்கான (Wrapping) 5 கருவிகளைப் பட்டியலிடுக.",
+                    en: "6. List the 5 wrapping tools used for interfacing C++ with Python."
+                },
+                ans: {
+                    ta: "1. <b>Python-C-API</b><br>2. <b>Ctypes</b><br>3. <b>SWIG</b> (Simplified Wrapper Interface Generator)<br>4. <b>Cython</b><br>5. <b>Boost.Python</b>",
+                    en: "1. <b>Python-C-API</b><br>2. <b>Ctypes</b><br>3. <b>SWIG</b> (Simplified Wrapper Interface Generator)<br>4. <b>Cython</b><br>5. <b>Boost.Python</b>"
+                }
+            },
+            {
+                type: '3m',
+                q: {
+                    ta: "7. சிறப்பு மாறி __name__ == \"__main__\" என்பதன் பொருள் யாது?",
+                    en: "7. Explain the significance of if __name__ == \"__main__\":"
+                },
+                ans: {
+                    ta: "ஒவ்வொரு பைத்தான் நிரலுக்கும் <code>__name__</code> என்ற உள்ளமைந்த மாறி உண்டு. நிரலை நேரடியாக இயக்கினால் <code>__name__</code> மதிப்பு <code>\"__main__\"</code> ஆக இருக்கும்; வேறொரு நிரலில் <code>import</code> செய்தால் கோப்பின் பெயராக இருக்கும்.",
+                    en: "Every Python module has a built-in <code>__name__</code> variable. When run directly, Python sets <code>__name__ = \"__main__\"</code>; when imported, it holds the module's filename."
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "8. C++-ஐ விட பைத்தானின் சிறப்பம்சங்கள் (Features of Python over C++) யாவை?",
+                    en: "8. Write any five features of Python over C++."
+                },
+                ans: {
+                    ta: "1. <b>தானியங்கி குப்பை சேகரிப்பு (Automatic Garbage Collection):</b> பைத்தான் நினைவகத்தைத் தானாகவே நிர்வகிக்கும்; C++-இல் கைமுறையாகச் செய்ய வேண்டும்.<br>2. <b>மாறும் தரவு வகை (Dynamic Typing):</b> பைத்தானில் தரவு வகையை அறிவிக்கத் தேவையில்லை.<br>3. <b>வரிமொழிமாற்றி (Interpreted):</b> தொகுத்தல் படிநிலை இல்லாமல் நேரடியாக இயங்கும்.<br>4. <b>குறைந்த குறியீடு:</b> C++-ஐ விட மிகக் குறைந்த வரிகளில் நிரல் எழுதலாம்.<br>5. <b>எளிய தொடரியல்:</b> அரைப்புள்ளி (<code>;</code>) அல்லது நெளிவு அடைப்புக்குறிகள் (<code>{}</code>) தேவையில்லை.",
+                    en: "1. <b>Automatic Garbage Collection:</b> Python manages memory automatically, whereas C++ requires manual allocation/deallocation.<br>2. <b>Dynamic Typing:</b> No explicit variable type declarations needed.<br>3. <b>Interpreted Execution:</b> Runs directly without separate compilation.<br>4. <b>Shorter Code:</b> Programs are 5–10 times shorter than C++.<br>5. <b>Clean Syntax:</b> Uses indentation instead of curly braces <code>{}</code> and semicolons <code>;</code>."
+                }
+            },
+            {
+                type: '5m',
+                q: {
+                    ta: "9. getopt.getopt() செயற்கூறின் தொடரியலை எழுதி அதன் அளபுருக்களை விவரி.",
+                    en: "9. Write the syntax of getopt.getopt() and explain its arguments and return values."
+                },
+                ans: {
+                    ta: "<b>தொடரியல்:</b> <code>opts, args = getopt.getopt(argv, options, [long_options])</code><br><br>• <b>argv:</b> பிரிக்கப்பட வேண்டிய அளபுரு பட்டியல் (<code>sys.argv[1:]</code>).<br>• <b>options:</b> குறுகிய விருப்ப எழுத்துக்கள்; மதிப்பு தேவைப்படின் முக்காற்புள்ளி (<code>:</code>) இட வேண்டும் (எ.கா: <code>'i:o:'</code>).<br>• <b>long_options:</b> நீண்ட விருப்பப் பெயர்களின் பட்டியல்; மதிப்பு தேவைப்படின் சமக்குறி (<code>=</code>) இட வேண்டும் (எ.கா: <code>['ifile=', 'ofile=']</code>).<br>• <b>திருப்பி அனுப்பும் மதிப்புகள்:</b> <code>opts</code> (விருப்பம்-மதிப்பு இணைகளின் பட்டியல்) மற்றும் <code>args</code> (மீதமுள்ள அளபுருக்கள்).",
+                    en: "<b>Syntax:</b> <code>opts, args = getopt.getopt(argv, options, [long_options])</code><br><br>• <b>argv:</b> Argument list to parse (<code>sys.argv[1:]</code>).<br>• <b>options:</b> String of short option characters; options requiring values are followed by a colon <code>:</code> (e.g., <code>'i:o:'</code>).<br>• <b>long_options:</b> List of long option strings; options requiring values end with <code>=</code> (e.g., <code>['ifile=', 'ofile=']</code>).<br>• <b>Return Values:</b> Returns two lists: <code>opts</code> (list of <code>(option, value)</code> pairs) and <code>args</code> (remaining non-option arguments)."
+                }
+            }
+        ];
+
+        // ==========================================
+        // 1-MARK QUIZ MCQs & BUG HUNTER DATA
+        // ==========================================
+        const quizQuestionsData = [
+            {
+                q: { ta: "1. பின்வருவனவற்றுள் எது ஒரு ஸ்கிரிப்டிங் மொழி (Scripting Language) அல்ல?", en: "1. Which of the following is NOT a scripting language?" },
+                options: { ta: ["JavaScript", "PHP", "Perl", "HTML"], en: ["JavaScript", "PHP", "Perl", "HTML"] },
+                answer: 3,
+                explanation: {
+                    ta: "HTML என்பது ஒரு குறியீட்டு மொழி (Markup Language); JavaScript, PHP, Perl ஆகியவை ஸ்கிரிப்டிங் மொழிகள்.",
+                    en: "HTML is a Markup Language, whereas JavaScript, PHP, and Perl are scripting languages."
+                }
+            },
+            {
+                q: { ta: "2. C++ நிரலை பைத்தான் மூலம் இறக்கம் செய்வது எவ்வாறு அழைக்கப்படுகிறது?", en: "2. Importing C++ programs in a Python program is called:" },
+                options: { ta: ["Wrapping (உறையிடுதல்)", "Downloading", "Interconnecting", "Parsing"], en: ["Wrapping", "Downloading", "Interconnecting", "Parsing"] },
+                answer: 0,
+                explanation: {
+                    ta: "C++ குறியீட்டிற்கு பைத்தான் இடைமுகத்தை உருவாக்குவது Wrapping (உறையிடுதல்) எனப்படும்.",
+                    en: "Creating a Python interface around C++ code is called Wrapping."
+                }
+            },
+            {
+                q: { ta: "3. API என்பதன் விரிவாக்கம் என்ன?", en: "3. The expansion of API is:" },
+                options: {
+                    ta: ["Application Programming Interpreter", "Application Programming Interface", "Application Performing Interface", "Application Programming Interlink"],
+                    en: ["Application Programming Interpreter", "Application Programming Interface", "Application Performing Interface", "Application Programming Interlink"]
+                },
+                answer: 1,
+                explanation: {
+                    ta: "API என்பது Application Programming Interface என்பதன் சுருக்கமாகும்.",
+                    en: "API stands for Application Programming Interface."
+                }
+            },
+            {
+                q: { ta: "4. பைத்தானையும் C மற்றும் C++ மொழிகளையும் இணைக்கும் கட்டமைப்பு (Framework) எது?", en: "4. A framework for interfacing Python and C++ is:" },
+                options: { ta: ["Ctypes", "SWIG", "Cython", "Boost"], en: ["Ctypes", "SWIG", "Cython", "Boost"] },
+                answer: 3,
+                explanation: {
+                    ta: "Boost.Python என்பது C++ மற்றும் பைத்தானை இணைக்கும் சக்திவாய்ந்த கட்டமைப்பு ஆகும்.",
+                    en: "Boost.Python is a C++ framework for seamless Python-C++ interoperability."
+                }
+            },
+            {
+                q: { ta: "5. கட்டளை வரியில் அனுப்பப்படும் அனைத்து அளபுருக்களையும் கொண்ட பட்டியல் எது?", en: "5. Which list holds all command-line arguments passed to Python?" },
+                options: { ta: ["sys.argv", "os.argv", "getopt.argv", "sys.args"], en: ["sys.argv", "os.argv", "getopt.argv", "sys.args"] },
+                answer: 0,
+                explanation: {
+                    ta: "sys.argv பட்டியல் கட்டளை வரி அளபுருக்களைச் சேமித்து வைக்கும்.",
+                    en: "sys.argv stores all command-line arguments passed to the Python script."
+                }
+            },
+            {
+                q: { ta: "6. sys.argv[0] எப்போதும் எதைக் கொண்டிருக்கும்?", en: "6. What does sys.argv[0] always contain?" },
+                options: { ta: ["C++ கோப்பின் பெயர்", "பைத்தான் நிரலின் பெயர்", "முதல் அளபுரு", "வெற்றுச் சரம்"], en: ["C++ filename", "Python script name", "First option flag", "Empty string"] },
+                answer: 1,
+                explanation: {
+                    ta: "sys.argv[0] எப்போதும் இயக்கப்படும் பைத்தான் நிரலின் பெயரைக் கொண்டிருக்கும்.",
+                    en: "sys.argv[0] always stores the name of the executed Python script."
+                }
+            },
+            {
+                q: { ta: "7. இயக்க அமைப்புடன் (OS) தொடர்பு கொள்ளப் பயன்படும் பைத்தான் கூறு எது?", en: "7. Which Python module provides OS-dependent shell execution?" },
+                options: { ta: ["sys", "getopt", "os", "math"], en: ["sys", "getopt", "os", "math"] },
+                answer: 2,
+                explanation: {
+                    ta: "os.system() மூலம் விண்டோஸ் கட்டளை வரியில் g++ மற்றும் .exe கோப்புகளை இயக்கலாம்.",
+                    en: "The os module provides os.system() to run shell/CMD commands."
+                }
+            },
+            {
+                q: { ta: "8. getopt.getopt() செயற்கூறில் குறுகிய விருப்பத்திற்கு (Short Option) மதிப்பு தேவைப்படின் எக்குறியீடு இட வேண்டும்?", en: "8. In getopt.getopt(), short options requiring a value must be followed by:" },
+                options: { ta: ["= (சமக்குறி)", ": (முக்காற்புள்ளி)", "; (அரைப்புள்ளி)", "? (கேள்விக்குறி)"], en: ["=", ":", ";", "?"] },
+                answer: 1,
+                explanation: {
+                    ta: "குறுகிய விருப்பத்திற்குப் பின் முக்காற்புள்ளியும் (\"i:\"), நீண்ட விருப்பத்திற்குப் பின் சமக்குறியும் ([\"ifile=\"]) இட வேண்டும்.",
+                    en: "Short options taking arguments are followed by a colon (\"i:\"), while long options use \"=\"."
+                }
+            },
+            {
+                q: { ta: "9. SWIG என்பதன் விரிவாக்கம் என்ன?", en: "9. What does SWIG stand for?" },
+                options: {
+                    ta: ["Simplified Wrapper Interface Generator", "Simple Windows Interface Group", "System Wrapper Input Generator", "Software Interface Generator"],
+                    en: ["Simplified Wrapper Interface Generator", "Simple Windows Interface Group", "System Wrapper Input Generator", "Software Interface Generator"]
+                },
+                answer: 0,
+                explanation: {
+                    ta: "SWIG = Simplified Wrapper Interface Generator.",
+                    en: "SWIG stands for Simplified Wrapper Interface Generator."
+                }
+            },
+            {
+                q: { ta: "10. பைத்தான் நிரல் நேரடியாக இயக்கப்படும்போது __name__ மாறியின் மதிப்பு என்ன?", en: "10. When a Python program runs directly, the value of __name__ is:" },
+                options: { ta: ["\"__init__\"", "\"__main__\"", "\"pycpp\"", "\"__sys__\""], en: ["\"__init__\"", "\"__main__\"", "\"pycpp\"", "\"__sys__\""] },
+                answer: 1,
+                explanation: {
+                    ta: "நேரடியாக இயக்கப்படும்போது __name__ மாறியின் மதிப்பு \"__main__\" ஆகும்.",
+                    en: "When run directly, __name__ is set to \"__main__\"."
+                }
+            }
+        ];
+
+        const bugChallengesData = [
+            {
+                title: { ta: "சவால் 1: os.system() g++ கட்டளை இடைவெளிப் பிழை", en: "Challenge 1: g++ Command String Spacing Bug" },
+                desc: { ta: "கீழே உள்ள Python குறியீட்டில் g++ தொகுத்தல் ஏன் தோல்வியடைகிறது?", en: "Why does the g++ compilation command fail in this Python snippet?" },
+                code: "import os\ncpp_file = 'pali.cpp'\nexe_file = 'pali.exe'\nos.system('g++' + cpp_file + '-o' + exe_file)",
+                options: {
+                    ta: ["'g++ ' மற்றும் ' -o ' ஆகியவற்றிற்கு இடைவெளி (Space) விடுபட்டுள்ளது", "os.system தவறானது", "cpp_file தவறானது", "நிரலில் பிழையில்லை"],
+                    en: ["Missing spaces in 'g++ ' and ' -o ' (produces g++pali.cpp-opali.exe)", "os.system is invalid", "cpp_file extension is wrong", "No error"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "இடைவெளி இல்லாவிட்டால் <code>g++pali.cpp-opali.exe</code> எனச் சேர்ந்துவிடும்; எனவே <code>'g++ ' + cpp_file + ' -o ' + exe_file</code> என எழுத வேண்டும்.",
+                    en: "Without spaces, the string becomes <code>g++pali.cpp-opali.exe</code>. Always include spaces: <code>'g++ ' + cpp_file + ' -o ' + exe_file</code>."
+                }
+            },
+            {
+                title: { ta: "சவால் 2: sys.argv சுட்டெண் (Index) பிழை", en: "Challenge 2: sys.argv Index Slice Bug" },
+                desc: { ta: "getopt.getopt()-க்கு அனுப்பப்படும் அளபுரு பட்டியலில் உள்ள பிழை எது?", en: "Identify the bug when passing sys.argv to main():" },
+                code: "import sys, getopt\n# Command: python pycpp.py -i welcome\nopts, args = getopt.getopt(sys.argv, 'i:', ['ifile='])",
+                options: {
+                    ta: ["sys.argv[0] (நிரல் பெயர்) தவிர்க்க sys.argv[1:] அனுப்ப வேண்டும்", "sys.argv[2] அனுப்ப வேண்டும்", "'i:' தவறானது", "நிரலில் பிழையில்லை"],
+                    en: ["Pass sys.argv[1:] instead of sys.argv to exclude the script name at index 0", "Pass sys.argv[2]", "'i:' is invalid", "No error"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "<code>sys.argv[0]</code>-இல் <code>'pycpp.py'</code> இருக்கும்; எனவே விருப்பங்களைப் பிரிக்க <code>sys.argv[1:]</code> அனுப்ப வேண்டும்.",
+                    en: "<code>sys.argv[0]</code> contains <code>'pycpp.py'</code>, so always slice <code>sys.argv[1:]</code> for <code>getopt.getopt()</code>."
+                }
+            },
+            {
+                title: { ta: "சவால் 3: getopt() நீண்ட விருப்பக் குறியீடு பிழை", en: "Challenge 3: getopt() Long Option Syntax Bug" },
+                desc: { ta: "கீழே உள்ள getopt.getopt() அழைப்பில் உள்ள பிழை எது?", en: "Spot the syntax bug in the long_options list below:" },
+                code: "opts, args = getopt.getopt(argv, 'i:', ['ifile:'])",
+                options: {
+                    ta: ["நீண்ட விருப்பத்திற்கு முக்காற்புள்ளி (:) பதிலாக சமக்குறி (['ifile=']) இட வேண்டும்", "குறுகிய விருப்பத்தில் = வர வேண்டும்", "argv தவறானது", "நிரலில் பிழையில்லை"],
+                    en: ["Long options requiring values must end with '=' (['ifile=']), not ':'", "Short options need '='", "argv is invalid", "No error"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "குறுகிய விருப்பத்திற்கு <code>'i:'</code> (Colon), நீண்ட விருப்பத்திற்கு <code>['ifile=']</code> (Equals) பயன்படுத்த வேண்டும்.",
+                    en: "Short options take a colon (<code>'i:'</code>), while long options require an equals sign (<code>['ifile=']</code>)."
+                }
+            },
+            {
+                title: { ta: "சவால் 4: __name__ == '__main__' ஒப்பீட்டுப் பிழை", en: "Challenge 4: __name__ Comparison Bug" },
+                desc: { ta: "இந்த நிபந்தனைக் கூற்றில் உள்ள பிழை எது?", en: "Why does this Python entry-point check cause a SyntaxError?" },
+                code: "if __name__ = '__main__':\n    main(sys.argv[1:])",
+                options: {
+                    ta: ["மதிப்பிருத்து (=) பதிலாக ஒப்பீட்டுச் செயற்குறி (==) பயன்படுத்த வேண்டும்", "__main__-க்கு மேற்கோள் கூடாது", "sys.argv[0] வேண்டும்", "நிரலில் பிழையில்லை"],
+                    en: ["Use equality operator (==) instead of assignment (=) inside if statement", "__main__ shouldn't have quotes", "Use sys.argv[0]", "No error"]
+                },
+                correct: 0,
+                solution: {
+                    ta: "<code>if</code> நிபந்தனையில் சமத்துவத்தைச் சோதிக்க இரட்டைச் சமக்குறி <code>==</code> (<code>if __name__ == '__main__':</code>) பயன்படுத்த வேண்டும்.",
+                    en: "Python requires the equality comparison operator <code>==</code>: <code>if __name__ == '__main__':</code>."
+                }
+            }
+        ];
+
+        // ==========================================
+        // RENDER EXAM Q&A, QUIZ & BUGS
+        // ==========================================
+        let currentQAFilter = 'all';
+
+        function renderExamQA(filter = currentQAFilter) {
+            currentQAFilter = filter;
+            const container = document.getElementById('qa-cards-grid');
+            container.innerHTML = '';
+
+            const filtered = filter === 'all' ? examQuestionsData : examQuestionsData.filter(q => q.type === filter);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow transition flex flex-col justify-between';
+
+                const badgeColor = item.type === '2m' ? 'bg-blue-100 text-blue-800' : (item.type === '3m' ? 'bg-indigo-100 text-indigo-800' : 'bg-amber-100 text-amber-800');
+                const badgeLabel = currentLang === 'ta'
+                    ? (item.type === '2m' ? '2 மதிப்பெண்' : (item.type === '3m' ? '3 மதிப்பெண்' : '5 மதிப்பெண்'))
+                    : (item.type === '2m' ? '2 Marks' : (item.type === '3m' ? '3 Marks' : '5 Marks'));
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs px-2.5 py-1 rounded-md font-bold ${badgeColor}">${badgeLabel}</span>
+                            <span class="text-xs text-slate-400 font-semibold"><i class="fa-brands fa-python"></i> Class 12 CS Ch.14</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm sm:text-base mb-3 leading-snug">${item.q[currentLang]}</h4>
+                        <div class="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                            ${item.ans[currentLang]}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterQA(type) {
+            playSound('click');
+            ['all', '2m', '3m', '5m'].forEach(t => {
+                const btn = document.getElementById(`qa-btn-${t}`);
+                btn.className = t === type
+                    ? 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-blue-600 text-white'
+                    : 'qa-filter-btn px-3 py-1 text-xs rounded-lg font-bold bg-slate-100 text-slate-700 hover:bg-slate-200';
+            });
+            renderExamQA(type);
+        }
+
+        let userQuizAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            quizQuestionsData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm transition';
+
+                let optionsHtml = '';
+                item.options[currentLang].forEach((opt, optIndex) => {
+                    const isChecked = userQuizAnswers[index] === optIndex ? 'checked' : '';
+                    optionsHtml += `
+                        <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-blue-50/50 cursor-pointer transition text-xs sm:text-sm">
+                            <input type="radio" name="question_${index}" value="${optIndex}" ${isChecked} onchange="selectQuizOption(${index}, ${optIndex})" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                            <span class="text-slate-700 font-medium">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-slate-900 text-sm sm:text-base mb-3">${item.q[currentLang]}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">${optionsHtml}</div>
+                    <div id="feedback-${index}" class="hidden text-xs p-3 rounded-xl"></div>
+                `;
+                container.appendChild(card);
+
+                if (userQuizAnswers[index] !== undefined) {
+                    highlightQuizFeedback(index, userQuizAnswers[index]);
+                }
+            });
+        }
+
+        function selectQuizOption(qIdx, selectedOpt) {
+            userQuizAnswers[qIdx] = selectedOpt;
+            highlightQuizFeedback(qIdx, selectedOpt);
+
+            let score = 0;
+            quizQuestionsData.forEach((q, idx) => {
+                if (userQuizAnswers[idx] === q.answer) score++;
+            });
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function highlightQuizFeedback(qIdx, selectedOpt) {
+            const item = quizQuestionsData[qIdx];
+            const box = document.getElementById(`feedback-${qIdx}`);
+            if (!box) return;
+            box.classList.remove('hidden');
+
+            if (selectedOpt === item.answer) {
+                playSound('success');
+                box.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                box.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'சரியான விடை!' : 'Correct!'}</b> ${item.explanation[currentLang]}`;
+            } else {
+                playSound('error');
+                box.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                box.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'தவறான விடை!' : 'Incorrect!'}</b> ${currentLang === 'ta' ? 'சரியான விடை:' : 'Correct answer:'} <b>${item.options[currentLang][item.answer]}</b>.<br>${item.explanation[currentLang]}`;
+            }
+        }
+
+        function resetQuiz() {
+            playSound('click');
+            userQuizAnswers = {};
+            document.getElementById('current-score').textContent = '0';
+            renderQuiz();
+        }
+
+        function renderBugChallenges() {
+            const container = document.getElementById('bug-cards-container');
+            container.innerHTML = '';
+
+            bugChallengesData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between';
+
+                let optHtml = '';
+                item.options[currentLang].forEach((opt, oIdx) => {
+                    optHtml += `
+                        <button onclick="checkBugChoice(${index}, ${oIdx})" class="text-left p-2.5 rounded-lg border border-slate-200 text-xs text-slate-700 hover:bg-slate-100 transition font-medium">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-slate-900 text-sm sm:text-base">${item.title[currentLang]}</span>
+                            <span class="text-xs bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold">${currentLang === 'ta' ? 'பிழை ஆய்வு' : 'Bug Hunt'}</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mb-3">${item.desc[currentLang]}</p>
+                        <pre class="bg-slate-900 text-emerald-400 p-3 rounded-xl text-xs font-mono mb-4 overflow-x-auto"><code>${item.code}</code></pre>
+                        <div class="space-y-1.5 mb-3 flex flex-col">${optHtml}</div>
+                    </div>
+                    <div id="bug-feedback-${index}" class="hidden text-xs p-3 rounded-xl mt-2 font-medium"></div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function checkBugChoice(cIdx, choiceIdx) {
+            const ch = bugChallengesData[cIdx];
+            const fb = document.getElementById(`bug-feedback-${cIdx}`);
+            fb.classList.remove('hidden');
+
+            if (choiceIdx === ch.correct) {
+                playSound('success');
+                fb.className = 'text-xs p-3 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200';
+                fb.innerHTML = `<b><i class="fa-solid fa-circle-check"></i> ${currentLang === 'ta' ? 'மிகச் சரி!' : 'Spot On!'}</b> ${ch.solution[currentLang]}`;
+            } else {
+                playSound('error');
+                fb.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-800 border border-rose-200';
+                fb.innerHTML = `<b><i class="fa-solid fa-circle-xmark"></i> ${currentLang === 'ta' ? 'மீண்டும் முயல்க!' : 'Try Again!'}</b> ${ch.solution[currentLang]}`;
+            }
+        }
+
+        // ==========================================
+        // LANGUAGE TOGGLE & NAVIGATION
+        // ==========================================
+        function updateLocalizedStaticTexts() {
+            const t = UI_TEXT[currentLang];
+            document.getElementById('lbl-header-std').textContent = t.headerStd;
+            document.getElementById('lbl-header-sub').textContent = t.headerSub;
+            document.getElementById('lbl-header-title').textContent = t.headerTitle;
+            document.getElementById('lang-btn-text').textContent = t.langBtn;
+
+            document.getElementById('tab-title-concepts').textContent = t.tabConcepts;
+            document.getElementById('tab-title-simulator').textContent = t.tabSimulator;
+            document.getElementById('tab-title-playground').textContent = t.tabPlayground;
+            document.getElementById('tab-title-qa').textContent = t.tabQA;
+            document.getElementById('tab-title-quiz').textContent = t.tabQuiz;
+
+            document.getElementById('badge-chapter').textContent = t.badgeChapter;
+            document.getElementById('hero-title').textContent = t.heroTitle;
+            document.getElementById('hero-sub').textContent = t.heroSub;
+            document.getElementById('hero-btn-sim').textContent = t.heroBtnSim;
+            document.getElementById('hero-btn-code').textContent = t.heroBtnCode;
+            document.getElementById('lbl-tap-hint').textContent = t.lblTapHint;
+            document.getElementById('lbl-chapters-badge').textContent = t.lblChaptersBadge;
+
+            document.getElementById('ch-btn-all').textContent = t.chAll;
+            document.getElementById('ch-btn-mod1').textContent = t.chMod1;
+            document.getElementById('ch-btn-mod2').textContent = t.chMod2;
+            document.getElementById('ch-btn-mod3').textContent = t.chMod3;
+
+            document.getElementById('sim-heading').textContent = t.simHeading;
+            document.getElementById('sim-subheading').textContent = t.simSubheading;
+            document.getElementById('sim-cli-title').textContent = t.simCliTitle;
+            document.getElementById('sim-btn-animate').textContent = t.simBtnAnimate;
+            document.getElementById('sim-sys-title').textContent = t.simSysTitle;
+            document.getElementById('sim-sys-desc').textContent = t.simSysDesc;
+            document.getElementById('sim-pipe-heading').textContent = t.simPipeHeading;
+            document.getElementById('pipe-s1-title').textContent = t.pipeS1Title;
+            document.getElementById('pipe-s1-desc').textContent = t.pipeS1Desc;
+            document.getElementById('pipe-s2-title').textContent = t.pipeS2Title;
+            document.getElementById('pipe-s2-desc').textContent = t.pipeS2Desc;
+            document.getElementById('pipe-s3-title').textContent = t.pipeS3Title;
+            document.getElementById('pipe-s3-desc').textContent = t.pipeS3Desc;
+            document.getElementById('pipe-s4-title').textContent = t.pipeS4Title;
+            document.getElementById('pipe-s4-desc').textContent = t.pipeS4Desc;
+            document.getElementById('sim-dunder-badge').textContent = t.simDunderBadge;
+            document.getElementById('sim-dunder-title').textContent = t.simDunderTitle;
+            document.getElementById('sim-dunder-desc').textContent = t.simDunderDesc;
+
+            document.getElementById('lbl-preset-select').innerHTML = `<i class="fa-brands fa-python text-blue-600 text-xl"></i> ${t.lblPreset}`;
+            document.getElementById('btn-copy-code').textContent = t.btnCopy;
+            document.getElementById('btn-run-code').textContent = t.btnRun;
+            const readyEl = document.getElementById('lbl-editor-ready');
+            if (readyEl) readyEl.textContent = t.lblReady;
+            document.getElementById('lbl-raw-out').textContent = t.lblRawOut;
+            document.getElementById('lbl-clear-term').textContent = t.clearTerm;
+            document.getElementById('lbl-stdin-hint').textContent = t.lblStdinHint;
+
+            document.getElementById('qa-heading').textContent = t.qaHeading;
+            document.getElementById('qa-subheading').textContent = t.qaSubheading;
+            document.getElementById('qa-btn-all').textContent = t.qaBtnAll;
+            document.getElementById('qa-btn-2m').textContent = t.qaBtn2m;
+            document.getElementById('qa-btn-3m').textContent = t.qaBtn3m;
+            document.getElementById('qa-btn-5m').textContent = t.qaBtn5m;
+
+            document.getElementById('quiz-heading').textContent = t.quizHeading;
+            document.getElementById('quiz-subheading').textContent = t.quizSubheading;
+            document.getElementById('lbl-score-text').textContent = t.lblScore;
+            document.getElementById('quiz-part1-title').textContent = t.quizP1Title;
+            document.getElementById('bug-part2-title').textContent = t.bugP2Title;
+            document.getElementById('bug-part2-sub').textContent = t.bugP2Sub;
+            document.getElementById('btn-quiz-reset').textContent = t.btnQuizReset;
+
+            document.getElementById('lbl-modal-concept').textContent = t.modalConcept;
+            document.getElementById('lbl-modal-points').textContent = t.modalPoints;
+            document.getElementById('lbl-modal-code').textContent = t.modalCode;
+            document.getElementById('lbl-modal-copy').textContent = t.modalCopy;
+            document.getElementById('lbl-modal-prev').textContent = t.modalPrev;
+            document.getElementById('lbl-modal-next').textContent = t.modalNext;
+            document.getElementById('lbl-modal-close').textContent = t.modalClose;
+            document.getElementById('lbl-modal-run').textContent = t.modalRun;
+            document.getElementById('footer-text').textContent = t.footerText;
+
+            updateThemeLabelTexts();
+        }
+
+        function toggleLanguage() {
+            playSound('click');
+            currentLang = currentLang === 'ta' ? 'en' : 'ta';
+            try { localStorage.setItem('pyCppLabLang', currentLang); } catch(e) {}
+
+            updateLocalizedStaticTexts();
+            renderTextbookChapters();
+            parseCliCommand();
+            setDunderMode(currentDunderMode);
+            renderDualPresets();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            if (!document.getElementById('topic-detail-modal').classList.contains('hidden')) {
+                openTopicDetail(currentModalTopicId, false);
+            }
+
+            showToast(currentLang === 'ta' ? "மொழி தமிழாக மாற்றப்பட்டது." : "Language switched to English.", "Language");
+        }
+
+        const allTabs = ['concepts', 'simulator', 'playground', 'qa', 'quiz'];
+        function switchTab(tabId) {
+            playSound('click');
+            allTabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('active-tab');
+                    btn.classList.remove('text-slate-300');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // TOAST SYSTEM
+        // ==========================================
+        function showToast(message, title = "Python + C++ Lab") {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-body').textContent = message;
+            toast.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+            setTimeout(hideToast, 3200);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast-notification');
+            toast.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+        }
+
+        // Register all interactive handlers globally for inline onclick attributes
+        Object.assign(window, {
+            toggleLanguage,
+            switchTab,
+            filterTopicsByChapter,
+            openTopicDetail,
+            closeTopicDetail,
+            navigateTopicDetail,
+            copyModalCode,
+            loadTopicPresetToPlayground,
+            setCliPreset,
+            parseCliCommand,
+            animatePipelineExecution,
+            setDunderMode,
+            loadDualPreset,
+            toggleEditorTheme,
+            copyActiveCode,
+            runPythonCppPipeline,
+            switchEditorFile,
+            clearTerminal,
+            filterQA,
+            selectQuizOption,
+            resetQuiz,
+            checkBugChoice,
+            hideToast
+        });
+
+        // ==========================================
+        // INITIALIZATION ON LOAD
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const savedLang = localStorage.getItem('pyCppLabLang');
+                if (savedLang === 'en' || savedLang === 'ta') currentLang = savedLang;
+            } catch(e) {}
+
+            try {
+                const savedTheme = localStorage.getItem('pyCppLabTheme') || 'dark';
+                setEditorTheme(savedTheme, false);
+            } catch(e) {
+                setEditorTheme('dark', false);
+            }
+
+            updateLocalizedStaticTexts();
+            renderTextbookChapters();
+            parseCliCommand();
+            setDunderMode('direct');
+            renderDualPresets();
+            renderExamQA();
+            renderQuiz();
+            renderBugChallenges();
+
+            loadDualPreset('palindromeCpp');
+        });
+    </script>
+</body>
+</html>
