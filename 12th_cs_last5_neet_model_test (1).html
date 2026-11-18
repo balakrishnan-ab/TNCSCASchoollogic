@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th Computer Science - NEET Model Exam (Chapters 12 - 16)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e2e8f0;
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.92em;
+            font-weight: 600;
+        }
+        .tab-active {
+            background-color: #1d4ed8;
+            color: #ffffff;
+            border-bottom: 4px solid #fbbf24;
+            box-shadow: 0 4px 6px -1px rgba(29, 78, 216, 0.3);
+        }
+        .tab-inactive {
+            background-color: #ffffff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+        .tab-inactive:hover {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-5">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <span id="hdr-badge" class="bg-amber-400 text-blue-950 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">தமிழ்நாடு பாடத்திட்டம் - 12-ஆம் வகுப்பு</span>
+                    <h1 id="hdr-title" class="text-xl md:text-2xl font-bold mt-2">கணினி அறிவியல் - நீட் (NEET) மாதிரி ஒருமதிப்பெண் தேர்வு</h1>
+                    <p id="hdr-subtitle" class="text-blue-200 text-sm mt-1">கடைசி 5 பாடங்கள் (அத்தியாயம் 12 முதல் 16 வரை) • புத்தக உட்பகுதி வினாக்கள்</p>
+                </div>
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <!-- Language Switcher -->
+                    <div class="bg-blue-950/80 p-1 rounded-xl border border-blue-600/60 flex items-center shadow-inner">
+                        <button id="btn-lang-ta" onclick="setLanguage('ta')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-400 text-blue-950 shadow">
+                            தமிழ்
+                        </button>
+                        <button id="btn-lang-en" onclick="setLanguage('en')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-blue-200 hover:text-white">
+                            English
+                        </button>
+                    </div>
+                    <!-- Marking Scheme -->
+                    <div class="bg-blue-950/60 border border-blue-700/50 rounded-xl p-3 text-sm flex flex-wrap gap-4 justify-center">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                            <span><span id="lbl-correct">சரி</span>: <strong class="text-emerald-300">+1.00</strong></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                            <span><span id="lbl-wrong">தவறு</span>: <strong class="text-rose-300">-0.25</strong></span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                            <span><span id="lbl-skip">விடையளிக்காதது</span>: <strong class="text-slate-200">0</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chapter Tabs -->
+    <nav class="bg-white shadow-sm sticky top-0 z-20 border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-4 py-3">
+            <div id="chapter-tabs" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+                <!-- Tabs injected by JS -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+        
+        <!-- Quiz Info & Controls Bar -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                <h2 id="current-chapter-title" class="text-lg font-bold text-blue-900"></h2>
+                <p id="quiz-meta-info" class="text-xs text-slate-500 mt-0.5">மொத்த வினாக்கள்: 30 | மொத்த மதிப்பெண்கள்: 30 | ஒவ்வொரு முறையும் வினாக்கள் மாறி அமையும்</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="answered-counter" class="text-sm font-semibold bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg border border-blue-200">
+                    விடையளித்தவை: 0 / 30
+                </span>
+                <button onclick="resetCurrentChapter()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-3 py-1.5 rounded-lg border border-slate-300 transition flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                    <span id="btn-reset-text">வினாக்களை மாற்றி மீண்டும் தொடங்கு</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Score Summary Panel (Hidden until submitted) -->
+        <div id="result-panel" class="hidden mb-8 bg-white rounded-2xl shadow-md border-2 border-blue-600 overflow-hidden">
+            <div class="bg-blue-700 text-white px-6 py-4 flex justify-between items-center">
+                <h3 id="res-panel-title" class="text-lg font-bold">தேர்வு முடிவுகள் மற்றும் மதிப்பெண் பகுப்பாய்வு</h3>
+                <span id="grade-badge" class="bg-amber-400 text-blue-950 font-bold px-3 py-1 rounded-full text-sm"></span>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                        <p id="res-lbl-net" class="text-xs text-slate-600 font-medium">பெற்ற மொத்த மதிப்பெண்</p>
+                        <p id="res-net-score" class="text-3xl font-extrabold text-blue-700 mt-1">0.00</p>
+                        <p id="res-lbl-outof" class="text-xs text-slate-500 mt-1">30 மதிப்பெண்களுக்கு</p>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                        <p id="res-lbl-corr" class="text-xs text-emerald-800 font-medium">சரியான விடைகள் (+1)</p>
+                        <p id="res-correct" class="text-2xl font-bold text-emerald-600 mt-1">0</p>
+                        <p id="res-pos-marks" class="text-xs text-emerald-700 mt-1">+0.00 மதிப்பெண்</p>
+                    </div>
+                    <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                        <p id="res-lbl-wrong" class="text-xs text-rose-800 font-medium">தவறான விடைகள் (-0.25)</p>
+                        <p id="res-wrong" class="text-2xl font-bold text-rose-600 mt-1">0</p>
+                        <p id="res-neg-marks" class="text-xs text-rose-700 mt-1">-0.00 கழிப்பு</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p id="res-lbl-unans" class="text-xs text-slate-700 font-medium">விடையளிக்காதவை (0)</p>
+                        <p id="res-unanswered" class="text-2xl font-bold text-slate-600 mt-1">0</p>
+                        <p id="res-lbl-nochange" class="text-xs text-slate-500 mt-1">மதிப்பெண் மாற்றமில்லை</p>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 col-span-2 md:col-span-1">
+                        <p id="res-lbl-acc" class="text-xs text-amber-800 font-medium">துல்லிய விகிதம்</p>
+                        <p id="res-accuracy" class="text-2xl font-bold text-amber-600 mt-1">0%</p>
+                        <p id="res-lbl-pct" class="text-xs text-amber-700 mt-1">சதவீதம்</p>
+                    </div>
+                </div>
+                <div class="mt-5 pt-4 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <p id="res-footer-note" class="text-sm text-slate-600 font-medium">கீழே அனைத்து 30 வினாக்களுக்கும் சரியான விடை, தவறான விடை மற்றும் காரண காரிய விளக்கங்கள் கொடுக்கப்பட்டுள்ளன.</p>
+                    <button id="btn-retake-res" onclick="resetCurrentChapter()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow transition">
+                        மீண்டும் இப்பாடத் தேர்வை எழுதுக
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questions-container" class="space-y-6">
+            <!-- Questions injected here -->
+        </div>
+
+        <!-- Submit Button Section -->
+        <div id="submit-section" class="mt-8 mb-12 bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
+            <p id="submit-note" class="text-sm text-slate-600 mb-4">அனைத்து வினாக்களையும் சரிபார்த்த பின் தேர்வைச் சமர்ப்பிக்கவும். தவறான விடைகளுக்கு 0.25 மதிப்பெண் குறைக்கப்படும் என்பதை நினைவில் கொள்ளவும்.</p>
+            <button id="btn-submit" onclick="submitQuiz()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
+                தேர்வைச் சமர்ப்பி (Submit Exam)
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 text-center py-4 text-xs">
+        <p id="footer-text">12-ஆம் வகுப்பு கணினி அறிவியல் • தமிழ்நாடு அரசுப் பாடநூல் உட்பகுதி வினாக்கள் • நீட் மாதிரித் தேர்வு</p>
+    </footer>
+
+    <script>
+        // Bilingual UI Strings
+        const uiStrings = {
+            ta: {
+                badge: "தமிழ்நாடு பாடத்திட்டம் - 12-ஆம் வகுப்பு",
+                title: "கணினி அறிவியல் - நீட் (NEET) மாதிரி ஒருமதிப்பெண் தேர்வு",
+                subtitle: "கடைசி 5 பாடங்கள் (அத்தியாயம் 12 முதல் 16 வரை) • புத்தக உட்பகுதி வினாக்கள்",
+                correct: "சரி",
+                wrong: "தவறு",
+                skip: "விடையளிக்காதது",
+                metaInfo: "மொத்த வினாக்கள்: 30 | மொத்த மதிப்பெண்கள்: 30 | ஒவ்வொரு முறையும் வினாக்கள் மாறி அமையும்",
+                answered: "விடையளித்தவை",
+                resetBtn: "வினாக்களை மாற்றி மீண்டும் தொடங்கு",
+                resTitle: "தேர்வு முடிவுகள் மற்றும் மதிப்பெண் பகுப்பாய்வு",
+                resNet: "பெற்ற மொத்த மதிப்பெண்",
+                resOutOf: "30 மதிப்பெண்களுக்கு",
+                resCorr: "சரியான விடைகள் (+1)",
+                resWrong: "தவறான விடைகள் (-0.25)",
+                resUnans: "விடையளிக்காதவை (0)",
+                resNoChange: "மதிப்பெண் மாற்றமில்லை",
+                resAcc: "துல்லிய விகிதம்",
+                resPct: "சதவீதம்",
+                marksWord: "மதிப்பெண்",
+                deductWord: "கழிப்பு",
+                resNote: "கீழே அனைத்து 30 வினாக்களுக்கும் சரியான விடை, தவறான விடை மற்றும் காரண காரிய விளக்கங்கள் கொடுக்கப்பட்டுள்ளன.",
+                retakeBtn: "மீண்டும் இப்பாடத் தேர்வை எழுதுக",
+                submitNote: "அனைத்து வினாக்களையும் சரிபார்த்த பின் தேர்வைச் சமர்ப்பிக்கவும். தவறான விடைகளுக்கு 0.25 மதிப்பெண் குறைக்கப்படும் என்பதை நினைவில் கொள்ளவும்.",
+                submitBtn: "தேர்வைச் சமர்ப்பி (Submit Exam)",
+                footer: "12-ஆம் வகுப்பு கணினி அறிவியல் • தமிழ்நாடு அரசுப் பாடநூல் உட்பகுதி வினாக்கள் • நீட் மாதிரித் தேர்வு",
+                optLabels: ['அ', 'ஆ', 'இ', 'ஈ'],
+                badgeUnans: "விடையளிக்கவில்லை (0 மதிப்பெண்)",
+                badgeCorr: "✓ சரி (+1.00 மதிப்பெண்)",
+                badgeWrong: "✗ தவறு (-0.25 மதிப்பெண்)",
+                tagRightAns: "சரியான விடை",
+                tagYourWrong: "உங்கள் தவறான விடை",
+                rationaleTitle: "காரண காரிய விளக்கம் (Rationale):",
+                grades: ["மிகச் சிறப்பு! (Outstanding)", "நன்று! (Good Performance)", "மேலும் பயிற்சி தேவை", "பாடத்தை நன்கு படித்து மீண்டும் முயல்க"]
+            },
+            en: {
+                badge: "Tamil Nadu State Board - Class 12",
+                title: "Computer Science - NEET Model MCQ Examination",
+                subtitle: "Last 5 Chapters (Chapters 12 to 16) • Book Interior Questions",
+                correct: "Correct",
+                wrong: "Wrong",
+                skip: "Unanswered",
+                metaInfo: "Total Questions: 30 | Total Marks: 30 | Questions & Options Shuffle Every Attempt",
+                answered: "Answered",
+                resetBtn: "Shuffle & Restart Exam",
+                resTitle: "Exam Results & Score Analysis",
+                resNet: "Net Score Obtained",
+                resOutOf: "Out of 30 Marks",
+                resCorr: "Correct Answers (+1)",
+                resWrong: "Wrong Answers (-0.25)",
+                resUnans: "Unanswered (0)",
+                resNoChange: "No Mark Deduction",
+                resAcc: "Accuracy Rate",
+                resPct: "Percentage",
+                marksWord: "Marks",
+                deductWord: "Deducted",
+                resNote: "Detailed review of all 30 questions with correct answers and explanations is shown below.",
+                retakeBtn: "Retake This Chapter Test",
+                submitNote: "Review all your answers before submitting. Remember that 0.25 marks will be deducted for each wrong answer.",
+                submitBtn: "Submit Exam",
+                footer: "Class 12 Computer Science • TN State Board Book Interior Questions • NEET Pattern",
+                optLabels: ['A', 'B', 'C', 'D'],
+                badgeUnans: "Unanswered (0 Marks)",
+                badgeCorr: "✓ Correct (+1.00 Mark)",
+                badgeWrong: "✗ Wrong (-0.25 Mark)",
+                tagRightAns: "Correct Answer",
+                tagYourWrong: "Your Wrong Answer",
+                rationaleTitle: "Explanation / Rationale:",
+                grades: ["Outstanding Performance!", "Good Performance!", "Needs More Practice", "Revise the Chapter & Try Again"]
+            }
+        };
+
+        // Bilingual Comprehensive Question Bank (150 Book Interior Questions)
+        const quizDatabase = [
+            {
+                id: 12,
+                shortTitle: { ta: "பாடம் 12: SQL", en: "Ch 12: SQL" },
+                fullTitle: {
+                    ta: "அத்தியாயம் 12: வினவல் அமைப்பு மொழி (Structured Query Language - SQL)",
+                    en: "Chapter 12: Structured Query Language (SQL)"
+                },
+                questions: [
+                    {
+                        q: { ta: "RDBMS என்பது எதனைக் குறிக்கிறது?", en: "What does RDBMS stand for?" },
+                        options: {
+                            ta: ["Relational Database Management System", "Regional Database Management System", "Relational Data Backup System", "Remote Database Management System"],
+                            en: ["Relational Database Management System", "Regional Database Management System", "Relational Data Backup System", "Remote Database Management System"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "RDBMS என்பதன் விரிவாக்கம் Relational Database Management System (உறவுநிலை தரவுத்தள மேலாண்மை அமைப்பு) ஆகும். இது உறவுநிலை மாதிரியின் அடிப்படையில் செயல்படுகிறது.",
+                            en: "RDBMS stands for Relational Database Management System, which manages data stored in structured tables based on the relational model."
+                        }
+                    },
+                    {
+                        q: { ta: "SQL-ன் ஆரம்பகாலப் பெயர் என்ன?", en: "What was the original name of SQL?" },
+                        options: { ta: ["SEQUEL", "MYSQL", "ORACLE", "DBASE"], en: ["SEQUEL", "MYSQL", "ORACLE", "DBASE"] },
+                        ans: 0,
+                        reason: {
+                            ta: "1970-களில் IBM நிறுவனத்தால் உருவாக்கப்பட்டபோது SQL-க்கு SEQUEL (Structured English Query Language) என்று பெயரிடப்பட்டது. பின்னர் இது SQL எனச் சுருக்கப்பட்டது.",
+                            en: "Developed at IBM in the 1970s, SQL was originally called SEQUEL (Structured English Query Language) before being shortened to SQL."
+                        }
+                    },
+                    {
+                        q: { ta: "தரவுத்தள அட்டவணையின் அமைப்பை (Structure) வரையறுக்கப் பயன்படும் SQL கூறு எது?", en: "Which SQL component is used to define the structure of database tables?" },
+                        options: {
+                            ta: ["DDL (Data Definition Language)", "DML (Data Manipulation Language)", "DCL (Data Control Language)", "TCL (Transaction Control Language)"],
+                            en: ["DDL (Data Definition Language)", "DML (Data Manipulation Language)", "DCL (Data Control Language)", "TCL (Transaction Control Language)"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "DDL (தரவு வரையறை மொழி) கட்டளைகளான CREATE, ALTER, DROP ஆகியவை அட்டவணையின் வடிவமைப்பு மற்றும் அமைப்பை உருவாக்கவும் மாற்றவும் பயன்படுகின்றன.",
+                            en: "DDL (Data Definition Language) commands like CREATE, ALTER, and DROP are used to define and modify the schema/structure of database objects."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது DML (Data Manipulation Language) கட்டளை அல்ல?", en: "Which of the following is NOT a DML (Data Manipulation Language) command?" },
+                        options: { ta: ["TRUNCATE", "INSERT", "UPDATE", "DELETE"], en: ["TRUNCATE", "INSERT", "UPDATE", "DELETE"] },
+                        ans: 0,
+                        reason: {
+                            ta: "TRUNCATE என்பது ஒரு DDL கட்டளையாகும்; இது அட்டவணையின் கட்டமைப்பை வைத்திருந்து அனைத்துப் பதிவுகளையும் நீக்கும். INSERT, UPDATE, DELETE ஆகியவை DML கட்டளைகள்.",
+                            en: "TRUNCATE is a DDL command that removes all records while keeping the table structure intact. INSERT, UPDATE, and DELETE are DML commands."
+                        }
+                    },
+                    {
+                        q: { ta: "அட்டவணையிலிருந்து அனைத்து வரிசைகளையும் நீக்கி, ஆனால் அட்டவணையின் கட்டமைப்பை மட்டும் தக்கவைத்துக் கொள்ளப் பயன்படும் கட்டளை எது?", en: "Which command deletes all rows from a table while retaining its structure?" },
+                        options: { ta: ["TRUNCATE", "DROP", "DELETE TABLE", "REMOVE"], en: ["TRUNCATE", "DROP", "DELETE TABLE", "REMOVE"] },
+                        ans: 0,
+                        reason: {
+                            ta: "TRUNCATE கட்டளை அட்டவணையில் உள்ள அனைத்து தரவுகளையும் நிரந்தரமாக நீக்கிவிட்டு, அட்டவணையின் கட்டமைப்பு மற்றும் இடத்தை மட்டும் தக்கவைத்துக் கொள்ளும். DROP முழு அட்டவணையையும் நீக்கிவிடும்.",
+                            en: "TRUNCATE deletes all rows permanently and frees space while preserving the table schema, whereas DROP deletes the entire table definition."
+                        }
+                    },
+                    {
+                        q: { ta: "பரிவர்த்தனைகளை (Transactions) நிரந்தரமாகத் தரவுத்தளத்தில் சேமிக்கப் பயன்படும் TCL கட்டளை எது?", en: "Which TCL command is used to permanently save transactions into the database?" },
+                        options: { ta: ["COMMIT", "ROLLBACK", "SAVEPOINT", "GRANT"], en: ["COMMIT", "ROLLBACK", "SAVEPOINT", "GRANT"] },
+                        ans: 0,
+                        reason: {
+                            ta: "COMMIT கட்டளையானது தரவுத்தளத்தில் செய்யப்பட்ட அனைத்து மாற்றங்களையும் நிரந்தரமாகச் சேமிக்கப் பயன்படுகிறது.",
+                            en: "The COMMIT command permanently saves all changes made during the current transaction to the database."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு நெடுவரிசையில் வெற்று (NULL) மதிப்புகளை அனுமதிக்காமல் தடுக்கும் கட்டுப்பாடு (Constraint) எது?", en: "Which constraint prevents NULL values from being entered into a column?" },
+                        options: { ta: ["NOT NULL", "UNIQUE", "CHECK", "DEFAULT"], en: ["NOT NULL", "UNIQUE", "CHECK", "DEFAULT"] },
+                        ans: 0,
+                        reason: {
+                            ta: "NOT NULL கட்டுப்பாடு ஒரு நெடுவரிசையில் கட்டாயமாக மதிப்பு இருக்க வேண்டும் என்பதை உறுதி செய்கிறது; வெற்று மதிப்பை அனுமதிக்காது.",
+                            en: "The NOT NULL constraint enforces a column to always contain a value, disallowing empty/NULL entries."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு அட்டவணையில் உள்ள ஒவ்வொரு பதிவையும் தனித்துவமாக அடையாளம் காண உதவும் கட்டுப்பாடு எது?", en: "Which constraint uniquely identifies each record in a database table?" },
+                        options: { ta: ["PRIMARY KEY", "FOREIGN KEY", "CHECK", "DEFAULT"], en: ["PRIMARY KEY", "FOREIGN KEY", "CHECK", "DEFAULT"] },
+                        ans: 0,
+                        reason: {
+                            ta: "PRIMARY KEY (முதன்மைத் திறவுகோல்) ஒரு அட்டவணையில் உள்ள ஒவ்வொரு வரிசையையும் தனித்துவமாக அடையாளம் காண்கிறது. இது UNIQUE மற்றும் NOT NULL பண்புகளைக் கொண்டது.",
+                            en: "PRIMARY KEY uniquely identifies each row in a table by combining UNIQUE and NOT NULL constraints."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு நெடுவரிசையில் உள்ள மதிப்புகள் குறிப்பிட்ட நிபந்தனைக்கு உட்பட்டதா எனச் சரிபார்க்கப் பயன்படும் கட்டுப்பாடு எது?", en: "Which constraint ensures that values in a column satisfy a specific condition?" },
+                        options: { ta: ["CHECK", "UNIQUE", "PRIMARY KEY", "INDEX"], en: ["CHECK", "UNIQUE", "PRIMARY KEY", "INDEX"] },
+                        ans: 0,
+                        reason: {
+                            ta: "CHECK கட்டுப்பாடு ஒரு நெடுவரிசையில் உள்ளிடப்படும் தரவு குறிப்பிட்ட வரம்பிற்குள் அல்லது நிபந்தனைக்குள் உள்ளதா என்பதைச் சரிபார்க்கிறது (எ.கா: Age >= 18).",
+                            en: "The CHECK constraint validates that all values in a column meet a specific logical condition (e.g., Age >= 18)."
+                        }
+                    },
+                    {
+                        q: { ta: "இரண்டு அட்டவணைகளுக்கு இடையே தொடர்பை (Referential Integrity) ஏற்படுத்தப் பயன்படும் திறவுகோல் எது?", en: "Which key is used to establish a link and referential integrity between two tables?" },
+                        options: { ta: ["FOREIGN KEY", "PRIMARY KEY", "UNIQUE KEY", "SUPER KEY"], en: ["FOREIGN KEY", "PRIMARY KEY", "UNIQUE KEY", "SUPER KEY"] },
+                        ans: 0,
+                        reason: {
+                            ta: "FOREIGN KEY (அயல் திறவுகோல்) ஒரு அட்டவணையின் நெடுவரிசையை மற்றொரு அட்டவணையின் முதன்மைத் திறவுகோலுடன் இணைத்து தரவு ஒருமைப்பாட்டைப் பாதுகாக்கிறது.",
+                            en: "A FOREIGN KEY links a column in one table to the PRIMARY KEY of another table, maintaining referential integrity."
+                        }
+                    },
+                    {
+                        q: { ta: "ஏற்கனவே உள்ள அட்டவணையில் புதிய நெடுவரிசையைச் (Column) சேர்க்கப் பயன்படும் கட்டளை எது?", en: "Which command is used to add a new column to an existing table?" },
+                        options: {
+                            ta: ["ALTER TABLE ... ADD", "UPDATE TABLE ... ADD", "MODIFY TABLE ... INSERT", "CREATE COLUMN"],
+                            en: ["ALTER TABLE ... ADD", "UPDATE TABLE ... ADD", "MODIFY TABLE ... INSERT", "CREATE COLUMN"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "ALTER TABLE அட்டவணைப் பெயர் ADD நெடுவரிசைப் பெயர் தரவுவகை; என்ற தொடரியல் மூலம் புதிய நெடுவரிசையைச் சேர்க்கலாம்.",
+                            en: "The syntax 'ALTER TABLE table_name ADD column_name datatype;' adds a new column to an existing table."
+                        }
+                    },
+                    {
+                        q: { ta: "வினவல் முடிவில் இரட்டிப்புப் பதிவுகளை (Duplicate Rows) தவிர்த்து தனித்துவமான மதிப்புகளை மட்டும் பெறப் பயன்படும் சிறப்புச் சொல் எது?", en: "Which keyword eliminates duplicate rows and returns only unique values in a query result?" },
+                        options: { ta: ["DISTINCT", "UNIQUE", "DIFFERENT", "SINGLE"], en: ["DISTINCT", "UNIQUE", "DIFFERENT", "SINGLE"] },
+                        ans: 0,
+                        reason: {
+                            ta: "SELECT DISTINCT என்ற சிறப்புச் சொல் ஒரு நெடுவரிசையில் மீண்டும் மீண்டும் வரும் ஒரே மாதிரியான மதிப்புகளைத் தவிர்த்து, தனித்த மதிப்புகளை மட்டும் காட்டும்.",
+                            en: "The DISTINCT keyword used with SELECT filters out duplicate entries and displays only unique values."
+                        }
+                    },
+                    {
+                        q: { ta: "SQL-ல் <code>BETWEEN</code> செயற்குறி எவ்வாறு செயல்படுகிறது?", en: "How does the <code>BETWEEN</code> operator work in SQL?" },
+                        options: {
+                            ta: ["வரம்பின் தொடக்க மற்றும் இறுதி மதிப்புகளையும் உள்ளடக்கும் (Inclusive)", "தொடக்க மதிப்பை மட்டும் உள்ளடக்கும்", "இறுதி மதிப்பை மட்டும் உள்ளடக்கும்", "இரண்டு எல்லை மதிப்புகளையும் தவிர்க்கும்"],
+                            en: ["Includes both start and end boundary values (Inclusive)", "Includes only the start value", "Includes only the end value", "Excludes both boundary values"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "BETWEEN செயற்குறியானது கொடுக்கப்பட்ட தொடக்க மற்றும் இறுதி மதிப்புகளையும் சேர்த்தே (Inclusive) தரவுகளைத் தேர்ந்தெடுக்கும்.",
+                            en: "The BETWEEN operator selects values within a given range and is inclusive, meaning both begin and end values are included."
+                        }
+                    },
+                    {
+                        q: { ta: "SQL-ல் <code>LIKE</code> செயற்குறியுடன் '0 அல்லது அதற்கு மேற்பட்ட எழுத்துக்களைக்' குறிக்கப் பயன்படும் Wildcard குறியீடு எது?", en: "Which wildcard character represents zero, one, or multiple characters with the <code>LIKE</code> operator?" },
+                        options: {
+                            ta: ["% (சதவீதக் குறி)", "_ (அடிக்கோடு)", "* (நட்சத்திரக் குறி)", "? (கேள்விக்குறி)"],
+                            en: ["% (Percent sign)", "_ (Underscore)", "* (Asterisk)", "? (Question mark)"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SQL-ல் % (Percent) குறியீடு பூஜ்ஜியம், ஒன்று அல்லது பல எழுத்துக்களைக் குறிக்கவும், _ (Underscore) குறியீடு ஒரே ஒரு எழுத்தைக் குறிக்கவும் பயன்படுகிறது.",
+                            en: "In SQL, '%' matches zero or more characters, while '_' matches exactly one single character."
+                        }
+                    },
+                    {
+                        q: { ta: "SQL-ல் ஒரே ஒரு எழுத்தை மட்டும் பதிலீடு செய்யப் பயன்படும் Wildcard குறியீடு எது?", en: "Which wildcard character substitutes a single character in SQL pattern matching?" },
+                        options: { ta: ["_ (Underscore)", "% (Percent)", "# (Hash)", "& (Ampersand)"], en: ["_ (Underscore)", "% (Percent)", "# (Hash)", "& (Ampersand)"] },
+                        ans: 0,
+                        reason: {
+                            ta: "_ (அடிக்கோடு) குறியீடு சரத்தில் சரியாக ஒரே ஒரு எழுத்தை (Single Character) மட்டும் குறிக்கப் பயன்படுகிறது.",
+                            en: "The underscore '_' wildcard represents exactly one single character in a string pattern."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>ORDER BY</code> துணைக்கூற்றின் கொடாநிலை (Default) வரிசையாக்க முறை எது?", en: "What is the default sorting order of the <code>ORDER BY</code> clause?" },
+                        options: {
+                            ta: ["ஏறுவரிசை (ASC)", "இறங்குவரிசை (DESC)", "எழுமாற்றான வரிசை (RANDOM)", "உள்ளீட்டு வரிசை"],
+                            en: ["Ascending (ASC)", "Descending (DESC)", "Random order", "Insertion order"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "ORDER BY துணைக்கூற்றில் ASC அல்லது DESC எனக் குறிப்பிடவில்லை எனில், அது கொடாநிலையாக ஏறுவரிசையில் (Ascending - ASC) தரவுகளை வரிசைப்படுத்தும்.",
+                            en: "If neither ASC nor DESC is specified, ORDER BY sorts records in ascending (ASC) order by default."
+                        }
+                    },
+                    {
+                        q: { ta: "குழுவாக்கப்பட்ட (GROUP BY) தரவுகளின் மீது நிபந்தனைகளை விதிக்கப் பயன்படும் துணைக்கூற்று எது?", en: "Which clause is used to apply conditions on grouped rows created by <code>GROUP BY</code>?" },
+                        options: { ta: ["HAVING", "WHERE", "ORDER BY", "DISTINCT"], en: ["HAVING", "WHERE", "ORDER BY", "DISTINCT"] },
+                        ans: 0,
+                        reason: {
+                            ta: "WHERE துணைக்கூற்றைத் தொகுப்புச் செயற்கூறுகளுடன் (Aggregate functions) பயன்படுத்த முடியாது. எனவே GROUP BY மூலம் பிரிக்கப்பட்ட குழுக்களுக்கு நிபந்தனை விதிக்க HAVING பயன்படுகிறது.",
+                            en: "Since the WHERE clause cannot be used with aggregate functions, the HAVING clause is used to filter grouped records."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது SQL-ன் தொகுப்புச் செயற்கூறு (Aggregate Function) அல்ல?", en: "Which of the following is NOT an SQL Aggregate Function?" },
+                        options: { ta: ["ROUND()", "AVG()", "COUNT()", "SUM()"], en: ["ROUND()", "AVG()", "COUNT()", "SUM()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "COUNT(), SUM(), AVG(), MAX(), MIN() ஆகியவை பல வரிசைகளைக் கணக்கிடும் தொகுப்புச் செயற்கூறுகள் ஆகும். ROUND() என்பது ஒரு ஒற்றை வரிசை எண் செயற்கூறு.",
+                            en: "COUNT(), SUM(), AVG(), MAX(), and MIN() are aggregate functions operating on sets of rows, whereas ROUND() is a scalar numeric function."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>COUNT(*)</code> மற்றும் <code>COUNT(column_name)</code> ஆகியவற்றிற்கு இடையேயான முக்கிய வேறுபாடு என்ன?", en: "What is the key difference between <code>COUNT(*)</code> and <code>COUNT(column_name)</code>?" },
+                        options: {
+                            ta: ["COUNT(*) NULL மதிப்புகளையும் சேர்த்து எண்ணும்; COUNT(column) NULL மதிப்புகளைத் தவிர்க்கும்", "இரண்டும் ஒரே முடிவைத் தரும்", "COUNT(*) NULL மதிப்புகளைத் தவிர்க்கும்", "COUNT(column) பிழையை ஏற்படுத்தும்"],
+                            en: ["COUNT(*) counts all rows including NULLs; COUNT(column) ignores NULL values", "Both return the exact same result", "COUNT(*) ignores NULL values", "COUNT(column) throws an error on NULLs"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "COUNT(*) அட்டவணையில் உள்ள அனைத்து வரிசைகளையும் (NULL உட்பட) எண்ணும். ஆனால் COUNT(column_name) அந்த நெடுவரிசையில் உள்ள NULL அல்லாத மதிப்புகளை மட்டுமே எண்ணும்.",
+                            en: "COUNT(*) counts total rows including NULLs, whereas COUNT(column_name) only counts non-NULL values in that specific column."
+                        }
+                    },
+                    {
+                        q: { ta: "பயனர்களுக்குத் தரவுத்தள அணுகல் உரிமைகளை வழங்கப் பயன்படும் DCL கட்டளை எது?", en: "Which DCL command provides database access privileges to users?" },
+                        options: { ta: ["GRANT", "REVOKE", "ALLOW", "PERMIT"], en: ["GRANT", "REVOKE", "ALLOW", "PERMIT"] },
+                        ans: 0,
+                        reason: {
+                            ta: "GRANT கட்டளை பயனர்களுக்கு SELECT, INSERT போன்ற உரிமைகளை வழங்கவும், REVOKE கட்டளை வழங்கப்பட்ட உரிமைகளைத் திரும்பப் பெறவும் பயன்படுகிறது.",
+                            en: "GRANT gives specific permissions (like SELECT, INSERT) to users, while REVOKE withdraws those privileges."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>SAVEPOINT</code> கட்டளை எந்த வகை SQL மொழியைச் சார்ந்தது?", en: "To which SQL command category does <code>SAVEPOINT</code> belong?" },
+                        options: {
+                            ta: ["TCL (Transaction Control Language)", "DDL (Data Definition Language)", "DML (Data Manipulation Language)", "DCL (Data Control Language)"],
+                            en: ["TCL (Transaction Control Language)", "DDL (Data Definition Language)", "DML (Data Manipulation Language)", "DCL (Data Control Language)"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "COMMIT, ROLLBACK, SAVEPOINT ஆகிய மூன்றும் பரிவர்த்தனை கட்டுப்பாட்டு மொழி (TCL) கட்டளைகள் ஆகும்.",
+                            en: "COMMIT, ROLLBACK, and SAVEPOINT are all Transaction Control Language (TCL) commands."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு பரிவர்த்தனையைக் குறிப்பிட்ட <code>SAVEPOINT</code> வரை மட்டும் பின்னோக்கிச் செல்லப் பயன்படும் கட்டளை எது?", en: "Which command undoes a transaction only up to a specific <code>SAVEPOINT</code>?" },
+                        options: {
+                            ta: ["ROLLBACK TO savepoint_name", "UNDO TO savepoint_name", "RESTORE savepoint_name", "COMMIT TO savepoint_name"],
+                            en: ["ROLLBACK TO savepoint_name", "UNDO TO savepoint_name", "RESTORE savepoint_name", "COMMIT TO savepoint_name"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "ROLLBACK TO <savepoint_name> என்ற கட்டளை மூலம் குறிப்பிட்ட சேமிப்புப் புள்ளிக்குப் பிறகு செய்யப்பட்ட மாற்றங்களை மட்டும் ரத்து செய்யலாம்.",
+                            en: "'ROLLBACK TO savepoint_name' rolls back only the changes made after the named savepoint."
+                        }
+                    },
+                    {
+                        q: { ta: "மதிப்புகளின் பட்டியலில் ஏதேனும் ஒன்றுடன் பொருந்துகிறதா எனச் சோதிக்கப் பயன்படும் SQL செயற்குறி எது?", en: "Which SQL operator checks if a value matches any value in a specified list?" },
+                        options: { ta: ["IN", "BETWEEN", "LIKE", "IS"], en: ["IN", "BETWEEN", "LIKE", "IS"] },
+                        ans: 0,
+                        reason: {
+                            ta: "IN செயற்குறியானது பல OR நிபந்தனைகளுக்கு மாற்றாக, கொடுக்கப்பட்ட பட்டியலில் உள்ள மதிப்புகளுடன் ஒப்பிடப் பயன்படுகிறது (எ.கா: WHERE City IN ('Chennai', 'Madurai')).",
+                            en: "The IN operator acts as a shorthand for multiple OR conditions to match values against a list."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு நெடுவரிசையில் <code>NULL</code> மதிப்பு உள்ளதா எனச் சோதிக்க சரியான தொடரியல் எது?", en: "What is the correct syntax to test for <code>NULL</code> values in a column?" },
+                        options: {
+                            ta: ["WHERE Marks IS NULL", "WHERE Marks = NULL", "WHERE Marks == NULL", "WHERE Marks IN NULL"],
+                            en: ["WHERE Marks IS NULL", "WHERE Marks = NULL", "WHERE Marks == NULL", "WHERE Marks IN NULL"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "NULL என்பது மதிப்பற்ற நிலையைக் குறிப்பதால் '=' செயற்குறியைப் பயன்படுத்த முடியாது. 'IS NULL' அல்லது 'IS NOT NULL' மட்டுமே பயன்படுத்த வேண்டும்.",
+                            en: "Comparison operators like '=' cannot test for NULL; 'IS NULL' or 'IS NOT NULL' must be used instead."
+                        }
+                    },
+                    {
+                        q: { ta: "அட்டவணையில் உள்ள ஒரு பதிவின் மதிப்பை மாற்றியமைக்கப் பயன்படும் கட்டளை எது?", en: "Which SQL command is used to modify existing records in a table?" },
+                        options: {
+                            ta: ["UPDATE ... SET", "ALTER ... SET", "MODIFY ... VALUE", "CHANGE ... TO"],
+                            en: ["UPDATE ... SET", "ALTER ... SET", "MODIFY ... VALUE", "CHANGE ... TO"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "UPDATE அட்டவணைப் பெயர் SET நெடுவரிசை = புதிய_மதிப்பு WHERE நிபந்தனை; என்ற DML கட்டளை மூலம் தரவுகளைத் திருத்தலாம்.",
+                            en: "The DML statement 'UPDATE table_name SET column = value WHERE condition;' modifies existing data rows."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது WAMP விரிவாக்கத்தில் உள்ள மென்பொருள் அல்ல?", en: "Which of the following is NOT part of the WAMP acronym?" },
+                        options: { ta: ["Python", "Windows", "Apache", "MySQL"], en: ["Python", "Windows", "Apache", "MySQL"] },
+                        ans: 0,
+                        reason: {
+                            ta: "WAMP என்பது Windows, Apache, MySQL மற்றும் PHP ஆகியவற்றின் தொகுப்பாகும். இதில் Python கிடையாது.",
+                            en: "WAMP stands for Windows, Apache, MySQL, and PHP; Python is not part of WAMP."
+                        }
+                    },
+                    {
+                        q: { ta: "அட்டவணைக்குப் பதிலாக தரவுத்தளத்தில் உள்ள ஒரு மெய்நிகர் அட்டவணையை (Virtual Table) உருவாக்கப் பயன்படும் கட்டளை எது?", en: "Which command creates a virtual table based on the result-set of an SQL statement?" },
+                        options: {
+                            ta: ["CREATE VIEW", "CREATE VIRTUAL", "CREATE TEMP", "CREATE TABLE"],
+                            en: ["CREATE VIEW", "CREATE VIRTUAL", "CREATE TEMP", "CREATE TABLE"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "CREATE VIEW கட்டளை ஒன்று அல்லது அதற்கு மேற்பட்ட அட்டவணைகளிலிருந்து எடுக்கப்பட்ட தரவுகளைக் கொண்ட மெய்நிகர் அட்டவணையை (View) உருவாக்கும்.",
+                            en: "CREATE VIEW defines a virtual table whose contents are dynamically retrieved from underlying tables."
+                        }
+                    },
+                    {
+                        q: { ta: "பரிவர்த்தனை கட்டுப்பாட்டு மொழி (TCL) கட்டளைகளை எந்த SQL கட்டளைகளுடன் மட்டுமே பயன்படுத்த முடியும்?", en: "With which SQL commands can Transaction Control Language (TCL) commands be used?" },
+                        options: {
+                            ta: ["INSERT, UPDATE, DELETE", "CREATE, ALTER, DROP", "GRANT, REVOKE", "SELECT, SHOW"],
+                            en: ["INSERT, UPDATE, DELETE", "CREATE, ALTER, DROP", "GRANT, REVOKE", "SELECT, SHOW"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "TCL கட்டளைகள் (COMMIT, ROLLBACK) தரவு கையாளுதல் மொழி (DML) கட்டளைகளான INSERT, UPDATE மற்றும் DELETE ஆகியவற்றுடன் மட்டுமே செயல்படும்.",
+                            en: "TCL commands like COMMIT and ROLLBACK only manage transactions created by DML commands (INSERT, UPDATE, DELETE)."
+                        }
+                    },
+                    {
+                        q: { ta: "அட்டவணையில் உள்ள நெடுவரிசைக்கான கட்டுப்பாடுகளை (Constraints) எத்தனை நிலைகளில் வரையறுக்கலாம்?", en: "At how many levels can constraints be defined in an SQL table?" },
+                        options: {
+                            ta: ["2 நிலைகள் (Column level மற்றும் Table level)", "1 நிலை மட்டும்", "3 நிலைகள்", "4 நிலைகள்"],
+                            en: ["2 levels (Column level and Table level)", "1 level only", "3 levels", "4 levels"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "கட்டுப்பாடுகளை நெடுவரிசை அளவிலும் (Column constraint) மற்றும் அட்டவணை அளவிலும் (Table constraint) என இரு வகைகளில் வரையறுக்கலாம்.",
+                            en: "Constraints can be specified at two levels: Column-level (applied to a single column) and Table-level (applied to multiple columns)."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>SELECT * FROM Student WHERE Name LIKE '_a%';</code> என்ற வினவல் எத்தகைய பெயர்களைத் தரும்?", en: "What names will the query <code>SELECT * FROM Student WHERE Name LIKE '_a%';</code> retrieve?" },
+                        options: {
+                            ta: ["இரண்டாவது எழுத்து 'a' ஆக உள்ள பெயர்கள்", "முதல் எழுத்து 'a' ஆக உள்ள பெயர்கள்", "கடைசி எழுத்து 'a' ஆக உள்ள பெயர்கள்", "'a' என்ற எழுத்து இல்லாத பெயர்கள்"],
+                            en: ["Names having 'a' as the second letter", "Names starting with 'a'", "Names ending with 'a'", "Names without the letter 'a'"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "முதலில் உள்ள '_' ஒரு எழுத்தையும், அடுத்துள்ள 'a' இரண்டாவது எழுத்தையும், '%' மீதமுள்ள எழுத்துக்களையும் குறிப்பதால் இரண்டாவது எழுத்து 'a' கொண்ட பெயர்கள் தேர்ந்தெடுக்கப்படும்.",
+                            en: "The leading '_' matches any single first character, followed by 'a' as the second character, and '%' matches any remaining characters."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 13,
+                shortTitle: { ta: "பாடம் 13: பைத்தான் & CSV", en: "Ch 13: Python & CSV" },
+                fullTitle: {
+                    ta: "அத்தியாயம் 13: பைத்தான் மற்றும் CSV கோப்புகள் (Python and CSV Files)",
+                    en: "Chapter 13: Python and CSV Files"
+                },
+                questions: [
+                    {
+                        q: { ta: "CSV என்பதன் சரியான விரிவாக்கம் என்ன?", en: "What is the correct expansion of CSV?" },
+                        options: {
+                            ta: ["Comma Separated Values", "Character Separated Values", "Column Separated Values", "Common Separated Variables"],
+                            en: ["Comma Separated Values", "Character Separated Values", "Column Separated Values", "Common Separated Variables"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "CSV என்பது காற்புள்ளியால் பிரிக்கப்பட்ட மதிப்புகள் (Comma Separated Values) என்பதைக் குறிக்கிறது. இது ஒரு எளிய உரைக்கோப்பு வடிவமாகும்.",
+                            en: "CSV stands for Comma Separated Values, a plain-text file format used to store tabular data."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் CSV கோப்புகளைப் படிக்கவும் எழுதவும் தருவிக்கப்பட வேண்டிய உள்ளிணைந்த கூறுநிலை (Module) எது?", en: "Which built-in Python module must be imported to read and write CSV files?" },
+                        options: { ta: ["csv", "os", "sys", "file"], en: ["csv", "os", "sys", "file"] },
+                        ans: 0,
+                        reason: {
+                            ta: "பைத்தானின் நிலையான நூலகத்தில் உள்ள 'csv' கூறுநிலையை (import csv) பயன்படுத்துவதன் மூலம் CSV கோப்புகளை எளிதாகக் கையாளலாம்.",
+                            en: "Python's standard library provides the built-in 'csv' module to parse and write CSV files."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வரும் கூற்றுகளில் எது சரியானது? (CSV கோப்பு vs XLS கோப்பு)", en: "Which of the following statements is TRUE regarding CSV vs XLS files?" },
+                        options: {
+                            ta: ["CSV கோப்புகள் எளிய உரை வடிவத்தில் குறைந்த நினைவகத்தை எடுத்துக்கொள்ளும்", "CSV கோப்புகள் எக்செல் கோப்புகளை விட அதிக நினைவகத்தை எடுத்துக்கொள்ளும்", "CSV கோப்புகளில் வரைபடங்களைச் சேமிக்க முடியும்", "CSV கோப்புகளை Notepad-ல் திறக்க முடியாது"],
+                            en: ["CSV files are plain text and consume less memory", "CSV files consume more memory than Excel files", "CSV files can store embedded charts", "CSV files cannot be opened in Notepad"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "CSV என்பது Plain Text வடிவமாகும். இது XLS/XLSX போல வடிவமைப்புத் தகவல்களைக் கொண்டிருக்காததால் மிகக் குறைந்த நினைவக இடத்தையே பிடிக்கும்.",
+                            en: "Because CSV files store only plain text without formatting metadata, they are significantly smaller in size than XLS/XLSX files."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் ஒரு கோப்பைத் திறக்கும்போது கொடாநிலையாக (Default) எந்த முறைமையில் (Mode) திறக்கப்படும்?", en: "In which mode does Python open a file by default if no mode is specified?" },
+                        options: {
+                            ta: ["படித்தல் முறைமை ('r')", "எழுதுதல் முறைமை ('w')", "சேர்த்தல் முறைமை ('a')", "இரும முறைமை ('b')"],
+                            en: ["Read mode ('r')", "Write mode ('w')", "Append mode ('a')", "Binary mode ('b')"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "open() செயற்கூறில் முறைமையைக் குறிப்பிடவில்லை எனில், கொடாநிலையாகப் படித்தல் முறைமையில் ('r' - Read mode) கோப்பு திறக்கப்படும்.",
+                            en: "When the mode argument is omitted in open(), Python defaults to read-only text mode ('r')."
+                        }
+                    },
+                    {
+                        q: { ta: "ஏற்கனவே உள்ள CSV கோப்பின் இறுதியில் புதிய தரவுகளைச் சேர்க்க எந்த கோப்பு முறைமையைப் பயன்படுத்த வேண்டும்?", en: "Which file mode should be used to add new data at the end of an existing CSV file?" },
+                        options: {
+                            ta: ["'a' (Append mode)", "'w' (Write mode)", "'r' (Read mode)", "'x' (Exclusive creation)"],
+                            en: ["'a' (Append mode)", "'w' (Write mode)", "'r' (Read mode)", "'x' (Exclusive creation)"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "'w' முறைமை பழைய தரவுகளை அழித்துவிட்டுப் புதிதாக எழுதும். 'a' (Append) முறைமை பழைய தரவுகளை அழிக்காமல் கோப்பின் இறுதியில் புதிய தரவுகளைச் சேர்க்கும்.",
+                            en: "Append mode ('a') preserves existing content and adds new records at the end, whereas 'w' overwrites the file."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் CSV கோப்பைத் திறக்கும்போது <code>with</code> கூற்றைப் பயன்படுத்துவதன் முக்கிய நன்மை என்ன?", en: "What is the main advantage of using the <code>with</code> statement when opening a CSV file?" },
+                        options: {
+                            ta: ["கோப்பு தானாகவே மூடப்படும் (close() அழைக்கத் தேவையில்லை)", "கோப்பு வேகமாகப் பதிவிறக்கம் ஆகும்", "கோப்பு மறைகுறியாக்கம் செய்யப்படும்", "கோப்பின் அளவு குறையும்"],
+                            en: ["The file is automatically closed without explicitly calling close()", "The file downloads faster", "The file gets automatically encrypted", "It reduces the file size"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "with open(...) கூற்றைப் பயன்படுத்தும்போது, தொகுதி முடிந்தவுடன் அல்லது விதிவிலக்கு ஏற்பட்டாலும் கோப்பு தானாகவே மூடப்பட்டு நினைவகம் விடுவிக்கப்படும்.",
+                            en: "The 'with' context manager guarantees automatic closing of the file once the block exits, even if exceptions occur."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பிலிருந்து தரவுகளைப் படிப்பதற்கான <code>csv.reader()</code> செயற்கூறு எந்த வடிவத்தில் தரவைத் திருப்பி அனுப்பும்?", en: "In what format does <code>csv.reader()</code> return each row read from a CSV file?" },
+                        options: { ta: ["List (பட்டியல்)", "Dictionary (அகராதி)", "Tuple", "Set"], en: ["List", "Dictionary", "Tuple", "Set"] },
+                        ans: 0,
+                        reason: {
+                            ta: "csv.reader() கோப்பில் உள்ள ஒவ்வொரு வரிசையையும் சரங்களின் பட்டியலாக (List of strings) மாற்றித் தரும்.",
+                            en: "csv.reader() parses each line of the CSV file and returns it as a list of strings."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பில் உள்ள தரவுகளை அகராதி (Dictionary) வடிவத்தில் படிக்கப் பயன்படும் இனக்குழு (Class) எது?", en: "Which class is used to read CSV data directly into a Dictionary format?" },
+                        options: {
+                            ta: ["csv.DictReader", "csv.reader", "csv.DictWriter", "csv.MapReader"],
+                            en: ["csv.DictReader", "csv.reader", "csv.DictWriter", "csv.MapReader"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "csv.DictReader முதல் வரிசையைத் திறவுகோல்களாகக் (Keys) கொண்டு, ஒவ்வொரு வரிசையையும் OrderedDict / Dictionary வடிவத்தில் படிக்கும்.",
+                            en: "csv.DictReader maps the information in each row to a dictionary whose keys are given by the first (header) row."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பில் காற்புள்ளி (,) தவிர வேறு பிரிப்பான்களை (எ.கா: குழாய் குறியீடு <code>|</code>) கையாளப் பயன்படும் அளபுரு எது?", en: "Which parameter is used to specify a custom separator like <code>|</code> instead of a comma?" },
+                        options: { ta: ["delimiter", "separator", "splitter", "divider"], en: ["delimiter", "separator", "splitter", "divider"] },
+                        ans: 0,
+                        reason: {
+                            ta: "delimiter='|' போன்ற அளபுருவை csv.reader() அல்லது csv.writer() செயற்கூறில் கொடுப்பதன் மூலம் விருப்பமான பிரிப்பானைப் பயன்படுத்தலாம்.",
+                            en: "Setting delimiter='|' in csv.reader() or csv.writer() allows using a pipe or any custom character as the field separator."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பில் தரவுகளுக்கு முன் உள்ள தேவையற்ற வெற்று இடைவெளிகளை (Initial Whitespace) நீக்கப் பயன்படும் Dialect அளபுரு எது?", en: "Which dialect parameter removes whitespace immediately following the delimiter?" },
+                        options: {
+                            ta: ["skipinitialspace = True", "removespace = True", "trimspace = True", "ignorewhitespace = True"],
+                            en: ["skipinitialspace = True", "removespace = True", "trimspace = True", "ignorewhitespace = True"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "csv.register_dialect() செயற்கூறில் skipinitialspace=True என அமைத்தால், பிரிப்பானுக்குப் பின் உள்ள தேவையற்ற இடைவெளிகள் நீக்கப்படும்.",
+                            en: "When skipinitialspace=True is set in a dialect, any whitespace immediately after the delimiter is ignored."
+                        }
+                    },
+                    {
+                        q: { ta: "விண்டோஸ் இயக்க அமைப்பில் CSV கோப்பை எழுதும்போது ஒவ்வொரு வரிசைக்கும் இடையே ஒரு வெற்று வரி (Blank Line) உருவாவதைத் தவிர்க்க <code>open()</code> செயற்கூறில் என்ன அளபுரு கொடுக்க வேண்டும்?", en: "Which parameter in <code>open()</code> prevents extra blank lines between rows when writing CSV files on Windows?" },
+                        options: { ta: ["newline=''", "blankline=False", "skipline=True", "end=''"], en: ["newline=''", "blankline=False", "skipline=True", "end=''"] },
+                        ans: 0,
+                        reason: {
+                            ta: "விண்டோஸில் \\r\\n வரிமுறிப்பால் கூடுதல் வெற்று வரி தோன்றும். இதைத் தவிர்க்க open('file.csv', 'w', newline='') எனக் குறிப்பிட வேண்டும்.",
+                            en: "Passing newline='' to open() prevents Python's universal newline translation from inserting extra blank rows on Windows."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>csv.register_dialect()</code> செயற்கூறின் நோக்கம் என்ன?", en: "What is the purpose of <code>csv.register_dialect()</code>?" },
+                        options: {
+                            ta: ["CSV கோப்பைப் படிப்பதற்கான தனிப்பயன் விதிகளை (Dialect) வரையறுத்தல்", "புதிய CSV கோப்பை உருவாக்குதல்", "CSV கோப்பை நீக்குதல்", "CSV கோப்பைப் பூட்டுதல்"],
+                            en: ["To define custom formatting rules (delimiter, quoting, etc.) under a dialect name", "To create a new CSV file on disk", "To delete an existing CSV file", "To encrypt a CSV file"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "பிரிப்பான் (delimiter), மேற்கோள் குறிகள் (quoting), இடைவெளி நீக்கம் போன்ற விதிகளை ஒரு பெயரின் கீழ் பதிவு செய்ய register_dialect() பயன்படுகிறது.",
+                            en: "register_dialect() associates a custom set of formatting parameters (like delimiter and skipinitialspace) with a string name."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பில் ஒரு வரிசையை மட்டும் எழுதப் பயன்படும் செயற்கூறு எது?", en: "Which method writes a single row at a time to a CSV file?" },
+                        options: { ta: ["writerow()", "writerows()", "writeline()", "write()"], en: ["writerow()", "writerows()", "writeline()", "write()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "writerow() ஒரு வரிசையை மட்டும் எழுதும்; writerows() ஒரே நேரத்தில் பல வரிசைகளை (2D List) எழுதப் பயன்படுகிறது.",
+                            en: "writerow() writes a single 1D list/row, whereas writerows() writes multiple rows (a 2D list) at once."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பில் தலைப்பு வரிசையை (Header Row) தவிர்த்துவிட்டுத் தரவுகளை மட்டும் படிக்கப் பயன்படும் உள்ளிணைந்த செயற்கூறு எது?", en: "Which built-in function is commonly used to skip the header row when reading a CSV file?" },
+                        options: { ta: ["next()", "skip()", "first()", "header()"], en: ["next()", "skip()", "first()", "header()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "next(reader_object) செயற்கூறு சுட்டியை அடுத்த வரிசைக்கு நகர்த்துவதால், முதல் வரிசையான தலைப்பைத் தவிர்க்க இது பயன்படுகிறது.",
+                            en: "Calling next(reader) advances the iterator past the first row, effectively skipping the header."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு சரத்தின் (String) உள்ளே காற்புள்ளி (,) இருந்தால், CSV கோப்பில் அதை எவ்வாறு பாதுகாப்பாகச் சேமிக்க வேண்டும்?", en: "How should a string containing a comma (,) be safely stored in a CSV file?" },
+                        options: {
+                            ta: ["இரட்டை மேற்கோள் குறிகளுக்குள் (\" \") கொடுக்க வேண்டும்", "அடைப்புக்குறிக்குள் கொடுக்க வேண்டும்", "சாய்வுக்கோட்டிற்குள் கொடுக்க வேண்டும்", "சேமிக்க முடியாது"],
+                            en: ["Enclose the string within double quotes (\" \")", "Enclose within parentheses ( )", "Enclose within slashes / /", "It cannot be stored in CSV"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "தரவில் காற்புள்ளி இருந்தால் அது பிரிப்பானாகக் கருதப்படுவதைத் தவிர்க்க, அந்தத் தரவு இரட்டை மேற்கோள் குறிகளுக்குள் (\"Chennai, TN\") கொடுக்கப்பட வேண்டும்.",
+                            en: "Fields containing embedded commas must be enclosed in double quotes so the comma is treated as data rather than a delimiter."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>csv.QUOTE_ALL</code> மாறிலியின் செயல்பாடு என்ன?", en: "What does the <code>csv.QUOTE_ALL</code> constant do?" },
+                        options: {
+                            ta: ["அனைத்து புலங்களையும் (Fields) மேற்கோள் குறிகளுக்குள் எழுதும்", "எண்களை மட்டும் மேற்கோள் குறிகளுக்குள் எழுதும்", "எந்தப் புலத்திற்கும் மேற்கோள் குறி இடாது", "சிறப்பு எழுத்துக்களுக்கு மட்டும் இடும்"],
+                            en: ["Quotes all fields regardless of data type", "Quotes only numeric fields", "Never quotes any field", "Quotes only special characters"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "quoting=csv.QUOTE_ALL என அமைத்தால், தரவு எண் வகையாக இருந்தாலும் சரமாக இருந்தாலும் அனைத்தையும் மேற்கோள் குறிகளுக்குள் எழுதும்.",
+                            en: "Setting quoting=csv.QUOTE_ALL instructs the writer to surround every field (strings and numbers alike) with quote characters."
+                        }
+                    },
+                    {
+                        q: { ta: "இருமக் கோப்புகளை (Binary Files - படங்கள், ஆடியோ) கையாளப் பயன்படும் கோப்பு முறைமை எது?", en: "Which file modes are used for handling non-text binary files like images or audio?" },
+                        options: { ta: ["'rb' அல்லது 'wb'", "'rt' அல்லது 'wt'", "'rx' அல்லது 'wx'", "'r+' அல்லது 'w+'"], en: ["'rb' or 'wb'", "'rt' or 'wt'", "'rx' or 'wx'", "'r+' or 'w+'"] },
+                        ans: 0,
+                        reason: {
+                            ta: "உரை அல்லாத கோப்புகளைப் படிக்கவும் எழுதவும் 'b' (Binary) எழுத்தைச் சேர்த்து 'rb' மற்றும் 'wb' முறைமைகளைப் பயன்படுத்த வேண்டும்.",
+                            en: "Appending 'b' to the mode ('rb' for read binary, 'wb' for write binary) handles raw bytes without text encoding."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பில் அகராதி (Dictionary) தரவுகளை எழுதும்போது <code>DictWriter</code>-க்கு கட்டாயமாக வழங்கப்பட வேண்டிய அளபுரு எது?", en: "Which parameter is mandatory when creating a <code>csv.DictWriter</code> object?" },
+                        options: { ta: ["fieldnames", "columns", "headers", "keys"], en: ["fieldnames", "columns", "headers", "keys"] },
+                        ans: 0,
+                        reason: {
+                            ta: "csv.DictWriter(f, fieldnames=fields) என்பதில் fieldnames அளபுரு அகராதியின் திறவுகோல்கள் எந்த வரிசையில் எழுதப்பட வேண்டும் என்பதைத் தீர்மானிக்கிறது.",
+                            en: "The 'fieldnames' parameter identifies the order in which dictionary keys are written to the CSV file."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>DictWriter</code>-ல் தலைப்பு வரிசையை (Header) கோப்பில் எழுத அழைக்கப்பட வேண்டிய வழிமுறை எது?", en: "Which method writes the header row using the <code>fieldnames</code> in <code>DictWriter</code>?" },
+                        options: { ta: ["writeheader()", "writerowheader()", "setheader()", "addheader()"], en: ["writeheader()", "writerowheader()", "setheader()", "addheader()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "DictWriter பொருளை உருவாக்கிய பின் writer.writeheader() என அழைத்தால் மட்டுமே fieldnames தலைப்பு வரிசையாக எழுதப்படும்.",
+                            en: "Calling writer.writeheader() writes a row with the field names specified in the DictWriter constructor."
+                        }
+                    },
+                    {
+                        q: { ta: "புதிய கோப்பை உருவாக்கி எழுதப் பயன்படும் <code>'x'</code> முறைமையின் சிறப்பம்சம் என்ன?", en: "What is the behavior of the <code>'x'</code> file mode in Python?" },
+                        options: {
+                            ta: ["குறிப்பிட்ட பெயரில் கோப்பு ஏற்கனவே இருந்தால் பிழையை (FileExistsError) ஏற்படுத்தும்", "ஏற்கனவே உள்ள கோப்பை அழித்துவிடும்", "கோப்பின் இறுதியில் சேர்க்கும்", "கோப்பைப் படிக்க மட்டுமே செய்யும்"],
+                            en: ["Raises FileExistsError if the file already exists", "Overwrites the existing file silently", "Appends data to the end of the file", "Opens the file in read-only mode"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "'x' (Exclusive creation) முறைமையானது புதிய கோப்பை மட்டுமே உருவாக்கும்; ஏற்கனவே அதே பெயரில் கோப்பு இருந்தால் தற்செயலாகத் தரவு அழிவதைத் தடுக்கப் பிழையைத் தரும்.",
+                            en: "'x' opens a file for exclusive creation, failing with FileExistsError if the path already exists to prevent accidental overwrites."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் ஒரு பட்டியலை (List) குறிப்பிட்ட நெடுவரிசையின் அடிப்படையில் வரிசைப்படுத்த <code>sort()</code> செயற்கூறில் பயன்படும் அளபுரு எது?", en: "Which parameter is used in <code>sort()</code> to sort CSV rows by a specific column index?" },
+                        options: {
+                            ta: ["key = operator.itemgetter(index)", "sortby = index", "column = index", "order = index"],
+                            en: ["key = operator.itemgetter(index)", "sortby = index", "column = index", "order = index"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "operator கூறுநிலையில் உள்ள itemgetter(col_no) செயற்கூறை key அளபுருவாகக் கொடுப்பதன் மூலம் குறிப்பிட்ட நெடுவரிசையின்படி வரிசைப்படுத்தலாம்.",
+                            en: "Passing key=operator.itemgetter(col_index) tells sort() to compare rows based on the element at that column index."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>sorted()</code> மற்றும் <code>sort()</code> செயற்கூறுகளுக்கு இடையேயான வேறுபாடு என்ன?", en: "What is the difference between <code>sorted()</code> and <code>list.sort()</code>?" },
+                        options: {
+                            ta: ["sorted() புதிய வரிசைப்படுத்தப்பட்ட பட்டியலைத் தரும்; sort() மூலப் பட்டியலையே மாற்றும்", "இரண்டும் ஒன்றே", "sort() புதிய பட்டியலைத் தரும்", "sorted() எண்களை மட்டுமே வரிசைப்படுத்தும்"],
+                            en: ["sorted() returns a new sorted list; sort() modifies the original list in-place", "Both behave identically", "sort() returns a new list without changing the original", "sorted() only works on numbers"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "sorted() மூலப் பட்டியலை மாற்றாமல் வரிசைப்படுத்தப்பட்ட புதிய பட்டியலைத் திருப்பி அனுப்பும். list.sort() மூலப் பட்டியலிலேயே மாற்றம் செய்யும்.",
+                            en: "sorted() creates and returns a new sorted list leaving the original intact, whereas list.sort() mutates the list in-place and returns None."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பின் கொடாநிலை வரி முறிப்பான் (lineterminator) எது?", en: "What is the default <code>lineterminator</code> used by Python's <code>csv.writer</code>?" },
+                        options: { ta: ["\\r\\n", "\\n", "\\t", "\\0"], en: ["\\r\\n", "\\n", "\\t", "\\0"] },
+                        ans: 0,
+                        reason: {
+                            ta: "பைத்தானின் csv கூறுநிலையில் கொடாநிலை lineterminator மதிப்பு '\\r\\n' (Carriage Return + Line Feed) ஆகும்.",
+                            en: "Python's csv dialect defaults to '\\r\\n' (CRLF) to terminate lines produced by writer objects."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது சரியான <code>open()</code> தொடரியல்?", en: "Which of the following is a valid syntax for Python's <code>open()</code> function?" },
+                        options: {
+                            ta: ["f = open('data.csv', 'r')", "f = open('data.csv', read)", "f = file.open('data.csv')", "open f = ('data.csv')"],
+                            en: ["f = open('data.csv', 'r')", "f = open('data.csv', read)", "f = file.open('data.csv')", "open f = ('data.csv')"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "open() செயற்கூறில் கோப்பின் பெயரும், முறைமையும் ('r', 'w', 'a') ஒற்றை அல்லது இரட்டை மேற்கோள் குறிகளுக்குள் சரமாகக் கொடுக்கப்பட வேண்டும்.",
+                            en: "Both the filename and mode ('r') must be passed as string arguments to open()."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>csv.DictReader</code> உருவாக்கும் தரவுகளில் சாதாரண அகராதியாக (Normal Dict) மாற்ற எந்தச் செயற்கூறு பயன்படுகிறது?", en: "Which built-in function converts a <code>DictReader</code> row into a standard Python dictionary?" },
+                        options: { ta: ["dict()", "list()", "tuple()", "str()"], en: ["dict()", "list()", "tuple()", "str()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "DictReader சில பைத்தான் பதிப்புகளில் OrderedDict-ஐத் தரும்; அதைச் சாதாரண அகராதியாக மாற்ற dict(row) செயற்கூறு பயன்படுகிறது.",
+                            en: "Wrapping a DictReader row inside dict(row) converts an OrderedDict into a standard dictionary."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு CSV கோப்பில் எத்தனை வரிசைகள் உள்ளன என்பதைக் கண்டறியப் பயன்படும் செயற்கூறு எது?", en: "How can you count the total number of rows in a <code>csv.reader</code> object?" },
+                        options: {
+                            ta: ["len(list(reader))", "reader.count()", "reader.rows()", "size(reader)"],
+                            en: ["len(list(reader))", "reader.count()", "reader.rows()", "size(reader)"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "csv.reader என்பது ஒரு iterator ஆகும். அதை list() ஆக மாற்றி len() செயற்கூறைப் பயன்படுத்துவதன் மூலம் மொத்த வரிசைகளின் எண்ணிக்கையை அறியலாம்.",
+                            en: "Converting the reader iterator into a list via list(reader) and passing it to len() gives the total row count."
+                        }
+                    },
+                    {
+                        q: { ta: "கோப்பினைத் திறந்து, படித்தல் மற்றும் எழுதுதல் ஆகிய இரண்டையும் செய்யப் பயன்படும் முறைமை எது?", en: "Which file mode opens a file for both reading and writing?" },
+                        options: { ta: ["'r+'", "'rw'", "'b+'", "'x+'"], en: ["'r+'", "'rw'", "'b+'", "'x+'"] },
+                        ans: 0,
+                        reason: {
+                            ta: "'r+' முறைமை கோப்பினைப் படிக்கவும் எழுதவும் (Read and Write) திறக்கிறது. இதில் கோப்புச் சுட்டி கோப்பின் தொடக்கத்தில் இருக்கும்.",
+                            en: "'r+' opens an existing file for both reading and writing with the stream positioned at the beginning."
+                        }
+                    },
+                    {
+                        q: { ta: "CSV கோப்பை MS Excel மூலம் திறக்கும்போது என்ன நிகழ்கிறது?", en: "What happens when a CSV file is opened in Microsoft Excel?" },
+                        options: {
+                            ta: ["தரவுகள் வரிசைகள் மற்றும் நெடுவரிசைகளாக அட்டவணை வடிவில் காட்டப்படும்", "பிழைச் செய்தி தோன்றும்", "அனைத்துத் தரவும் ஒரே கட்டத்தில் தெரியும்", "கடவுச்சொல் கேட்கும்"],
+                            en: ["Data is automatically arranged into rows and columns in a spreadsheet grid", "An error message is displayed", "All data appears inside a single cell", "It prompts for a password"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "CSV கோப்புகளில் உள்ள காற்புள்ளிகளை MS Excel தானாகவே பிரிப்பான்களாக எடுத்துக்கொண்டு அட்டவணை வடிவில் காட்டும்.",
+                            en: "MS Excel recognizes commas as column delimiters and displays the CSV data neatly in tabular cells."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>csv.QUOTE_NONNUMERIC</code> அளபுரு எதற்குப் பயன்படுகிறது?", en: "What is the effect of <code>quoting=csv.QUOTE_NONNUMERIC</code>?" },
+                        options: {
+                            ta: ["எண் அல்லாத (சர) மதிப்புகளை மட்டும் மேற்கோள் குறிகளுக்குள் எழுத", "எண் மதிப்புகளை மட்டும் மேற்கோள் குறிகளுக்குள் எழுத", "அனைத்து மதிப்புகளையும் நீக்க", "எண்களைச் சரமாக மாற்ற"],
+                            en: ["Quotes only non-numeric (string) fields while leaving numbers unquoted", "Quotes only numeric fields", "Removes all values", "Converts numbers to strings"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "QUOTE_NONNUMERIC அமைப்பானது சரங்கள் போன்ற எண் அல்லாத தரவுகளை மட்டும் மேற்கோள் குறிகளுக்குள் எழுதும்; எண்களை அப்படியே எழுதும்.",
+                            en: "QUOTE_NONNUMERIC quotes all non-numeric values (such as strings) and leaves numeric values unquoted."
+                        }
+                    },
+                    {
+                        q: { ta: "திறக்கப்பட்ட கோப்புப் பொருளின் பெயரை அறியப் பயன்படும் பண்புக்கூறு (Attribute) எது?", en: "Which attribute returns the name of an opened file object?" },
+                        options: {
+                            ta: ["file_object.name", "file_object.title", "file_object.path", "file_object.filename"],
+                            en: ["file_object.name", "file_object.title", "file_object.path", "file_object.filename"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "கோப்புப் பொருளுடன் .name என்ற பண்புக்கூறைப் பயன்படுத்தினால் (எ.கா: f.name), திறக்கப்பட்ட கோப்பின் பெயர் கிடைக்கும்.",
+                            en: "Accessing f.name on a Python file object returns the name/path of the file passed to open()."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 14,
+                shortTitle: { ta: "பாடம் 14: பைத்தானில் C++", en: "Ch 14: C++ in Python" },
+                fullTitle: {
+                    ta: "அத்தியாயம் 14: பைத்தானில் C++ நிரல்களைத் தருவித்தல் (Importing C++ Programs in Python)",
+                    en: "Chapter 14: Importing C++ Programs in Python"
+                },
+                questions: [
+                    {
+                        q: { ta: "பைத்தான் மற்றும் C++ ஆகிய இரு மொழிகளையும் இணைத்து இயக்குவது எவ்வாறு அழைக்கப்படுகிறது?", en: "What is the process of creating a Python interface for C/C++ code called?" },
+                        options: {
+                            ta: ["Wrapping (உறையிடுதல்)", "Compiling (தொகுத்தல்)", "Linking (இணைத்தல்)", "Debugging (பிழைதிருத்தல்)"],
+                            en: ["Wrapping", "Compiling", "Linking", "Debugging"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "C அல்லது C++ நிரல்களுக்குப் பைத்தான் இடைமுகத்தை உருவாக்கி இரண்டையும் இணைக்கும் செயல்முறை Wrapping (உறையிடுதல்) எனப்படும்.",
+                            en: "Wrapping refers to creating a Python-compatible interface around C/C++ functions and classes so they can be called from Python."
+                        }
+                    },
+                    {
+                        q: { ta: "C++ நிரல்களை விட பைத்தான் நிரல்கள் மெதுவாக இயங்குவதற்கான முதன்மைக் காரணம் என்ன?", en: "Why do Python programs generally execute slower than C++ programs?" },
+                        options: {
+                            ta: ["பைத்தான் ஒரு வரிமொழிமாற்றி (Interpreted) மொழி; C++ ஒரு தொகுப்பான் (Compiled) மொழி", "பைத்தானில் மாறிகள் இல்லை", "C++ நிரல்கள் சிறியவை", "பைத்தான் இணையத்தில் மட்டுமே இயங்கும்"],
+                            en: ["Python is an interpreted language, whereas C++ is a compiled language", "Python does not support variables", "C++ programs are always shorter", "Python runs only over the internet"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "C++ நிரல்கள் முன்கூட்டியே இயந்திர மொழியாகத் தொகுக்கப்படுவதால் (Compiled) மிக வேகமாக இயங்கும். பைத்தான் வரிவரியாக மொழிமாற்றம் செய்யப்படுவதால் ஒப்பீட்டளவில் மெதுவானது.",
+                            en: "C++ code is pre-compiled directly into native machine code, whereas Python is interpreted line-by-line at runtime."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது C++ நிரல்களைப் பைத்தானில் உறையிடுவதற்கான (Wrapping) இடைமுகம் அல்ல?", en: "Which of the following is NOT an interface/tool for wrapping C++ in Python?" },
+                        options: { ta: ["PyQt", "SWIG", "Cython", "Boost.Python"], en: ["PyQt", "SWIG", "Cython", "Boost.Python"] },
+                        ans: 0,
+                        reason: {
+                            ta: "SWIG, Cython, Boost.Python, MinGW ஆகியவை C/C++ நிரல்களைப் பைத்தானுடன் இணைக்கப் பயன்படுபவை. PyQt என்பது GUI உருவாக்கப் பயன்படும் கருவி.",
+                            en: "SWIG, Cython, and Boost.Python are C/C++ wrapping tools, whereas PyQt is a GUI toolkit."
+                        }
+                    },
+                    {
+                        q: { ta: "SWIG என்பதன் சரியான விரிவாக்கம் என்ன?", en: "What does SWIG stand for?" },
+                        options: {
+                            ta: ["Simplified Wrapper Interface Generator", "Software Wrapper Interface Generator", "Simple Web Interface Generator", "System Wrapper Integration Guide"],
+                            en: ["Simplified Wrapper Interface Generator", "Software Wrapper Interface Generator", "Simple Web Interface Generator", "System Wrapper Integration Guide"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SWIG என்பது Simplified Wrapper Interface Generator ஆகும். இது C மற்றும் C++ நிரல்களைப் பைத்தான் உள்ளிட்ட பல மொழிகளுடன் இணைக்க உதவுகிறது.",
+                            en: "SWIG stands for Simplified Wrapper Interface Generator, which connects C/C++ programs with high-level languages like Python."
+                        }
+                    },
+                    {
+                        q: { ta: "MinGW என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of MinGW?" },
+                        options: {
+                            ta: ["Minimalist GNU for Windows", "Minimum GNU for Web", "Microsoft GNU for Windows", "Main Interface GNU for Windows"],
+                            en: ["Minimalist GNU for Windows", "Minimum GNU for Web", "Microsoft GNU for Windows", "Main Interface GNU for Windows"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "MinGW (Minimalist GNU for Windows) என்பது விண்டோஸ் இயக்க அமைப்பில் C/C++ நிரல்களைத் தொகுக்கப் பயன்படும் g++ தொகுப்பானை உள்ளடக்கிய மென்பொருள் தொகுப்பாகும்.",
+                            en: "MinGW stands for Minimalist GNU for Windows and provides the g++ compiler to compile C++ code on Windows."
+                        }
+                    },
+                    {
+                        q: { ta: "விண்டோஸ் கட்டளை வரியில் (Command Prompt) C++ நிரலைத் தொகுக்கப் பயன்படும் கட்டளை எது?", en: "Which compiler command is used to compile a C++ program via the command line?" },
+                        options: { ta: ["g++", "gcc", "python", "cpp"], en: ["g++", "gcc", "python", "cpp"] },
+                        ans: 0,
+                        reason: {
+                            ta: "g++ என்பது GNU C++ தொகுப்பான் ஆகும். இது C++ மூலக் குறிமுறையை இயங்கக்கூடிய (.exe) கோப்பாக மாற்றுகிறது.",
+                            en: "g++ is the GNU C++ compiler used to compile .cpp source files into executable binaries."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தான் நிரல் வழியாக இயக்க அமைப்பின் கட்டளைகளை (OS Commands) இயக்கப் பயன்படும் கூறுநிலை எது?", en: "Which Python module is used to execute operating system shell commands?" },
+                        options: { ta: ["os", "sys", "getopt", "math"], en: ["os", "sys", "getopt", "math"] },
+                        ans: 0,
+                        reason: {
+                            ta: "os கூறுநிலையில் உள்ள os.system() செயற்கூறு இயக்க அமைப்பின் கட்டளை வரி (Shell) கட்டளைகளைப் பைத்தானிலிருந்தே இயக்க உதவுகிறது.",
+                            en: "The os module provides os.system() to pass and execute shell commands directly from Python."
+                        }
+                    },
+                    {
+                        q: { ta: "கட்டளை வரி செயலுருபுகளைப் (Command Line Arguments) பைத்தானில் அணுகப் பயன்படும் கூறுநிலை எது?", en: "Which module provides access to command-line arguments passed to a Python script?" },
+                        options: { ta: ["sys", "os", "csv", "time"], en: ["sys", "os", "csv", "time"] },
+                        ans: 0,
+                        reason: {
+                            ta: "sys கூறுநிலையில் உள்ள sys.argv என்ற பட்டியல் கட்டளை வரியில் அனுப்பப்படும் அனைத்து செயலுருபுகளையும் சேமித்து வைத்திருக்கும்.",
+                            en: "The sys module provides the sys.argv list containing all command-line arguments passed to the script."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>sys.argv[0]</code> எப்போதும் எதனைக் கொண்டிருக்கும்?", en: "What does <code>sys.argv[0]</code> always contain?" },
+                        options: {
+                            ta: ["இயக்கப்படும் பைத்தான் நிரலின் பெயரை", "முதல் உள்ளீட்டு மதிப்பை", "C++ கோப்பின் பெயரை", "மொத்த செயலுருபுகளின் எண்ணிக்கையை"],
+                            en: ["The name of the Python script being executed", "The first user input argument", "The C++ source file name", "The total count of arguments"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "sys.argv பட்டியலில் 0-வது சுட்டெண்ணில் (sys.argv[0]) எப்போதும் இயக்கப்படும் பைத்தான் நிரலின் கோப்புப் பெயரே இருக்கும்.",
+                            en: "Index 0 of sys.argv always stores the name/path of the invoked Python script itself."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>python sample.py -i input.cpp</code> என்ற கட்டளையில் <code>sys.argv[2]</code>-ன் மதிப்பு என்னவாக இருக்கும்?", en: "In the command <code>python sample.py -i input.cpp</code>, what is the value of <code>sys.argv[2]</code>?" },
+                        options: { ta: ["input.cpp", "-i", "sample.py", "python"], en: ["input.cpp", "-i", "sample.py", "python"] },
+                        ans: 0,
+                        reason: {
+                            ta: "sys.argv[0] = 'sample.py', sys.argv[1] = '-i', sys.argv[2] = 'input.cpp' ஆகும்.",
+                            en: "sys.argv[0] is 'sample.py', sys.argv[1] is '-i', and sys.argv[2] is 'input.cpp'."
+                        }
+                    },
+                    {
+                        q: { ta: "கட்டளை வரி விருப்பங்களையும் (Options) செயலுருபுகளையும் பிரித்தெடுக்கப் பயன்படும் பைத்தான் கூறுநிலை எது?", en: "Which Python module parses C-style command-line options and parameter lists?" },
+                        options: { ta: ["getopt", "sys", "os", "argparse"], en: ["getopt", "sys", "os", "argparse"] },
+                        ans: 0,
+                        reason: {
+                            ta: "getopt கூறுநிலை கட்டளை வரியில் கொடுக்கப்படும் குறுகிய (-i) மற்றும் நீண்ட (--input) விருப்பங்களைப் பிரித்து ஆராய உதவுகிறது.",
+                            en: "The getopt module helps scripts parse short (-i) and long (--input) command-line options."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>getopt.getopt(argv, options, [long_options])</code> செயற்கூறில், ஒரு குறுகிய விருப்பத்திற்கு (எ.கா: <code>-i</code>) மதிப்பு தேவைப்பட்டால் எவ்வாறு குறிப்பிட வேண்டும்?", en: "In <code>getopt.getopt()</code>, how is a short option (e.g., <code>-i</code>) marked when it requires an argument value?" },
+                        options: {
+                            ta: ["'i:' (முக்காற்புள்ளியுடன்)", "'i='", "'i*'", "'i?'"],
+                            en: ["'i:' (followed by a colon)", "'i='", "'i*'", "'i?'"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "குறுகிய விருப்பங்களுக்குப் பின் முக்காற்புள்ளி (:) இட்டால் (எ.கா: 'i:o:'), அந்த விருப்பத்திற்குத் தொடர்ந்து ஒரு மதிப்பு (Argument) அவசியம் என்பதைக் குறிக்கும்.",
+                            en: "Short options that require an accompanying argument value must be followed by a colon ':' (e.g., 'i:o:')."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>getopt.getopt()</code> செயற்கூறில் நீண்ட விருப்பங்களுக்கு (Long options, எ.கா: <code>ifile</code>) மதிப்பு தேவைப்பட்டால் எவ்வாறு குறிப்பிட வேண்டும்?", en: "In <code>getopt.getopt()</code>, how is a long option (e.g., <code>ifile</code>) marked when it requires a value?" },
+                        options: { ta: ["['ifile=']", "['ifile:']", "['--ifile']", "['ifile*']"], en: ["['ifile=']", "['ifile:']", "['--ifile']", "['ifile*']"] },
+                        ans: 0,
+                        reason: {
+                            ta: "நீண்ட விருப்பங்களுக்குப் பின் சமக்குறி (=) இட்டால் (எ.கா: ['ifile=', 'ofile=']), அவற்றுக்கு மதிப்பு வழங்கப்பட வேண்டும் என்பதைக் குறிக்கும்.",
+                            en: "Long option names that require an argument must be followed by an equals sign '=' (e.g., ['ifile='])."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>getopt.getopt()</code> செயற்கூறு எத்தனை மதிப்புகளைத் திருப்பி அனுப்பும்?", en: "How many list values does <code>getopt.getopt()</code> return?" },
+                        options: {
+                            ta: ["2 (opts மற்றும் args)", "1 (opts மட்டும்)", "3 (opts, args, errors)", "4"],
+                            en: ["2 (opts and args)", "1 (opts only)", "3 (opts, args, errors)", "4"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "getopt.getopt() செயற்கூறு (option, value) இணைகளைக் கொண்ட 'opts' பட்டியலையும், மீதமுள்ள செயலுருபுகளைக் கொண்ட 'args' பட்டியலையும் திருப்பி அனுப்பும்.",
+                            en: "getopt.getopt() returns a tuple of two lists: 'opts' (list of (option, value) pairs) and 'args' (remaining non-option arguments)."
+                        }
+                    },
+                    {
+                        q: { ta: "C++ நிரலைத் தொகுக்கும்போது வெளியீட்டு இயங்கு கோப்பிற்கு (Executable file) நாமே ஒரு பெயரை வழங்கப் பயன்படும் <code>g++</code> கொடி (Flag) எது?", en: "Which <code>g++</code> compiler flag specifies the output executable filename?" },
+                        options: { ta: ["-o", "-i", "-c", "-e"], en: ["-o", "-i", "-c", "-e"] },
+                        ans: 0,
+                        reason: {
+                            ta: "g++ sample.cpp -o sample.exe என்ற கட்டளையில் உள்ள '-o' (Output) கொடி உருவாக்கப்படும் இயங்கு கோப்பிற்குப் பெயரிடப் பயன்படுகிறது.",
+                            en: "The '-o' flag stands for output and allows specifying a custom name for the generated executable file."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>-o</code> கொடியைக் குறிப்பிடாமல் <code>g++ sample.cpp</code> என இயக்கினால், விண்டோஸில் உருவாகும் கொடாநிலை இயங்கு கோப்பின் பெயர் என்ன?", en: "What is the default executable filename produced on Windows when compiling with <code>g++ sample.cpp</code> without <code>-o</code>?" },
+                        options: { ta: ["a.exe", "sample.exe", "out.exe", "main.exe"], en: ["a.exe", "sample.exe", "out.exe", "main.exe"] },
+                        ans: 0,
+                        reason: {
+                            ta: "வெளியீட்டுப் பெயரைக் குறிப்பிடாதபோது g++ தொகுப்பான் விண்டோஸில் கொடாநிலையாக 'a.exe' என்ற கோப்பை உருவாக்கும்.",
+                            en: "When '-o' is omitted, g++ defaults to creating an executable named 'a.exe' on Windows."
+                        }
+                    },
+                    {
+                        q: { ta: "C++ நிரலில் <code>int main(int argc, char* argv[])</code> என்பதில் <code>argc</code> எதைக் குறிக்கிறது?", en: "In C++ <code>int main(int argc, char* argv[])</code>, what does <code>argc</code> represent?" },
+                        options: {
+                            ta: ["கட்டளை வரியில் அனுப்பப்பட்ட மொத்த செயலுருபுகளின் எண்ணிக்கை", "செயலுருபுகளின் மதிப்புகள்", "நிரலின் திருப்பு மதிப்பு", "பிழைகளின் எண்ணிக்கை"],
+                            en: ["Total number of command-line arguments passed", "Array of argument strings", "Return status of the program", "Number of compilation errors"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "argc (Argument Count) என்பது நிரலின் பெயரையும் சேர்த்து கட்டளை வரியில் வழங்கப்பட்ட மொத்த செயலுருபுகளின் எண்ணிக்கையைக் குறிக்கும் முழு எண் ஆகும்.",
+                            en: "argc (Argument Count) holds the integer count of command-line arguments passed to the program, including the program name."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் <code>__name__</code> என்ற சிறப்பு மாறியின் மதிப்பு, அந்த நிரல் நேரடியாக இயக்கப்படும்போது என்னவாக இருக்கும்?", en: "What is the value of the special variable <code>__name__</code> when a Python file is executed directly?" },
+                        options: { ta: ["'__main__'", "'__init__'", "'__sys__'", "கோப்பின் பெயர்"], en: ["'__main__'", "'__init__'", "'__sys__'", "The script filename"] },
+                        ans: 0,
+                        reason: {
+                            ta: "ஒரு பைத்தான் நிரல் நேரடியாக இயக்கப்படும்போது அதன் __name__ மாறியின் மதிப்பு '__main__' என அமைக்கப்படும். வேறு நிரலில் தருவிக்கப்பட்டால் கோப்பின் பெயராக இருக்கும்.",
+                            en: "Python sets __name__ to '__main__' when a script is run directly, and to the module's name when imported."
+                        }
+                    },
+                    {
+                        q: { ta: "C++ நிரலை தொகுக்கும்போது <code>-Wall</code> கொடியின் பயன்பாடு என்ன?", en: "What is the purpose of the <code>-Wall</code> flag when compiling with <code>g++</code>?" },
+                        options: {
+                            ta: ["அனைத்து எச்சரிக்கைச் செய்திகளையும் (All Warnings) திரையில் காட்டும்", "அனைத்து கோப்புகளையும் அழிக்கும்", "சுவர் (Wall) வரைபடம் உருவாக்கும்", "நிரலை நிறுத்தும்"],
+                            en: ["Enables and displays all compiler warning messages", "Deletes all temporary files", "Generates a wall-chart diagram", "Halts program execution"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "g++ -Wall என்பது தொகுத்தலின் போது ஏற்படும் அனைத்து எச்சரிக்கைகளையும் (Warnings) காட்டி நிரலர் பிழைகளைத் திருத்த உதவுகிறது.",
+                            en: "The -Wall flag turns on all common compiler warnings to help identify potential bugs in C++ code."
+                        }
+                    },
+                    {
+                        q: { ta: "C++ நிரலில் உள்ள தருக்கப் பிழைகளைத் தவிர்க்கவும், கணித மற்றும் நிரல் செயல்திறனை அதிகரிக்கவும் எது சிறந்தது?", en: "What is the best approach to combine Python's ease of use with C++'s execution speed?" },
+                        options: {
+                            ta: ["C++ நிரலை பைத்தானில் தருவித்து இயக்குவது", "C++ நிரலை பைத்தானாக முழுமையாக மாற்றுவது", "பைத்தானை மட்டும் பயன்படுத்துவது", "SQL பயன்படுத்துவது"],
+                            en: ["Wrapping and importing C++ code inside Python", "Rewriting all C++ code into pure Python", "Using only Python for heavy computation", "Using SQL queries instead"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "அதிக கணக்கீடு கொண்ட பகுதிகளை C++-ல் எழுதி, பைத்தானின் எளிய இடைமுகத்துடன் இணைத்து இயக்குவதால் செயல்திறன் பன்மடங்கு அதிகரிக்கும்.",
+                            en: "Writing performance-critical routines in C++ and wrapping them into Python provides C++ execution speed with Python's simplicity."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code> என்ற கூற்று என்ன செய்யும்?", en: "What does the Python statement <code>os.system('g++ ' + cpp_file + ' -o ' + exe_file)</code> perform?" },
+                        options: {
+                            ta: ["C++ கோப்பைத் தொகுத்து இயங்கு கோப்பாக மாற்றும்", "பைத்தான் கோப்பைத் தொகுக்கும்", "C++ கோப்பை நீக்கும்", "இயங்கு கோப்பை மட்டும் இயக்கும்"],
+                            en: ["Compiles the C++ source file into an executable file", "Compiles the Python script", "Deletes the C++ source file", "Executes an already compiled binary"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "os.system() வழியாக g++ கட்டளையை அனுப்புவதால், பைத்தான் நிரல் பின்னணியில் C++ மூலக் கோப்பைத் தொகுத்து .exe கோப்பை உருவாக்கும்.",
+                            en: "os.system() invokes the shell to run the g++ compiler command, generating the output executable from the C++ file."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் <code>getopt.GetoptError</code> விதிவிலக்கு எப்போது ஏற்படும்?", en: "When is the <code>getopt.GetoptError</code> exception raised in Python?" },
+                        options: {
+                            ta: ["தவறான அல்லது வரையறுக்கப்படாத விருப்பம் (Option) கட்டளை வரியில் கொடுக்கப்படும்போது", "கோப்பு இல்லாதபோது", "பூஜ்ஜியத்தால் வகுக்கும்போது", "நினைவகம் நிரம்பும்போது"],
+                            en: ["When an unrecognized option is passed or a required argument is missing", "When a file is not found on disk", "During division by zero", "When system memory overflows"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "getopt.getopt()-ல் குறிப்பிடப்படாத ஒரு விருப்பத்தை (எ.கா: -z) பயனர் கட்டளை வரியில் வழங்கினால் GetoptError பிழை ஏற்படும்.",
+                            en: "getopt.GetoptError is raised when an invalid option is found in the argument list or when an option requiring an argument is given none."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தான் மற்றும் C++ ஆகிய இரண்டிற்கும் இடையே உள்ள முக்கிய ஒற்றுமை என்ன?", en: "What is a major similarity between Python and C++?" },
+                        options: {
+                            ta: ["இரண்டுமே பொருள்நோக்கு நிரலாக்கத்தை (OOPS) ஆதரிக்கின்றன", "இரண்டுமே வரிமொழிமாற்றிகள்", "இரண்டுமே தரவு வகைகளை அறிவிக்கத் தேவையில்லை", "இரண்டுமே உள்தள்ளலைப் (Indentation) பயன்படுத்துகின்றன"],
+                            en: ["Both support Object-Oriented Programming (OOPS)", "Both are purely interpreted languages", "Neither requires explicit variable type declarations", "Both use mandatory indentation blocks"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "C++ மற்றும் பைத்தான் ஆகிய இரண்டு மொழிகளுமே இனக்குழுக்கள் (Classes) மற்றும் பொருள்கள் (Objects) கொண்ட பொருள்நோக்கு நிரலாக்கத்தை (OOPS) ஆதரிக்கின்றன.",
+                            en: "Both C++ and Python are multi-paradigm languages that fully support Object-Oriented Programming concepts like classes and inheritance."
+                        }
+                    },
+                    {
+                        q: { ta: "Cython என்பது என்ன?", en: "What is Cython?" },
+                        options: {
+                            ta: ["பைத்தான் குறிமுறையை C/C++ ஆக மாற்றும் மொழி மற்றும் தொகுப்பான்", "ஒரு தரவுத்தள மென்பொருள்", "ஒரு இயக்க அமைப்பு", "ஒரு இணைய உலாவி"],
+                            en: ["A superset language and compiler that translates Python code into C/C++", "A relational database software", "An operating system kernel", "A web browser engine"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "Cython என்பது பைத்தான் நிரல்களுக்கு C போன்ற செயல்திறனை வழங்கவும், C/C++ நூலகங்களைப் பைத்தானில் எளிதாக அழைக்கவும் உதவும் கருவியாகும்.",
+                            en: "Cython is a programming language and compiler that translates Python-like code into C/C++ extensions for high performance."
+                        }
+                    },
+                    {
+                        q: { ta: "Boost.Python எதற்காகப் பயன்படுகிறது?", en: "What is Boost.Python used for?" },
+                        options: {
+                            ta: ["C++ மற்றும் பைத்தான் இடையே தடையற்ற இடைமுகத்தை (Interoperability) உருவாக்க", "இணையதளம் வடிவமைக்க", "கணினி வேகத்தைக் குறைக்க", "வீடியோக்களைத் திருத்த"],
+                            en: ["Enabling seamless interoperability between C++ and Python", "Designing responsive web pages", "Throttling CPU clock speeds", "Editing multimedia video files"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "Boost.Python என்பது C++ நூலகங்களைப் பைத்தானுக்குள்ளும், பைத்தான் பொருள்களை C++-க்குள்ளும் பயன்படுத்த உதவும் C++ நூலகமாகும்.",
+                            en: "Boost.Python is a C++ library that enables seamless exposure of C++ classes and functions to Python."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>sys.argv[1:]</code> என்பதன் பொருள் என்ன?", en: "What does the slice <code>sys.argv[1:]</code> return?" },
+                        options: {
+                            ta: ["நிரலின் பெயரைத் தவிர்த்து, கட்டளை வரியில் கொடுக்கப்பட்ட அனைத்து செயலுருபுகளும்", "நிரலின் பெயர் மட்டும்", "கடைசி செயலுருபு மட்டும்", "முதல் செயலுருபு மட்டும்"],
+                            en: ["All command-line arguments excluding the script name", "Only the Python script name", "Only the very last argument", "Only the first argument"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "sys.argv[0] நிரலின் பெயரைக் கொண்டிருப்பதால், Slicing மூலம் sys.argv[1:] என எடுக்கும்போது பயனர் வழங்கிய செயலுருபுகள் மட்டும் கிடைக்கும்.",
+                            en: "Since sys.argv[0] is the script name, slicing from index 1 onward (sys.argv[1:]) extracts only the user-supplied arguments."
+                        }
+                    },
+                    {
+                        q: { ta: "C++ மூலக் கோப்பின் நீட்டிப்பு (Extension) என்ன?", en: "What is the standard file extension for a C++ source file?" },
+                        options: { ta: [".cpp", ".py", ".csv", ".sql"], en: [".cpp", ".py", ".csv", ".sql"] },
+                        ans: 0,
+                        reason: {
+                            ta: "C++ நிரல் கோப்புகள் .cpp என்ற நீட்டிப்புடனும், பைத்தான் கோப்புகள் .py என்ற நீட்டிப்புடனும் சேமிக்கப்படுகின்றன.",
+                            en: "C++ source code files use the '.cpp' extension, whereas Python scripts use '.py'."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு C++ நிரலில் <code>#include <iostream></code> என்பது எதைக் குறிக்கிறது?", en: "What does <code>#include <iostream></code> include in a C++ program?" },
+                        options: {
+                            ta: ["நிலையான உள்ளீடு மற்றும் வெளியீட்டுத் தாரை தலைப்புக் கோப்பு", "கணிதச் செயற்கூறு தலைப்புக் கோப்பு", "சரங்களைக் கையாளும் தலைப்புக் கோப்பு", "கோப்புகளைக் கையாளும் தலைப்புக் கோப்பு"],
+                            en: ["Standard input-output stream header file", "Mathematical functions header file", "String manipulation header file", "File stream header file"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "iostream (Input Output Stream) தலைப்புக் கோப்பு cin மற்றும் cout போன்ற உள்ளீடு/வெளியீட்டு பொருள்களைப் பயன்படுத்த உதவுகிறது.",
+                            en: "<iostream> declares standard input/output stream objects such as cin and cout."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>os.system()</code> செயற்கூறு கட்டளை வெற்றிகரமாக இயங்கி முடிந்தால் பொதுவாக எந்த மதிப்பைத் திருப்பி அனுப்பும்?", en: "What exit status value does <code>os.system()</code> typically return when a command executes successfully?" },
+                        options: { ta: ["0", "-1", "True", "None"], en: ["0", "-1", "True", "None"] },
+                        ans: 0,
+                        reason: {
+                            ta: "இயக்க அமைப்பின் கட்டளை எந்தப் பிழையுமின்றி வெற்றிகரமாக இயங்கினால் os.system() செயற்கூறு 0 என்ற exit status மதிப்பைத் திருப்பி அனுப்பும்.",
+                            en: "An exit status of 0 indicates successful execution of the shell command without errors."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் <code>if __name__ == '__main__':</code> என்ற கூற்றை எழுதுவதன் நோக்கம் என்ன?", en: "What is the purpose of writing <code>if __name__ == '__main__':</code> in a Python module?" },
+                        options: {
+                            ta: ["நிரல் நேரடியாக இயக்கப்படும்போது மட்டுமே main() செயற்கூறை அழைக்க", "நிரலைப் பூட்ட", "தொகுத்தல் பிழையைத் தவிர்க்க", "மாறிகளை அழிக்க"],
+                            en: ["To execute specific code only when the file is run directly, not when imported", "To password-protect the script", "To prevent syntax errors", "To clear global variables"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "இந்தக் நிபந்தனை மூலம், அந்தக் கோப்பு நேரடியாக இயக்கப்படும்போது மட்டுமே குறிப்பிட்ட குறிமுறை இயங்கும்; வேறு கோப்பில் import செய்யப்படும்போது தானாக இயங்காது.",
+                            en: "This guard ensures that the block runs only when the script is executed directly as the main program and not when imported as a module."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 15,
+                shortTitle: { ta: "பாடம் 15: SQL தரவு கையாளுதல்", en: "Ch 15: SQL Manipulation" },
+                fullTitle: {
+                    ta: "அத்தியாயம் 15: SQL மூலம் தரவுகளைக் கையாளுதல் (Data Manipulation through SQL)",
+                    en: "Chapter 15: Data Manipulation through SQL"
+                },
+                questions: [
+                    {
+                        q: { ta: "SQLite என்பது எவ்வகையான தரவுத்தள அமைப்பாகும்?", en: "What type of database system is SQLite?" },
+                        options: {
+                            ta: ["எளிய, இலகுரக உறவுநிலை தரவுத்தள மேலாண்மை அமைப்பு (Serverless RDBMS)", "பெரிய அளவிலான கிளையன்ட்-சர்வர் தரவுத்தளம்", "ஒரு நிரலாக்க மொழி", "ஒரு இயக்க அமைப்பு"],
+                            en: ["Simple, lightweight serverless relational database management system", "Heavyweight client-server enterprise database", "A procedural programming language", "An operating system"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SQLite என்பது தனி சேவையகம் (Server) தேவையில்லாத, கோப்பு அடிப்படையிலான இலகுரக உறவுநிலை தரவுத்தள அமைப்பாகும். இது பைத்தானுடன் இணைந்தே வருகிறது.",
+                            en: "SQLite is a serverless, file-based, lightweight relational database engine integrated directly into Python's standard library."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் SQLite தரவுத்தளத்தைப் பயன்படுத்த தருவிக்க வேண்டிய கூறுநிலை எது?", en: "Which built-in module must be imported in Python to work with SQLite databases?" },
+                        options: { ta: ["sqlite3", "mysql", "sql", "dbase"], en: ["sqlite3", "mysql", "sql", "dbase"] },
+                        ans: 0,
+                        reason: {
+                            ta: "பைத்தானின் நிலையான நூலகத்தில் உள்ள 'sqlite3' கூறுநிலையை (import sqlite3) பயன்படுத்தி SQLite தரவுத்தளத்துடன் இணையலாம்.",
+                            en: "Python includes the 'sqlite3' module natively to interface with SQLite databases."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite தரவுத்தளத்துடன் இணைப்பை ஏற்படுத்தப் பயன்படும் செயற்கூறு எது?", en: "Which function establishes a connection to an SQLite database file?" },
+                        options: {
+                            ta: ["sqlite3.connect()", "sqlite3.open()", "sqlite3.cursor()", "sqlite3.link()"],
+                            en: ["sqlite3.connect()", "sqlite3.open()", "sqlite3.cursor()", "sqlite3.link()"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "connection = sqlite3.connect('academy.db') என்ற செயற்கூறு தரவுத்தளக் கோப்புடன் இணைப்பை ஏற்படுத்தும்; கோப்பு இல்லையெனில் புதிதாக உருவாக்கும்.",
+                            en: "sqlite3.connect('filename.db') opens a connection to the database file, creating it automatically if it does not exist."
+                        }
+                    },
+                    {
+                        q: { ta: "தரவுத்தளத்தில் SQL கட்டளைகளை இயக்குவதற்கும், தரவுகளைப் பெறுவதற்கும் உருவாக்கப்பட வேண்டிய கட்டுப்பாட்டு அமைப்பு எது?", en: "Which control structure is required to traverse records and execute SQL commands in Python?" },
+                        options: { ta: ["Cursor (சுட்டி)", "Pointer", "Connector", "Table"], en: ["Cursor", "Pointer", "Connector", "Table"] },
+                        ans: 0,
+                        reason: {
+                            ta: "connection.cursor() மூலம் உருவாக்கப்படும் Cursor பொருள் மூலமே SQL வினவல்களை இயக்கவும் (execute), முடிவுகளைப் பெறவும் முடியும்.",
+                            en: "A Cursor object created via connection.cursor() is used to execute SQL statements and fetch results."
+                        }
+                    },
+                    {
+                        q: { ta: "Cursor பொருளைப் பயன்படுத்தி ஒரு SQL கட்டளையை இயக்கப் பயன்படும் வழிமுறை எது?", en: "Which method of the Cursor object executes a single SQL statement?" },
+                        options: { ta: ["cursor.execute()", "cursor.run()", "cursor.query()", "cursor.start()"], en: ["cursor.execute()", "cursor.run()", "cursor.query()", "cursor.start()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.execute('SQL_Command') என்ற வழிமுறை கொடுக்கப்பட்ட SQL கட்டளையைத் தரவுத்தளத்தில் செயல்படுத்தும்.",
+                            en: "cursor.execute() passes the SQL query string to the SQLite engine for execution."
+                        }
+                    },
+                    {
+                        q: { ta: "வினவல் முடிவில் உள்ள அனைத்துப் பதிவுகளையும் ஒரு பட்டியலாகப் (List of Tuples) பெறப் பயன்படும் வழிமுறை எது?", en: "Which cursor method retrieves all remaining rows of a query result as a list of tuples?" },
+                        options: { ta: ["fetchall()", "fetchone()", "fetchmany()", "getall()"], en: ["fetchall()", "fetchone()", "fetchmany()", "getall()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.fetchall() வினவலுக்குப் பொருந்தும் அனைத்து வரிசைகளையும் Tuples கொண்ட பட்டியலாகத் (List of tuples) திருப்பி அனுப்பும்.",
+                            en: "fetchall() fetches all rows from the query result set and returns them as a list of tuples."
+                        }
+                    },
+                    {
+                        q: { ta: "வினவல் முடிவில் உள்ள அடுத்த ஒரு பதிவை மட்டும் பெறப் பயன்படும் வழிமுறை எது?", en: "Which cursor method fetches only the next single row from the query result?" },
+                        options: { ta: ["fetchone()", "fetchall()", "fetchsingle()", "nextrow()"], en: ["fetchone()", "fetchall()", "fetchsingle()", "nextrow()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.fetchone() முடிவுத் தொகுப்பிலிருந்து ஒரு வரிசையை மட்டும் Tuple வடிவில் தரும்; பதிவுகள் முடிந்துவிட்டால் None என்பதைத் தரும்.",
+                            en: "fetchone() returns the next single row as a tuple, or None when no more rows are available."
+                        }
+                    },
+                    {
+                        q: { ta: "வினவல் முடிவிலிருந்து குறிப்பிட்ட <code>n</code> எண்ணிக்கையிலான பதிவுகளை மட்டும் பெறப் பயன்படும் வழிமுறை எது?", en: "Which cursor method retrieves a specified number <code>n</code> of rows from the result set?" },
+                        options: { ta: ["fetchmany(n)", "fetchall(n)", "fetchone(n)", "getrows(n)"], en: ["fetchmany(n)", "fetchall(n)", "fetchone(n)", "getrows(n)"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.fetchmany(n) என்பது முடிவுத் தொகுப்பிலிருந்து முதல் 'n' வரிசைகளை மட்டும் பட்டியலாகத் திருப்பி அனுப்பும்.",
+                            en: "fetchmany(n) retrieves the next 'n' rows from the result set as a list of tuples."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite-ல் ஒரு நெடுவரிசையின் மதிப்பு தானாகவே 1, 2, 3 என அதிகரித்துச் செல்லப் பயன்படும் சிறப்புச் சொல் எது?", en: "Which keyword automatically generates sequential integer values (1, 2, 3...) for a primary key column in SQLite?" },
+                        options: { ta: ["AUTOINCREMENT", "AUTO_INCREMENT", "IDENTITY", "SERIAL"], en: ["AUTOINCREMENT", "AUTO_INCREMENT", "IDENTITY", "SERIAL"] },
+                        ans: 0,
+                        reason: {
+                            ta: "SQLite-ல் INTEGER PRIMARY KEY AUTOINCREMENT என வரையறுக்கும்போது, புதிய பதிவுகள் சேர்க்கப்படும்போது மதிப்பு தானாகவே அதிகரிக்கும்.",
+                            en: "In SQLite, INTEGER PRIMARY KEY AUTOINCREMENT automatically assigns a unique incrementing integer to new rows."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite தரவுத்தளத்தில் <code>INSERT</code>, <code>UPDATE</code> போன்ற மாற்றங்களைச் செய்தபின், அவை கோப்பில் நிரந்தரமாகச் சேமிக்கப்பட எந்த வழிமுறையை அழைக்க வேண்டும்?", en: "Which method must be called to permanently save changes made by <code>INSERT</code> or <code>UPDATE</code> in SQLite?" },
+                        options: {
+                            ta: ["connection.commit()", "cursor.commit()", "connection.save()", "cursor.close()"],
+                            en: ["connection.commit()", "cursor.commit()", "connection.save()", "cursor.close()"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "connection.commit() வழிமுறையை அழைத்தால் மட்டுமே தரவுத்தளத்தில் செய்யப்பட்ட மாற்றங்கள் வட்டில் (Disk) நிரந்தரமாகச் சேமிக்கப்படும்.",
+                            en: "Calling connection.commit() commits the current transaction so changes are permanently written to the database file."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite-ல் எத்தனை முதன்மை சேமிப்பு வகுப்புகள் (Storage Classes / Data Types) உள்ளன?", en: "How many primary storage classes (data types) exist in SQLite?" },
+                        options: {
+                            ta: ["5 (NULL, INTEGER, REAL, TEXT, BLOB)", "3 (INT, CHAR, FLOAT)", "4", "6"],
+                            en: ["5 (NULL, INTEGER, REAL, TEXT, BLOB)", "3 (INT, CHAR, FLOAT)", "4", "6"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SQLite-ல் NULL, INTEGER, REAL, TEXT மற்றும் BLOB ஆகிய 5 அடிப்படை சேமிப்பு தரவு வகைகள் உள்ளன.",
+                            en: "Every value stored in an SQLite database has one of 5 storage classes: NULL, INTEGER, REAL, TEXT, or BLOB."
+                        }
+                    },
+                    {
+                        q: { ta: "படங்கள், ஆடியோ போன்ற இருமத் தரவுகளை (Binary Data) SQLite-ல் சேமிக்கப் பயன்படும் தரவு வகை எது?", en: "Which SQLite storage class stores binary data such as images or audio files?" },
+                        options: { ta: ["BLOB", "TEXT", "REAL", "NUMERIC"], en: ["BLOB", "TEXT", "REAL", "NUMERIC"] },
+                        ans: 0,
+                        reason: {
+                            ta: "BLOB (Binary Large Object) என்பது உள்ளிடப்பட்ட தரவை எந்த மாற்றமும் இன்றி இரும வடிவிலேயே (Binary) சேமிக்கும்.",
+                            en: "BLOB (Binary Large Object) stores raw binary data exactly as it was input."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரே நேரத்தில் பல பதிவுகளை (Multiple Rows) அட்டவணையில் நுழைக்கப் பயன்படும் Cursor வழிமுறை எது?", en: "Which cursor method inserts multiple rows into a table in a single call?" },
+                        options: { ta: ["executemany()", "execute()", "executescript()", "insertmany()"], en: ["executemany()", "execute()", "executescript()", "insertmany()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.executemany(sql, list_of_tuples) மூலம் பல பதிவுகளை ஒரே கட்டளையில் அட்டவணையில் சேர்க்க முடியும்.",
+                            en: "executemany() executes a parameterized SQL command against all parameter sequences/tuples in a list."
+                        }
+                    },
+                    {
+                        q: { ta: "அரைப்புள்ளியால் (;) பிரிக்கப்பட்ட பல SQL கட்டளைகளை ஒரே நேரத்தில் இயக்கப் பயன்படும் வழிமுறை எது?", en: "Which cursor method executes multiple semicolon-separated SQL statements at once?" },
+                        options: { ta: ["executescript()", "executemany()", "executeall()", "multirun()"], en: ["executescript()", "executemany()", "executeall()", "multirun()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.executescript() பல SQL கட்டளைகளைக் கொண்ட ஒரு சரத்தை (String) ஒரே நேரத்தில் செயல்படுத்தப் பயன்படுகிறது.",
+                            en: "executescript() allows executing multiple SQL statements contained in a single string separated by semicolons."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite-ல் அளபுருவாக்கப்பட்ட வினவல்களில் (Parameterized Queries) மதிப்புகளை இடமாற்றம் செய்யப் பயன்படும் இடநிரப்பி (Placeholder) குறியீடு எது?", en: "Which placeholder symbol is used in SQLite parameterized queries to prevent SQL injection?" },
+                        options: { ta: ["? (கேள்விக்குறி)", "%s", "$1", "@param"], en: ["? (Question mark)", "%s", "$1", "@param"] },
+                        ans: 0,
+                        reason: {
+                            ta: "SQLite3 கூறுநிலையில் பாதுகாப்பான வினவல்களை எழுத '?' என்ற கேள்விக்குறி இடநிரப்பியாகப் (Placeholder) பயன்படுத்தப்படுகிறது.",
+                            en: "The sqlite3 module uses the '?' (qmark style) placeholder to safely bind Python values to SQL queries."
+                        }
+                    },
+                    {
+                        q: { ta: "அட்டவணையில் உள்ள நெடுவரிசைகளின் தலைப்புப் பெயர்களை (Column Names) அறிய உதவும் Cursor பண்புக்கூறு எது?", en: "Which cursor attribute provides the column names of the last executed query?" },
+                        options: {
+                            ta: ["cursor.description", "cursor.headers", "cursor.columns", "cursor.names"],
+                            en: ["cursor.description", "cursor.headers", "cursor.columns", "cursor.names"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.description என்பது கடைசியாக இயக்கப்பட்ட வினவலின் ஒவ்வொரு நெடுவரிசையின் பெயரையும் கொண்ட Tuple-களின் தொகுப்பைத் தரும்.",
+                            en: "cursor.description returns a tuple of tuples where the first element of each inner tuple is the column name."
+                        }
+                    },
+                    {
+                        q: { ta: "கடைசியாக இயக்கப்பட்ட <code>UPDATE</code> அல்லது <code>DELETE</code> கட்டளையால் பாதிக்கப்பட்ட வரிசைகளின் எண்ணிக்கையைக் காட்டும் பண்புக்கூறு எது?", en: "Which attribute shows the number of rows affected by the last <code>UPDATE</code> or <code>DELETE</code> query?" },
+                        options: {
+                            ta: ["cursor.rowcount", "cursor.count", "cursor.affected", "cursor.total"],
+                            en: ["cursor.rowcount", "cursor.count", "cursor.affected", "cursor.total"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.rowcount பண்புக்கூறு கடைசி DML கட்டளையால் மாற்றப்பட்ட அல்லது நீக்கப்பட்ட வரிசைகளின் எண்ணிக்கையைத் தரும்.",
+                            en: "cursor.rowcount returns the count of rows modified or deleted by the most recent DML statement."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>sqlite3.connect(':memory:')</code> என்பது எதைக் குறிக்கிறது?", en: "What does <code>sqlite3.connect(':memory:')</code> do?" },
+                        options: {
+                            ta: ["தற்காலிகமாக கணினியின் RAM நினைவகத்தில் மட்டுமே தரவுத்தளத்தை உருவாக்கும்", "வன்வட்டில் memory.db கோப்பை உருவாக்கும்", "பிழையை ஏற்படுத்தும்", "பழைய தரவுத்தளத்தை அழிக்கும்"],
+                            en: ["Creates a temporary database solely in system RAM", "Creates a file named memory.db on disk", "Raises a syntax error", "Deletes existing databases"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "':memory:' எனக் கொடுக்கும்போது வன்வட்டில் கோப்பு உருவாக்கப்படாமல், RAM நினைவகத்தில் அதிவேகமாகச் செயல்படும் தற்காலிகத் தரவுத்தளம் உருவாகும்.",
+                            en: "Passing ':memory:' opens a fast, temporary in-memory database in RAM instead of writing to disk."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது SQLite-ல் தொகுப்புச் செயற்கூறுகளுடன் (Aggregate Functions) தொடர்புடைய சரியான கூற்று?", en: "Which statement is TRUE regarding aggregate functions in SQLite?" },
+                        options: {
+                            ta: ["COUNT(), SUM(), AVG(), MIN(), MAX() ஆகியவற்றை SELECT வினவலில் பயன்படுத்தலாம்", "SQLite-ல் தொகுப்புச் செயற்கூறுகள் கிடையாது", "AVG() சரங்களுக்குப் பயன்படும்", "SUM() எழுத்துக்களைக் கூட்டும்"],
+                            en: ["COUNT(), SUM(), AVG(), MIN(), and MAX() are supported in SELECT queries", "SQLite does not support aggregate functions", "AVG() computes string length averages", "SUM() concatenates text strings"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SQLite அனைத்து நிலையான SQL தொகுப்புச் செயற்கூறுகளான COUNT, SUM, AVG, MIN, MAX ஆகியவற்றை முழுமையாக ஆதரிக்கிறது.",
+                            en: "SQLite fully supports standard SQL aggregate functions including COUNT(), SUM(), AVG(), MIN(), and MAX()."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite வினவலில் <code>GROUP BY</code> மற்றும் <code>ORDER BY</code> இரண்டும் வந்தால், எது முதலில் எழுதப்பட வேண்டும்?", en: "When both <code>GROUP BY</code> and <code>ORDER BY</code> appear in an SQL query, which must come first?" },
+                        options: {
+                            ta: ["GROUP BY முதலில் வரவேண்டும், ORDER BY இறுதியில் வரவேண்டும்", "ORDER BY முதலில் வரவேண்டும்", "எப்படி வேண்டுமானாலும் எழுதலாம்", "இரண்டையும் சேர்த்துப் பயன்படுத்த முடியாது"],
+                            en: ["GROUP BY must come before ORDER BY", "ORDER BY must come before GROUP BY", "They can be written in any order", "They cannot be used together"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SQL தொடரியல் விதிப்படி SELECT -> FROM -> WHERE -> GROUP BY -> HAVING -> ORDER BY என்ற வரிசையிலேயே துணைக்கூறுகள் அமைய வேண்டும்.",
+                            en: "Standard SQL clause order requires GROUP BY (and HAVING) to precede ORDER BY."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>INSERT OR IGNORE INTO ...</code> என்ற SQLite கட்டளையின் செயல்பாடு என்ன?", en: "What does the SQLite statement <code>INSERT OR IGNORE INTO ...</code> do?" },
+                        options: {
+                            ta: ["முதன்மைத் திறவுகோல் நகல் (Duplicate) ஏற்பட்டால் பிழையைத் தவிர்த்து அந்தப் பதிவைப் புறக்கணிக்கும்", "அனைத்துப் பதிவுகளையும் அழிக்கும்", "பழைய பதிவைப் புதுப்பிக்கும்", "நிரலை நிறுத்தும்"],
+                            en: ["Skips inserting the row without error if a UNIQUE/PRIMARY KEY conflict occurs", "Deletes all records in the table", "Overwrites the existing row", "Terminates the Python script"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "UNIQUE அல்லது PRIMARY KEY கட்டுப்பாடு மீறப்படும்போது நிரல் முறிவதைத் தடுக்க INSERT OR IGNORE பயன்படுகிறது.",
+                            en: "INSERT OR IGNORE quietly ignores rows that would violate a UNIQUE or PRIMARY KEY constraint."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>INSERT OR REPLACE INTO ...</code> கட்டளை என்ன செய்யும்?", en: "What is the behavior of <code>INSERT OR REPLACE INTO ...</code> in SQLite?" },
+                        options: {
+                            ta: ["ஏற்கனவே அதே முதன்மைத் திறவுகோல் இருந்தால் பழைய பதிவை நீக்கிவிட்டுப் புதியதைச் சேர்க்கும்", "புதிய பதிவைப் புறக்கணிக்கும்", "இரண்டு பதிவுகளையும் வைத்திருக்கும்", "அட்டவணையை நீக்கும்"],
+                            en: ["Deletes the conflicting existing row and inserts the new row", "Ignores the new row", "Keeps both duplicate rows", "Drops the entire table"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "தனித்துவக் கட்டுப்பாடு மீறப்படும்போது, ஏற்கனவே உள்ள வரிசையை நீக்கிவிட்டுப் புதிய மதிப்புகளுடன் கூடிய வரிசையைப் பதிலீடு செய்யும்.",
+                            en: "When a constraint violation occurs, INSERT OR REPLACE deletes the pre-existing row and inserts the new row in its place."
+                        }
+                    },
+                    {
+                        q: { ta: "தரவுத்தளப் பணிகள் முடிந்தவுடன் இணைப்பைத் துண்டிக்கப் பயன்படும் வழிமுறை எது?", en: "Which method closes the SQLite database connection cleanly?" },
+                        options: {
+                            ta: ["connection.close()", "connection.end()", "connection.stop()", "sqlite3.exit()"],
+                            en: ["connection.close()", "connection.end()", "connection.stop()", "sqlite3.exit()"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "connection.close() வழிமுறை தரவுத்தள இணைப்பைப் பாதுகாப்பாக மூடி கணினி வளங்களை விடுவிக்கும்.",
+                            en: "Calling connection.close() releases database locks and system resources properly."
+                        }
+                    },
+                    {
+                        q: { ta: "கடைசியாக அட்டவணையில் சேர்க்கப்பட்ட வரிசையின் <code>rowid</code> மதிப்பை அறியப் பயன்படும் பண்புக்கூறு எது?", en: "Which cursor attribute retrieves the <code>rowid</code> of the most recently inserted row?" },
+                        options: { ta: ["cursor.lastrowid", "cursor.rowid", "cursor.id", "connection.lastid"], en: ["cursor.lastrowid", "cursor.rowid", "cursor.id", "connection.lastid"] },
+                        ans: 0,
+                        reason: {
+                            ta: "cursor.lastrowid பண்புக்கூறு அட்டவணையில் கடைசியாக INSERT செய்யப்பட்ட வரிசையின் தனித்துவமான rowid-ஐத் தரும்.",
+                            en: "cursor.lastrowid returns the internal rowid of the last row inserted via that cursor."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite-ல் <code>AND</code>, <code>OR</code>, <code>NOT</code> ஆகியவை எவ்வகைச் செயற்குறிகள்?", en: "What type of operators are <code>AND</code>, <code>OR</code>, and <code>NOT</code> in SQLite?" },
+                        options: {
+                            ta: ["தருக்கச் செயற்குறிகள் (Logical Operators)", "கணிதச் செயற்குறிகள்", "ஒப்பீட்டுச் செயற்குறிகள்", "பிட்வைஸ் செயற்குறிகள்"],
+                            en: ["Logical Operators", "Arithmetic Operators", "Comparison Operators", "Bitwise Operators"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "WHERE துணைக்கூற்றில் ஒன்றுக்கு மேற்பட்ட நிபந்தனைகளை இணைக்கப் பயன்படும் AND, OR, NOT ஆகியவை தருக்கச் செயற்குறிகள் ஆகும்.",
+                            en: "AND, OR, and NOT are logical operators used to combine or negate conditions in a WHERE clause."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>SELECT name, marks FROM Student WHERE marks >= 80 AND marks <= 90;</code> என்பதற்கு இணையான வினவல் எது?", en: "Which query is equivalent to <code>SELECT name, marks FROM Student WHERE marks >= 80 AND marks <= 90;</code>?" },
+                        options: {
+                            ta: ["SELECT name, marks FROM Student WHERE marks BETWEEN 80 AND 90;", "SELECT name, marks FROM Student WHERE marks IN (80, 90);", "SELECT name, marks FROM Student WHERE marks LIKE 80..90;", "SELECT name, marks FROM Student WHERE marks IS 80 TO 90;"],
+                            en: ["SELECT name, marks FROM Student WHERE marks BETWEEN 80 AND 90;", "SELECT name, marks FROM Student WHERE marks IN (80, 90);", "SELECT name, marks FROM Student WHERE marks LIKE 80..90;", "SELECT name, marks FROM Student WHERE marks IS 80 TO 90;"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "80 மற்றும் 90 ஆகிய எல்லைகளையும் உள்ளடக்கிய வரம்பைக் குறிக்க BETWEEN 80 AND 90 என்பது சரியான மாற்று வினவலாகும்.",
+                            en: "BETWEEN 80 AND 90 is inclusive of both boundary values and matches 'marks >= 80 AND marks <= 90'."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite தரவுத்தளத்தில் சேமிக்கப்பட்ட தரவுகளை CSV கோப்பிற்கு ஏற்றுமதி செய்ய எந்த இரு கூறுநிலைகள் தேவைப்படும்?", en: "Which two Python modules are needed to export data from an SQLite table into a CSV file?" },
+                        options: { ta: ["sqlite3 மற்றும் csv", "sqlite3 மற்றும் os", "csv மற்றும் sys", "os மற்றும் math"], en: ["sqlite3 and csv", "sqlite3 and os", "csv and sys", "os and math"] },
+                        ans: 0,
+                        reason: {
+                            ta: "sqlite3 மூலம் தரவுத்தளத்திலிருந்து தரவுகளை fetchall() செய்து, csv கூறுநிலையின் writerows() மூலம் CSV கோப்பில் எழுதலாம்.",
+                            en: "sqlite3 fetches rows from the database, and the csv module writes those rows into a .csv file."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite-ல் உண்மை (Boolean) மதிப்புகளான True மற்றும் False எவ்வாறு சேமிக்கப்படுகின்றன?", en: "How are Boolean values True and False stored in SQLite?" },
+                        options: {
+                            ta: ["முழு எண்கள் 1 மற்றும் 0 ஆக", "'True' மற்றும் 'False' சரங்களாக", "தனி BOOLEAN வகையாக", "NULL ஆக"],
+                            en: ["As integers 1 and 0", "As strings 'True' and 'False'", "As a dedicated BOOLEAN storage class", "As NULL values"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "SQLite-ல் தனி Boolean சேமிப்பு வகுப்பு இல்லை; True என்பது 1 ஆகவும், False என்பது 0 ஆகவும் INTEGER வடிவில் சேமிக்கப்படுகிறது.",
+                            en: "SQLite does not have a separate Boolean storage class; instead, Boolean values are stored as integers 0 (false) and 1 (true)."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>WHERE</code> துணைக்கூற்று இல்லாமல் <code>DELETE FROM Student;</code> என்ற கட்டளையை இயக்கினால் என்ன நிகழும்?", en: "What happens if <code>DELETE FROM Student;</code> is executed without a <code>WHERE</code> clause?" },
+                        options: {
+                            ta: ["Student அட்டவணையில் உள்ள அனைத்துப் பதிவுகளும் நீக்கப்படும்", "எந்தப் பதிவும் நீக்கப்படாது", "தொடரியல் பிழை ஏற்படும்", "முதல் பதிவு மட்டும் நீக்கப்படும்"],
+                            en: ["All rows in the Student table are deleted", "No rows are deleted", "A syntax error is raised", "Only the first row is deleted"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "WHERE நிபந்தனை இல்லாமல் DELETE கட்டளையை இயக்கினால், அட்டவணையின் கட்டமைப்பு மட்டும் இருந்து, உள்ளே உள்ள அனைத்துத் தரவுகளும் நீக்கப்படும்.",
+                            en: "Omitting the WHERE clause in a DELETE statement removes every record from the table while preserving the table schema."
+                        }
+                    },
+                    {
+                        q: { ta: "SQLite அட்டவணையில் உள்ள <code>NULL</code> மதிப்புகளைக் கையாளுவது குறித்த சரியான கூற்று எது?", en: "Which statement is TRUE regarding <code>NULL</code> values in an SQLite table?" },
+                        options: {
+                            ta: ["NULL என்பது 0 அல்லது வெற்று இடைவெளி (' ') அல்ல; அது மதிப்பு இல்லாத நிலையைக் குறிக்கும்", "NULL என்பது 0-க்குச் சமம்", "NULL என்பது வெற்றுச் சரத்திற்குச் சமம்", "NULL = NULL என்பது True தரும்"],
+                            en: ["NULL is neither 0 nor a blank space; it represents a missing or unknown value", "NULL is equal to numeric 0", "NULL is identical to an empty string", "NULL = NULL evaluates to True"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "தரவுத்தளத்தில் NULL என்பது அறியப்படாத அல்லது மதிப்பு வழங்கப்படாத நிலையைக் குறிக்கும். இது எண் 0 அல்லது வெற்று இடைவெளியிலிருந்து முற்றிலும் வேறுபட்டது.",
+                            en: "NULL represents the absence of a value and is distinct from zero or an empty string."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 16,
+                shortTitle: { ta: "பாடம் 16: தரவு காட்சிப்படுத்துதல்", en: "Ch 16: Data Visualization" },
+                fullTitle: {
+                    ta: "அத்தியாயம் 16: தரவு காட்சிப்படுத்துதல்: Pyplot பயன்படுத்தி கோட்டு வரைபடம், வட்ட வரைபடம் மற்றும் பட்டை வரைபடம் உருவாக்குதல்",
+                    en: "Chapter 16: Data Visualization Using Pyplot: Line Chart, Pie Chart and Bar Chart"
+                },
+                questions: [
+                    {
+                        q: { ta: "தரவு காட்சிப்படுத்துதல் (Data Visualization) என்றால் என்ன?", en: "What is Data Visualization?" },
+                        options: {
+                            ta: ["தகவல்கள் மற்றும் தரவுகளை வரைபட வடிவில் காட்சிப்படுத்துதல்", "தரவுகளை அட்டவணையில் சேமித்தல்", "தரவுகளை மறைகுறியாக்கம் செய்தல்", "தரவுகளை அழித்தல்"],
+                            en: ["Graphical representation of information and data", "Storing raw data in database tables", "Encrypting confidential datasets", "Deleting redundant records"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "எண் வடிவிலான சிக்கலான தரவுகளை எளிதில் புரிந்துகொள்ளும் வகையில் வரைபடங்கள் (Charts, Graphs) மூலம் காட்சிப்படுத்துவதே தரவு காட்சிப்படுத்துதல் ஆகும்.",
+                            en: "Data visualization is the graphical representation of information and data using visual elements like charts and graphs."
+                        }
+                    },
+                    {
+                        q: { ta: "பைத்தானில் தரவு காட்சிப்படுத்துதலுக்குப் பயன்படும் மிகவும் பிரபலமான நூலகம் எது?", en: "Which is the most popular Python library used for 2D data visualization?" },
+                        options: { ta: ["Matplotlib", "NumPy", "SciPy", "Django"], en: ["Matplotlib", "NumPy", "SciPy", "Django"] },
+                        ans: 0,
+                        reason: {
+                            ta: "Matplotlib என்பது பைத்தானில் இருபரிமாண (2D) வரைபடங்களை உருவாக்கப் பயன்படும் முதன்மையான தரவு காட்சிப்படுத்தல் நூலகமாகும்.",
+                            en: "Matplotlib is the most widely used 2D plotting library in Python for creating static, animated, and interactive visualizations."
+                        }
+                    },
+                    {
+                        q: { ta: "Matplotlib நூலகத்தில் MATLAB போன்ற இடைமுகத்தை வழங்கும் துணைக் கூறுநிலை எது?", en: "Which submodule in Matplotlib provides a MATLAB-like plotting interface?" },
+                        options: {
+                            ta: ["matplotlib.pyplot", "matplotlib.graph", "matplotlib.chart", "matplotlib.draw"],
+                            en: ["matplotlib.pyplot", "matplotlib.graph", "matplotlib.chart", "matplotlib.draw"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "matplotlib.pyplot என்பது வரைபடங்களை உருவாக்கவும், அச்சுகள் மற்றும் தலைப்புகளை அமைக்கவும் உதவும் செயற்கூறுகளின் தொகுப்பாகும்.",
+                            en: "matplotlib.pyplot is a collection of command-style functions that make Matplotlib work like MATLAB."
+                        }
+                    },
+                    {
+                        q: { ta: "வரைபடத்தைத் திரையில் காண்பிக்கப் பயன்படும் <code>pyplot</code> செயற்கூறு எது?", en: "Which <code>pyplot</code> function displays the plotted chart window on the screen?" },
+                        options: { ta: ["plt.show()", "plt.display()", "plt.view()", "plt.print()"], en: ["plt.show()", "plt.display()", "plt.view()", "plt.print()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.show() செயற்கூறை அழைத்தால் மட்டுமே உருவாக்கப்பட்ட வரைபடம் தனிச் சாளரத்தில் திரையில் தோன்றும்.",
+                            en: "plt.show() renders the figure and displays it inside an interactive viewer window."
+                        }
+                    },
+                    {
+                        q: { ta: "கோட்டு வரைபடத்தை (Line Chart) உருவாக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function is used to create a Line Chart in Pyplot?" },
+                        options: { ta: ["plt.plot()", "plt.line()", "plt.bar()", "plt.pie()"], en: ["plt.plot()", "plt.line()", "plt.bar()", "plt.pie()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.plot(x, y) செயற்கூறு கொடுக்கப்பட்ட x மற்றும் y ஆயத்தொலைவுப் புள்ளிகளை நேர்க்கோடுகளால் இணைத்துக் கோட்டு வரைபடத்தை உருவாக்கும்.",
+                            en: "plt.plot(x, y) plots y versus x as lines and/or markers to create a line chart."
+                        }
+                    },
+                    {
+                        q: { ta: "வரைபடத்தின் X-அச்சு மற்றும் Y-அச்சுகளுக்குப் பெயரிடப் பயன்படும் செயற்கூறுகள் யாவை?", en: "Which functions are used to set labels for the X-axis and Y-axis?" },
+                        options: {
+                            ta: ["plt.xlabel() மற்றும் plt.ylabel()", "plt.xaxis() மற்றும் plt.yaxis()", "plt.xname() மற்றும் plt.yname()", "plt.titlex() மற்றும் plt.titley()"],
+                            en: ["plt.xlabel() and plt.ylabel()", "plt.xaxis() and plt.yaxis()", "plt.xname() and plt.yname()", "plt.titlex() and plt.titley()"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "கிடைமட்ட அச்சிற்குப் பெயரிட plt.xlabel() மற்றும் செங்குத்து அச்சிற்குப் பெயரிட plt.ylabel() ஆகிய செயற்கூறுகள் பயன்படுகின்றன.",
+                            en: "plt.xlabel() sets the label for the horizontal X-axis, and plt.ylabel() sets the label for the vertical Y-axis."
+                        }
+                    },
+                    {
+                        q: { ta: "வரைபடத்திற்குத் தலைப்பு (Title) இடப் பயன்படும் செயற்கூறு எது?", en: "Which function adds a main title to a Pyplot chart?" },
+                        options: { ta: ["plt.title()", "plt.header()", "plt.heading()", "plt.caption()"], en: ["plt.title()", "plt.header()", "plt.heading()", "plt.caption()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.title('வரைபடத் தலைப்பு') என்ற செயற்கூறு வரைபடத்தின் மேற்பகுதியில் தலைப்பைக் காட்டும்.",
+                            en: "plt.title() places a descriptive title at the top of the plot."
+                        }
+                    },
+                    {
+                        q: { ta: "ஒரு வரைபடத்தில் ஒன்றுக்கு மேற்பட்ட கோடுகள் வரையப்படும்போது, அவற்றை அடையாளம் காண உதவும் விளக்கப் பெட்டியை (Legend) காட்டப் பயன்படும் செயற்கூறு எது?", en: "Which function displays a legend box identifying multiple plotted lines or datasets?" },
+                        options: { ta: ["plt.legend()", "plt.label()", "plt.info()", "plt.key()"], en: ["plt.legend()", "plt.label()", "plt.info()", "plt.key()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plot() செயற்கூறில் label அளபுருவைக் கொடுத்துவிட்டு, plt.legend() செயற்கூறை அழைத்தால் வரைபடத்தின் மூலையில் விளக்கப் பெட்டி (Legend) தோன்றும்.",
+                            en: "Calling plt.legend() displays the legend box using the 'label' strings assigned in plot()."
+                        }
+                    },
+                    {
+                        q: { ta: "செங்குத்துப் பட்டை வரைபடத்தை (Vertical Bar Chart) உருவாக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function generates a vertical Bar Chart in Pyplot?" },
+                        options: { ta: ["plt.bar()", "plt.barh()", "plt.hist()", "plt.col()"], en: ["plt.bar()", "plt.barh()", "plt.hist()", "plt.col()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.bar() செங்குத்துப் பட்டை வரைபடத்தையும், plt.barh() கிடைமட்டப் பட்டை வரைபடத்தையும் உருவாக்கும்.",
+                            en: "plt.bar() creates vertical bars, while plt.barh() creates horizontal bars."
+                        }
+                    },
+                    {
+                        q: { ta: "கிடைமட்டப் பட்டை வரைபடத்தை (Horizontal Bar Chart) உருவாக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function generates a horizontal Bar Chart in Pyplot?" },
+                        options: { ta: ["plt.barh()", "plt.bar()", "plt.hbar()", "plt.bar_horiz()"], en: ["plt.barh()", "plt.bar()", "plt.hbar()", "plt.bar_horiz()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.barh() (Bar Horizontal) செயற்கூறு கிடைமட்டமாகப் பட்டைகளை வரைந்து தரவுகளை ஒப்பிட உதவுகிறது.",
+                            en: "plt.barh() plots horizontal bars where categories are placed along the Y-axis."
+                        }
+                    },
+                    {
+                        q: { ta: "வட்ட வரைபடத்தை (Pie Chart) உருவாக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function creates a Pie Chart in Pyplot?" },
+                        options: { ta: ["plt.pie()", "plt.circle()", "plt.round()", "plt.donut()"], en: ["plt.pie()", "plt.circle()", "plt.round()", "plt.donut()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.pie() செயற்கூறு முழுத் தரவின் விகிதாச்சாரத்தை ஒரு வட்டத்தின் துண்டுகளாக (Slices) காட்சிப்படுத்தப் பயன்படுகிறது.",
+                            en: "plt.pie() plots a circular chart divided into wedges/slices proportional to numerical values."
+                        }
+                    },
+                    {
+                        q: { ta: "வட்ட வரைபடத்தில் (Pie Chart) ஒவ்வொரு துண்டின் சதவீத மதிப்பையும் தானாகவே காட்டப் பயன்படும் அளபுரு எது?", en: "Which parameter in <code>plt.pie()</code> automatically displays the percentage value on each slice?" },
+                        options: { ta: ["autopct", "percent", "showpct", "autovalue"], en: ["autopct", "percent", "showpct", "autovalue"] },
+                        ans: 0,
+                        reason: {
+                            ta: "autopct='%1.1f%%' என்ற அளபுரு வட்ட வரைபடத்தின் ஒவ்வொரு பிரிவிலும் அதன் சதவீதத்தைத் தசம புள்ளிகளுடன் காட்டும்.",
+                            en: "The 'autopct' format string (e.g., autopct='%1.1f%%') labels each wedge with its calculated percentage."
+                        }
+                    },
+                    {
+                        q: { ta: "வட்ட வரைபடத்தில் ஒரு குறிப்பிட்ட துண்டை மட்டும் வட்டத்திலிருந்து சற்று வெளியே பிரித்துக் காட்டப் பயன்படும் அளபுரு எது?", en: "Which parameter in <code>plt.pie()</code> offsets a slice outward from the center to highlight it?" },
+                        options: { ta: ["explode", "detach", "split", "pull"], en: ["explode", "detach", "split", "pull"] },
+                        ans: 0,
+                        reason: {
+                            ta: "explode அளபுருவில் (எ.கா: explode=[0, 0.1, 0, 0]) மதிப்புகளைக் கொடுப்பதன் மூலம் முக்கியப் பகுதியைத் தனியாகப் பிரித்து முன்னிலைப்படுத்தலாம்.",
+                            en: "The 'explode' tuple/list specifies the fraction of the radius with which to offset each wedge."
+                        }
+                    },
+                    {
+                        q: { ta: "பட்டை வரைபடம் (Bar Chart) மற்றும் செவ்வகப்படம் (Histogram) ஆகியவற்றிற்கு இடையேயான முக்கிய வேறுபாடு என்ன?", en: "What is the key visual difference between a Bar Chart and a Histogram?" },
+                        options: {
+                            ta: ["பட்டை வரைபடத்தில் பட்டைகளுக்கு இடையே இடைவெளி இருக்கும்; Histogram-ல் இடைவெளி இருக்காது", "Histogram-ல் இடைவெளி இருக்கும்", "இரண்டும் ஒன்றே", "பட்டை வரைபடம் தொடர் தரவுகளுக்கு மட்டுமே பயன்படும்"],
+                            en: ["Bar charts have gaps between bars; Histograms have no gaps between adjacent bars", "Histograms have wide gaps between bars", "Both are visually identical", "Bar charts only plot continuous frequency bins"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "Bar Chart வகைப்படுத்தப்பட்ட (Categorical) தரவுகளை ஒப்பிட இடைவெளியுடன் வரையப்படுகிறது. Histogram தொடர்ச்சியான எண் வரம்புகளின் (Frequency distribution) இடைவெளியின்றி வரையப்படுகிறது.",
+                            en: "Bar charts compare discrete categories with spaces between bars, while histograms show continuous frequency distributions with touching bars."
+                        }
+                    },
+                    {
+                        q: { ta: "செவ்வகப்படத்தை (Histogram) உருவாக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function plots a Histogram in Pyplot?" },
+                        options: { ta: ["plt.hist()", "plt.bar()", "plt.box()", "plt.freq()"], en: ["plt.hist()", "plt.bar()", "plt.box()", "plt.freq()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.hist() செயற்கூறு கொடுக்கப்பட்ட தரவுகளின் நிகழ்வெண் பரவலை (Frequency distribution) செவ்வகப்படமாகக் காட்டும்.",
+                            en: "plt.hist() computes and draws the frequency distribution histogram of numerical data."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது Matplotlib-ன் ஒரு பகுதி அல்ல?", en: "Which of the following is NOT a component of a Matplotlib plot?" },
+                        options: { ta: ["Status bar", "Plot area", "Title", "Legend"], en: ["Status bar", "Plot area", "Title", "Legend"] },
+                        ans: 0,
+                        reason: {
+                            ta: "Title, Legend, Axis labels, Grid, Plot area ஆகியவை Matplotlib வரைபடத்தின் கூறுகள். Status bar என்பது வரைபடத்தின் பகுதி அல்ல.",
+                            en: "Plot area, Title, Axes, and Legend are standard plot elements; Status bar is a GUI window element, not a chart component."
+                        }
+                    },
+                    {
+                        q: { ta: "Matplotlib-ல் வரைபடத்தின் பின்னணியில் கட்டக் கோடுகளை (Grid lines) காட்டப் பயன்படும் செயற்கூறு எது?", en: "Which function toggles background grid lines on a Matplotlib chart?" },
+                        options: { ta: ["plt.grid(True)", "plt.lines(True)", "plt.net(True)", "plt.mesh(True)"], en: ["plt.grid(True)", "plt.lines(True)", "plt.net(True)", "plt.mesh(True)"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.grid(True) செயற்கூறு வரைபடப் பகுதியில் X மற்றும் Y அச்சுகளுக்கு இணையான கட்டக் கோடுகளை உருவாக்கி மதிப்புகளை எளிதாகப் படிக்க உதவும்.",
+                            en: "plt.grid(True) displays horizontal and vertical reference grid lines across the plot area."
+                        }
+                    },
+                    {
+                        q: { ta: "இரண்டு மாறிகளுக்கு இடையேயான தொடர்பை புள்ளிகளாகக் காட்டப் பயன்படும் சிதறல் வரைபட (Scatter Plot) செயற்கூறு எது?", en: "Which function creates a Scatter Plot showing individual data points?" },
+                        options: { ta: ["plt.scatter()", "plt.point()", "plt.dot()", "plt.plot()"], en: ["plt.scatter()", "plt.point()", "plt.dot()", "plt.plot()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.scatter(x, y) செயற்கூறு கோடுகளால் இணைக்காமல் தனித்தனிப் புள்ளிகளாகத் தரவுகளைக் காட்சிப்படுத்தும்.",
+                            en: "plt.scatter(x, y) plots unconnected individual markers to show correlation between two variables."
+                        }
+                    },
+                    {
+                        q: { ta: "பெட்டி வரைபடத்தை (Box Plot) உருவாக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function is used to create a Box Plot in Pyplot?" },
+                        options: { ta: ["plt.boxplot()", "plt.box()", "plt.rect()", "plt.range()"], en: ["plt.boxplot()", "plt.box()", "plt.rect()", "plt.range()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.boxplot() தரவுகளின் குறைந்தபட்சம், முதல் கால்மானம், இடைநிலை, மூன்றாம் கால்மானம் மற்றும் அதிகபட்ச மதிப்புகளைக் காட்டும்.",
+                            en: "plt.boxplot() displays the five-number summary (minimum, Q1, median, Q3, maximum) of a dataset."
+                        }
+                    },
+                    {
+                        q: { ta: "விண்டோஸில் <code>pip</code> கட்டளையைப் பயன்படுத்தி Matplotlib-ஐ நிறுவ சரியான கட்டளை எது?", en: "Which command installs Matplotlib using <code>pip</code> on Windows?" },
+                        options: {
+                            ta: ["python -m pip install matplotlib", "pip get matplotlib", "install matplotlib", "python install pyplot"],
+                            en: ["python -m pip install matplotlib", "pip get matplotlib", "install matplotlib", "python install pyplot"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "கட்டளை வரியில் 'pip install matplotlib' அல்லது 'python -m pip install matplotlib' என்ற கட்டளை மூலம் Matplotlib தொகுப்பை நிறுவலாம்.",
+                            en: "'python -m pip install matplotlib' downloads and installs the Matplotlib package from PyPI."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>plt.plot(x, y, 'ro--')</code> என்பதில் <code>'ro--'</code> எதைக் குறிக்கிறது?", en: "In <code>plt.plot(x, y, 'ro--')</code>, what does the format string <code>'ro--'</code> specify?" },
+                        options: {
+                            ta: ["சிவப்பு நிறம் (Red), வட்டப் புள்ளிகள் (Circle marker), விட்டுவிட்டு வரும் கோடு (Dashed line)", "சிவப்பு நிறம், சதுரப் புள்ளிகள், தொடர் கோடு", "நீல நிறம், வட்டப் புள்ளிகள்", "சிவப்பு நிறம், முக்கோணப் புள்ளிகள்"],
+                            en: ["Red color, circle markers, and a dashed line", "Red color, square markers, and a solid line", "Blue color and circle markers", "Red color and triangle markers"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "இந்த வடிவமைப்புச் சரத்தில் 'r' என்பது Red நிறத்தையும், 'o' என்பது வட்ட வடிவப் புள்ளியையும் (Marker), '--' என்பது விட்டுவிட்டு வரும் கோட்டையும் குறிக்கிறது.",
+                            en: "In the shorthand format string, 'r' = red color, 'o' = circle marker, and '--' = dashed line style."
+                        }
+                    },
+                    {
+                        q: { ta: "காலப்போக்கில் (Over a period of time) ஏற்படும் மாற்றங்கள் மற்றும் போக்குகளைக் (Trends) காட்ட மிகவும் பொருத்தமான வரைபடம் எது?", en: "Which chart type is most suitable for displaying trends and changes over a period of time?" },
+                        options: {
+                            ta: ["கோட்டு வரைபடம் (Line Chart)", "வட்ட வரைபடம் (Pie Chart)", "பட்டை வரைபடம் (Bar Chart)", "செவ்வகப்படம் (Histogram)"],
+                            en: ["Line Chart", "Pie Chart", "Bar Chart", "Histogram"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "காலவரிசைத் தரவுகளில் (எ.கா: ஆண்டு வாரியான மழையளவு, பங்குச் சந்தை ஏற்ற இறக்கம்) ஏற்படும் போக்குகளைக் காட்ட கோட்டு வரைபடமே சிறந்தது.",
+                            en: "Line charts connect sequential data points, making them ideal for showing time-series trends."
+                        }
+                    },
+                    {
+                        q: { ta: "உருவாக்கப்பட்ட வரைபடத்தை ஒரு படக் கோப்பாக (எ.கா: PNG, PDF) சேமிக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function saves the current figure as an image file (e.g., PNG or PDF)?" },
+                        options: {
+                            ta: ["plt.savefig('chart.png')", "plt.save('chart.png')", "plt.export('chart.png')", "plt.store('chart.png')"],
+                            en: ["plt.savefig('chart.png')", "plt.save('chart.png')", "plt.export('chart.png')", "plt.store('chart.png')"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.show() அழைப்பதற்கு முன்பாக plt.savefig('filename.png') செயற்கூறை அழைப்பதன் மூலம் வரைபடத்தைக் கோப்பாகச் சேமிக்கலாம்.",
+                            en: "plt.savefig() saves the rendered figure to disk (should be called before plt.show())."
+                        }
+                    },
+                    {
+                        q: { ta: "X-அச்சின் காட்சி வரம்பை (Limits) நாமே நிர்ணயிக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function sets the minimum and maximum display limits of the X-axis?" },
+                        options: { ta: ["plt.xlim()", "plt.xrange()", "plt.xbound()", "plt.xsize()"], en: ["plt.xlim()", "plt.xrange()", "plt.xbound()", "plt.xsize()"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.xlim(min, max) மற்றும் plt.ylim(min, max) செயற்கூறுகள் மூலம் அச்சுகளின் தொடக்க மற்றும் இறுதி மதிப்புகளைக் கட்டுப்படுத்தலாம்.",
+                            en: "plt.xlim(left, right) sets the numerical boundaries displayed along the X-axis."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>plt.bar()</code> செயற்கூறில் பட்டைகளின் அகலத்தை மாற்றப் பயன்படும் அளபுரு எது?", en: "Which parameter changes the thickness/width of bars in <code>plt.bar()</code>?" },
+                        options: { ta: ["width", "size", "thickness", "breadth"], en: ["width", "size", "thickness", "breadth"] },
+                        ans: 0,
+                        reason: {
+                            ta: "செங்குத்துப் பட்டை வரைபடத்தில் width=0.5 போன்ற அளபுருவைக் கொடுத்துப் பட்டைகளின் அகலத்தை மாற்றலாம் (கொடாநிலை மதிப்பு 0.8).",
+                            en: "The 'width' parameter (default 0.8) controls the width of vertical bars in plt.bar()."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>plt.barh()</code> செயற்கூறில் பட்டைகளின் தடிமனை (உயரத்தை) மாற்றப் பயன்படும் அளபுரு எது?", en: "Which parameter controls the thickness of bars in a horizontal bar chart (<code>plt.barh()</code>)?" },
+                        options: { ta: ["height", "width", "size", "thick"], en: ["height", "width", "size", "thick"] },
+                        ans: 0,
+                        reason: {
+                            ta: "கிடைமட்டப் பட்டை வரைபடத்தில் (barh) பட்டைகள் படுக்கை வசத்தில் இருப்பதால் 'height' அளபுரு மூலம் அவற்றின் தடிமனை மாற்றலாம்.",
+                            en: "Because bars in plt.barh() are oriented horizontally, their thickness is controlled by the 'height' parameter."
+                        }
+                    },
+                    {
+                        q: { ta: "தரவு காட்சிப்படுத்துதலின் முக்கியப் பயன்களில் ஒன்று எது?", en: "What is a major benefit of Data Visualization?" },
+                        options: {
+                            ta: ["தரவுகளில் மறைந்திருக்கும் போக்குகள் மற்றும் புறம்பான மதிப்புகளை (Outliers) விரைவாகக் கண்டறிதல்", "தரவுத்தள அளவைக் குறைத்தல்", "நிரலின் தொகுப்பு நேரத்தைக் குறைத்தல்", "இணைய வேகத்தை அதிகரித்தல்"],
+                            en: ["Quickly identifying hidden patterns, trends, and outliers in data", "Compressing database file size", "Reducing code compilation time", "Increasing internet bandwidth"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "பெரிய எண் பட்டியல்களைப் படிப்பதை விட வரைபடமாகப் பார்க்கும்போது முரண்பாடுகள் (Outliers) மற்றும் போக்குகள் உடனடியாகப் புலப்படும்.",
+                            en: "Visual charts allow human eyes to rapidly spot trends, clusters, and outliers that are difficult to notice in raw tables."
+                        }
+                    },
+                    {
+                        q: { ta: "பின்வருவனவற்றுள் எது Matplotlib-ல் கோட்டின் தடிமனை (Line width) அமைக்கப் பயன்படும் அளபுரு?", en: "Which parameter sets the thickness of a plotted line in Matplotlib?" },
+                        options: { ta: ["linewidth அல்லது lw", "linesize", "thick", "border"], en: ["linewidth or lw", "linesize", "thick", "border"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.plot(x, y, linewidth=3) அல்லது lw=3 என்ற அளபுரு மூலம் வரைபடக் கோட்டின் தடிமனை அதிகரிக்கலாம்.",
+                            en: "The 'linewidth' (or shorthand 'lw') parameter controls the stroke width of lines in plt.plot()."
+                        }
+                    },
+                    {
+                        q: { ta: "<code>plt.pie()</code> செயற்கூறில் வட்ட வரைபடத்திற்கு நிழல் (Shadow) விளைவைச் சேர்க்கப் பயன்படும் அளபுரு எது?", en: "Which parameter adds a drop-shadow effect beneath a Pie Chart in <code>plt.pie()</code>?" },
+                        options: { ta: ["shadow = True", "shade = True", "effect = 'shadow'", "3d = True"], en: ["shadow = True", "shade = True", "effect = 'shadow'", "3d = True"] },
+                        ans: 0,
+                        reason: {
+                            ta: "plt.pie(sizes, shadow=True) எனக் கொடுப்பதன் மூலம் வட்ட வரைபடத்தின் விளிம்பில் முப்பரிமாணத் தோற்றம் தரும் நிழலை உருவாக்கலாம்.",
+                            en: "Setting shadow=True draws a shadow underneath the pie wedges for visual depth."
+                        }
+                    },
+                    {
+                        q: { ta: "புள்ளியியல் மற்றும் தரவு அறிவியலில் தரவு காட்சிப்படுத்துதல் என்பது எதன் கீழ் வருகிறது?", en: "Under which branch of statistics does Data Visualization fall?" },
+                        options: {
+                            ta: ["விளக்கப் புள்ளியியல் (Descriptive Statistics)", "நிரல் தொகுப்பு", "வலையமைப்பு பாதுகாப்பு", "வன்பொருள் வடிவமைப்பு"],
+                            en: ["Descriptive Statistics", "Compiler Design", "Network Security", "Hardware Architecture"]
+                        },
+                        ans: 0,
+                        reason: {
+                            ta: "தரவு காட்சிப்படுத்துதல் என்பது தரவுகளின் பண்புகளைச் சுருக்கமாகவும் தெளிவாகவும் விளக்கும் விளக்கப் புள்ளியியலின் (Descriptive Statistics) முக்கிய அங்கமாகும்.",
+                            en: "Data visualization is a core component of Descriptive Statistics used to summarize and present dataset characteristics."
+                        }
+                    }
+                ]
+            }
+        ];
+
+        let currentLang = 'ta';
+        let currentChapterIndex = 0;
+        let shuffledQuestions = [];
+        let userAnswers = {}; // { questionIndex: selectedOptionIndex }
+        let isSubmitted = false;
+
+        // Fisher-Yates Shuffle Algorithm
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Toggle Language seamlessly without losing progress
+        function setLanguage(lang) {
+            if (currentLang === lang) return;
+            currentLang = lang;
+
+            const btnTa = document.getElementById('btn-lang-ta');
+            const btnEn = document.getElementById('btn-lang-en');
+
+            if (lang === 'ta') {
+                btnTa.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-400 text-blue-950 shadow";
+                btnEn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-blue-200 hover:text-white";
+            } else {
+                btnEn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition bg-amber-400 text-blue-950 shadow";
+                btnTa.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition text-blue-200 hover:text-white";
+            }
+
+            updateUIText();
+            renderTabs();
+            renderQuestions();
+            if (isSubmitted) {
+                updateResultPanelText();
+            }
+        }
+
+        // Update Static UI Labels according to selected language
+        function updateUIText() {
+            const t = uiStrings[currentLang];
+            const chapter = quizDatabase[currentChapterIndex];
+
+            document.getElementById('hdr-badge').textContent = t.badge;
+            document.getElementById('hdr-title').textContent = t.title;
+            document.getElementById('hdr-subtitle').textContent = t.subtitle;
+            document.getElementById('lbl-correct').textContent = t.correct;
+            document.getElementById('lbl-wrong').textContent = t.wrong;
+            document.getElementById('lbl-skip').textContent = t.skip;
+
+            document.getElementById('current-chapter-title').textContent = chapter.fullTitle[currentLang];
+            document.getElementById('quiz-meta-info').textContent = t.metaInfo;
+            document.getElementById('btn-reset-text').textContent = t.resetBtn;
+
+            document.getElementById('res-panel-title').textContent = t.resTitle;
+            document.getElementById('res-lbl-net').textContent = t.resNet;
+            document.getElementById('res-lbl-outof').textContent = t.resOutOf;
+            document.getElementById('res-lbl-corr').textContent = t.resCorr;
+            document.getElementById('res-lbl-wrong').textContent = t.resWrong;
+            document.getElementById('res-lbl-unans').textContent = t.resUnans;
+            document.getElementById('res-lbl-nochange').textContent = t.resNoChange;
+            document.getElementById('res-lbl-acc').textContent = t.resAcc;
+            document.getElementById('res-lbl-pct').textContent = t.resPct;
+            document.getElementById('res-footer-note').textContent = t.resNote;
+            document.getElementById('btn-retake-res').textContent = t.retakeBtn;
+
+            document.getElementById('submit-note').textContent = t.submitNote;
+            document.getElementById('btn-submit').textContent = t.submitBtn;
+            document.getElementById('footer-text').textContent = t.footer;
+
+            updateCounter();
+        }
+
+        // Initialize Tabs
+        function renderTabs() {
+            const tabContainer = document.getElementById('chapter-tabs');
+            tabContainer.innerHTML = '';
+
+            quizDatabase.forEach((chapter, index) => {
+                const btn = document.createElement('button');
+                const isActive = index === currentChapterIndex;
+                btn.className = `px-3 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition text-center truncate ${isActive ? 'tab-active' : 'tab-inactive'}`;
+                btn.textContent = chapter.shortTitle[currentLang];
+                btn.title = chapter.fullTitle[currentLang];
+                btn.onclick = () => switchChapter(index);
+                tabContainer.appendChild(btn);
+            });
+        }
+
+        // Switch Chapter Tab
+        function switchChapter(index) {
+            currentChapterIndex = index;
+            loadChapter(index);
+        }
+
+        // Load and Shuffle Questions for Selected Chapter
+        function loadChapter(index) {
+            const chapter = quizDatabase[index];
+            
+            // Shuffle questions and preserve bilingual option pairs
+            const rawQuestions = shuffleArray(chapter.questions);
+            shuffledQuestions = rawQuestions.map(q => {
+                const optionObjects = q.options.ta.map((_, idx) => ({
+                    ta: q.options.ta[idx],
+                    en: q.options.en[idx],
+                    isCorrect: idx === q.ans
+                }));
+                const shuffledOpts = shuffleArray(optionObjects);
+                return {
+                    q: q.q,
+                    options: {
+                        ta: shuffledOpts.map(o => o.ta),
+                        en: shuffledOpts.map(o => o.en)
+                    },
+                    ans: shuffledOpts.findIndex(o => o.isCorrect),
+                    reason: q.reason
+                };
+            });
+
+            userAnswers = {};
+            isSubmitted = false;
+
+            document.getElementById('result-panel').classList.add('hidden');
+            document.getElementById('submit-section').classList.remove('hidden');
+            updateUIText();
+            renderTabs();
+            renderQuestions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetCurrentChapter() {
+            loadChapter(currentChapterIndex);
+        }
+
+        function updateCounter() {
+            const t = uiStrings[currentLang];
+            const count = Object.keys(userAnswers).length;
+            document.getElementById('answered-counter').textContent = `${t.answered}: ${count} / ${shuffledQuestions.length}`;
+        }
+
+        // Select Option
+        function selectOption(qIndex, optIndex) {
+            if (isSubmitted) return; // Lock after submission
+
+            // Allow deselecting if clicking the already selected option (like NEET OMR clearing)
+            if (userAnswers[qIndex] === optIndex) {
+                delete userAnswers[qIndex];
+            } else {
+                userAnswers[qIndex] = optIndex;
+            }
+            
+            updateCounter();
+            renderQuestions();
+        }
+
+        // Render Questions List
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            const t = uiStrings[currentLang];
+            const optionLabels = t.optLabels;
+
+            shuffledQuestions.forEach((item, qIdx) => {
+                const selectedOpt = userAnswers[qIdx];
+                const isAnswered = selectedOpt !== undefined;
+                const isCorrect = isAnswered && selectedOpt === item.ans;
+
+                // Card border styling after submission
+                let cardBorder = 'border-slate-200';
+                let statusBadge = '';
+
+                if (isSubmitted) {
+                    if (!isAnswered) {
+                        cardBorder = 'border-slate-300 bg-slate-50/50';
+                        statusBadge = `<span class="text-xs font-bold px-2.5 py-1 rounded bg-slate-200 text-slate-700">${t.badgeUnans}</span>`;
+                    } else if (isCorrect) {
+                        cardBorder = 'border-emerald-500 ring-1 ring-emerald-500/30';
+                        statusBadge = `<span class="text-xs font-bold px-2.5 py-1 rounded bg-emerald-100 text-emerald-800">${t.badgeCorr}</span>`;
+                    } else {
+                        cardBorder = 'border-rose-500 ring-1 ring-rose-500/30';
+                        statusBadge = `<span class="text-xs font-bold px-2.5 py-1 rounded bg-rose-100 text-rose-800">${t.badgeWrong}</span>`;
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-xl shadow-sm border ${cardBorder} p-5 transition`;
+
+                // Question Header
+                let html = `
+                    <div class="flex flex-wrap justify-between items-start gap-2 mb-4">
+                        <div class="flex items-start gap-3">
+                            <span class="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-900 text-white font-bold text-sm flex items-center justify-center mt-0.5">
+                                ${qIdx + 1}
+                            </span>
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-800 leading-relaxed">${item.q[currentLang]}</h3>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 ml-0 sm:ml-11">
+                `;
+
+                // Options
+                item.options[currentLang].forEach((optText, oIdx) => {
+                    let btnStyle = 'border-slate-200 bg-slate-50/70 hover:bg-blue-50 hover:border-blue-300 text-slate-700';
+                    let circleStyle = 'bg-white border-slate-300 text-slate-600';
+                    let indicatorIcon = '';
+
+                    if (!isSubmitted) {
+                        if (selectedOpt === oIdx) {
+                            btnStyle = 'border-blue-600 bg-blue-50 text-blue-950 font-semibold ring-2 ring-blue-600/20';
+                            circleStyle = 'bg-blue-600 border-blue-600 text-white';
+                        }
+                    } else {
+                        // Post-submission review styling
+                        if (oIdx === item.ans) {
+                            btnStyle = 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold ring-1 ring-emerald-600';
+                            circleStyle = 'bg-emerald-600 border-emerald-600 text-white';
+                            indicatorIcon = `<span class="ml-auto text-xs font-bold text-emerald-700 bg-emerald-200/70 px-2 py-0.5 rounded">${t.tagRightAns}</span>`;
+                        } else if (selectedOpt === oIdx && oIdx !== item.ans) {
+                            btnStyle = 'border-rose-500 bg-rose-50 text-rose-950 font-semibold';
+                            circleStyle = 'bg-rose-600 border-rose-600 text-white';
+                            indicatorIcon = `<span class="ml-auto text-xs font-bold text-rose-700 bg-rose-200/70 px-2 py-0.5 rounded">${t.tagYourWrong}</span>`;
+                        } else {
+                            btnStyle = 'border-slate-200 bg-white text-slate-400 opacity-75';
+                        }
+                    }
+
+                    html += `
+                        <button type="button" onclick="selectOption(${qIdx}, ${oIdx})" ${isSubmitted ? 'disabled' : ''}
+                            class="w-full text-left p-3.5 rounded-xl border transition flex items-center gap-3 ${btnStyle} ${isSubmitted ? 'cursor-default' : 'cursor-pointer'}">
+                            <span class="flex-shrink-0 w-7 h-7 rounded-full border text-xs font-bold flex items-center justify-center ${circleStyle}">
+                                ${optionLabels[oIdx]}
+                            </span>
+                            <span class="text-sm sm:text-base leading-snug">${optText}</span>
+                            ${indicatorIcon}
+                        </button>
+                    `;
+                });
+
+                html += `</div>`;
+
+                // Detailed Rationale Box (Shown after submission)
+                if (isSubmitted) {
+                    const boxBg = !isAnswered ? 'bg-amber-50 border-amber-200' : (isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-rose-50/70 border-rose-200');
+                    const titleColor = !isAnswered ? 'text-amber-900' : (isCorrect ? 'text-emerald-900' : 'text-rose-900');
+
+                    html += `
+                        <div class="mt-4 ml-0 sm:ml-11 p-4 rounded-xl border ${boxBg}">
+                            <div class="flex items-center gap-2 font-bold text-sm ${titleColor} mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span>${t.rationaleTitle}</span>
+                            </div>
+                            <p class="text-sm text-slate-700 leading-relaxed">${item.reason[currentLang]}</p>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = html;
+                container.appendChild(card);
+            });
+        }
+
+        function updateResultPanelText() {
+            const t = uiStrings[currentLang];
+            let correctCount = 0;
+            let wrongCount = 0;
+            let unansweredCount = 0;
+
+            shuffledQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === undefined) {
+                    unansweredCount++;
+                } else if (userAnswers[idx] === q.ans) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            });
+
+            const positiveMarks = correctCount * 1.0;
+            const negativeMarks = wrongCount * 0.25;
+            const netScore = positiveMarks - negativeMarks;
+            const attempted = correctCount + wrongCount;
+            const accuracy = attempted > 0 ? Math.round((correctCount / attempted) * 100) : 0;
+
+            document.getElementById('res-net-score').textContent = netScore.toFixed(2);
+            document.getElementById('res-correct').textContent = correctCount;
+            document.getElementById('res-pos-marks').textContent = `+${positiveMarks.toFixed(2)} ${t.marksWord}`;
+            document.getElementById('res-wrong').textContent = wrongCount;
+            document.getElementById('res-neg-marks').textContent = `-${negativeMarks.toFixed(2)} ${t.deductWord}`;
+            document.getElementById('res-unanswered').textContent = unansweredCount;
+            document.getElementById('res-accuracy').textContent = `${accuracy}%`;
+
+            const badge = document.getElementById('grade-badge');
+            if (netScore >= 25) {
+                badge.textContent = t.grades[0];
+            } else if (netScore >= 18) {
+                badge.textContent = t.grades[1];
+            } else if (netScore >= 10) {
+                badge.textContent = t.grades[2];
+            } else {
+                badge.textContent = t.grades[3];
+            }
+        }
+
+        // Submit Quiz and Calculate NEET Score
+        function submitQuiz() {
+            isSubmitted = true;
+            updateResultPanelText();
+
+            document.getElementById('result-panel').classList.remove('hidden');
+            document.getElementById('submit-section').classList.add('hidden');
+
+            renderQuestions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Start App
+        loadChapter(0);
+    </script>
+</body>
+</html>
