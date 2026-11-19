@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>கணினி பயன்பாடுகள் - 16 பாடங்கள் ஒரு மதிப்பெண் கோட்டை போர்</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Noto Sans Tamil, Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+Tamil:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+            background: #060b19;
+            color: #f1f5f9;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .arena-strip {
+            background: 
+                linear-gradient(90deg, rgba(14, 165, 233, 0.09) 0%, rgba(15, 23, 42, 0.95) 50%, rgba(244, 63, 94, 0.09) 100%),
+                repeating-linear-gradient(90deg, rgba(56, 189, 248, 0.05) 0px, rgba(56, 189, 248, 0.05) 1px, transparent 1px, transparent 28px);
+        }
+        @keyframes arena-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        .shake-hit {
+            animation: arena-shake 0.35s ease-in-out;
+        }
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0) scale(0.95); }
+            100% { opacity: 0; transform: translateY(-32px) scale(1.15); }
+        }
+        .dmg-float {
+            animation: float-up 0.95s ease-out forwards;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.45); border-radius: 4px; }
+    </style>
+</head>
+<body class="lg:h-screen lg:overflow-hidden flex flex-col p-1.5 sm:p-2.5 gap-2 select-none">
+
+    <!-- 1. TOP HEADER BAR -->
+    <header class="w-full bg-slate-900/95 border border-slate-800 rounded-xl px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 shadow-lg">
+        <!-- Brand & Student Badge -->
+        <div class="flex items-center gap-2 min-w-0">
+            <span class="text-xl sm:text-2xl shrink-0">🏰</span>
+            <h1 id="ui-title" class="text-sm sm:text-lg font-extrabold bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent truncate">
+                12th கணினி பயன்பாடுகள் - கோட்டை போர்
+            </h1>
+            <button onclick="openStudentModal(true)" id="studentHeaderPill" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-cyan-950/90 hover:bg-cyan-900 border border-cyan-500/40 text-xs text-cyan-200 truncate max-w-[240px] transition cursor-pointer">
+                <span>👤</span>
+                <span id="headerStudentText" class="font-bold truncate">மாணவர்</span>
+            </button>
+        </div>
+
+        <!-- Chapter Selector & Bilingual Switcher -->
+        <div class="flex flex-wrap items-center gap-2">
+            <select id="chapterSelect" onchange="changeChapterFilter()" class="bg-slate-950 border border-indigo-500/50 text-cyan-200 text-xs sm:text-sm font-bold rounded-lg px-2.5 py-1.5 max-w-[230px] sm:max-w-[300px] focus:outline-none cursor-pointer">
+                <!-- Populated dynamically with All 16 Chapters -->
+            </select>
+
+            <div class="bg-slate-950 p-0.5 rounded-lg border border-cyan-500/40 flex text-xs sm:text-sm font-bold">
+                <button onclick="setUiLang('ta')" id="langBtn-ta" class="px-2.5 py-1 rounded-md bg-cyan-500 text-slate-950 transition cursor-pointer">தமிழ்</button>
+                <button onclick="setUiLang('en')" id="langBtn-en" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer">EN</button>
+            </div>
+        </div>
+
+        <!-- Score, Finish & Reset -->
+        <div class="flex items-center gap-2 text-xs sm:text-sm">
+            <div class="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                <span id="ui-scoreLabel" class="text-slate-400">மதிப்பெண்:</span>
+                <span id="scoreDisplay" class="font-extrabold text-amber-400">0</span>
+                <span class="text-slate-700">|</span>
+                <span id="comboDisplay" class="font-bold text-cyan-400">0x🔥</span>
+            </div>
+
+            <button onclick="openEndModal('summary')" id="ui-finishBtn" class="px-3 py-1.5 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-400/50 text-emerald-200 font-bold transition cursor-pointer">
+                📊 முடி & சரிபார்
+            </button>
+
+            <button onclick="toggleSound()" id="soundBtn" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition cursor-pointer">🔊</button>
+            <button onclick="resetGame()" id="ui-resetBtn" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950 border border-slate-700 text-slate-300 hover:text-rose-300 font-semibold transition cursor-pointer">
+                ↺
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. FULL-WIDTH BATTLE ARENA STRIP -->
+    <section id="battleStrip" class="w-full arena-strip border border-slate-800 rounded-xl px-4 sm:px-6 py-2 shrink-0 relative overflow-hidden">
+        <div class="grid grid-cols-12 items-center gap-3">
+            <!-- Player Hero -->
+            <div class="col-span-5 flex items-center gap-3 relative">
+                <svg class="w-11 h-8 sm:w-14 sm:h-10 shrink-0 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" viewBox="0 0 120 80" fill="none">
+                    <rect x="15" y="54" width="75" height="18" rx="9" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+                    <path d="M22 54 L30 36 H75 L84 54 Z" fill="#0284c7" stroke="#7dd3fc" stroke-width="2.5"/>
+                    <rect x="38" y="22" width="30" height="14" rx="5" fill="#0369a1" stroke="#bae6fd" stroke-width="2.5"/>
+                    <rect x="68" y="26" width="42" height="7" rx="3" fill="#38bdf8"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span id="ui-playerName" class="text-cyan-300 truncate">🛡️ சைபர் வீரன்</span>
+                        <span id="playerHpText" class="font-mono text-emerald-400">100/100</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                        <div id="playerHpBar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 transition-all duration-300" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div id="playerDmgAnchor" class="absolute right-0 -top-2 pointer-events-none"></div>
+            </div>
+
+            <!-- VS & Laser Lane -->
+            <div class="col-span-2 flex flex-col items-center justify-center relative h-10">
+                <span id="qProgressTag" class="text-[11px] font-extrabold text-amber-300 bg-slate-950/90 px-2 py-0.5 rounded border border-amber-500/30">1 / 240</span>
+                <div id="projectileLane" class="absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+            </div>
+
+            <!-- Fortress Boss -->
+            <div class="col-span-5 flex items-center justify-end gap-3 relative">
+                <div id="bossDmgAnchor" class="absolute left-0 -top-2 pointer-events-none"></div>
+                <div class="flex-1 min-w-0 text-right">
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span id="bossHpText" class="font-mono text-rose-400">100/100</span>
+                        <span id="ui-bossName" class="text-amber-300 truncate">🏰 பாடம் 1 கோட்டை</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                        <div id="bossHpBar" class="h-full bg-gradient-to-l from-rose-600 to-amber-500 transition-all duration-300 ml-auto" style="width: 100%"></div>
+                    </div>
+                </div>
+                <svg class="w-11 h-9 sm:w-14 sm:h-11 shrink-0 drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]" viewBox="0 0 120 95" fill="none">
+                    <path d="M22 86 L28 32 H92 L98 86 Z" fill="#1e1b4b" stroke="#f43f5e" stroke-width="3"/>
+                    <rect x="24" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <rect x="44" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <rect x="64" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <rect x="84" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <circle cx="60" cy="54" r="10" fill="#090d16" stroke="#fbbf24" stroke-width="2.5"/>
+                    <circle cx="60" cy="54" r="4" fill="#f43f5e"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. FULL-SCREEN QUESTION & 4-OPTION ARENA -->
+    <main class="w-full flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+        
+        <!-- LEFT PANEL: Book-Back Question & Hint (5 cols) -->
+        <div class="lg:col-span-5 bg-slate-900/95 border border-slate-800 rounded-xl p-4 sm:p-5 flex flex-col justify-between min-h-0 shadow-lg">
+            <div>
+                <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-800">
+                    <span id="chapterBadge" class="px-3 py-1 rounded-lg text-xs sm:text-sm font-extrabold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
+                        பாடம் 1: பல்லூடகம்
+                    </span>
+                    <button onclick="skipQuestion()" id="ui-skipBtn" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs sm:text-sm font-semibold text-slate-300 transition cursor-pointer">
+                        ⏭️ மாற்று
+                    </button>
+                </div>
+
+                <div class="mt-4 bg-slate-950/90 border border-slate-800 rounded-xl p-4 sm:p-5">
+                    <div class="text-xs font-bold text-amber-400 mb-2" id="ui-bookBackTag">📘 புத்தகப் பின்பகுதி & பொதுத்தேர்வு வினா (1 மதிப்பெண் | -20 HP)</div>
+                    <h2 id="questionText" class="text-base sm:text-xl lg:text-2xl font-extrabold text-white leading-relaxed">
+                        வினா ஏற்றப்படுகிறது...
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Hint / Explanation Toggle -->
+            <div class="mt-3">
+                <button onclick="toggleHint()" class="w-full py-2.5 px-4 rounded-xl bg-indigo-950/70 hover:bg-indigo-900/70 border border-indigo-500/40 text-indigo-300 text-xs sm:text-sm font-bold flex items-center justify-between transition cursor-pointer">
+                    <span>💡 <span id="ui-hintBtnText">விளக்கம் / குறிப்பு காட்டு (Concept Hint)</span></span>
+                    <span>▼</span>
+                </button>
+                <div id="hintBox" class="hidden mt-2 bg-indigo-950/40 border border-indigo-500/30 rounded-xl p-3 text-xs sm:text-sm text-indigo-100 leading-relaxed">
+                    <p id="hintText"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: 4 MCQ Options & Instant Combat Feedback (7 cols) -->
+        <div class="lg:col-span-7 bg-slate-900/95 border border-slate-800 rounded-xl p-4 sm:p-5 flex flex-col justify-between min-h-0 shadow-lg">
+            <div class="flex items-center justify-between pb-2.5 border-b border-slate-800 shrink-0">
+                <h3 id="ui-chooseTitle" class="text-sm sm:text-base font-extrabold text-cyan-300">⚡ சரியான விடையைத் தேர்ந்தெடுத்து கோட்டையைத் தாக்கு:</h3>
+                <span class="text-xs font-bold text-emerald-300 bg-emerald-500/15 px-2.5 py-0.5 rounded">+1 Mark | -20 HP</span>
+            </div>
+
+            <!-- 4 Options Grid -->
+            <div id="optionsList" class="my-auto py-3 grid grid-cols-1 gap-3 overflow-y-auto">
+                <!-- Options injected dynamically -->
+            </div>
+
+            <!-- Inline Feedback Bar -->
+            <div id="inlineFeedback" class="hidden mt-2 rounded-xl p-3.5 border flex items-center justify-between gap-3 shrink-0">
+                <div class="min-w-0">
+                    <div id="feedbackTitle" class="text-sm sm:text-base font-extrabold"></div>
+                    <p id="feedbackDetail" class="text-xs sm:text-sm text-slate-200 mt-0.5 leading-snug"></p>
+                </div>
+                <button onclick="loadNextQuestion()" id="ui-nextBtn" class="px-5 py-2.5 rounded-xl bg-white text-slate-950 hover:bg-slate-200 font-extrabold text-xs sm:text-sm shrink-0 shadow transition cursor-pointer">
+                    அடுத்த வினா ➡️
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- STUDENT REGISTRATION MODAL -->
+    <div id="studentModal" class="fixed inset-0 z-50 bg-slate-950/92 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-cyan-500/60 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🎓</span>
+                    <div>
+                        <h2 id="ui-loginTitle" class="text-base sm:text-lg font-extrabold text-cyan-300">மாணவர் விவரம் பதிவு</h2>
+                        <p id="ui-loginSub" class="text-xs text-slate-400">12-ஆம் வகுப்பு கணினி பயன்பாடுகள் (16 பாடங்கள்)</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950 p-0.5 rounded-lg border border-cyan-500/40 flex text-xs font-bold">
+                    <button type="button" onclick="setUiLang('ta')" id="modalLangBtn-ta" class="px-2.5 py-1 rounded-md bg-cyan-500 text-slate-950 cursor-pointer">தமிழ்</button>
+                    <button type="button" onclick="setUiLang('en')" id="modalLangBtn-en" class="px-2.5 py-1 rounded-md text-slate-400 cursor-pointer">EN</button>
+                </div>
+            </div>
+
+            <form onsubmit="submitStudentForm(event)" class="space-y-4">
+                <div>
+                    <label id="ui-nameLabel" for="studentNameInput" class="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5">
+                        மாணவர் பெயர் (Student Name) *
+                    </label>
+                    <input type="text" id="studentNameInput" required placeholder="உங்கள் பெயரை உள்ளிடவும்..." class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none">
+                </div>
+
+                <div>
+                    <label id="ui-emisLabel" for="studentEmisInput" class="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5">
+                        EMIS எண் (EMIS Number) *
+                    </label>
+                    <input type="text" id="studentEmisInput" required inputmode="numeric" placeholder="எ.கா: 1029384756" class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none">
+                </div>
+
+                <div id="loginErrorMsg" class="hidden text-xs text-rose-400 font-semibold bg-rose-950/60 border border-rose-500/40 rounded-lg p-2.5"></div>
+
+                <button type="submit" id="ui-startBattleBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-lg transition cursor-pointer">
+                    ⚔️ போரைத் தொடங்கு
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FULL-SCREEN SCORECARD & ANSWER REVIEW MODAL -->
+    <div id="endModal" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col p-2 sm:p-4">
+        <div class="bg-slate-900 border-2 border-cyan-400/80 rounded-2xl p-4 sm:p-6 w-full h-full flex flex-col shadow-2xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div id="modalEmoji" class="text-3xl sm:text-4xl">🏰💥</div>
+                    <div>
+                        <h2 id="modalTitle" class="text-lg sm:text-2xl font-extrabold text-amber-300">வாழ்த்துகள்!</h2>
+                        <p id="modalSubtitle" class="text-xs sm:text-sm text-slate-300 mt-0.5"></p>
+                    </div>
+                </div>
+                <div class="inline-flex items-center gap-2 self-start md:self-center px-3.5 py-1.5 rounded-xl bg-cyan-950 border border-cyan-500/50 text-xs sm:text-sm text-cyan-200 font-mono font-bold">
+                    <span id="modalStudentBadge">👤 மாணவர் | EMIS: -</span>
+                </div>
+            </div>
+
+            <!-- 5 Summary Stat Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 my-3 shrink-0 text-center">
+                <div class="bg-amber-950/50 border border-amber-500/40 rounded-xl p-2.5">
+                    <div id="stat-marksLabel" class="text-xs text-amber-300 font-bold">பெற்ற மதிப்பெண்</div>
+                    <div id="stat-marksVal" class="text-lg sm:text-2xl font-extrabold text-amber-400">0 / 0</div>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5">
+                    <div id="stat-answeredLabel" class="text-xs text-slate-400 font-bold">பதிலளித்தவை</div>
+                    <div id="stat-answeredVal" class="text-lg sm:text-2xl font-extrabold text-white">0</div>
+                </div>
+                <div class="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-2.5">
+                    <div id="stat-correctLabel" class="text-xs text-emerald-300 font-bold">சரியானவை</div>
+                    <div id="stat-correctVal" class="text-lg sm:text-2xl font-extrabold text-emerald-400">0</div>
+                </div>
+                <div class="bg-rose-950/40 border border-rose-500/40 rounded-xl p-2.5">
+                    <div id="stat-wrongLabel" class="text-xs text-rose-300 font-bold">தவறானவை</div>
+                    <div id="stat-wrongVal" class="text-lg sm:text-2xl font-extrabold text-rose-400">0</div>
+                </div>
+                <div class="col-span-2 sm:col-span-1 bg-cyan-950/40 border border-cyan-500/40 rounded-xl p-2.5">
+                    <div id="stat-accLabel" class="text-xs text-cyan-300 font-bold">துல்லியம்</div>
+                    <div id="stat-accVal" class="text-lg sm:text-2xl font-extrabold text-cyan-300">0%</div>
+                </div>
+            </div>
+
+            <!-- Review Filter Tabs -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5 shrink-0">
+                <h3 id="ui-reviewHeading" class="text-sm sm:text-base font-extrabold text-slate-200">📋 விடைகள் சரிபார்ப்பு (Answer Review)</h3>
+                <div class="flex gap-2 text-xs sm:text-sm font-bold">
+                    <button onclick="setReviewFilter('all')" id="revFilter-all" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white cursor-pointer">அனைத்தும்</button>
+                    <button onclick="setReviewFilter('correct')" id="revFilter-correct" class="px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-300 cursor-pointer">✅ சரி</button>
+                    <button onclick="setReviewFilter('wrong')" id="revFilter-wrong" class="px-3 py-1.5 rounded-lg bg-slate-800 text-rose-300 cursor-pointer">❌ தவறு</button>
+                </div>
+            </div>
+
+            <!-- 2-Column Scrollable Answer Review Grid -->
+            <div id="reviewHistoryList" class="flex-1 min-h-0 overflow-y-auto grid grid-cols-1 lg:grid-cols-2 gap-3 pr-1 mb-3 content-start"></div>
+
+            <!-- Bottom Buttons -->
+            <div class="flex flex-wrap items-center justify-end gap-3 pt-2.5 border-t border-slate-800 shrink-0">
+                <button onclick="switchToNewStudent()" id="ui-newStudentBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition cursor-pointer">
+                    👤 புதிய மாணவர்
+                </button>
+                <button id="modalActionBtn" onclick="handleModalAction()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm shadow-lg transition cursor-pointer">
+                    மீண்டும் விளையாடு 🔄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. All 16 Chapters Metadata (12th Computer Applications)
+        // ============================================================
+        const chaptersList = [
+            { num: 1, ta: "பாடம் 1: பல்லூடகம் (Multimedia)", en: "Ch 1: Multimedia" },
+            { num: 2, ta: "பாடம் 2: Adobe PageMaker அறிமுகம்", en: "Ch 2: Adobe PageMaker" },
+            { num: 3, ta: "பாடம் 3: தரவுத்தள மேலாண்மை அமைப்பு", en: "Ch 3: Database Management System" },
+            { num: 4, ta: "பாடம் 4: PHP அறிமுகம்", en: "Ch 4: Introduction to PHP" },
+            { num: 5, ta: "பாடம் 5: PHP செயற்கூறுகள் மற்றும் அணிகள்", en: "Ch 5: PHP Functions & Arrays" },
+            { num: 6, ta: "பாடம் 6: PHP நிபந்தனைக் கூற்றுகள்", en: "Ch 6: PHP Conditional Statements" },
+            { num: 7, ta: "பாடம் 7: மடக்கு அமைப்புகள் (Loops)", en: "Ch 7: PHP Looping Structures" },
+            { num: 8, ta: "பாடம் 8: படிவங்கள் மற்றும் கோப்புகள்", en: "Ch 8: Forms & Files in PHP" },
+            { num: 9, ta: "பாடம் 9: PHP உடன் MySQL இணைத்தல்", en: "Ch 9: Connecting PHP & MySQL" },
+            { num: 10, ta: "பாடம் 10: கணிப்பொறி வலையமைப்பு அறிமுகம்", en: "Ch 10: Intro to Computer Networks" },
+            { num: 11, ta: "பாடம் 11: வலையமைப்பு எடுத்துக்காட்டுகள் & நெறிமுறைகள்", en: "Ch 11: Network Examples & Protocols" },
+            { num: 12, ta: "பாடம் 12: களப்பெயர் அமைப்பு (DNS)", en: "Ch 12: Domain Name System (DNS)" },
+            { num: 13, ta: "பாடம் 13: வலைவடமிடல் கூறுகள் (Network Cabling)", en: "Ch 13: Network Cabling" },
+            { num: 14, ta: "பாடம் 14: திறந்த மூல கருவிகள் (Open Source)", en: "Ch 14: Open Source Concepts" },
+            { num: 15, ta: "பாடம் 15: மின்-வணிகம் (E-Commerce)", en: "Ch 15: E-Commerce" },
+            { num: 16, ta: "பாடம் 16: மின்னணு செலுத்தல் முறைகள்", en: "Ch 16: Electronic Payment Systems" }
+        ];
+
+        // ============================================================
+        // 2. Book-Back & Public Exam Interior 1-Mark Questions (15 per Ch = 240 Qns)
+        // ============================================================
+        const questionBank = [
+            // --- CHAPTER 1 (15 Qns) ---
+            { id: 101, ch: 1, q: { ta: "______ என்பது பயனரைப் பல்வேறு ஊடகக் கூறுகளை ஒருங்கிணைத்துத் தொடர்பு கொள்ள அனுமதிக்கிறது.", en: "______ allows the user to combine and interact with multiple media elements." }, opts: [{ ta: "பல்லூடகம் (Multimedia)", en: "Multimedia" }, { ta: "தொகுப்பி (Compiler)", en: "Compiler" }, { ta: "இயக்க அமைப்பு (OS)", en: "Operating System" }, { ta: "விரிதாள் (Spreadsheet)", en: "Spreadsheet" }], ans: 0, exp: { ta: "உரை, படம், ஒலி, ஒளிக்காட்சி மற்றும் அசைவூட்டம் ஆகியவற்றின் தொகுப்பே பல்லூடகம்.", en: "Multimedia combines text, graphics, audio, video, and animation." } },
+            { id: 102, ch: 1, q: { ta: "RTF கோப்பு வடிவத்தை அறிமுகப்படுத்திய நிறுவனம் எது?", en: "Which company introduced the RTF (Rich Text Format) file format?" }, opts: [{ ta: "மைக்ரோசாப்ட் (Microsoft)", en: "Microsoft" }, { ta: "அடோப் (Adobe)", en: "Adobe" }, { ta: "ஆப்பிள் (Apple)", en: "Apple" }, { ta: "கூகுள் (Google)", en: "Google" }], ans: 0, exp: { ta: "1987-இல் மைக்ரோசாப்ட் நிறுவனம் RTF வடிவத்தை அறிமுகப்படுத்தியது.", en: "Microsoft introduced RTF in 1987." } },
+            { id: 103, ch: 1, q: { ta: "JPEG என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of JPEG?" }, opts: [{ ta: "Joint Photographic Experts Group", en: "Joint Photographic Experts Group" }, { ta: "Joint Picture Electronic Group", en: "Joint Picture Electronic Group" }, { ta: "Java Photographic Experts Group", en: "Java Photographic Experts Group" }, { ta: "Joint Photo Editing Group", en: "Joint Photo Editing Group" }], ans: 0, exp: { ta: "JPEG என்பது Joint Photographic Experts Group என்பதன் சுருக்கமாகும்.", en: "JPEG stands for Joint Photographic Experts Group." } },
+            { id: 104, ch: 1, q: { ta: "MIDI என்பது ______ வகையைச் சார்ந்த கோப்பு வடிவமாகும்.", en: "MIDI is a file format belonging to the ______ category." }, opts: [{ ta: "ஒலி (Audio)", en: "Audio" }, { ta: "ஒளிக்காட்சி (Video)", en: "Video" }, { ta: "படம் (Image)", en: "Image" }, { ta: "உரை (Text)", en: "Text" }], ans: 0, exp: { ta: "MIDI (Musical Instrument Digital Interface) ஒரு டிஜிட்டல் ஒலி வடிவமாகும்.", en: "MIDI is a standard digital audio format." } },
+            { id: 105, ch: 1, q: { ta: "படங்களை வினாடிக்கு 16 முதல் 24 சட்டங்கள் வேகத்தில் திரையிடும் 2D அசைவூட்ட வகை எது?", en: "Which animation displays still images rapidly at 16 to 24 frames per second?" }, opts: [{ ta: "சட்ட அசைவூட்டம் (Frame Animation)", en: "Frame Animation" }, { ta: "பாதை அசைவூட்டம் (Path Animation)", en: "Path Animation" }, { ta: "ஒலி அசைவூட்டம்", en: "Audio Animation" }, { ta: "உரை அசைவூட்டம்", en: "Text Animation" }], ans: 0, exp: { ta: "சட்ட அசைவூட்டத்தில் காட்சிகள் விரைவாக ஒன்றன்பின் ஒன்றாகத் திரையிடப்படுகின்றன.", en: "Frame animation displays still frames rapidly." } },
+            { id: 106, ch: 1, q: { ta: "கணிப்பொறித் திரையில் ஒரு எழுத்தின் தோற்றத்தை வடிவமைக்கும் தொகுப்பு எது?", en: "What is a set of characters with a specific design and size called?" }, opts: [{ ta: "எழுத்துரு (Font)", en: "Font" }, { ta: "சட்டம் (Frame)", en: "Frame" }, { ta: "பிக்சல் (Pixel)", en: "Pixel" }, { ta: "அடுக்கு (Layer)", en: "Layer" }], ans: 0, exp: { ta: "குறிப்பிட்ட வடிவம் மற்றும் அளவு கொண்ட எழுத்துக்களின் தொகுப்பு எழுத்துரு (Font) ஆகும்.", en: "A Font is a collection of characters of a specific typeface and size." } },
+            { id: 107, ch: 1, q: { ta: "தொடர்ச்சியான கோடுகள் மற்றும் வளைவுகளைக் கொண்டு உருவாக்கப்படும் பட வகை எது?", en: "Which image type is created using mathematical lines and curves?" }, opts: [{ ta: "வெக்டர் படங்கள் (Vector Images)", en: "Vector Images" }, { ta: "ராஸ்டர் படங்கள் (Raster Images)", en: "Raster Images" }, { ta: "பிட்மேப் படங்கள் (Bitmap)", en: "Bitmap Images" }, { ta: "GIF படங்கள்", en: "GIF Images" }], ans: 0, exp: { ta: "வெக்டர் படங்களை எவ்வளவு பெரிதாக்கினாலும் தரம் குறையாது.", en: "Vector images use mathematical formulas and retain quality when scaled." } },
+            { id: 108, ch: 1, q: { ta: "MPEG என்பதன் விரிவாக்கம் என்ன? (பொதுத்தேர்வு வினா)", en: "What does MPEG stand for? (Public Exam)" }, opts: [{ ta: "Moving Picture Experts Group", en: "Moving Picture Experts Group" }, { ta: "Multimedia Picture Experts Group", en: "Multimedia Picture Experts Group" }, { ta: "Motion Photo Electronic Group", en: "Motion Photo Electronic Group" }, { ta: "Moving Pixel Experts Group", en: "Moving Pixel Experts Group" }], ans: 0, exp: { ta: "MPEG என்பது டிஜிட்டல் ஒளிக்காட்சி (Video) மற்றும் ஒலி சுருக்கத் தரநிலையாகும்.", en: "MPEG stands for Moving Picture Experts Group." } },
+            { id: 109, ch: 1, q: { ta: "முப்பரிமாண (3D) அசைவூட்டத்தில் பொருள்கள் எத்தனை அச்சுகளில் நகரும்?", en: "Along how many axes do objects move in 3D animation?" }, opts: [{ ta: "3 அச்சுகள் (X, Y, Z)", en: "3 Axes (X, Y, Z)" }, { ta: "2 அச்சுகள் (X, Y)", en: "2 Axes (X, Y)" }, { ta: "1 அச்சு மட்டும்", en: "1 Axis only" }, { ta: "4 அச்சுகள்", en: "4 Axes" }], ans: 0, exp: { ta: "3D அசைவூட்டத்தில் X, Y மற்றும் Z ஆகிய மூன்று அச்சுகளில் பொருள்கள் நகரும்.", en: "3D animation operates across X, Y, and Z axes." } },
+            { id: 110, ch: 1, q: { ta: "கீழ்க்கண்டவற்றுள் எது ஒளிக்காட்சி (Video) கோப்பு வடிவம் அல்ல?", en: "Which of the following is NOT a video file format?" }, opts: [{ ta: ".wav", en: ".wav" }, { ta: ".avi", en: ".avi" }, { ta: ".mp4", en: ".mp4" }, { ta: ".mov", en: ".mov" }], ans: 0, exp: { ta: ".wav (Waveform Audio File) என்பது ஒலி கோப்பு வடிவமாகும்.", en: ".wav is an uncompressed audio file format, not video." } },
+            { id: 111, ch: 1, q: { ta: "பல்லூடகத்தின் மிக முக்கியமான மற்றும் அடிப்படைக் கூறு எது?", en: "Which is the most basic and essential component of Multimedia?" }, opts: [{ ta: "உரை (Text)", en: "Text" }, { ta: "ஒலி (Audio)", en: "Audio" }, { ta: "ஒளிக்காட்சி (Video)", en: "Video" }, { ta: "அசைவூட்டம் (Animation)", en: "Animation" }], ans: 0, exp: { ta: "தகவல்களைத் தெளிவாகத் தெரிவிக்க உரை (Text) அடிப்படைக் கூறாக உள்ளது.", en: "Text is the most fundamental element of multimedia." } },
+            { id: 112, ch: 1, q: { ta: "TIFF என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of TIFF?" }, opts: [{ ta: "Tagged Image File Format", en: "Tagged Image File Format" }, { ta: "Text Image File Format", en: "Text Image File Format" }, { ta: "True Image File Format", en: "True Image File Format" }, { ta: "Technical Image Form", en: "Technical Image Form" }], ans: 0, exp: { ta: "TIFF என்பது உயர்தர அச்சுப் படங்களுக்குப் பயன்படும் வடிவமாகும்.", en: "TIFF stands for Tagged Image File Format." } },
+            { id: 113, ch: 1, q: { ta: "GIF பட வடிவம் அதிகபட்சமாக எத்தனை வண்ணங்களை ஆதரிக்கும்? (உள் வினா)", en: "How many maximum colors does a GIF image support? (Interior)" }, opts: [{ ta: "256 வண்ணங்கள் (8-bit)", en: "256 colors (8-bit)" }, { ta: "16 மில்லியன் வண்ணங்கள்", en: "16 million colors" }, { ta: "2 வண்ணங்கள் மட்டும்", en: "2 colors only" }, { ta: "1024 வண்ணங்கள்", en: "1024 colors" }], ans: 0, exp: { ta: "GIF வடிவம் 8-பிட் வண்ண அட்டவணை மூலம் 256 வண்ணங்களை ஆதரிக்கும்.", en: "GIF supports an 8-bit palette of up to 256 colors." } },
+            { id: 114, ch: 1, q: { ta: "பல்லூடக உருவாக்கக் குழுவில் திட்டத்தை வடிவமைத்து ஒருங்கிணைப்பவர் யார்?", en: "Who designs and coordinates the overall structure of a multimedia project?" }, opts: [{ ta: "பல்லூடக வடிவமைப்பாளர் (Multimedia Designer)", en: "Multimedia Designer" }, { ta: "உரை எழுத்தாளர்", en: "Text Writer" }, { ta: "வலையமைப்பு பொறியாளர்", en: "Network Engineer" }, { ta: "தரவுத்தள நிர்வாகி", en: "Database Admin" }], ans: 0, exp: { ta: "பல்லூடக வடிவமைப்பாளர் அனைத்து ஊடகக் கூறுகளையும் ஒருங்கிணைப்பார்.", en: "The Multimedia Designer integrates graphics, text, audio, and video." } },
+            { id: 115, ch: 1, q: { ta: "Windows இயக்க அமைப்பில் அதிகம் பயன்படும் ஒளிக்காட்சி கோப்பு வடிவம் எது?", en: "Which video file format was developed by Microsoft for Windows?" }, opts: [{ ta: "AVI (Audio Video Interleave)", en: "AVI (Audio Video Interleave)" }, { ta: "MOV", en: "MOV" }, { ta: "FLV", en: "FLV" }, { ta: "SWF", en: "SWF" }], ans: 0, exp: { ta: "1992-இல் மைக்ரோசாப்ட் நிறுவனத்தால் AVI வடிவம் அறிமுகப்படுத்தப்பட்டது.", en: "AVI (Audio Video Interleave) was introduced by Microsoft." } },
+
+            // --- CHAPTER 2 (15 Qns) ---
+            { id: 201, ch: 2, q: { ta: "DTP என்பதன் விரிவாக்கம் என்ன?", en: "What does DTP stand for?" }, opts: [{ ta: "Desktop Publishing", en: "Desktop Publishing" }, { ta: "Data Type Processing", en: "Data Type Processing" }, { ta: "Desktop Printing", en: "Desktop Printing" }, { ta: "Digital Text Publishing", en: "Digital Text Publishing" }], ans: 0, exp: { ta: "DTP என்பது Desktop Publishing ஆகும்.", en: "DTP stands for Desktop Publishing." } },
+            { id: 202, ch: 2, q: { ta: "Adobe PageMaker ஆவணங்களின் கொடாநிலை (Default) கோப்பு நீட்டிப்பு என்ன?", en: "What is the default file extension of an Adobe PageMaker document?" }, opts: [{ ta: ".pmd", en: ".pmd" }, { ta: ".doc", en: ".doc" }, { ta: ".pdf", en: ".pdf" }, { ta: ".psd", en: ".psd" }], ans: 0, exp: { ta: "PageMaker கோப்புகள் .pmd என்ற நீட்டிப்புடன் சேமிக்கப்படும்.", en: "PageMaker files are saved with the .pmd extension." } },
+            { id: 203, ch: 2, q: { ta: "PageMaker-இல் ஆவணத்தை மூடுவதற்கான குறுக்குவழி விசை எது?", en: "Which shortcut key closes a document in PageMaker?" }, opts: [{ ta: "Ctrl + W", en: "Ctrl + W" }, { ta: "Ctrl + N", en: "Ctrl + N" }, { ta: "Ctrl + S", en: "Ctrl + S" }, { ta: "Ctrl + P", en: "Ctrl + P" }], ans: 0, exp: { ta: "Ctrl + W நடப்பு ஆவணத்தை மூடும்.", en: "Ctrl + W closes the active document." } },
+            { id: 204, ch: 2, q: { ta: "PageMaker-இல் உரையைத் தேர்ந்தெடுக்கவும், தட்டச்சு செய்யவும் பயன்படும் கருவி எது?", en: "Which tool is used to select, type, and edit text in PageMaker?" }, opts: [{ ta: "Text Tool (T)", en: "Text Tool (T)" }, { ta: "Pointer Tool", en: "Pointer Tool" }, { ta: "Crop Tool", en: "Crop Tool" }, { ta: "Hand Tool", en: "Hand Tool" }], ans: 0, exp: { ta: "Text Tool (T) உரையை உள்ளிடவும் திருத்தவும் பயன்படுகிறது.", en: "The Text Tool (T) is used for typing and editing text." } },
+            { id: 205, ch: 2, q: { ta: "அனைத்துப் பக்கங்களிலும் தானாகவே தோன்றும் பக்க எண், தலைப்புகளை அமைக்கப் பயன்படுவது எது?", en: "Which feature places recurring headers, footers, and page numbers on all pages?" }, opts: [{ ta: "Master Pages", en: "Master Pages" }, { ta: "Pasteboard", en: "Pasteboard" }, { ta: "Control Palette", en: "Control Palette" }, { ta: "Story Editor", en: "Story Editor" }], ans: 0, exp: { ta: "Master Pages-இல் இடப்படும் பொருள்கள் அனைத்துப் பக்கங்களிலும் தோன்றும்.", en: "Items on Master Pages appear on every page." } },
+            { id: 206, ch: 2, q: { ta: "பக்கத்திற்கு வெளியே பொருள்கள் தற்காலிகமாக வைக்கப்படும் வெற்றுப் பகுதி எது?", en: "What is the blank area surrounding the page where objects can be temporarily placed?" }, opts: [{ ta: "ஒட்டுப்பலகை (Pasteboard)", en: "Pasteboard" }, { ta: "அளவுகோல் (Ruler)", en: "Ruler" }, { ta: "கருவிப்பெட்டி (Toolbox)", en: "Toolbox" }, { ta: "பட்டிப்பட்டை (Menu Bar)", en: "Menu Bar" }], ans: 0, exp: { ta: "Pasteboard என்பது பக்கத்தைச் சுற்றியுள்ள தற்காலிகப் பணியிடமாகும்.", en: "The Pasteboard is the workspace surrounding the publication page." } },
+            { id: 207, ch: 2, q: { ta: "படங்களின் தேவையற்ற பகுதிகளை வெட்டி நீக்கப் பயன்படும் கருவி எது?", en: "Which tool is used to trim or crop imported graphics in PageMaker?" }, opts: [{ ta: "Crop Tool", en: "Crop Tool" }, { ta: "Line Tool", en: "Line Tool" }, { ta: "Polygon Tool", en: "Polygon Tool" }, { ta: "Zoom Tool", en: "Zoom Tool" }], ans: 0, exp: { ta: "Crop Tool இறக்குமதி செய்யப்பட்ட படங்களின் அளவைக் குறைக்கப் பயன்படுகிறது.", en: "The Crop Tool trims unwanted edges of imported graphics." } },
+            { id: 208, ch: 2, q: { ta: "PageMaker-இல் புதிய ஆவணத்தைத் தொடங்கப் பயன்படும் குறுக்குவழி விசை எது?", en: "Which shortcut key creates a new document in PageMaker?" }, opts: [{ ta: "Ctrl + N", en: "Ctrl + N" }, { ta: "Ctrl + O", en: "Ctrl + O" }, { ta: "Ctrl + D", en: "Ctrl + D" }, { ta: "Ctrl + E", en: "Ctrl + E" }], ans: 0, exp: { ta: "Ctrl + N புதிய ஆவண உரையாடல் பெட்டியைத் திறக்கும்.", en: "Ctrl + N opens the Document Setup dialog for a new file." } },
+            { id: 209, ch: 2, q: { ta: "படங்கள் மற்றும் உரைக் கோப்புகளை ஆவணத்தில் இறக்குமதி செய்யப் (Place) பயன்படும் குறுக்குவழி எது?", en: "Which shortcut key places/imports an image or file into PageMaker? (Public Exam)" }, opts: [{ ta: "Ctrl + D", en: "Ctrl + D" }, { ta: "Ctrl + I", en: "Ctrl + I" }, { ta: "Ctrl + M", en: "Ctrl + M" }, { ta: "Ctrl + K", en: "Ctrl + K" }], ans: 0, exp: { ta: "File -> Place (Ctrl + D) மூலம் படங்களை ஆவணத்தில் சேர்க்கலாம்.", en: "Ctrl + D executes the Place command to import graphics/text." } },
+            { id: 210, ch: 2, q: { ta: "உரைத் தொகுதிகளை (Text Blocks) இணைக்கவும் நகர்த்தவும் பயன்படும் கருவி எது?", en: "Which tool selects, moves, and resizes text blocks and graphics?" }, opts: [{ ta: "Pointer Tool", en: "Pointer Tool" }, { ta: "Text Tool", en: "Text Tool" }, { ta: "Rotate Tool", en: "Rotate Tool" }, { ta: "Ellipse Tool", en: "Ellipse Tool" }], ans: 0, exp: { ta: "Pointer Tool பொருள்களைத் தேர்ந்தெடுக்கவும் நகர்த்தவும் பயன்படுகிறது.", en: "The Pointer Tool selects, moves, and resizes objects." } },
+            { id: 211, ch: 2, q: { ta: "பக்கத்தைத் திரையில் நகர்த்திப் பார்க்கப் பயன்படும் கருவி எது?", en: "Which tool scrolls or pans the page view in PageMaker?" }, opts: [{ ta: "Hand Tool", en: "Hand Tool" }, { ta: "Zoom Tool", en: "Zoom Tool" }, { ta: "Crop Tool", en: "Crop Tool" }, { ta: "Box Tool", en: "Box Tool" }], ans: 0, exp: { ta: "Hand Tool பக்கத்தைத் திரையில் இழுத்துப் பார்க்கப் பயன்படுகிறது.", en: "The Hand Tool pans around the page." } },
+            { id: 212, ch: 2, q: { ta: "பலபக்க ஆவணத்தில் உரையைத் தானாகவே அடுத்தடுத்த பக்கங்களில் பாயச் செய்யும் வசதி எது?", en: "Which feature flows text automatically across multiple pages? (Interior)" }, opts: [{ ta: "Autoflow", en: "Autoflow" }, { ta: "Story Editor", en: "Story Editor" }, { ta: "Master Page", en: "Master Page" }, { ta: "Control Palette", en: "Control Palette" }], ans: 0, exp: { ta: "Layout -> Autoflow தேர்வு செய்தால் உரை தானாகவே அடுத்தடுத்த பக்கங்களில் நிரம்பும்.", en: "Autoflow automatically pours text from page to page." } },
+            { id: 213, ch: 2, q: { ta: "உரையைச் சுற்றி ஒரு வடிவம் (Frame) வரைந்து அதற்குள் உரையை உள்ளிடப் பயன்படுவது எது?", en: "Which tools draw shapes that act as containers for text?" }, opts: [{ ta: "Frame Tools (Rectangle/Ellipse/Polygon Frame)", en: "Frame Tools" }, { ta: "Line Tools", en: "Line Tools" }, { ta: "Hand Tool", en: "Hand Tool" }, { ta: "Crop Tool", en: "Crop Tool" }], ans: 0, exp: { ta: "Frame கருவிகள் உரை மற்றும் படங்களை உள்ளடக்கும் சட்டங்களாகச் செயல்படுகின்றன.", en: "Frame tools create placeholders for text or graphics." } },
+            { id: 214, ch: 2, q: { ta: "கீழ்க்கண்டவற்றுள் எது திறந்த மூல (Open Source) DTP மென்பொருள் ஆகும்?", en: "Which of the following is an Open Source DTP software?" }, opts: [{ ta: "Scribus", en: "Scribus" }, { ta: "Adobe PageMaker", en: "Adobe PageMaker" }, { ta: "QuarkXPress", en: "QuarkXPress" }, { ta: "Adobe InDesign", en: "Adobe InDesign" }], ans: 0, exp: { ta: "Scribus என்பது இலவச திறந்த மூல DTP மென்பொருளாகும்.", en: "Scribus is a popular open-source Desktop Publishing application." } },
+            { id: 215, ch: 2, q: { ta: "PageMaker-இல் கருவிப்பெட்டியை (Toolbox) மறைக்க அல்லது காட்டப் பயன்படும் பட்டி எது?", en: "Which menu contains the option to show or hide the Toolbox?" }, opts: [{ ta: "Window -> Show/Hide Tools", en: "Window -> Show/Hide Tools" }, { ta: "File -> Tools", en: "File -> Tools" }, { ta: "Edit -> Toolbox", en: "Edit -> Toolbox" }, { ta: "Type -> Tools", en: "Type -> Tools" }], ans: 0, exp: { ta: "Window பட்டியில் Show/Hide Tools விருப்பம் உள்ளது.", en: "Window menu controls visibility of Toolbox and Control Palette." } },
+
+            // --- CHAPTER 3 (15 Qns) ---
+            { id: 301, ch: 3, q: { ta: "ER மாதிரியை (Entity-Relationship Model) உருவாக்கியவர் யார்?", en: "Who developed the Entity-Relationship (ER) Model?" }, opts: [{ ta: "பீட்டர் சென் (Peter Chen - 1976)", en: "Peter Chen (1976)" }, { ta: "இ.எஃப். காட் (E.F. Codd)", en: "E.F. Codd" }, { ta: "சார்லஸ் பாபேஜ்", en: "Charles Babbage" }, { ta: "டென்னிஸ் ரிட்சி", en: "Dennis Ritchie" }], ans: 0, exp: { ta: "1976-இல் பீட்டர் சென் ER மாதிரியை அறிமுகப்படுத்தினார்.", en: "Peter Chen introduced the ER model in 1976." } },
+            { id: 302, ch: 3, q: { ta: "தரவுத்தள அட்டவணையில் உள்ள ஒரு வரிசை (Row) எவ்வாறு அழைக்கப்படுகிறது?", en: "A row in a database relation/table is known as a ______." }, opts: [{ ta: "டியூபிள் (Tuple)", en: "Tuple" }, { ta: "பண்புக்கூறு (Attribute)", en: "Attribute" }, { ta: "களம் (Domain)", en: "Domain" }, { ta: "படிநிலை (Degree)", en: "Degree" }], ans: 0, exp: { ta: "வரிசை Tuple என்றும், நெடுவரிசை Attribute என்றும் அழைக்கப்படும்.", en: "A row is a Tuple and a column is an Attribute." } },
+            { id: 303, ch: 3, q: { ta: "ஒரு அட்டவணையில் உள்ள பதிவுகளைத் தனித்துவமாக அடையாளம் காண உதவும் திறவுகோல் எது?", en: "Which key uniquely identifies each record in a database table?" }, opts: [{ ta: "முதன்மைத் திறவுகோல் (Primary Key)", en: "Primary Key" }, { ta: "அந்நியத் திறவுகோல் (Foreign Key)", en: "Foreign Key" }, { ta: "மாற்றுத் திறவுகோல்", en: "Alternate Key" }, { ta: "சூப்பர் திறவுகோல்", en: "Super Key" }], ans: 0, exp: { ta: "Primary Key தனித்துவமானது மற்றும் NULL மதிப்பை ஏற்காது.", en: "A Primary Key uniquely identifies every record and cannot be NULL." } },
+            { id: 304, ch: 3, q: { ta: "SQL என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of SQL?" }, opts: [{ ta: "Structured Query Language", en: "Structured Query Language" }, { ta: "Simple Query Language", en: "Simple Query Language" }, { ta: "Standard Question Language", en: "Standard Question Language" }, { ta: "System Query Logic", en: "System Query Logic" }], ans: 0, exp: { ta: "SQL என்பது Structured Query Language ஆகும்.", en: "SQL stands for Structured Query Language." } },
+            { id: 305, ch: 3, q: { ta: "ER வரைபடத்தில் செவ்வகம் (Rectangle) எதனைக் குறிக்கிறது?", en: "What does a Rectangle represent in an ER Diagram?" }, opts: [{ ta: "உருப்பொருள் (Entity)", en: "Entity" }, { ta: "பண்புக்கூறு (Attribute)", en: "Attribute" }, { ta: "உறவுநிலை (Relationship)", en: "Relationship" }, { ta: "முதன்மைத் திறவுகோல்", en: "Primary Key" }], ans: 0, exp: { ta: "செவ்வகம் - Entity, நீள்வட்டம் - Attribute, சாய்சதுரம் - Relationship.", en: "Rectangle represents Entity, Ellipse represents Attribute." } },
+            { id: 306, ch: 3, q: { ta: "உறவுநிலை தரவுத்தள மாதிரியை (Relational Model) அறிமுகப்படுத்தியவர் யார்?", en: "Who proposed the Relational Database Model?" }, opts: [{ ta: "இ.எஃப். காட் (E.F. Codd - 1970)", en: "E.F. Codd (1970)" }, { ta: "பீட்டர் சென்", en: "Peter Chen" }, { ta: "பில் கேட்ஸ்", en: "Bill Gates" }, { ta: "லாரி எலிசன்", en: "Larry Ellison" }], ans: 0, exp: { ta: "1970-இல் E.F. Codd உறவுநிலை மாதிரியை உருவாக்கினார்.", en: "E.F. Codd proposed the Relational Model in 1970." } },
+            { id: 307, ch: 3, q: { ta: "ER வரைபடத்தில் பண்புக்கூறுகளை (Attributes) குறிக்கப் பயன்படும் வடிவம் எது?", en: "Which symbol represents Attributes in an ER Diagram?" }, opts: [{ ta: "நீள்வட்டம் (Ellipse / Oval)", en: "Ellipse / Oval" }, { ta: "செவ்வகம் (Rectangle)", en: "Rectangle" }, { ta: "சாய்சதுரம் (Diamond)", en: "Diamond" }, { ta: "முக்கோணம் (Triangle)", en: "Triangle" }], ans: 0, exp: { ta: "நீள்வட்டம் (Ellipse) பண்புக்கூறுகளைக் குறிக்கும்.", en: "An Ellipse represents an Attribute in an ER diagram." } },
+            { id: 308, ch: 3, q: { ta: "தரவு மிகைமையைக் (Data Redundancy) குறைக்க அட்டவணைகளைப் பிரிக்கும் செயல்முறை எது?", en: "What is the process of organizing tables to reduce data redundancy called? (Public Exam)" }, opts: [{ ta: "இயல்பாக்கம் (Normalization)", en: "Normalization" }, { ta: "குறியாக்கம் (Encryption)", en: "Encryption" }, { ta: "அட்டவணைப்படுத்தல் (Indexing)", en: "Indexing" }, { ta: "காப்பு எடுத்தல் (Backup)", en: "Backup" }], ans: 0, exp: { ta: "இயல்பாக்கம் (Normalization) தரவு நகல்களைத் தவிர்த்துச் சீராக்கும்.", en: "Normalization minimizes redundancy and dependency in databases." } },
+            { id: 309, ch: 3, q: { ta: "மரவுரு தரவுத்தள மாதிரியில் (Hierarchical Model) தரவுகள் எவ்வாறு அமைக்கப்பட்டிருக்கும்?", en: "How is data organized in a Hierarchical Database Model?" }, opts: [{ ta: "பெற்றோர்-குழந்தை (Parent-Child) மர அமைப்பு", en: "Parent-Child Tree structure" }, { ta: "அட்டவணைகள் (Tables)", en: "Tables" }, { ta: "பொருள்கள் (Objects)", en: "Objects" }, { ta: "வலைப்பின்னல் (Graph)", en: "Graph" }], ans: 0, exp: { ta: "Hierarchical மாதிரியில் ஒரு பெற்றோருக்குப் பல குழந்தைகள் (1:N) இருக்கும்.", en: "Hierarchical model uses a tree-like Parent-Child structure." } },
+            { id: 310, ch: 3, q: { ta: "ஒரு அட்டவணையில் உள்ள நெடுவரிசைகளின் (Attributes) எண்ணிக்கை எவ்வாறு அழைக்கப்படுகிறது?", en: "The number of attributes (columns) in a relation is called its ______." }, opts: [{ ta: "படிநிலை (Degree)", en: "Degree" }, { ta: "எண்ணிக்கை (Cardinality)", en: "Cardinality" }, { ta: "களம் (Domain)", en: "Domain" }, { ta: "திறவுகோல் (Key)", en: "Key" }], ans: 0, exp: { ta: "நெடுவரிசைகளின் எண்ணிக்கை Degree என்றும், வரிசைகளின் எண்ணிக்கை Cardinality என்றும் அழைக்கப்படும்.", en: "Degree is the number of columns; Cardinality is the number of rows." } },
+            { id: 311, ch: 3, q: { ta: "ஒரு அட்டவணையில் உள்ள மொத்த வரிசைகளின் (Tuples) எண்ணிக்கை எவ்வாறு அழைக்கப்படுகிறது?", en: "The total number of rows (tuples) in a table is known as ______." }, opts: [{ ta: "கார்டினாலிட்டி (Cardinality)", en: "Cardinality" }, { ta: "டிகிரி (Degree)", en: "Degree" }, { ta: "ஸ்கீமா (Schema)", en: "Schema" }, { ta: "டொமைன் (Domain)", en: "Domain" }], ans: 0, exp: { ta: "வரிசைகளின் எண்ணிக்கை Cardinality எனப்படும்.", en: "Cardinality refers to the number of tuples in a relation." } },
+            { id: 312, ch: 3, q: { ta: "இரு அட்டவணைகளுக்கு இடையே தொடர்பை ஏற்படுத்தப் பயன்படும் திறவுகோல் எது?", en: "Which key links two tables together by referencing the Primary Key of another table?" }, opts: [{ ta: "அந்நியத் திறவுகோல் (Foreign Key)", en: "Foreign Key" }, { ta: "முதன்மைத் திறவுகோல் (Primary Key)", en: "Primary Key" }, { ta: "கூட்டுத் திறவுகோல்", en: "Composite Key" }, { ta: "வேட்புத் திறவுகோல்", en: "Candidate Key" }], ans: 0, exp: { ta: "Foreign Key மற்றொரு அட்டவணையின் Primary Key-ஐக் குறிக்கும்.", en: "A Foreign Key references the Primary Key of another table." } },
+            { id: 313, ch: 3, q: { ta: "ER வரைபடத்தில் பலமதிப்பு பண்புக்கூறை (Multivalued Attribute) குறிக்கப் பயன்படுவது எது? (உள் வினா)", en: "Which symbol denotes a Multivalued Attribute in an ER diagram? (Interior)" }, opts: [{ ta: "இரட்டை நீள்வட்டம் (Double Ellipse)", en: "Double Ellipse" }, { ta: "ஒற்றை நீள்வட்டம்", en: "Single Ellipse" }, { ta: "இரட்டை செவ்வகம்", en: "Double Rectangle" }, { ta: "புள்ளியிட்ட நீள்வட்டம்", en: "Dashed Ellipse" }], ans: 0, exp: { ta: "இரட்டை நீள்வட்டம் (எ.கா: தொலைபேசி எண்கள்) பலமதிப்பு பண்புக்கூறைக் குறிக்கும்.", en: "Double Ellipse represents a multivalued attribute like Phone Numbers." } },
+            { id: 314, ch: 3, q: { ta: "கீழ்க்கண்டவற்றுள் எது ஒரு RDBMS மென்பொருள் ஆகும்?", en: "Which of the following is a Relational Database Management System (RDBMS)?" }, opts: [{ ta: "MySQL", en: "MySQL" }, { ta: "Adobe PageMaker", en: "Adobe PageMaker" }, { ta: "Windows 10", en: "Windows 10" }, { ta: "Google Chrome", en: "Google Chrome" }], ans: 0, exp: { ta: "MySQL, Oracle, PostgreSQL ஆகியவை பிரபலமான RDBMS மென்பொருள்கள்.", en: "MySQL is an open-source RDBMS." } },
+            { id: 315, ch: 3, q: { ta: "தரவுத்தளத்தில் புதிய பதிவுகளைச் சேர்க்கப் பயன்படும் SQL கட்டளை எது?", en: "Which SQL command is used to insert new records into a table?" }, opts: [{ ta: "INSERT INTO", en: "INSERT INTO" }, { ta: "SELECT", en: "SELECT" }, { ta: "UPDATE", en: "UPDATE" }, { ta: "DELETE", en: "DELETE" }], ans: 0, exp: { ta: "INSERT INTO அட்டவணையில் புதிய வரிசைகளைச் சேர்க்கும்.", en: "INSERT INTO adds new rows to a database table." } },
+
+            // --- CHAPTER 4 (15 Qns) ---
+            { id: 401, ch: 4, q: { ta: "PHP என்பதன் விரிவாக்கம் என்ன?", en: "What does PHP stand for?" }, opts: [{ ta: "PHP: Hypertext Preprocessor", en: "PHP: Hypertext Preprocessor" }, { ta: "Personal Home Page", en: "Personal Home Page" }, { ta: "Private Hypertext Processor", en: "Private Hypertext Processor" }, { ta: "Pre Hypertext Page", en: "Pre Hypertext Page" }], ans: 0, exp: { ta: "PHP என்பது PHP: Hypertext Preprocessor ஆகும்.", en: "PHP stands for PHP: Hypertext Preprocessor." } },
+            { id: 402, ch: 4, q: { ta: "PHP-ஐ உருவாக்கியவர் யார்?", en: "Who created PHP?" }, opts: [{ ta: "ராஸ்மஸ் லெர்டார்ஃப் (Rasmus Lerdorf)", en: "Rasmus Lerdorf" }, { ta: "டிம் பெர்னர்ஸ் லீ", en: "Tim Berners-Lee" }, { ta: "பிரெண்டன் ஈச்", en: "Brendan Eich" }, { ta: "கைடோ வான் ரோஸம்", en: "Guido van Rossum" }], ans: 0, exp: { ta: "1994-இல் ராஸ்மஸ் லெர்டார்ஃப் PHP மொழியை உருவாக்கினார்.", en: "Rasmus Lerdorf created PHP in 1994." } },
+            { id: 403, ch: 4, q: { ta: "PHP-இல் அனைத்து மாறிகளும் (Variables) எந்தக் குறியீட்டுடன் தொடங்க வேண்டும்?", en: "All variables in PHP must start with which symbol?" }, opts: [{ ta: "$ (டாலர் குறி)", en: "$ (Dollar sign)" }, { ta: "@ (At குறி)", en: "@ (At symbol)" }, { ta: "# (ஹேஷ் குறி)", en: "# (Hash symbol)" }, { ta: "& (Ampersand)", en: "& (Ampersand)" }], ans: 0, exp: { ta: "PHP மாறிகள் $ குறியீட்டுடன் தொடங்க வேண்டும்.", en: "Every PHP variable starts with a $ sign." } },
+            { id: 404, ch: 4, q: { ta: "PHP கோப்புகளின் கொடாநிலை (Default) கோப்பு நீட்டிப்பு என்ன?", en: "What is the default file extension for PHP files?" }, opts: [{ ta: ".php", en: ".php" }, { ta: ".html", en: ".html" }, { ta: ".xml", en: ".xml" }, { ta: ".py", en: ".py" }], ans: 0, exp: { ta: "PHP கோப்புகள் .php நீட்டிப்புடன் சேமிக்கப்படும்.", en: "PHP scripts use the .php file extension." } },
+            { id: 405, ch: 4, q: { ta: "PHP-இல் மதிப்பு மற்றும் தரவு வகை இரண்டையும் ஒப்பிடும் செயற்குறி எது?", en: "Which operator in PHP checks if two values are equal AND of the same data type?" }, opts: [{ ta: "===", en: "===" }, { ta: "==", en: "==" }, { ta: "=", en: "=" }, { ta: "!=", en: "!=" }], ans: 0, exp: { ta: "=== (Identical operator) மதிப்பு மற்றும் தரவு வகை இரண்டையும் சரிபார்க்கும்.", en: "=== checks both value and data type equality." } },
+            { id: 406, ch: 4, q: { ta: "PHP என்பது எவ்வகை ஸ்கிரிப்டிங் மொழியாகும்?", en: "PHP is what type of scripting language?" }, opts: [{ ta: "சேவையகப் பக்க ஸ்கிரிப்டிங் மொழி (Server-side)", en: "Server-side scripting language" }, { ta: "கிளையண்ட் பக்க மொழி மட்டும்", en: "Client-side only" }, { ta: "இயந்திர மொழி", en: "Machine language" }, { ta: "அசெம்பிளி மொழி", en: "Assembly language" }], ans: 0, exp: { ta: "PHP குறிமுறை சேவையகத்தில் (Web Server) இயக்கப்பட்டு HTML வெளியீட்டைத் தரும்.", en: "PHP scripts are executed on the web server." } },
+            { id: 407, ch: 4, q: { ta: "PHP குறிமுறையின் தொடக்க மற்றும் முடிவு ஒட்டுகள் (Tags) எவை?", en: "What are the standard opening and closing tags for a PHP script?" }, opts: [{ ta: "\u003C?php மற்றும் ?\u003E", en: "\u003C?php and ?\u003E" }, { ta: "\u003Cscript\u003E மற்றும் \u003C/script\u003E", en: "\u003Cscript\u003E and \u003C/script\u003E" }, { ta: "\u003Cphp\u003E மற்றும் \u003C/php\u003E", en: "\u003Cphp\u003E and \u003C/php\u003E" }, { ta: "\u003C? மற்றும் \u003E", en: "\u003C? and \u003E" }], ans: 0, exp: { ta: "\u003C?php மற்றும் ?\u003E ஒட்டுகளுக்குள் PHP கட்டளைகள் எழுதப்படும்.", en: "PHP blocks begin with \u003C?php and end with ?\u003E." } },
+            { id: 408, ch: 4, q: { ta: "PHP-இல் ஒவ்வொரு கூற்றும் (Statement) எந்தக் குறியீட்டுடன் முடிவடைய வேண்டும்?", en: "Every statement in PHP must end with which character?" }, opts: [{ ta: "; (அரைப்புள்ளி / Semicolon)", en: "; (Semicolon)" }, { ta: ": (முக்காற்புள்ளி)", en: ": (Colon)" }, { ta: ". (முற்றுப்புள்ளி)", en: ". (Period)" }, { ta: ", (காற்புள்ளி)", en: ", (Comma)" }], ans: 0, exp: { ta: "PHP-இல் ஒவ்வொரு கட்டளையின் முடிவிலும் ; (Semicolon) இட வேண்டும்.", en: "Statements in PHP are terminated by a semicolon (;)." } },
+            { id: 409, ch: 4, q: { ta: "PHP-இல் இரு சரங்களை (Strings) இணைக்கப் பயன்படும் செயற்குறி எது? (பொதுத்தேர்வு வினா)", en: "Which operator is used to concatenate two strings in PHP? (Public Exam)" }, opts: [{ ta: ". (புள்ளி / Dot operator)", en: ". (Dot operator)" }, { ta: "+ (கூட்டல் குறி)", en: "+ (Plus)" }, { ta: "& (Ampersand)", en: "& (Ampersand)" }, { ta: "* (பெருக்கல்)", en: "* (Asterisk)" }], ans: 0, exp: { ta: "$a . $b என்ற புள்ளி (.) செயற்குறி இரு சரங்களை இணைக்கும்.", en: "The dot (.) operator concatenates two strings in PHP." } },
+            { id: 410, ch: 4, q: { ta: "PHP-இல் ஒரு வரி குறிப்புரை (Single-line comment) எழுதப் பயன்படும் குறியீடுகள் எவை?", en: "Which symbols are used for single-line comments in PHP?" }, opts: [{ ta: "// அல்லது #", en: "// or #" }, { ta: "/* மற்றும் */", en: "/* and */" }, { ta: "<!-- மற்றும் -->", en: "<!-- and -->" }, { ta: "** மற்றும் **", en: "** and **" }], ans: 0, exp: { ta: "// மற்றும் # ஒரு வரி குறிப்புரைக்கும், /* */ பல வரி குறிப்புரைக்கும் பயன்படும்.", en: "// and # denote single-line comments in PHP." } },
+            { id: 411, ch: 4, q: { ta: "PHP-இல் மாறிலிகளை (Constants) வரையறுக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function is used to define a constant in PHP?" }, opts: [{ ta: "define()", en: "define()" }, { ta: "const_var()", en: "const_var()" }, { ta: "fixed()", en: "fixed()" }, { ta: "static()", en: "static()" }], ans: 0, exp: { ta: "define('PI', 3.14); மாறிலியை உருவாக்கும்; மாறிலிகளுக்கு $ தேவையில்லை.", en: "define() creates a constant in PHP without a $ prefix." } },
+            { id: 412, ch: 4, q: { ta: "PHP-இல் எத்தனை அடிப்படைத் தரவு வகைகள் (Data Types) உள்ளன?", en: "How many primary data types are supported in PHP?" }, opts: [{ ta: "8 (Integer, Float, String, Boolean, Array, Object, NULL, Resource)", en: "8 Data Types" }, { ta: "3", en: "3" }, { ta: "4", en: "4" }, { ta: "12", en: "12" }], ans: 0, exp: { ta: "PHP 8 தரவு வகைகளை ஆதரிக்கிறது.", en: "PHP supports 8 primitive/compound/special data types." } },
+            { id: 413, ch: 4, q: { ta: "திரையில் வெளியீட்டை அச்சிடப் பயன்படும் PHP கட்டளை எது?", en: "Which PHP construct outputs text to the browser?" }, opts: [{ ta: "echo அல்லது print", en: "echo or print" }, { ta: "cout", en: "cout" }, { ta: "printf", en: "printf" }, { ta: "write", en: "write" }], ans: 0, exp: { ta: "echo மற்றும் print இணைய உலாவியில் வெளியீட்டைக் காட்டும்.", en: "echo and print output strings to the browser." } },
+            { id: 414, ch: 4, q: { ta: "XAMPP என்பதில் 'P' எதைக் குறிக்கிறது? (உள் வினா)", en: "What does the first 'P' stand for in XAMPP? (Interior)" }, opts: [{ ta: "PHP", en: "PHP" }, { ta: "Python", en: "Python" }, { ta: "Pascal", en: "Pascal" }, { ta: "Postgres", en: "Postgres" }], ans: 0, exp: { ta: "XAMPP = Cross-platform, Apache, MariaDB, PHP, Perl.", en: "XAMPP stands for Cross-platform, Apache, MariaDB, PHP, and Perl." } },
+            { id: 415, ch: 4, q: { ta: "ஒரு மாறியின் தரவு வகை மற்றும் மதிப்பைத் திரையில் காட்ட உதவும் PHP செயற்கூறு எது?", en: "Which PHP function dumps information about a variable including its type and value?" }, opts: [{ ta: "var_dump()", en: "var_dump()" }, { ta: "typeof()", en: "typeof()" }, { ta: "datatype()", en: "datatype()" }, { ta: "info()", en: "info()" }], ans: 0, exp: { ta: "var_dump($x) மாறியின் தரவு வகை மற்றும் மதிப்பைக் காட்டும்.", en: "var_dump() displays structured information (type and value) of a variable." } },
+
+            // --- CHAPTER 5 (15 Qns) ---
+            { id: 501, ch: 5, q: { ta: "PHP-இல் பயனர் வரையறுத்த செயற்கூறு எந்தச் சிறப்புச் சொல்லுடன் தொடங்கும்?", en: "Which keyword declares a user-defined function in PHP?" }, opts: [{ ta: "function", en: "function" }, { ta: "def", en: "def" }, { ta: "func", en: "func" }, { ta: "void", en: "void" }], ans: 0, exp: { ta: "function functionName() என்ற தொடரியல் பயன்படுகிறது.", en: "User-defined functions start with the 'function' keyword." } },
+            { id: 502, ch: 5, q: { ta: "PHP-இல் எத்தனை வகையான அணிகள் (Arrays) உள்ளன?", en: "How many types of Arrays are there in PHP?" }, opts: [{ ta: "3 (Indexed, Associative, Multi-dimensional)", en: "3 (Indexed, Associative, Multi-dimensional)" }, { ta: "2", en: "2" }, { ta: "4", en: "4" }, { ta: "5", en: "5" }], ans: 0, exp: { ta: "Indexed, Associative மற்றும் Multi-dimensional என 3 வகை அணிகள் உள்ளன.", en: "PHP has 3 array types: Indexed, Associative, and Multi-dimensional." } },
+            { id: 503, ch: 5, q: { ta: "PHP-இல் சுட்டெண் கொண்ட அணியின் (Indexed Array) முதல் சுட்டெண் மதிப்பு என்ன?", en: "What is the starting index value of an Indexed Array in PHP?" }, opts: [{ ta: "0", en: "0" }, { ta: "1", en: "1" }, { ta: "-1", en: "-1" }, { ta: "10", en: "10" }], ans: 0, exp: { ta: "அணியின் சுட்டெண் எப்போதும் 0-விலிருந்து தொடங்கும்.", en: "Array indexing in PHP always starts at 0." } },
+            { id: 504, ch: 5, q: { ta: "Associative Array-இல் திறவுகோல் மற்றும் மதிப்பை (Key => Value) இணைக்கும் குறியீடு எது?", en: "Which symbol associates a key with a value in a PHP Associative Array?" }, opts: [{ ta: "=>", en: "=>" }, { ta: "->", en: "->" }, { ta: "::", en: "::" }, { ta: "==", en: "==" }], ans: 0, exp: { ta: "array('key' => 'value') என்ற அமைப்பில் => பயன்படுகிறது.", en: "The => operator assigns values to named keys." } },
+            { id: 505, ch: 5, q: { ta: "ஒரு அணியில் உள்ள உறுப்புகளின் எண்ணிக்கையைக் கண்டறிய உதவும் PHP செயற்கூறு எது?", en: "Which PHP function returns the number of elements in an array?" }, opts: [{ ta: "count()", en: "count()" }, { ta: "len()", en: "len()" }, { ta: "size()", en: "size()" }, { ta: "total()", en: "total()" }], ans: 0, exp: { ta: "count($arr) அணியில் உள்ள உறுப்புகளின் எண்ணிக்கையைத் தரும்.", en: "count() returns the number of elements in an array." } },
+            { id: 506, ch: 5, q: { ta: "PHP-இல் அணியை உருவாக்கப் பயன்படும் உள்ளிணைந்த செயற்கூறு எது?", en: "Which built-in function is used to create an array in PHP?" }, opts: [{ ta: "array()", en: "array()" }, { ta: "list()", en: "list()" }, { ta: "create_array()", en: "create_array()" }, { ta: "dim()", en: "dim()" }], ans: 0, exp: { ta: "$colors = array('Red', 'Blue'); மூலம் அணியை உருவாக்கலாம்.", en: "The array() construct creates an array in PHP." } },
+            { id: 507, ch: 5, q: { ta: "செயற்கூறிலிருந்து ஒரு மதிப்பை அழைக்கும் இடத்திற்குத் திருப்பி அனுப்பப் பயன்படும் கூற்று எது?", en: "Which statement returns a value from a function back to the caller?" }, opts: [{ ta: "return", en: "return" }, { ta: "echo", en: "echo" }, { ta: "break", en: "break" }, { ta: "exit", en: "exit" }], ans: 0, exp: { ta: "return கூற்று செயற்கூறின் முடிவைத் திருப்பி அனுப்பும்.", en: "The return statement sends a result back to the calling code." } },
+            { id: 508, ch: 5, q: { ta: "PHP செயற்கூறு பெயர்கள் எழுத்து வடிவ உணர்திறன் (Case-Sensitive) கொண்டவையா? (பொதுத்தேர்வு வினா)", en: "Are PHP function names case-sensitive? (Public Exam)" }, opts: [{ ta: "இல்லை (Not Case-Sensitive)", en: "No (Not Case-Sensitive)" }, { ta: "ஆம் (Case-Sensitive)", en: "Yes (Case-Sensitive)" }, { ta: "பெரிய எழுத்து மட்டும்", en: "Uppercase only" }, { ta: "சிறிய எழுத்து மட்டும்", en: "Lowercase only" }], ans: 0, exp: { ta: "PHP-இல் மாறிப் பெயர்கள் Case-Sensitive; ஆனால் செயற்கூறு பெயர்கள் Case-Insensitive.", en: "Function names in PHP are NOT case-sensitive, though variable names are." } },
+            { id: 509, ch: 5, q: { ta: "அணியின் உறுப்புகளை ஏறுவரிசையில் (Ascending Order) அடுக்கப் பயன்படும் PHP செயற்கூறு எது?", en: "Which PHP function sorts an indexed array in ascending order?" }, opts: [{ ta: "sort()", en: "sort()" }, { ta: "rsort()", en: "rsort()" }, { ta: "asort()", en: "asort()" }, { ta: "ksort()", en: "ksort()" }], ans: 0, exp: { ta: "sort() ஏறுவரிசையிலும், rsort() இறங்குவரிசையிலும் அடுக்கும்.", en: "sort() sorts indexed arrays in ascending order." } },
+            { id: 510, ch: 5, q: { ta: "Associative Array-ஐ திறவுகோல் (Key) அடிப்படையில் ஏறுவரிசையில் அடுக்கும் செயற்கூறு எது?", en: "Which function sorts an associative array in ascending order according to the key?" }, opts: [{ ta: "ksort()", en: "ksort()" }, { ta: "asort()", en: "asort()" }, { ta: "sort()", en: "sort()" }, { ta: "krsort()", en: "krsort()" }], ans: 0, exp: { ta: "ksort() Key அடிப்படையிலும், asort() Value அடிப்படையிலும் அடுக்கும்.", en: "ksort() sorts associative arrays by key." } },
+            { id: 511, ch: 5, q: { ta: "அணியின் இறுதியில் ஒன்று அல்லது அதற்கு மேற்பட்ட உறுப்புகளைச் சேர்க்கப் பயன்படும் செயற்கூறு எது?", en: "Which function inserts one or more elements to the end of an array?" }, opts: [{ ta: "array_push()", en: "array_push()" }, { ta: "array_pop()", en: "array_pop()" }, { ta: "array_shift()", en: "array_shift()" }, { ta: "array_slice()", en: "array_slice()" }], ans: 0, exp: { ta: "array_push() அணியின் இறுதியில் உறுப்பைச் சேர்க்கும்.", en: "array_push() appends elements to the end of an array." } },
+            { id: 512, ch: 5, q: { ta: "அணியின் கடைசி உறுப்பை நீக்கப் பயன்படும் PHP செயற்கூறு எது?", en: "Which function deletes the last element of an array?" }, opts: [{ ta: "array_pop()", en: "array_pop()" }, { ta: "array_push()", en: "array_push()" }, { ta: "array_merge()", en: "array_merge()" }, { ta: "unset()", en: "unset()" }], ans: 0, exp: { ta: "array_pop() அணியின் இறுதி உறுப்பை நீக்கும்.", en: "array_pop() removes the last element from an array." } },
+            { id: 513, ch: 5, q: { ta: "ஒரு அணியில் குறிப்பிட்ட மதிப்பு உள்ளதா எனத் தேட உதவும் செயற்கூறு எது? (உள் வினா)", en: "Which function searches an array for a specific value? (Interior)" }, opts: [{ ta: "in_array()", en: "in_array()" }, { ta: "find_array()", en: "find_array()" }, { ta: "has_value()", en: "has_value()" }, { ta: "check()", en: "check()" }], ans: 0, exp: { ta: "in_array('Apple', $fruits) மதிப்பு இருந்தால் true தரும்.", en: "in_array() checks if a value exists in an array." } },
+            { id: 514, ch: 5, q: { ta: "ஒன்றுக்கு மேற்பட்ட அணிகளை ஒன்றாக இணைக்கப் பயன்படும் செயற்கூறு எது?", en: "Which function merges one or more arrays into one array?" }, opts: [{ ta: "array_merge()", en: "array_merge()" }, { ta: "array_join()", en: "array_join()" }, { ta: "array_add()", en: "array_add()" }, { ta: "array_link()", en: "array_link()" }], ans: 0, exp: { ta: "array_merge($a1, $a2) இரு அணிகளை இணைக்கும்.", en: "array_merge() combines two or more arrays." } },
+            { id: 515, ch: 5, q: { ta: "ஒரு சரத்தின் (String) நீளத்தைக் கண்டறியப் பயன்படும் உள்ளிணைந்த PHP செயற்கூறு எது?", en: "Which built-in PHP function returns the length of a string?" }, opts: [{ ta: "strlen()", en: "strlen()" }, { ta: "strcount()", en: "strcount()" }, { ta: "len()", en: "len()" }, { ta: "sizeof()", en: "sizeof()" }], ans: 0, exp: { ta: "strlen('Tamil') என்பது 5 என்ற மதிப்பைத் தரும்.", en: "strlen() returns the number of characters in a string." } },
+
+            // --- CHAPTER 6 (15 Qns) ---
+            { id: 601, ch: 6, q: { ta: "PHP-இல் ஒரு நிபந்தனை சரியாக இருந்தால் மட்டும் குறிமுறையை இயக்கப் பயன்படும் கூற்று எது?", en: "Which statement executes code only if a specified condition is true in PHP?" }, opts: [{ ta: "if கூற்று", en: "if statement" }, { ta: "break கூற்று", en: "break statement" }, { ta: "echo கூற்று", en: "echo statement" }, { ta: "include கூற்று", en: "include statement" }], ans: 0, exp: { ta: "if கூற்று நிபந்தனை உண்மையானால் மட்டும் இயங்கும்.", en: "The 'if' statement runs code only when the condition is true." } },
+            { id: 602, ch: 6, q: { ta: "பல நிபந்தனைகளைச் சோதித்துத் தேர்ந்தெடுக்க if-elseif-else-க்கு மாற்றாகப் பயன்படும் கூற்று எது?", en: "Which statement is an alternative to multiple if-elseif statements in PHP?" }, opts: [{ ta: "switch கூற்று", en: "switch statement" }, { ta: "for கூற்று", en: "for statement" }, { ta: "while கூற்று", en: "while statement" }, { ta: "return கூற்று", en: "return statement" }], ans: 0, exp: { ta: "switch கூற்று பல மதிப்புகளை ஒப்பிட்டுச் செயல்பட எளிமையானது.", en: "The 'switch' statement selects one of many code blocks to run." } },
+            { id: 603, ch: 6, q: { ta: "switch கூற்றில் ஒவ்வொரு case முடிவிலும் கட்டுப்பாட்டை வெளியே அனுப்பப் பயன்படும் சிறப்புச் சொல் எது?", en: "Which keyword prevents code from running into the next case in a switch block?" }, opts: [{ ta: "break", en: "break" }, { ta: "stop", en: "stop" }, { ta: "exit", en: "exit" }, { ta: "continue", en: "continue" }], ans: 0, exp: { ta: "break கூற்று அடுத்த case-க்குள் நுழைவதைத் தடுக்கும்.", en: "The 'break' keyword terminates the switch block." } },
+            { id: 604, ch: 6, q: { ta: "switch கூற்றில் எந்த case-உம் பொருந்தவில்லை எனில் இயக்கப்படும் பகுதி எது?", en: "Which block executes in a switch statement if no case matches?" }, opts: [{ ta: "default", en: "default" }, { ta: "else", en: "else" }, { ta: "other", en: "other" }, { ta: "none", en: "none" }], ans: 0, exp: { ta: "எந்த case-உம் பொருந்தாதபோது default பகுதி இயங்கும்.", en: "The 'default' block runs when no case matches." } },
+            { id: 605, ch: 6, q: { ta: "if-else கூற்றின் சுருக்கமான வடிவமாகப் பயன்படும் மும்ம செயற்குறி (Ternary Operator) எது?", en: "Which symbols represent the Ternary Operator in PHP?" }, opts: [{ ta: "? :", en: "? :" }, { ta: "&& ||", en: "&& ||" }, { ta: "=> ->", en: "=> ->" }, { ta: "++ --", en: "++ --" }], ans: 0, exp: { ta: "(condition) ? true_val : false_val என்பது மும்ம செயற்குறியாகும்.", en: "(condition) ? expr1 : expr2 is the ternary operator." } },
+            { id: 606, ch: 6, q: { ta: "ஒரு நிபந்தனை சரி எனில் ஒரு தொகுதியும், தவறு எனில் மற்றொரு தொகுதியும் இயங்கப் பயன்படுவது எது?", en: "Which statement executes one block if a condition is true and another if false?" }, opts: [{ ta: "if-else கூற்று", en: "if-else statement" }, { ta: "if கூற்று மட்டும்", en: "if statement only" }, { ta: "for கூற்று", en: "for statement" }, { ta: "foreach கூற்று", en: "foreach statement" }], ans: 0, exp: { ta: "if-else இருவழி கிளை பிரிப்புக் கூற்றாகும்.", en: "if-else provides two-way branching." } },
+            { id: 607, ch: 6, q: { ta: "PHP-இல் elseif என்பதற்குப் பதிலாக இடைவெளியுடன் எழுதக்கூடிய வடிவம் எது? (உள் வினா)", en: "Which alternative syntax with a space is valid for 'elseif' in PHP? (Interior)" }, opts: [{ ta: "else if", en: "else if" }, { ta: "elif", en: "elif" }, { ta: "if else", en: "if else" }, { ta: "otherwise", en: "otherwise" }], ans: 0, exp: { ta: "PHP-இல் elseif மற்றும் else if இரண்டும் செல்லுபடியாகும் (Python-இல் மட்டுமே elif).", en: "PHP accepts both 'elseif' and 'else if'." } },
+            { id: 608, ch: 6, q: { ta: "இரண்டு நிபந்தனைகளும் உண்மையாக இருந்தால் மட்டுமே true தரும் தருக்க செயற்குறி எது?", en: "Which logical operator returns true only if both conditions are true?" }, opts: [{ ta: "&& (Logical AND)", en: "&& (Logical AND)" }, { ta: "|| (Logical OR)", en: "|| (Logical OR)" }, { ta: "! (Logical NOT)", en: "! (Logical NOT)" }, { ta: "xor", en: "xor" }], ans: 0, exp: { ta: "&& (AND) இரு நிபந்தனைகளும் சரியாக இருந்தால் மட்டுமே true தரும்.", en: "&& returns true if both operands are true." } },
+            { id: 609, ch: 6, q: { ta: "நிபந்தனையின் முடிவை எதிர்மறையாக (True -> False) மாற்றும் செயற்குறி எது?", en: "Which operator reverses the logical state of its operand?" }, opts: [{ ta: "! (Logical NOT)", en: "! (Logical NOT)" }, { ta: "&&", en: "&&" }, { ta: "||", en: "||" }, { ta: "==", en: "==" }], ans: 0, exp: { ta: "!$x என்பது $x உண்மையாக இருந்தால் false தரும்.", en: "! (NOT) negates a boolean expression." } },
+            { id: 610, ch: 6, q: { ta: "ஒரு if கூற்றுக்குள் மற்றொரு if கூற்று அமைந்தால் அது எவ்வாறு அழைக்கப்படுகிறது?", en: "An 'if' statement placed inside another 'if' statement is called ______." }, opts: [{ ta: "பின்னலான if (Nested if)", en: "Nested if" }, { ta: "switch கூற்று", en: "switch statement" }, { ta: "மடக்கு (Loop)", en: "Loop" }, { ta: "அணி (Array)", en: "Array" }], ans: 0, exp: { ta: "ஒரு நிபந்தனைக்குள் மற்றொரு நிபந்தனையைச் சோதிப்பது Nested if ஆகும்.", en: "An if inside another if is known as Nested if." } },
+            { id: 611, ch: 6, q: { ta: "switch கூற்றில் case மதிப்பிற்குப் பிறகு எந்தக் குறியீடு இடப்பட வேண்டும்?", en: "Which punctuation mark follows each case value in a switch statement?" }, opts: [{ ta: ": (முக்காற்புள்ளி / Colon)", en: ": (Colon)" }, { ta: "; (அரைப்புள்ளி)", en: "; (Semicolon)" }, { ta: ", (காற்புள்ளி)", en: ", (Comma)" }, { ta: ". (புள்ளி)", en: ". (Dot)" }], ans: 0, exp: { ta: "case 1: என முக்காற்புள்ளி (Colon) இட வேண்டும்.", en: "Each case label ends with a colon (:)." } },
+            { id: 612, ch: 6, q: { ta: "PHP 7-இல் அறிமுகப்படுத்தப்பட்ட Null Coalescing செயற்குறி எது? (பொதுத்தேர்வு வினா)", en: "Which is the Null Coalescing operator introduced in PHP 7? (Public Exam)" }, opts: [{ ta: "??", en: "??" }, { ta: "?:", en: "?:" }, { ta: "<=>", en: "<=>" }, { ta: "===", en: "===" }], ans: 0, exp: { ta: "$a ?? $b என்பது $a மதிப்பு NULL ஆக இல்லையெனில் $a-ஐயும், இல்லையெனில் $b-ஐயும் தரும்.", en: "The ?? operator returns its first operand if it exists and is not NULL." } },
+            { id: 613, ch: 6, q: { ta: "கீழ்க்கண்ட PHP குறிமுறையின் வெளியீடு என்ன? $x = 5; echo ($x > 3) ? 'Yes' : 'No';", en: "What is the output of: $x = 5; echo ($x > 3) ? 'Yes' : 'No';" }, opts: [{ ta: "Yes", en: "Yes" }, { ta: "No", en: "No" }, { ta: "5", en: "5" }, { ta: "Error", en: "Error" }], ans: 0, exp: { ta: "5 > 3 என்பது உண்மை என்பதால் 'Yes' அச்சிடப்படும்.", en: "Since 5 > 3 is true, 'Yes' is echoed." } },
+            { id: 614, ch: 6, q: { ta: "இரு மதிப்புகளை ஒப்பிட்டு -1, 0 அல்லது 1 தரும் Spaceship செயற்குறி எது?", en: "Which operator compares two expressions and returns -1, 0, or 1?" }, opts: [{ ta: "<=>", en: "<=>" }, { ta: "!==", en: "!==" }, { ta: "??", en: "??" }, { ta: "&&", en: "&&" }], ans: 0, exp: { ta: "<=> என்பது Spaceship செயற்குறி ஆகும்.", en: "<=> is the combined comparison (Spaceship) operator." } },
+            { id: 615, ch: 6, q: { ta: "நிபந்தனைக் கூற்றுகள் எவ்வகைக் கட்டுப்பாட்டு அமைப்புகளாகும்?", en: "Conditional statements belong to which category of control structures?" }, opts: [{ ta: "கிளைபிரிப்புக் கூற்றுகள் (Branching / Selection)", en: "Branching / Selection statements" }, { ta: "மடக்குக் கூற்றுகள் (Iteration)", en: "Iteration statements" }, { ta: "வரிசைமுறைக் கூற்றுகள்", en: "Sequential statements" }, { ta: "கோப்புக் கூற்றுகள்", en: "File statements" }], ans: 0, exp: { ta: "நிபந்தனையின் அடிப்படையில் பாதையைத் தேர்ந்தெடுப்பதால் இவை கிளைபிரிப்புக் கூற்றுகள் எனப்படும்.", en: "Conditional statements are selection/branching control structures." } },
+
+            // --- CHAPTER 7 (15 Qns) ---
+            { id: 701, ch: 7, q: { ta: "சுழற்சிகளின் எண்ணிக்கை முன்கூட்டியே தெரிந்திருக்கும்போது பயன்படும் சிறந்த மடக்கு எது?", en: "Which loop is best used when the number of iterations is known in advance?" }, opts: [{ ta: "for மடக்கு", en: "for loop" }, { ta: "while மடக்கு", en: "while loop" }, { ta: "do-while மடக்கு", en: "do-while loop" }, { ta: "if கூற்று", en: "if statement" }], ans: 0, exp: { ta: "for மடக்கு வரையறுக்கப்பட்ட எண்ணிக்கை மடக்காகும்.", en: "The 'for' loop is ideal when the iteration count is known." } },
+            { id: 702, ch: 7, q: { ta: "அணியின் (Array) ஒவ்வொரு உறுப்பையும் சுட்டெண் இல்லாமல் அணுகப் பயன்படும் மடக்கு எது?", en: "Which loop works exclusively on arrays to iterate through each key/value pair?" }, opts: [{ ta: "foreach மடக்கு", en: "foreach loop" }, { ta: "while மடக்கு", en: "while loop" }, { ta: "switch மடக்கு", en: "switch loop" }, { ta: "do-while மடக்கு", en: "do-while loop" }], ans: 0, exp: { ta: "foreach அணிகளில் மட்டுமே செயல்படும் சிறப்பு மடக்காகும்.", en: "The 'foreach' loop iterates over each element in an array." } },
+            { id: 703, ch: 7, q: { ta: "நிபந்தனை தவறாக இருந்தாலும் குறைந்தபட்சம் ஒரு முறையாவது இயங்கும் மடக்கு எது?", en: "Which loop executes its block of code at least once even if the condition is false?" }, opts: [{ ta: "do-while மடக்கு", en: "do-while loop" }, { ta: "while மடக்கு", en: "while loop" }, { ta: "for மடக்கு", en: "for loop" }, { ta: "foreach மடக்கு", en: "foreach loop" }], ans: 0, exp: { ta: "do-while என்பது வெளியேறுதல் சோதிப்பு மடக்கு (Exit-check loop) ஆகும்.", en: "do-while checks the condition at the end of the loop." } },
+            { id: 704, ch: 7, q: { ta: "while மடக்கு என்பது எவ்வகை மடக்காகும்?", en: "What type of loop is a 'while' loop?" }, opts: [{ ta: "நுழைவுச் சோதிப்பு மடக்கு (Entry-check loop)", en: "Entry-check loop" }, { ta: "வெளியேறுதல் சோதிப்பு மடக்கு (Exit-check loop)", en: "Exit-check loop" }, { ta: "முடிவிலா மடக்கு", en: "Infinite loop" }, { ta: "நிபந்தனையற்ற மடக்கு", en: "Unconditional loop" }], ans: 0, exp: { ta: "while மடக்கு முதலில் நிபந்தனையைச் சோதித்த பிறகே உள்ளே செல்லும்.", en: "while evaluates the condition before executing the body." } },
+            { id: 705, ch: 7, q: { ta: "மடக்கின் தற்போதைய சுழற்சியை மட்டும் தவிர்த்து அடுத்த சுழற்சிக்குச் செல்ல உதவும் கூற்று எது?", en: "Which statement skips the current iteration of a loop and continues with the next?" }, opts: [{ ta: "continue", en: "continue" }, { ta: "break", en: "break" }, { ta: "exit", en: "exit" }, { ta: "goto", en: "goto" }], ans: 0, exp: { ta: "continue நடப்பு சுழற்சியைத் தவிர்த்து அடுத்த சுழற்சியைத் தொடங்கும்.", en: "continue skips the remaining code in the current iteration." } },
+            { id: 706, ch: 7, q: { ta: "for மடக்கின் தலைப்பில் எத்தனை அளபுருக்கள் (Expressions) அரைப்புள்ளியால் பிரிக்கப்பட்டிருக்கும்?", en: "How many expressions separated by semicolons appear in a 'for' loop header?" }, opts: [{ ta: "3 (Initialization; Condition; Increment)", en: "3 (Initialization; Condition; Increment)" }, { ta: "2", en: "2" }, { ta: "4", en: "4" }, { ta: "1", en: "1" }], ans: 0, exp: { ta: "தொடக்க மதிப்பு, நிபந்தனை, மிகுப்பு/குறைப்பு என 3 பகுதிகள் உள்ளன.", en: "A for loop header has initialization, condition, and increment/decrement." } },
+            { id: 707, ch: 7, q: { ta: "do-while மடக்கின் இறுதியில் எந்தக் குறியீடு இடப்பட வேண்டும்? (பொதுத்தேர்வு வினா)", en: "Which symbol must terminate a do-while statement? (Public Exam)" }, opts: [{ ta: "; (அரைப்புள்ளி / Semicolon)", en: "; (Semicolon)" }, { ta: ": (முக்காற்புள்ளி)", en: ": (Colon)" }, { ta: ". (புள்ளி)", en: ". (Dot)" }, { ta: ", (காற்புள்ளி)", en: ", (Comma)" }], ans: 0, exp: { ta: "do-while மடக்கின் இறுதியில் அரைப்புள்ளி (;) இட வேண்டும்.", en: "A semicolon is required after the while(condition) in a do-while loop." } },
+            { id: 708, ch: 7, q: { ta: "ஒரு மடக்கின் நிபந்தனை எப்போதும் உண்மையாகவே (True) இருந்தால் அது எவ்வாறு அழைக்கப்படுகிறது?", en: "A loop whose condition never becomes false is called an ______." }, opts: [{ ta: "முடிவிலா மடக்கு (Infinite Loop)", en: "Infinite Loop" }, { ta: "பின்னலான மடக்கு (Nested Loop)", en: "Nested Loop" }, { ta: "காலி மடக்கு (Empty Loop)", en: "Empty Loop" }, { ta: "வெளியேறு மடக்கு", en: "Exit Loop" }], ans: 0, exp: { ta: "நிபந்தனை பொய்யாகாதபோது மடக்கு முடிவின்றி இயங்கும்.", en: "An Infinite Loop runs endlessly because its condition never evaluates to false." } },
+            { id: 709, ch: 7, q: { ta: "மடக்கை உடனடியாக நிறுத்திவிட்டு மடக்கிற்கு வெளியே செல்லப் பயன்படும் கூற்று எது?", en: "Which statement immediately exits a loop completely?" }, opts: [{ ta: "break", en: "break" }, { ta: "continue", en: "continue" }, { ta: "next", en: "next" }, { ta: "skip", en: "skip" }], ans: 0, exp: { ta: "break மடக்கின் இயக்கத்தை முழுமையாக முடிவுக்குக் கொண்டு வரும்.", en: "break exits the loop immediately." } },
+            { id: 710, ch: 7, q: { ta: "foreach மடக்கில் திறவுகோல் மற்றும் மதிப்பு இரண்டையும் பெறப் பயன்படும் தொடரியல் எது?", en: "Which syntax extracts both key and value in a foreach loop?" }, opts: [{ ta: "foreach ($arr as $key => $val)", en: "foreach ($arr as $key => $val)" }, { ta: "foreach ($arr as $key : $val)", en: "foreach ($arr as $key : $val)" }, { ta: "foreach ($arr -> $key, $val)", en: "foreach ($arr -> $key, $val)" }, { ta: "foreach ($key in $arr)", en: "foreach ($key in $arr)" }], ans: 0, exp: { ta: "foreach ($arr as $key => $value) மூலம் key மற்றும் value இரண்டையும் பெறலாம்.", en: "foreach ($array as $key => $value) accesses both keys and values." } },
+            { id: 711, ch: 7, q: { ta: "ஒரு மடக்கிற்குள் மற்றொரு மடக்கு அமைந்தால் அது எவ்வாறு அழைக்கப்படுகிறது?", en: "A loop placed inside the body of another loop is called a ______." }, opts: [{ ta: "பின்னலான மடக்கு (Nested Loop)", en: "Nested Loop" }, { ta: "முடிவிலா மடக்கு", en: "Infinite Loop" }, { ta: "ஒற்றை மடக்கு", en: "Single Loop" }, { ta: "தனி மடக்கு", en: "Isolated Loop" }], ans: 0, exp: { ta: "Nested Loop இரு பரிமாண அணிகள் மற்றும் வடிவங்களை அச்சிடப் பயன்படுகிறது.", en: "Nested loops are commonly used for 2D arrays and patterns." } },
+            { id: 712, ch: 7, q: { ta: "கீழ்க்கண்ட மடக்கு எத்தனை முறை இயங்கும்? for ($i = 1; $i <= 5; $i++)", en: "How many times will this loop execute? for ($i = 1; $i <= 5; $i++)" }, opts: [{ ta: "5 முறை", en: "5 times" }, { ta: "4 முறை", en: "4 times" }, { ta: "6 முறை", en: "6 times" }, { ta: "0 முறை", en: "0 times" }], ans: 0, exp: { ta: "$i மதிப்பு 1, 2, 3, 4, 5 என 5 முறை இயங்கும்.", en: "It runs for $i = 1, 2, 3, 4, and 5 (5 times)." } },
+            { id: 713, ch: 7, q: { ta: "கீழ்க்கண்ட குறிமுறையின் வெளியீடு என்ன? $i = 10; do { echo $i; } while ($i < 5);", en: "What is the output of: $i = 10; do { echo $i; } while ($i < 5);" }, opts: [{ ta: "10", en: "10" }, { ta: "5", en: "5" }, { ta: "வெளியீடு இல்லை", en: "No output" }, { ta: "Error", en: "Error" }], ans: 0, exp: { ta: "do-while நிபந்தனையை இறுதியில் சோதிப்பதால் 10 ஒரு முறை அச்சிடப்படும்.", en: "do-while runs once before checking $i < 5, printing 10." } },
+            { id: 714, ch: 7, q: { ta: "PHP-இல் மொத்தம் எத்தனை வகையான மடக்கு அமைப்புகள் உள்ளன? (உள் வினா)", en: "How many types of looping structures exist in PHP? (Interior)" }, opts: [{ ta: "4 (for, foreach, while, do-while)", en: "4 (for, foreach, while, do-while)" }, { ta: "2", en: "2" }, { ta: "3", en: "3" }, { ta: "5", en: "5" }], ans: 0, exp: { ta: "for, foreach, while, do-while என 4 மடக்குகள் உள்ளன.", en: "PHP has 4 looping structures: for, foreach, while, and do-while." } },
+            { id: 715, ch: 7, q: { ta: "பின்மிகுப்பு (Post-increment) செயற்குறி எது?", en: "Which is the post-increment operator in PHP?" }, opts: [{ ta: "$x++", en: "$x++" }, { ta: "++$x", en: "++$x" }, { ta: "$x--", en: "$x--" }, { ta: "--$x", en: "--$x" }], ans: 0, exp: { ta: "$x++ முதலில் தற்போதைய மதிப்பைப் பயன்படுத்திவிட்டு பின்னர் 1 கூட்டும்.", en: "$x++ returns $x, then increments $x by one." } },
+
+            // --- CHAPTER 8 (15 Qns) ---
+            { id: 801, ch: 8, q: { ta: "HTML படிவத் தரவுகளை URL வழியாக அனுப்பும் முறை எது?", en: "Which form submission method appends form data to the URL?" }, opts: [{ ta: "GET முறை", en: "GET method" }, { ta: "POST முறை", en: "POST method" }, { ta: "FILE முறை", en: "FILE method" }, { ta: "SEND முறை", en: "SEND method" }], ans: 0, exp: { ta: "GET முறை தரவுகளை URL-இல் இணைத்து அனுப்பும்.", en: "GET sends form data via URL parameters." } },
+            { id: 802, ch: 8, q: { ta: "கடவுச்சொற்கள் (Passwords) மற்றும் அதிக அளவு தரவுகளை அனுப்பப் பாதுகாப்பான முறை எது?", en: "Which method is secure for sending passwords and large amounts of form data?" }, opts: [{ ta: "POST முறை", en: "POST method" }, { ta: "GET முறை", en: "GET method" }, { ta: "REQUEST முறை", en: "REQUEST method" }, { ta: "URL முறை", en: "URL method" }], ans: 0, exp: { ta: "POST முறையில் தரவுகள் URL-இல் தெரியாது; அளவு வரம்பும் இல்லை.", en: "POST hides data from the URL and has no size limit." } },
+            { id: 803, ch: 8, q: { ta: "PHP-இல் ஒரு கோப்பைத் திறக்கப் பயன்படும் செயற்கூறு எது?", en: "Which PHP function is used to open a file?" }, opts: [{ ta: "fopen()", en: "fopen()" }, { ta: "fread()", en: "fread()" }, { ta: "fclose()", en: "fclose()" }, { ta: "fwrite()", en: "fwrite()" }], ans: 0, exp: { ta: "fopen('file.txt', 'r') கோப்பைத் திறக்கப் பயன்படுகிறது.", en: "fopen() opens a file in a specified mode." } },
+            { id: 804, ch: 8, q: { ta: "கோப்பைப் படிப்பதற்காக மட்டும் (Read-only) திறக்கப் பயன்படும் முறைமை (Mode) எது?", en: "Which file mode opens a file for reading only?" }, opts: [{ ta: "r", en: "r" }, { ta: "w", en: "w" }, { ta: "a", en: "a" }, { ta: "x", en: "x" }], ans: 0, exp: { ta: "'r' என்பது Read-only முறைமையாகும்.", en: "Mode 'r' opens a file for read-only access." } },
+            { id: 805, ch: 8, q: { ta: "திறக்கப்பட்ட கோப்பை மூடுவதற்குப் பயன்படும் PHP செயற்கூறு எது?", en: "Which PHP function closes an open file pointer?" }, opts: [{ ta: "fclose()", en: "fclose()" }, { ta: "fend()", en: "fend()" }, { ta: "fexit()", en: "fexit()" }, { ta: "fstop()", en: "fstop()" }], ans: 0, exp: { ta: "fclose($file) கோப்பை மூடும்.", en: "fclose() closes an open file pointer." } },
+            { id: 806, ch: 8, q: { ta: "கோப்பின் இறுதியில் புதிய தரவுகளைச் சேர்க்கப் (Append) பயன்படும் முறைமை எது?", en: "Which file mode opens a file for writing at the end without erasing existing data?" }, opts: [{ ta: "a (Append)", en: "a (Append)" }, { ta: "w (Write)", en: "w (Write)" }, { ta: "r (Read)", en: "r (Read)" }, { ta: "d (Delete)", en: "d (Delete)" }], ans: 0, exp: { ta: "'a' முறைமை பழைய தரவுகளை அழிக்காமல் இறுதியில் புதிய தரவைச் சேர்க்கும்.", en: "'a' preserves existing content and appends data at the end." } },
+            { id: 807, ch: 8, q: { ta: "HTML படிவத்தில் உள்ள அனைத்து உள்ளீடுகளையும் தேர்ந்தெடுத்துச் சரிபார்க்கப் பயன்படும் பண்புக்கூறு எது?", en: "Which HTML form attribute specifies the PHP file that processes the form data?" }, opts: [{ ta: "action", en: "action" }, { ta: "method", en: "method" }, { ta: "name", en: "name" }, { ta: "target", en: "target" }], ans: 0, exp: { ta: "\u003Cform action='welcome.php' method='post'\u003E என action பண்புக்கூறு பயன்படுகிறது.", en: "The 'action' attribute specifies the target script URL." } },
+            { id: 808, ch: 8, q: { ta: "பதிவேற்றம் செய்யப்பட்ட கோப்புகளின் விவரங்களைப் பெறப் பயன்படும் PHP மீஉலகளாவிய அணி (Superglobal) எது? (பொதுத்தேர்வு வினா)", en: "Which PHP superglobal array collects uploaded file information? (Public Exam)" }, opts: [{ ta: "$_FILES", en: "$_FILES" }, { ta: "$_POST", en: "$_POST" }, { ta: "$_GET", en: "$_GET" }, { ta: "$_SERVER", en: "$_SERVER" }], ans: 0, exp: { ta: "$_FILES அணியில் கோப்பின் பெயர், அளவு, வகை ஆகியவை இருக்கும்.", en: "$_FILES holds information about uploaded files." } },
+            { id: 809, ch: 8, q: { ta: "கோப்பிலிருந்து ஒரு வரியை மட்டும் படிக்கப் பயன்படும் PHP செயற்கூறு எது?", en: "Which PHP function reads a single line from an open file?" }, opts: [{ ta: "fgets()", en: "fgets()" }, { ta: "fgetc()", en: "fgetc()" }, { ta: "fwrite()", en: "fwrite()" }, { ta: "file_size()", en: "file_size()" }], ans: 0, exp: { ta: "fgets() ஒரு வரியையும், fgetc() ஒரு எழுத்தையும் படிக்கும்.", en: "fgets() reads a single line from a file." } },
+            { id: 810, ch: 8, q: { ta: "கோப்பிலிருந்து ஒரு எழுத்தை மட்டும் (Single Character) படிக்கப் பயன்படும் செயற்கூறு எது?", en: "Which PHP function reads a single character from a file?" }, opts: [{ ta: "fgetc()", en: "fgetc()" }, { ta: "fgets()", en: "fgets()" }, { ta: "fread()", en: "fread()" }, { ta: "fopen()", en: "fopen()" }], ans: 0, exp: { ta: "fgetc($file) ஒரு எழுத்தை மட்டும் படிக்கும்.", en: "fgetc() reads a single character from an open file." } },
+            { id: 811, ch: 8, q: { ta: "கோப்பின் இறுதியை (End-Of-File) அடைந்துவிட்டதா எனச் சோதிக்கும் செயற்கூறு எது?", en: "Which function checks if the 'end-of-file' (EOF) has been reached?" }, opts: [{ ta: "feof()", en: "feof()" }, { ta: "eof()", en: "eof()" }, { ta: "fend()", en: "fend()" }, { ta: "fclose()", en: "fclose()" }], ans: 0, exp: { ta: "feof($file) கோப்பின் இறுதியை அடைந்தால் true தரும்.", en: "feof() returns true when the file pointer reaches the end of the file." } },
+            { id: 812, ch: 8, q: { ta: "படிவத்தில் ஒரு புலத்தைக் கட்டாயம் நிரப்ப வேண்டும் என்பதைக் குறிக்கும் HTML5 பண்புக்கூறு எது?", en: "Which HTML5 attribute specifies that an input field must be filled out before submitting?" }, opts: [{ ta: "required", en: "required" }, { ta: "validate", en: "validate" }, { ta: "must", en: "must" }, { ta: "checked", en: "checked" }], ans: 0, exp: { ta: "required பண்புக்கூறு காலியான படிவம் சமர்ப்பிக்கப்படுவதைத் தடுக்கும்.", en: "The 'required' attribute enforces mandatory field completion." } },
+            { id: 813, ch: 8, q: { ta: "கோப்பு பதிவேற்றத்திற்கு (File Upload) HTML படிவத்தில் இருக்க வேண்டிய enctype மதிப்பு என்ன? (உள் வினா)", en: "Which enctype attribute value is required for file uploads in HTML forms? (Interior)" }, opts: [{ ta: "multipart/form-data", en: "multipart/form-data" }, { ta: "text/plain", en: "text/plain" }, { ta: "application/json", en: "application/json" }, { ta: "file/upload", en: "file/upload" }], ans: 0, exp: { ta: "கோப்புகளைப் பதிவேற்ற enctype='multipart/form-data' அவசியம்.", en: "enctype='multipart/form-data' is mandatory for file uploads." } },
+            { id: 814, ch: 8, q: { ta: "PHP-இல் கோப்பு உள்ளதா எனச் சரிபார்க்கப் பயன்படும் செயற்கூறு எது?", en: "Which PHP function checks whether a file or directory exists?" }, opts: [{ ta: "file_exists()", en: "file_exists()" }, { ta: "is_file_there()", en: "is_file_there()" }, { ta: "check_file()", en: "check_file()" }, { ta: "has_file()", en: "has_file()" }], ans: 0, exp: { ta: "file_exists('data.txt') கோப்பு இருந்தால் true தரும்.", en: "file_exists() checks if a file exists." } },
+            { id: 815, ch: 8, q: { ta: "GET மற்றும் POST ஆகிய இரு முறைகளின் தரவுகளையும் பெற உதவும் Superglobal அணி எது?", en: "Which PHP superglobal collects form data sent with both GET and POST methods?" }, opts: [{ ta: "$_REQUEST", en: "$_REQUEST" }, { ta: "$_SESSION", en: "$_SESSION" }, { ta: "$_COOKIE", en: "$_COOKIE" }, { ta: "$_ENV", en: "$_ENV" }], ans: 0, exp: { ta: "$_REQUEST அணியில் $_GET மற்றும் $_POST தரவுகள் இருக்கும்.", en: "$_REQUEST contains data from $_GET, $_POST, and $_COOKIE." } },
+
+            // --- CHAPTER 9 (15 Qns) ---
+            { id: 901, ch: 9, q: { ta: "PHP-இல் MySQLi தரவுத்தள இணைப்பைத் தொடங்கப் பயன்படும் செயற்கூறு எது?", en: "Which PHP function opens a new connection to a MySQL server?" }, opts: [{ ta: "mysqli_connect()", en: "mysqli_connect()" }, { ta: "mysqli_query()", en: "mysqli_query()" }, { ta: "mysqli_close()", en: "mysqli_close()" }, { ta: "mysqli_open()", en: "mysqli_open()" }], ans: 0, exp: { ta: "mysqli_connect() MySQL தரவுத்தளத்துடன் இணைப்பை ஏற்படுத்தும்.", en: "mysqli_connect() establishes a connection to MySQL." } },
+            { id: 902, ch: 9, q: { ta: "mysqli_connect() செயற்கூறிற்குத் தேவையான அளபுருக்களின் (Parameters) எண்ணிக்கை என்ன?", en: "How many parameters are commonly passed to mysqli_connect()?" }, opts: [{ ta: "4 (Server, Username, Password, DB_Name)", en: "4 (Server, Username, Password, DB_Name)" }, { ta: "2", en: "2" }, { ta: "3", en: "3" }, { ta: "5", en: "5" }], ans: 0, exp: { ta: "Server, Username, Password, Database name ஆகிய 4 அளபுருக்கள் பயன்படுகின்றன.", en: "The 4 parameters are host, username, password, and database name." } },
+            { id: 903, ch: 9, q: { ta: "PHP-இல் SQL வினவலை (Query) இயக்கப் பயன்படும் செயற்கூறு எது?", en: "Which PHP function executes an SQL query against a MySQL database?" }, opts: [{ ta: "mysqli_query()", en: "mysqli_query()" }, { ta: "mysqli_connect()", en: "mysqli_connect()" }, { ta: "mysqli_fetch()", en: "mysqli_fetch()" }, { ta: "mysqli_error()", en: "mysqli_error()" }], ans: 0, exp: { ta: "mysqli_query($conn, $sql) SQL கட்டளையைச் செயல்படுத்தும்.", en: "mysqli_query() performs a query against the database." } },
+            { id: 904, ch: 9, q: { ta: "MySQL தரவுத்தள இணைப்பை மூடுவதற்குப் பயன்படும் செயற்கூறு எது?", en: "Which PHP function closes a previously opened database connection?" }, opts: [{ ta: "mysqli_close()", en: "mysqli_close()" }, { ta: "mysqli_stop()", en: "mysqli_stop()" }, { ta: "mysqli_end()", en: "mysqli_end()" }, { ta: "mysqli_quit()", en: "mysqli_quit()" }], ans: 0, exp: { ta: "mysqli_close($conn) தரவுத்தள இணைப்பை மூடும்.", en: "mysqli_close() closes an active MySQLi connection." } },
+            { id: 905, ch: 9, q: { ta: "தரவுத்தள இணைப்பில் ஏதேனும் பிழை ஏற்பட்டால் பிழைச் செய்தியைக் காட்டும் செயற்கூறு எது?", en: "Which function returns the error description from the last connection error?" }, opts: [{ ta: "mysqli_connect_error()", en: "mysqli_connect_error()" }, { ta: "mysqli_bug()", en: "mysqli_bug()" }, { ta: "mysqli_fail()", en: "mysqli_fail()" }, { ta: "mysqli_warn()", en: "mysqli_warn()" }], ans: 0, exp: { ta: "mysqli_connect_error() இணைப்புப் பிழை விவரத்தைத் தரும்.", en: "mysqli_connect_error() returns the connection error string." } },
+            { id: 906, ch: 9, q: { ta: "MySQLi என்பதில் 'i' எதைக் குறிக்கிறது? (பொதுத்தேர்வு வினா)", en: "What does the 'i' stand for in MySQLi? (Public Exam)" }, opts: [{ ta: "Improved (மேம்படுத்தப்பட்ட)", en: "Improved" }, { ta: "Internet", en: "Internet" }, { ta: "Interface", en: "Interface" }, { ta: "Internal", en: "Internal" }], ans: 0, exp: { ta: "MySQLi என்பது MySQL Improved என்பதன் சுருக்கமாகும்.", en: "MySQLi stands for MySQL Improved." } },
+            { id: 907, ch: 9, q: { ta: "வினவல் முடிவிலிருந்து ஒரு வரிசையை Associative Array ஆகப் பெறப் பயன்படும் செயற்கூறு எது?", en: "Which function fetches a result row as an associative array?" }, opts: [{ ta: "mysqli_fetch_assoc()", en: "mysqli_fetch_assoc()" }, { ta: "mysqli_fetch_num()", en: "mysqli_fetch_num()" }, { ta: "mysqli_get_row()", en: "mysqli_get_row()" }, { ta: "mysqli_read()", en: "mysqli_read()" }], ans: 0, exp: { ta: "mysqli_fetch_assoc($result) நெடுவரிசைப் பெயர்களைத் திறவுகோலாகக் கொண்டு வரிசையைத் தரும்.", en: "mysqli_fetch_assoc() fetches a row as an associative array." } },
+            { id: 908, ch: 9, q: { ta: "SELECT வினவல் மூலம் எத்தனை வரிசைகள் (Rows) கிடைத்துள்ளன என்பதைக் கண்டறியும் செயற்கூறு எது?", en: "Which function returns the number of rows in a result set?" }, opts: [{ ta: "mysqli_num_rows()", en: "mysqli_num_rows()" }, { ta: "mysqli_count_rows()", en: "mysqli_count_rows()" }, { ta: "mysqli_total()", en: "mysqli_total()" }, { ta: "mysqli_rows()", en: "mysqli_rows()" }], ans: 0, exp: { ta: "mysqli_num_rows($result) கிடைத்த பதிவுகளின் எண்ணிக்கையைத் தரும்.", en: "mysqli_num_rows() returns the row count of a result set." } },
+            { id: 909, ch: 9, q: { ta: "உள்ளூர் சேவையகத்தின் (Local Server) கொடாநிலை பெயர் என்ன?", en: "What is the default hostname for a local MySQL server?" }, opts: [{ ta: "localhost", en: "localhost" }, { ta: "remotehost", en: "remotehost" }, { ta: "webhost", en: "webhost" }, { ta: "dbhost", en: "dbhost" }], ans: 0, exp: { ta: "உள்ளூர் கணினியில் சேவையகம் 'localhost' (127.0.0.1) என அழைக்கப்படும்.", en: "'localhost' refers to the local machine." } },
+            { id: 910, ch: 9, q: { ta: "XAMPP-இல் MySQL-இன் கொடாநிலை பயனர் பெயர் (Default Username) என்ன?", en: "What is the default MySQL username in XAMPP?" }, opts: [{ ta: "root", en: "root" }, { ta: "admin", en: "admin" }, { ta: "user", en: "user" }, { ta: "guest", en: "guest" }], ans: 0, exp: { ta: "கொடாநிலையாக பயனர் பெயர் 'root' மற்றும் கடவுச்சொல் காலியாக ('') இருக்கும்.", en: "The default username is 'root' with an empty password." } },
+            { id: 911, ch: 9, q: { ta: "PHP வழியாக MySQL தரவுத்தளத்துடன் இணையப் பயன்படும் மற்றொரு நவீன இடைமுகம் எது?", en: "Which is the other modern database abstraction layer in PHP besides MySQLi?" }, opts: [{ ta: "PDO (PHP Data Objects)", en: "PDO (PHP Data Objects)" }, { ta: "ODBC", en: "ODBC" }, { ta: "JDBC", en: "JDBC" }, { ta: "ADO", en: "ADO" }], ans: 0, exp: { ta: "MySQLi மற்றும் PDO ஆகிய இரண்டும் PHP-இல் தரவுத்தள இணைப்பிற்குப் பயன்படுகின்றன.", en: "PHP supports MySQLi and PDO (PHP Data Objects)." } },
+            { id: 912, ch: 9, q: { ta: "SQL வினவலில் பிழை ஏற்பட்டால் நிரலை நிறுத்திப் பிழையைக் காட்டப் பயன்படும் PHP செயற்கூறு எது?", en: "Which PHP function prints a message and exits the current script on connection failure?" }, opts: [{ ta: "die()", en: "die()" }, { ta: "stop()", en: "stop()" }, { ta: "break()", en: "break()" }, { ta: "halt()", en: "halt()" }], ans: 0, exp: { ta: "if (!$conn) { die('Connection failed'); } மூலம் நிரலை நிறுத்தலாம்.", en: "die() outputs a message and terminates the script." } },
+            { id: 913, ch: 9, q: { ta: "UPDATE, DELETE வினவல்களால் பாதிக்கப்பட்ட வரிசைகளின் எண்ணிக்கையைத் தரும் செயற்கூறு எது? (உள் வினா)", en: "Which function returns the number of affected rows in INSERT, UPDATE, or DELETE? (Interior)" }, opts: [{ ta: "mysqli_affected_rows()", en: "mysqli_affected_rows()" }, { ta: "mysqli_num_rows()", en: "mysqli_num_rows()" }, { ta: "mysqli_changed()", en: "mysqli_changed()" }, { ta: "mysqli_update_count()", en: "mysqli_update_count()" }], ans: 0, exp: { ta: "mysqli_affected_rows($conn) மாற்றப்பட்ட பதிவுகளின் எண்ணிக்கையைத் தரும்.", en: "mysqli_affected_rows() returns rows affected by the last query." } },
+            { id: 914, ch: 9, q: { ta: "தரவுத்தளத்தில் உள்ள பதிவுகளை மாற்றியமைக்கப் பயன்படும் SQL கட்டளை எது?", en: "Which SQL command modifies existing records in a MySQL table?" }, opts: [{ ta: "UPDATE", en: "UPDATE" }, { ta: "ALTER", en: "ALTER" }, { ta: "INSERT", en: "INSERT" }, { ta: "CREATE", en: "CREATE" }], ans: 0, exp: { ta: "UPDATE அட்டவணையின் தரவுகளையும், ALTER அட்டவணையின் அமைப்பையும் மாற்றும்.", en: "UPDATE modifies existing data records in a table." } },
+            { id: 915, ch: 9, q: { ta: "PHP 7 மற்றும் அதற்கு மேற்பட்ட பதிப்புகளில் நீக்கப்பட்ட பழைய MySQL நீட்டிப்பு எது?", en: "Which legacy MySQL extension was completely removed in PHP 7?" }, opts: [{ ta: "mysql_* functions", en: "mysql_* functions" }, { ta: "mysqli_* functions", en: "mysqli_* functions" }, { ta: "PDO", en: "PDO" }, { ta: "SQLite3", en: "SQLite3" }], ans: 0, exp: { ta: "பழைய mysql_connect() நீக்கப்பட்டு mysqli_connect() பயன்பாட்டிற்கு வந்தது.", en: "The original mysql_* extension was removed in PHP 7." } },
+
+            // --- CHAPTER 10 (15 Qns) ---
+            { id: 1001, ch: 10, q: { ta: "ARPANET எந்த ஆண்டு உருவாக்கப்பட்டது?", en: "In which year was ARPANET formed?" }, opts: [{ ta: "1969", en: "1969" }, { ta: "1976", en: "1976" }, { ta: "1985", en: "1985" }, { ta: "1991", en: "1991" }], ans: 0, exp: { ta: "1969-இல் அமெரிக்கப் பாதுகாப்புத் துறையால் ARPANET உருவாக்கப்பட்டது.", en: "ARPANET was established in 1969." } },
+            { id: 1002, ch: 10, q: { ta: "இணையத்தின் தந்தை என அழைக்கப்படுபவர் யார்?", en: "Who is known as the Father of the Internet?" }, opts: [{ ta: "வின்ட் செர்ஃப் (Vint Cerf)", en: "Vint Cerf" }, { ta: "சார்லஸ் பாபேஜ்", en: "Charles Babbage" }, { ta: "பில் கேட்ஸ்", en: "Bill Gates" }, { ta: "ஆலன் டூரிங்", en: "Alan Turing" }], ans: 0, exp: { ta: "TCP/IP நெறிமுறையை வடிவமைத்த வின்ட் செர்ஃப் இணையத்தின் தந்தை எனப்படுகிறார்.", en: "Vint Cerf is widely recognized as the Father of the Internet." } },
+            { id: 1003, ch: 10, q: { ta: "கம்பியில்லா இணைய இணைப்பை வழங்கும் Wi-Fi என்பதன் விரிவாக்கம் என்ன?", en: "What does Wi-Fi stand for?" }, opts: [{ ta: "Wireless Fidelity", en: "Wireless Fidelity" }, { ta: "Wired Fiber", en: "Wired Fiber" }, { ta: "Wide Fidelity", en: "Wide Fidelity" }, { ta: "Wireless Frequency", en: "Wireless Frequency" }], ans: 0, exp: { ta: "Wi-Fi என்பது Wireless Fidelity என்பதன் சுருக்கமாகும்.", en: "Wi-Fi stands for Wireless Fidelity." } },
+            { id: 1004, ch: 10, q: { ta: "ஒரு கட்டிடம் அல்லது பள்ளி வளாகத்திற்குள் அமைக்கப்படும் வலையமைப்பு எது?", en: "Which network spans a small geographic area like a school or office building?" }, opts: [{ ta: "LAN (Local Area Network)", en: "LAN (Local Area Network)" }, { ta: "WAN (Wide Area Network)", en: "WAN (Wide Area Network)" }, { ta: "MAN (Metropolitan Area Network)", en: "MAN (Metropolitan Area Network)" }, { ta: "GAN", en: "GAN" }], ans: 0, exp: { ta: "LAN (குறும்பரப்பு வலையமைப்பு) ஒரு கட்டிடத்திற்குள் செயல்படும்.", en: "LAN connects computers within a limited area like a school." } },
+            { id: 1005, ch: 10, q: { ta: "வலையமைப்பில் ஒரு கணினியை அடையாளம் காண உதவும் 48-பிட் வன்பொருள் முகவரி எது?", en: "Which is the 48-bit unique hardware address assigned to a Network Interface Card?" }, opts: [{ ta: "MAC முகவரி (MAC Address)", en: "MAC Address" }, { ta: "IP முகவரி (IP Address)", en: "IP Address" }, { ta: "URL முகவரி", en: "URL Address" }, { ta: "Port எண்", en: "Port Number" }], ans: 0, exp: { ta: "MAC (Media Access Control) முகவரி NIC அட்டையில் பதிக்கப்பட்ட 48-பிட் முகவரியாகும்.", en: "MAC Address is a permanent 48-bit physical address." } },
+            { id: 1006, ch: 10, q: { ta: "வலையமைப்பில் இணைக்கப்பட்டுள்ள ஒவ்வொரு கணினி அல்லது சாதனமும் எவ்வாறு அழைக்கப்படுகிறது?", en: "Each computer or device connected to a network is called a ______." }, opts: [{ ta: "முனை (Node)", en: "Node" }, { ta: "சேவையகம் (Server)", en: "Server" }, { ta: "வடம் (Cable)", en: "Cable" }, { ta: "பொதி (Packet)", en: "Packet" }], ans: 0, exp: { ta: "வலையமைப்பில் தரவை அனுப்பும் அல்லது பெறும் ஒவ்வொரு சாதனமும் முனை (Node) எனப்படும்.", en: "Any active device attached to a network is called a Node." } },
+            { id: 1007, ch: 10, q: { ta: "மிகக் குறுகிய தொலைவில் (10 மீட்டர் வரை - Bluetooth, Hotspot) அமைக்கப்படும் வலையமைப்பு எது?", en: "Which network covers a very short range (up to 10 meters) around an individual?" }, opts: [{ ta: "PAN (Personal Area Network)", en: "PAN (Personal Area Network)" }, { ta: "MAN", en: "MAN" }, { ta: "WAN", en: "WAN" }, { ta: "CAN", en: "CAN" }], ans: 0, exp: { ta: "PAN (தனிநபர் பரப்பு வலையமைப்பு) 10 மீட்டர் சுற்றளவில் செயல்படும்.", en: "PAN connects personal devices within a 10-meter range." } },
+            { id: 1008, ch: 10, q: { ta: "இணையத்தில் தகவல்களைப் பரிமாறத் தரவுகளைச் சிறிய துண்டுகளாகப் பிரிப்பதன் பெயர் என்ன? (பொதுத்தேர்வு வினா)", en: "Small units of data transmitted over a network are called _______. (Public Exam)" }, opts: [{ ta: "பொதிகள் (Packets)", en: "Packets" }, { ta: "துணுக்குகள் (Chips)", en: "Chips" }, { ta: "கோப்புகள் (Files)", en: "Files" }, { ta: "அட்டைகள் (Cards)", en: "Cards" }], ans: 0, exp: { ta: "தரவுகள் Packets என்ற சிறிய பொதிகளாகப் பிரிக்கப்பட்டு அனுப்பப்படுகின்றன.", en: "Data is broken into small Packets for network transmission." } },
+            { id: 1009, ch: 10, q: { ta: "வையக விரிவு வலையை (WWW - World Wide Web) உருவாக்கியவர் யார்?", en: "Who invented the World Wide Web (WWW)?" }, opts: [{ ta: "டிம் பெர்னர்ஸ் லீ (Tim Berners-Lee)", en: "Tim Berners-Lee" }, { ta: "வின்ட் செர்ஃப்", en: "Vint Cerf" }, { ta: "ராஸ்மஸ் லெர்டார்ஃப்", en: "Rasmus Lerdorf" }, { ta: "மார்க் ஆண்ட்ரீசன்", en: "Marc Andreessen" }], ans: 0, exp: { ta: "1989-இல் டிம் பெர்னர்ஸ் லீ WWW-ஐ உருவாக்கினார்.", en: "Tim Berners-Lee invented the World Wide Web in 1989." } },
+            { id: 1010, ch: 10, q: { ta: "ஒரு நகரம் முழுவதையும் இணைக்கும் வலையமைப்பு எது?", en: "Which network spans across an entire city?" }, opts: [{ ta: "MAN (Metropolitan Area Network)", en: "MAN (Metropolitan Area Network)" }, { ta: "LAN", en: "LAN" }, { ta: "PAN", en: "PAN" }, { ta: "SAN", en: "SAN" }], ans: 0, exp: { ta: "MAN ஒரு நகரத்திற்குள் உள்ள பல LAN-களை இணைக்கும்.", en: "MAN interconnects multiple LANs across a city." } },
+            { id: 1011, ch: 10, q: { ta: "சமூக வலைதளங்களின் முக்கியப் பயன் என்ன?", en: "What is the primary purpose of Social Networking platforms?" }, opts: [{ ta: "மக்களிடையே கருத்துக்கள் மற்றும் தகவல்களைப் பகிர்தல்", en: "Sharing ideas, information, and connecting people" }, { ta: "வன்பொருள் பழுதுபார்த்தல்", en: "Hardware repairing" }, { ta: "இயக்க அமைப்பை நிறுவுதல்", en: "OS installation" }, { ta: "மின்சாரம் தயாரித்தல்", en: "Electricity generation" }], ans: 0, exp: { ta: "சமூக வலைதளங்கள் உலகளாவிய தகவல் பரிமாற்றத்திற்கு உதவுகின்றன.", en: "Social networks enable global communication and content sharing." } },
+            { id: 1012, ch: 10, q: { ta: "கணிப்பொறியை வலையமைப்புடன் இணைக்க உதவும் வன்பொருள் அட்டை எது?", en: "Which hardware component connects a computer to a computer network?" }, opts: [{ ta: "NIC (Network Interface Card)", en: "NIC (Network Interface Card)" }, { ta: "Sound Card", en: "Sound Card" }, { ta: "Graphics Card", en: "Graphics Card" }, { ta: "TV Tuner Card", en: "TV Tuner Card" }], ans: 0, exp: { ta: "NIC (வலையமைப்பு இடைமுக அட்டை) கணினியை வலையமைப்புடன் இணைக்கும்.", en: "NIC provides the physical interface to connect a PC to a network." } },
+            { id: 1013, ch: 10, q: { ta: "RFID என்பதன் விரிவாக்கம் என்ன? (உள் வினா)", en: "What does RFID stand for? (Interior)" }, opts: [{ ta: "Radio Frequency Identification", en: "Radio Frequency Identification" }, { ta: "Rapid File Internet Data", en: "Rapid File Internet Data" }, { ta: "Radio Fiber Internet Device", en: "Radio Fiber Internet Device" }, { ta: "Remote Frequency ID", en: "Remote Frequency ID" }], ans: 0, exp: { ta: "RFID என்பது ரேடியோ அலைகள் மூலம் பொருள்களை அடையாளம் காணும் தொழில்நுட்பம்.", en: "RFID stands for Radio Frequency Identification." } },
+            { id: 1014, ch: 10, q: { ta: "தொலைபேசி கம்பிகள் வழியாக அதிவேக இணைய சேவையை வழங்கும் தொழில்நுட்பம் எது?", en: "Which technology provides high-speed internet over traditional telephone lines?" }, opts: [{ ta: "DSL (Digital Subscriber Line)", en: "DSL (Digital Subscriber Line)" }, { ta: "NFC", en: "NFC" }, { ta: "Bluetooth", en: "Bluetooth" }, { ta: "Infrared", en: "Infrared" }], ans: 0, exp: { ta: "DSL தொலைபேசி கம்பி வழியாக அதிவேக பிராட்பேண்ட் இணையத்தை வழங்கும்.", en: "DSL delivers broadband internet over copper telephone lines." } },
+            { id: 1015, ch: 10, q: { ta: "உலகளவில் மிகப்பெரிய விரிபரப்பு வலையமைப்பு (WAN) எது?", en: "Which is the largest Wide Area Network (WAN) in the world?" }, opts: [{ ta: "இணையம் (The Internet)", en: "The Internet" }, { ta: "Intranet", en: "Intranet" }, { ta: "Bluetooth", en: "Bluetooth" }, { ta: "Wi-Fi", en: "Wi-Fi" }], ans: 0, exp: { ta: "இணையம் (Internet) உலகின் மிகப்பெரிய WAN ஆகும்.", en: "The Internet is the largest global WAN." } },
+
+            // --- CHAPTER 11 (15 Qns) ---
+            { id: 1101, ch: 11, q: { ta: "OSI மாதிரியில் மொத்தம் எத்தனை அடுக்குகள் (Layers) உள்ளன?", en: "How many layers are there in the OSI Reference Model?" }, opts: [{ ta: "7 அடுக்குகள்", en: "7 Layers" }, { ta: "4 அடுக்குகள்", en: "4 Layers" }, { ta: "5 அடுக்குகள்", en: "5 Layers" }, { ta: "6 அடுக்குகள்", en: "6 Layers" }], ans: 0, exp: { ta: "OSI மாதிரியில் 7 அடுக்குகள் உள்ளன.", en: "The OSI reference model has 7 layers." } },
+            { id: 1102, ch: 11, q: { ta: "TCP/IP மாதிரியில் எத்தனை அடுக்குகள் உள்ளன?", en: "How many layers exist in the TCP/IP protocol suite?" }, opts: [{ ta: "4 அடுக்குகள்", en: "4 Layers" }, { ta: "7 அடுக்குகள்", en: "7 Layers" }, { ta: "3 அடுக்குகள்", en: "3 Layers" }, { ta: "8 அடுக்குகள்", en: "8 Layers" }], ans: 0, exp: { ta: "Network Access, Internet, Transport, Application என 4 அடுக்குகள் உள்ளன.", en: "TCP/IP consists of 4 layers." } },
+            { id: 1103, ch: 11, q: { ta: "இணையத்தில் வலைப்பக்கங்களைப் பாதுகாப்பாகப் பரிமாற உதவும் நெறிமுறை எது?", en: "Which protocol provides encrypted, secure web communication?" }, opts: [{ ta: "HTTPS", en: "HTTPS" }, { ta: "HTTP", en: "HTTP" }, { ta: "FTP", en: "FTP" }, { ta: "TELNET", en: "TELNET" }], ans: 0, exp: { ta: "HTTPS SSL/TLS குறியாக்கத்தைப் பயன்படுத்துகிறது.", en: "HTTPS encrypts web data using SSL/TLS." } },
+            { id: 1104, ch: 11, q: { ta: "கோப்புகளை ஒரு கணினியிலிருந்து மற்றொரு கணினிக்குப் பரிமாற உதவும் நெறிமுறை எது?", en: "Which protocol is specifically used for transferring files between client and server?" }, opts: [{ ta: "FTP (File Transfer Protocol)", en: "FTP (File Transfer Protocol)" }, { ta: "SMTP", en: "SMTP" }, { ta: "ARP", en: "ARP" }, { ta: "ICMP", en: "ICMP" }], ans: 0, exp: { ta: "FTP கோப்புகளைப் பதிவேற்றவும் பதிவிறக்கவும் பயன்படுகிறது.", en: "FTP transfers files over a TCP/IP network." } },
+            { id: 1105, ch: 11, q: { ta: "மின்னஞ்சல்களை (Emails) அனுப்புவதற்குப் பயன்படும் நெறிமுறை எது?", en: "Which protocol is used for sending outgoing emails?" }, opts: [{ ta: "SMTP (Simple Mail Transfer Protocol)", en: "SMTP (Simple Mail Transfer Protocol)" }, { ta: "HTTP", en: "HTTP" }, { ta: "SNMP", en: "SNMP" }, { ta: "DHCP", en: "DHCP" }], ans: 0, exp: { ta: "மின்னஞ்சல் அனுப்ப SMTP-உம், பெற POP3/IMAP-உம் பயன்படுகின்றன.", en: "SMTP sends emails while POP3/IMAP receive them." } },
+            { id: 1106, ch: 11, q: { ta: "OSI மாதிரியின் முதல் (மிகக் கீழ்) அடுக்கு எது?", en: "Which is the lowest (first) layer of the OSI model?" }, opts: [{ ta: "பருநிலை அடுக்கு (Physical Layer)", en: "Physical Layer" }, { ta: "பயன்பாட்டு அடுக்கு (Application Layer)", en: "Application Layer" }, { ta: "வலையமைப்பு அடுக்கு (Network Layer)", en: "Network Layer" }, { ta: "அமர்வு அடுக்கு (Session Layer)", en: "Session Layer" }], ans: 0, exp: { ta: "Physical Layer கம்பி வழியே பிட்டுகளை (0, 1) கடத்தும்.", en: "Physical Layer is Layer 1 of the OSI model." } },
+            { id: 1107, ch: 11, q: { ta: "IP முகவரி மற்றும் வழித்தடத் தேர்வு (Routing) எந்த OSI அடுக்கில் நடைபெறுகிறது? (பொதுத்தேர்வு வினா)", en: "Which OSI layer handles logical IP addressing and routing? (Public Exam)" }, opts: [{ ta: "வலையமைப்பு அடுக்கு (Network Layer)", en: "Network Layer" }, { ta: "தரவு இணைப்பு அடுக்கு (Data Link Layer)", en: "Data Link Layer" }, { ta: "போக்குவரத்து அடுக்கு (Transport Layer)", en: "Transport Layer" }, { ta: "விளக்கக்காட்சி அடுக்கு (Presentation Layer)", en: "Presentation Layer" }], ans: 0, exp: { ta: "Network Layer (Layer 3) IP முகவரி மற்றும் Routing பணிகளைச் செய்யும்.", en: "Network Layer manages IP addressing and packet routing." } },
+            { id: 1108, ch: 11, q: { ta: "தரவு குறியாக்கம் (Encryption) மற்றும் சுருக்கம் (Compression) எந்த OSI அடுக்கில் நடைபெறுகிறது?", en: "Which OSI layer is responsible for data encryption and compression?" }, opts: [{ ta: "விளக்கக்காட்சி அடுக்கு (Presentation Layer)", en: "Presentation Layer" }, { ta: "அமர்வு அடுக்கு (Session Layer)", en: "Session Layer" }, { ta: "பருநிலை அடுக்கு", en: "Physical Layer" }, { ta: "தரவு இணைப்பு அடுக்கு", en: "Data Link Layer" }], ans: 0, exp: { ta: "Presentation Layer (Layer 6) தரவு வடிவமைப்பு மற்றும் குறியாக்கத்தைச் செய்யும்.", en: "Presentation Layer handles translation, encryption, and compression." } },
+            { id: 1109, ch: 11, q: { ta: "தொலைதூரக் கணினியை (Remote Login) இயக்கப் பயன்படும் நெறிமுறை எது?", en: "Which protocol allows remote login to another computer over a network?" }, opts: [{ ta: "TELNET / SSH", en: "TELNET / SSH" }, { ta: "SMTP", en: "SMTP" }, { ta: "POP3", en: "POP3" }, { ta: "ARP", en: "ARP" }], ans: 0, exp: { ta: "TELNET மற்றும் பாதுகாப்பான SSH தொலைதூரக் கணினியை இயக்க உதவும்.", en: "TELNET and SSH enable remote terminal access." } },
+            { id: 1110, ch: 11, q: { ta: "வலையமைப்பு சாதனங்களுக்குத் தானாகவே IP முகவரியை வழங்கும் நெறிமுறை எது?", en: "Which protocol automatically assigns IP addresses to devices on a network?" }, opts: [{ ta: "DHCP (Dynamic Host Configuration Protocol)", en: "DHCP" }, { ta: "DNS", en: "DNS" }, { ta: "FTP", en: "FTP" }, { ta: "HTTP", en: "HTTP" }], ans: 0, exp: { ta: "DHCP சாதனங்களுக்கு Dynamic IP முகவரிகளை தானாக வழங்கும்.", en: "DHCP dynamically assigns IP addresses to network hosts." } },
+            { id: 1111, ch: 11, q: { ta: "நம்பகமான, இணைப்பு சார்ந்த (Connection-oriented) போக்குவரத்து நெறிமுறை எது?", en: "Which is a reliable, connection-oriented transport layer protocol?" }, opts: [{ ta: "TCP (Transmission Control Protocol)", en: "TCP" }, { ta: "UDP (User Datagram Protocol)", en: "UDP" }, { ta: "IP", en: "IP" }, { ta: "ICMP", en: "ICMP" }], ans: 0, exp: { ta: "TCP தரவுப் பொதிகள் வரிசையாகவும் பிழையின்றியும் சேர்வதை உறுதி செய்யும்.", en: "TCP guarantees reliable, ordered delivery of packets." } },
+            { id: 1112, ch: 11, q: { ta: "IP முகவரியிலிருந்து வன்பொருள் முகவரியை (MAC Address) கண்டறிய உதவும் நெறிமுறை எது?", en: "Which protocol resolves an IP address into a physical MAC address?" }, opts: [{ ta: "ARP (Address Resolution Protocol)", en: "ARP" }, { ta: "RARP", en: "RARP" }, { ta: "SMTP", en: "SMTP" }, { ta: "HTTP", en: "HTTP" }], ans: 0, exp: { ta: "ARP IP முகவரிக்கு இணையான MAC முகவரியைக் கண்டறியும்.", en: "ARP maps a 32-bit IP address to a 48-bit MAC address." } },
+            { id: 1113, ch: 11, q: { ta: "வலையமைப்பில் தரவுப் பரிமாற்றத்தைக் கட்டுப்படுத்தும் விதிகளின் தொகுப்பு எவ்வாறு அழைக்கப்படுகிறது? (உள் வினா)", en: "A set of rules governing data communication over a network is called a ______. (Interior)" }, opts: [{ ta: "நெறிமுறை (Protocol)", en: "Protocol" }, { ta: "இடவியல் (Topology)", en: "Topology" }, { ta: "வடம் (Cable)", en: "Cable" }, { ta: "திசைவி (Router)", en: "Router" }], ans: 0, exp: { ta: "நெறிமுறை (Protocol) என்பது தரவுப் பரிமாற்ற விதிகளின் தொகுப்பாகும்.", en: "A Protocol defines rules and conventions for communication." } },
+            { id: 1114, ch: 11, q: { ta: "HTTP நெறிமுறையின் கொடாநிலை துறைமுக எண் (Default Port Number) என்ன?", en: "What is the default port number for HTTP?" }, opts: [{ ta: "80", en: "80" }, { ta: "443", en: "443" }, { ta: "21", en: "21" }, { ta: "25", en: "25" }], ans: 0, exp: { ta: "HTTP-க்கு 80, HTTPS-க்கு 443, FTP-க்கு 21, SMTP-க்கு 25.", en: "HTTP uses port 80; HTTPS uses port 443." } },
+            { id: 1115, ch: 11, q: { ta: "Intranet என்பது எதைக் குறிக்கிறது?", en: "What is an Intranet?" }, opts: [{ ta: "ஒரு நிறுவனத்திற்குள் மட்டும் செயல்படும் தனியார் வலையமைப்பு", en: "A private network accessible only within an organization" }, { ta: "பொது இணையம்", en: "Public Internet" }, { ta: "செயற்கைக்கோள் இணைப்பு", en: "Satellite link" }, { ta: "புளூடூத் இணைப்பு", en: "Bluetooth link" }], ans: 0, exp: { ta: "Intranet ஒரு நிறுவனத்தின் ஊழியர்கள் மட்டும் பயன்படுத்தும் பாதுகாப்பான வலையமைப்பு.", en: "An Intranet is an internal private network for an organization." } },
+
+            // --- CHAPTER 12 (15 Qns) ---
+            { id: 1201, ch: 12, q: { ta: "DNS என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of DNS?" }, opts: [{ ta: "Domain Name System", en: "Domain Name System" }, { ta: "Data Network Service", en: "Data Network Service" }, { ta: "Digital Name Server", en: "Digital Name Server" }, { ta: "Domain Number System", en: "Domain Number System" }], ans: 0, exp: { ta: "DNS என்பது Domain Name System ஆகும்.", en: "DNS stands for Domain Name System." } },
+            { id: 1202, ch: 12, q: { ta: "IPv4 முகவரி எத்தனை பிட்டுகளைக் (Bits) கொண்டது?", en: "How many bits are used in an IPv4 address?" }, opts: [{ ta: "32 பிட்டுகள்", en: "32 bits" }, { ta: "64 பிட்டுகள்", en: "64 bits" }, { ta: "128 பிட்டுகள்", en: "128 bits" }, { ta: "16 பிட்டுகள்", en: "16 bits" }], ans: 0, exp: { ta: "IPv4 32-பிட் (4 பைட்) முகவரியைக் கொண்டது.", en: "IPv4 uses 32-bit addresses." } },
+            { id: 1203, ch: 12, q: { ta: "IPv6 முகவரி எத்தனை பிட்டுகளைக் கொண்டது?", en: "How many bits are used in an IPv6 address?" }, opts: [{ ta: "128 பிட்டுகள்", en: "128 bits" }, { ta: "32 பிட்டுகள்", en: "32 bits" }, { ta: "48 பிட்டுகள்", en: "48 bits" }, { ta: "256 பிட்டுகள்", en: "256 bits" }], ans: 0, exp: { ta: "IPv6 முகவரி 128 பிட்டுகளைக் கொண்ட பதினாறும வடிவமாகும்.", en: "IPv6 addresses are 128 bits long." } },
+            { id: 1204, ch: 12, q: { ta: "கல்வி நிறுவனங்களுக்கான உயர்மட்டக் களப்பெயர் (TLD) எது?", en: "Which Top-Level Domain (TLD) is used for educational institutions?" }, opts: [{ ta: ".edu", en: ".edu" }, { ta: ".gov", en: ".gov" }, { ta: ".com", en: ".com" }, { ta: ".mil", en: ".mil" }], ans: 0, exp: { ta: ".edu கல்வி நிறுவனங்களுக்கும், .gov அரசு நிறுவனங்களுக்கும் பயன்படுகிறது.", en: ".edu is used for educational institutions." } },
+            { id: 1205, ch: 12, q: { ta: "இந்தியாவிற்கான நாடு குறியீடு உயர்மட்டக் களப்பெயர் (ccTLD) எது?", en: "Which is the Country Code Top-Level Domain (ccTLD) for India?" }, opts: [{ ta: ".in", en: ".in" }, { ta: ".us", en: ".us" }, { ta: ".uk", en: ".uk" }, { ta: ".au", en: ".au" }], ans: 0, exp: { ta: ".in என்பது இந்தியாவின் ccTLD ஆகும்.", en: ".in is the country code TLD for India." } },
+            { id: 1206, ch: 12, q: { ta: "URL என்பதன் விரிவாக்கம் என்ன?", en: "What does URL stand for?" }, opts: [{ ta: "Uniform Resource Locator", en: "Uniform Resource Locator" }, { ta: "Universal Resource Link", en: "Universal Resource Link" }, { ta: "Uniform Register Locator", en: "Uniform Register Locator" }, { ta: "United Resource Line", en: "United Resource Line" }], ans: 0, exp: { ta: "URL என்பது இணையத்தில் ஒரு வளத்தின் முழு முகவரியாகும்.", en: "URL stands for Uniform Resource Locator." } },
+            { id: 1207, ch: 12, q: { ta: "DNS மரக்கட்டமைப்பில் மிக உயர்ந்த நிலையில் உள்ள வேர் முனை (Root Node) எதனால் குறிக்கப்படுகிறது? (பொதுத்தேர்வு வினா)", en: "How is the Root Node represented in the DNS hierarchy? (Public Exam)" }, opts: [{ ta: ". (புள்ளி / Dot)", en: ". (Dot)" }, { ta: "/ (சாய்வுக்கோடு)", en: "/ (Slash)" }, { ta: "@ (At குறி)", en: "@ (At symbol)" }, { ta: "# (ஹேஷ்)", en: "# (Hash)" }], ans: 0, exp: { ta: "DNS படிநிலையில் Root Node ஒரு புள்ளியால் (.) குறிக்கப்படும்.", en: "The DNS root zone is represented by a trailing dot (.)." } },
+            { id: 1208, ch: 12, q: { ta: "DNS-இல் எத்தனை முக்கியக் கூறுகள் (Components) உள்ளன?", en: "How many main components are there in DNS?" }, opts: [{ ta: "3 (Name Space, Name Server, Resolver)", en: "3 (Name Space, Name Server, Resolver)" }, { ta: "2", en: "2" }, { ta: "4", en: "4" }, { ta: "5", en: "5" }], ans: 0, exp: { ta: "Name Space, Name Server, மற்றும் Resolver ஆகிய 3 கூறுகள் உள்ளன.", en: "DNS has 3 components: Name Space, Name Server, and Resolver." } },
+            { id: 1209, ch: 12, q: { ta: "பயனர் கணினியிலிருந்து DNS சேவையகத்திற்குக் கோரிக்கை அனுப்பும் நிரல் எது?", en: "Which client-side program queries DNS servers to resolve domain names?" }, opts: [{ ta: "தீர்வி (Resolver)", en: "Resolver" }, { ta: "ரூட் சேவையகம்", en: "Root Server" }, { ta: "திசைவி (Router)", en: "Router" }, { ta: "மோடம் (Modem)", en: "Modem" }], ans: 0, exp: { ta: "Resolver களப்பெயரை IP முகவரியாக மாற்றும் கோரிக்கையைத் தொடங்கும்.", en: "A DNS Resolver initiates the translation of domain names to IP addresses." } },
+            { id: 1210, ch: 12, q: { ta: "IPv4 முகவரியில் உள்ள ஒவ்வொரு எண்ணும் எந்த வரம்பிற்குள் இருக்கும்?", en: "Each octet in an IPv4 address ranges from ______." }, opts: [{ ta: "0 முதல் 255 வரை", en: "0 to 255" }, { ta: "1 முதல் 100 வரை", en: "1 to 100" }, { ta: "0 முதல் 512 வரை", en: "0 to 512" }, { ta: "1 முதல் 1024 வரை", en: "1 to 1024" }], ans: 0, exp: { ta: "ஒவ்வொரு 8-பிட் பகுதியும் 0 முதல் 255 வரையிலான மதிப்பைக் கொண்டிருக்கும்.", en: "Each 8-bit octet in IPv4 ranges from 0 to 255." } },
+            { id: 1211, ch: 12, q: { ta: "வணிக நிறுவனங்களுக்கான பொதுவான உயர்மட்டக் களப்பெயர் (gTLD) எது?", en: "Which generic Top-Level Domain (gTLD) is used for commercial organizations?" }, opts: [{ ta: ".com", en: ".com" }, { ta: ".gov", en: ".gov" }, { ta: ".edu", en: ".edu" }, { ta: ".mil", en: ".mil" }], ans: 0, exp: { ta: ".com என்பது Commercial நிறுவனங்களுக்கான களப்பெயராகும்.", en: ".com stands for commercial entities." } },
+            { id: 1212, ch: 12, q: { ta: "உலகளவில் மொத்தம் எத்தனை ரூட் பெயர் சேவையகங்கள் (Root Name Servers) உள்ளன?", en: "How many Root Name Server clusters exist globally?" }, opts: [{ ta: "13 (A முதல் M வரை)", en: "13 (A through M)" }, { ta: "7", en: "7" }, { ta: "26", en: "26" }, { ta: "100", en: "100" }], ans: 0, exp: { ta: "உலகளவில் A முதல் M வரை 13 Root Server அமைப்புகள் உள்ளன.", en: "There are 13 logical Root Name Servers labeled A through M." } },
+            { id: 1213, ch: 12, q: { ta: "ஒரு களப்பெயரில் அதிகபட்சமாக எத்தனை எழுத்துக்கள் இருக்கலாம்? (உள் வினா)", en: "What is the maximum total length of a full Domain Name? (Interior)" }, opts: [{ ta: "253 / 255 எழுத்துக்கள்", en: "253 / 255 characters" }, { ta: "63 எழுத்துக்கள்", en: "63 characters" }, { ta: "128 எழுத்துக்கள்", en: "128 characters" }, { ta: "32 எழுத்துக்கள்", en: "32 characters" }], ans: 0, exp: { ta: "ஒரு துணைப் பெயர் 63 எழுத்துக்களும், முழு களப்பெயர் 253/255 எழுத்துக்களும் கொண்டிருக்கலாம்.", en: "A full domain name cannot exceed 253/255 characters." } },
+            { id: 1214, ch: 12, q: { ta: "உலகளவில் IP முகவரிகள் மற்றும் களப்பெயர்களை நிர்வகிக்கும் அமைப்பு எது?", en: "Which organization coordinates global IP addresses and DNS root management?" }, opts: [{ ta: "ICANN", en: "ICANN" }, { ta: "IEEE", en: "IEEE" }, { ta: "ISO", en: "ISO" }, { ta: "W3C", en: "W3C" }], ans: 0, exp: { ta: "ICANN (Internet Corporation for Assigned Names and Numbers) நிர்வகிக்கிறது.", en: "ICANN manages global IP address allocation and DNS." } },
+            { id: 1215, ch: 12, q: { ta: "அரசு நிறுவனங்களுக்கான உயர்மட்டக் களப்பெயர் எது?", en: "Which Top-Level Domain is used for government entities?" }, opts: [{ ta: ".gov", en: ".gov" }, { ta: ".org", en: ".org" }, { ta: ".net", en: ".net" }, { ta: ".biz", en: ".biz" }], ans: 0, exp: { ta: ".gov என்பது அரசுத் துறை இணையதளங்களுக்கானது.", en: ".gov is reserved for government institutions." } },
+
+            // --- CHAPTER 13 (15 Qns) ---
+            { id: 1301, ch: 13, q: { ta: "ஈதர்நெட் (Ethernet) வடத்தில் பயன்படும் இணைப்பி (Connector) எது?", en: "Which connector is used with Twisted Pair Ethernet cables?" }, opts: [{ ta: "RJ-45", en: "RJ-45" }, { ta: "RJ-11", en: "RJ-11" }, { ta: "BNC", en: "BNC" }, { ta: "USB", en: "USB" }], ans: 0, exp: { ta: "RJ-45 இணைப்பி 8 பின்களைக் கொண்டது; ஈதர்நெட் வடத்தில் பயன்படுகிறது.", en: "RJ-45 is an 8-pin connector used for Ethernet cables." } },
+            { id: 1302, ch: 13, q: { ta: "RJ-45 இணைப்பியில் எத்தனை பின்கள் (Pins) உள்ளன?", en: "How many pins are there in an RJ-45 connector?" }, opts: [{ ta: "8 பின்கள்", en: "8 pins" }, { ta: "4 பின்கள்", en: "4 pins" }, { ta: "6 பின்கள்", en: "6 pins" }, { ta: "12 பின்கள்", en: "12 pins" }], ans: 0, exp: { ta: "UTP வடத்தில் உள்ள 8 கம்பிகளை இணைக்க RJ-45-இல் 8 பின்கள் உள்ளன.", en: "An RJ-45 connector contains 8 pins." } },
+            { id: 1303, ch: 13, q: { ta: "ஒளியிழை வடத்தில் (Fiber Optic Cable) தரவு எவ்வாறு கடத்தப்படுகிறது?", en: "How is data transmitted inside a Fiber Optic Cable?" }, opts: [{ ta: "ஒளித் துடிப்புகளாக (Light Pulses)", en: "Light pulses" }, { ta: "மின்சார அலைகளாக", en: "Electrical currents" }, { ta: "ஒலி அலைகளாக", en: "Sound waves" }, { ta: "காந்த அலைகளாக", en: "Magnetic waves" }], ans: 0, exp: { ta: "கண்ணாடி இழை வழியே ஒளி அலைகளாகத் தரவு மிக வேகமாக அனுப்பப்படுகிறது.", en: "Fiber optic cables transmit data as pulses of light." } },
+            { id: 1304, ch: 13, q: { ta: "UTP வடத்தின் முனையில் RJ-45 இணைப்பியை அழுத்திப் பொருத்தப் பயன்படும் கருவி எது?", en: "Which tool attaches an RJ-45 connector onto a UTP cable?" }, opts: [{ ta: "கிரிம்பிங் கருவி (Crimping Tool)", en: "Crimping Tool" }, { ta: "கேபிள் டெஸ்டர்", en: "Cable Tester" }, { ta: "சாலிடரிங் அயர்ன்", en: "Soldering Iron" }, { ta: "மல்டிமீட்டர்", en: "Multimeter" }], ans: 0, exp: { ta: "Crimping Tool மூலம் RJ-45 இணைப்பி வடத்துடன் இறுக்கமாகப் பொருத்தப்படுகிறது.", en: "A Crimping Tool permanently crimps the RJ-45 connector onto the cable." } },
+            { id: 1305, ch: 13, q: { ta: "UTP என்பதன் விரிவாக்கம் என்ன?", en: "What does UTP stand for?" }, opts: [{ ta: "Unshielded Twisted Pair", en: "Unshielded Twisted Pair" }, { ta: "Universal Twisted Pair", en: "Universal Twisted Pair" }, { ta: "United Transfer Protocol", en: "United Transfer Protocol" }, { ta: "Unshielded Transfer Pair", en: "Unshielded Transfer Pair" }], ans: 0, exp: { ta: "UTP என்பது Unshielded Twisted Pair ஆகும்.", en: "UTP stands for Unshielded Twisted Pair." } },
+            { id: 1306, ch: 13, q: { ta: "தொலைபேசி இணைப்புகளில் பயன்படும் 4 அல்லது 6 பின் இணைப்பி எது?", en: "Which connector is commonly used for telephone lines?" }, opts: [{ ta: "RJ-11", en: "RJ-11" }, { ta: "RJ-45", en: "RJ-45" }, { ta: "HDMI", en: "HDMI" }, { ta: "VGA", en: "VGA" }], ans: 0, exp: { ta: "RJ-11 தொலைபேசி கம்பிகளிலும், RJ-45 கணினி வலையமைப்பிலும் பயன்படும்.", en: "RJ-11 is used for telephone wiring." } },
+            { id: 1307, ch: 13, q: { ta: "இரு கணினிகளை (PC-to-PC) Switch இல்லாமல் நேரடியாக இணைக்கப் பயன்படும் வடம் எது? (பொதுத்தேர்வு வினா)", en: "Which Ethernet cable directly connects two similar devices (PC-to-PC)? (Public Exam)" }, opts: [{ ta: "Cross-Over Cable", en: "Cross-Over Cable" }, { ta: "Straight-Through Cable", en: "Straight-Through Cable" }, { ta: "Rollover Cable", en: "Rollover Cable" }, { ta: "Coaxial Cable", en: "Coaxial Cable" }], ans: 0, exp: { ta: "Cross-Over வடத்தில் ஒரு முனையில் T568A, மறுமுனையில் T568B வண்ண வரிசை இருக்கும்.", en: "Cross-Over cables connect similar devices directly." } },
+            { id: 1308, ch: 13, q: { ta: "கணினியை Switch அல்லது Hub உடன் இணைக்கப் பயன்படும் வடம் எது?", en: "Which cable connects a computer to a Switch or Hub?" }, opts: [{ ta: "Straight-Through Cable", en: "Straight-Through Cable" }, { ta: "Cross-Over Cable", en: "Cross-Over Cable" }, { ta: "Rollover Cable", en: "Rollover Cable" }, { ta: "Power Cable", en: "Power Cable" }], ans: 0, exp: { ta: "Straight-Through வடத்தின் இரு முனைகளிலும் ஒரே வண்ணத் தரநிலை (T568B) இருக்கும்.", en: "Straight-Through cables connect dissimilar devices like PC to Switch." } },
+            { id: 1309, ch: 13, q: { ta: "ஈதர்நெட் வடமிடலில் பயன்படும் இரு சர்வதேச வண்ணத் தரநிலைகள் எவை?", en: "What are the two international wiring color code standards for Ethernet?" }, opts: [{ ta: "T568A மற்றும் T568B", en: "T568A and T568B" }, { ta: "RGB மற்றும் CMYK", en: "RGB and CMYK" }, { ta: "ISO 9001 மற்றும் 9002", en: "ISO 9001 and 9002" }, { ta: "IEEE 802.11a மற்றும் b", en: "IEEE 802.11a and b" }], ans: 0, exp: { ta: "T568A மற்றும் T568B ஆகியவை 8 கம்பிகளுக்கான வண்ண வரிசைகளாகும்.", en: "T568A and T568B define pinouts for 8-pin RJ-45 connectors." } },
+            { id: 1310, ch: 13, q: { ta: "கேபிள் டிவி இணைப்புகளில் அதிகம் பயன்படும் மையச் செப்புக் கம்பி கொண்ட வடம் எது?", en: "Which cable has a central copper core and is widely used in Cable TV?" }, opts: [{ ta: "இணை அச்சு வடம் (Coaxial Cable)", en: "Coaxial Cable" }, { ta: "ஒளியிழை வடம்", en: "Fiber Optic Cable" }, { ta: "UTP வடம்", en: "UTP Cable" }, { ta: "USB வடம்", en: "USB Cable" }], ans: 0, exp: { ta: "Coaxial Cable கேபிள் டிவி மற்றும் பழைய ஈதர்நெட் வலையமைப்புகளில் பயன்பட்டது.", en: "Coaxial cables are used for Cable TV signals." } },
+            { id: 1311, ch: 13, q: { ta: "வடத்தின் 8 கம்பிகளும் சரியாக இணைக்கப்பட்டுள்ளதா எனச் சோதிக்கும் கருவி எது?", en: "Which device verifies electrical continuity in a crimped Ethernet cable?" }, opts: [{ ta: "கேபிள் டெஸ்டர் (Cable Tester)", en: "Cable Tester" }, { ta: "கிரிம்பிங் கருவி", en: "Crimping Tool" }, { ta: "திசைவி (Router)", en: "Router" }, { ta: "சுவிட்ச் (Switch)", en: "Switch" }], ans: 0, exp: { ta: "Cable Tester-இல் 1 முதல் 8 வரை LED விளக்குகள் வரிசையாக எரிந்தால் இணைப்பு சரி.", en: "A Cable Tester checks signal continuity across all 8 pins." } },
+            { id: 1312, ch: 13, q: { ta: "மின்காந்த குறுக்கீடுகளால் (EMI) சிறிதும் பாதிக்கப்படாத வடம் எது?", en: "Which network cable is completely immune to Electromagnetic Interference (EMI)?" }, opts: [{ ta: "ஒளியிழை வடம் (Fiber Optic Cable)", en: "Fiber Optic Cable" }, { ta: "UTP வடம்", en: "UTP Cable" }, { ta: "Coaxial வடம்", en: "Coaxial Cable" }, { ta: "தொலைபேசி கம்பி", en: "Telephone wire" }], ans: 0, exp: { ta: "ஒளியிழை வடத்தில் மின்சாரத்திற்குப் பதில் ஒளி செல்வதால் EMI பாதிப்பு இல்லை.", en: "Fiber optics use light signals and are immune to EMI." } },
+            { id: 1313, ch: 13, q: { ta: "USB என்பதன் விரிவாக்கம் என்ன? (உள் வினா)", en: "What does USB stand for? (Interior)" }, opts: [{ ta: "Universal Serial Bus", en: "Universal Serial Bus" }, { ta: "United System Bus", en: "United System Bus" }, { ta: "Universal System Byte", en: "Universal System Byte" }, { ta: "Uniform Serial Bit", en: "Uniform Serial Bit" }], ans: 0, exp: { ta: "USB என்பது Universal Serial Bus ஆகும்.", en: "USB stands for Universal Serial Bus." } },
+            { id: 1314, ch: 13, q: { ta: "T568B வண்ணத் தரநிலையில் பின் 1 மற்றும் பின் 2 ஆகியவற்றில் இணையும் கம்பிகள் எவை?", en: "In T568B wiring standard, which color pair is connected to Pins 1 and 2?" }, opts: [{ ta: "வெள்ளை-ஆரஞ்சு & ஆரஞ்சு (White-Orange & Orange)", en: "White-Orange & Orange" }, { ta: "வெள்ளை-பச்சை & பச்சை", en: "White-Green & Green" }, { ta: "வெள்ளை-நீலம் & நீலம்", en: "White-Blue & Blue" }, { ta: "வெள்ளை-பழுப்பு & பழுப்பு", en: "White-Brown & Brown" }], ans: 0, exp: { ta: "T568B-இல் ஆரஞ்சு இணை முதலில் வரும்; T568A-இல் பச்சை இணை முதலில் வரும்.", en: "T568B starts with White-Orange (Pin 1) and Orange (Pin 2)." } },
+            { id: 1315, ch: 13, q: { ta: "கணிப்பொறியையும் Router-ஐயும் நேரடியாக இணைத்து உள்ளமைக்கப் (Configure) பயன்படும் வடம் எது?", en: "Which cable connects a computer to a Router's console port for configuration?" }, opts: [{ ta: "Rollover Cable (Console Cable)", en: "Rollover Cable" }, { ta: "Straight-Through Cable", en: "Straight-Through Cable" }, { ta: "Coaxial Cable", en: "Coaxial Cable" }, { ta: "HDMI Cable", en: "HDMI Cable" }], ans: 0, exp: { ta: "Rollover Cable கணினியை Router/Switch-இன் Console port-உடன் இணைக்கும்.", en: "A Rollover cable connects a PC to a router console port." } },
+
+            // --- CHAPTER 14 (15 Qns) ---
+            { id: 1401, ch: 14, q: { ta: "மூலக் குறிமுறை (Source Code) அனைவருக்கும் இலவசமாகக் கிடைக்கும் மென்பொருள் எது?", en: "Software whose source code is freely available to inspect, modify, and share is called ______." }, opts: [{ ta: "திறந்த மூல மென்பொருள் (Open Source Software)", en: "Open Source Software" }, { ta: "தனியுரிம மென்பொருள் (Proprietary)", en: "Proprietary Software" }, { ta: "தீம்பொருள் (Malware)", en: "Malware" }, { ta: "பகிர்வு மென்பொருள்", en: "Shareware" }], ans: 0, exp: { ta: "Open Source மென்பொருளின் மூலக் குறிமுறையை யார் வேண்டுமானாலும் மாற்றியமைக்கலாம்.", en: "Open Source Software allows anyone to view, modify, and distribute source code." } },
+            { id: 1402, ch: 14, q: { ta: "கீழ்க்கண்டவற்றுள் எது திறந்த மூல இயக்க அமைப்பு (Open Source OS) ஆகும்?", en: "Which of the following is an Open Source Operating System?" }, opts: [{ ta: "லினக்ஸ் (Linux / Ubuntu)", en: "Linux / Ubuntu" }, { ta: "Windows 11", en: "Windows 11" }, { ta: "macOS", en: "macOS" }, { ta: "MS-DOS", en: "MS-DOS" }], ans: 0, exp: { ta: "Linux புகழ்பெற்ற திறந்த மூல இயக்க அமைப்பாகும்.", en: "Linux is the leading open-source operating system." } },
+            { id: 1403, ch: 14, q: { ta: "பல்வேறு வலையமைப்புகளை ஒன்றிணைத்து, தரவுப் பொதிகளுக்குச் சரியான பாதையைத் தேர்வு செய்யும் சாதனம் எது?", en: "Which network device connects multiple networks and routes data packets?" }, opts: [{ ta: "திசைவி (Router)", en: "Router" }, { ta: "குவியம் (Hub)", en: "Hub" }, { ta: "மீள்விப்பான் (Repeater)", en: "Repeater" }, { ta: "மோடம் (Modem)", en: "Modem" }], ans: 0, exp: { ta: "Router IP முகவரிகளைப் பயன்படுத்திச் சிறந்த வழித்தடத்தைத் தேர்ந்தெடுக்கும்.", en: "A Router forwards data packets between networks using IP addresses." } },
+            { id: 1404, ch: 14, q: { ta: "இலவச மென்பொருள் அறக்கட்டளையை (FSF) நிறுவியவர் யார்?", en: "Who founded the Free Software Foundation (FSF)?" }, opts: [{ ta: "ரிச்சர்ட் ஸ்டால்மேன் (Richard Stallman)", en: "Richard Stallman" }, { ta: "லினஸ் டொர்வால்ட்ஸ்", en: "Linus Torvalds" }, { ta: "ஸ்டீவ் ஜாப்ஸ்", en: "Steve Jobs" }, { ta: "மார்க் ஜுக்கர்பெர்க்", en: "Mark Zuckerberg" }], ans: 0, exp: { ta: "1985-இல் ரிச்சர்ட் ஸ்டால்மேன் Free Software Foundation-ஐ நிறுவினார்.", en: "Richard Stallman founded the FSF in 1985." } },
+            { id: 1405, ch: 14, q: { ta: "கீழ்க்கண்டவற்றுள் எது திறந்த மூல வலையமைப்பு உருவகப்படுத்தி (Network Simulator) ஆகும்?", en: "Which of the following is an open-source network simulator tool?" }, opts: [{ ta: "NS2 (Network Simulator 2)", en: "NS2 (Network Simulator 2)" }, { ta: "Adobe Photoshop", en: "Adobe Photoshop" }, { ta: "MS Word", en: "MS Word" }, { ta: "Tally ERP", en: "Tally ERP" }], ans: 0, exp: { ta: "NS2 மற்றும் OpenNMS ஆகியவை திறந்த மூல வலையமைப்பு கருவிகளாகும்.", en: "NS2 is an open-source event-driven network simulator." } },
+            { id: 1406, ch: 14, q: { ta: "லினக்ஸ் (Linux) இயக்க அமைப்பின் கருவை (Kernel) உருவாக்கியவர் யார்? (பொதுத்தேர்வு வினா)", en: "Who created the Linux Kernel? (Public Exam)" }, opts: [{ ta: "லினஸ் டொர்வால்ட்ஸ் (Linus Torvalds)", en: "Linus Torvalds" }, { ta: "ரிச்சர்ட் ஸ்டால்மேன்", en: "Richard Stallman" }, { ta: "கென் தாம்சன்", en: "Ken Thompson" }, { ta: "டென்னிஸ் ரிட்சி", en: "Dennis Ritchie" }], ans: 0, exp: { ta: "1991-இல் லினஸ் டொர்வால்ட்ஸ் Linux Kernel-ஐ உருவாக்கினார்.", en: "Linus Torvalds developed the Linux kernel in 1991." } },
+            { id: 1407, ch: 14, q: { ta: "பயன்பாட்டு உரிமம் (License) பெற்று, மூலக் குறிமுறை மறைக்கப்பட்ட மென்பொருள் எது?", en: "Software with hidden source code owned by an individual or company is called ______." }, opts: [{ ta: "தனியுரிம மென்பொருள் (Proprietary Software)", en: "Proprietary Software" }, { ta: "திறந்த மூல மென்பொருள்", en: "Open Source Software" }, { ta: "இலவச மென்பொருள்", en: "Free Software" }, { ta: "பொதுக் கள மென்பொருள்", en: "Public Domain Software" }], ans: 0, exp: { ta: "Windows, MS Office, Photoshop ஆகியவை தனியுரிம மென்பொருள்களாகும்.", en: "Proprietary software restricts access to its source code." } },
+            { id: 1408, ch: 14, q: { ta: "OpenNMS என்பது எவ்வகைத் திறந்த மூல மென்பொருளாகும்?", en: "What is OpenNMS used for?" }, opts: [{ ta: "வலையமைப்பு கண்காணிப்பு மற்றும் மேலாண்மை (Network Monitoring)", en: "Network Monitoring and Management" }, { ta: "படத்தொகுப்பு", en: "Photo Editing" }, { ta: "ஒலிப்பதிவு", en: "Audio Recording" }, { ta: "கணக்கியல்", en: "Accounting" }], ans: 0, exp: { ta: "OpenNMS என்பது நிறுவன வலையமைப்புகளைக் கண்காணிக்கும் திறந்த மூலக் கருவியாகும்.", en: "OpenNMS is an enterprise-grade open-source network monitoring platform." } },
+            { id: 1409, ch: 14, q: { ta: "குவியம் (Hub) மற்றும் நிலைமாற்றி (Switch) ஆகியவற்றில் எது புத்திசாலித்தனமான சாதனம்?", en: "Between a Hub and a Switch, which is an intelligent device that uses MAC addresses?" }, opts: [{ ta: "நிலைமாற்றி (Switch)", en: "Switch" }, { ta: "குவியம் (Hub)", en: "Hub" }, { ta: "மீள்விப்பான் (Repeater)", en: "Repeater" }, { ta: "வடம் (Cable)", en: "Cable" }], ans: 0, exp: { ta: "Switch குறிப்பிட்ட இலக்கு கணினிக்கு மட்டுமே தரவை அனுப்பும்; Hub அனைத்திற்கும் அனுப்பும்.", en: "A Switch forwards frames only to the specific destination MAC address." } },
+            { id: 1410, ch: 14, q: { ta: "பலவீனமடைந்த சிக்னல்களை மீண்டும் வலுப்படுத்தி அனுப்பும் வலையமைப்பு சாதனம் எது?", en: "Which network device regenerates and amplifies weak signals over long distances?" }, opts: [{ ta: "மீள்விப்பான் (Repeater)", en: "Repeater" }, { ta: "கணினி (PC)", en: "PC" }, { ta: "அச்சுப்பொறி", en: "Printer" }, { ta: "வருடி (Scanner)", en: "Scanner" }], ans: 0, exp: { ta: "Repeater சிக்னல் வலிமையை மீட்டெடுத்து நீண்ட தொலைவிற்கு அனுப்பும்.", en: "A Repeater regenerates incoming signals to extend transmission distance." } },
+            { id: 1411, ch: 14, q: { ta: "GNU திட்டத்தைத் (GNU Project) தொடங்கியவர் யார்?", en: "Who initiated the GNU Project in 1983?" }, opts: [{ ta: "ரிச்சர்ட் ஸ்டால்மேன்", en: "Richard Stallman" }, { ta: "எரிக் ரேமண்ட்", en: "Eric Raymond" }, { ta: "புரூஸ் பெரென்ஸ்", en: "Bruce Perens" }, { ta: "டிம் ஓ'ரெய்லி", en: "Tim O'Reilly" }], ans: 0, exp: { ta: "ரிச்சர்ட் ஸ்டால்மேன் 1983-இல் GNU திட்டத்தைத் தொடங்கினார்.", en: "Richard Stallman launched the GNU Project in 1983." } },
+            { id: 1412, ch: 14, q: { ta: "இலவச மற்றும் திறந்த மூல மென்பொருள்களின் சுருக்கப்பெயர் என்ன?", en: "What is the common acronym for Free and Open Source Software?" }, opts: [{ ta: "FOSS", en: "FOSS" }, { ta: "BIOS", en: "BIOS" }, { ta: "CMOS", en: "CMOS" }, { ta: "RTOS", en: "RTOS" }], ans: 0, exp: { ta: "FOSS என்பது Free and Open Source Software ஆகும்.", en: "FOSS stands for Free and Open Source Software." } },
+            { id: 1413, ch: 14, q: { ta: "வலையமைப்பு பொதிகளை (Packets) ஆய்வு செய்யும் திறந்த மூலக் கருவி எது? (உள் வினா)", en: "Which is a widely used open-source network packet analyzer? (Interior)" }, opts: [{ ta: "Wireshark", en: "Wireshark" }, { ta: "Notepad", en: "Notepad" }, { ta: "Paint", en: "Paint" }, { ta: "Calculator", en: "Calculator" }], ans: 0, exp: { ta: "Wireshark வலையமைப்பில் செல்லும் தரவுப் பொதிகளை நேரடியாகப் பகுப்பாய்வு செய்யும்.", en: "Wireshark captures and analyzes network traffic packets." } },
+            { id: 1414, ch: 14, q: { ta: "இரு வேறுபட்ட நெறிமுறைகளைக் கொண்ட வலையமைப்புகளை இணைக்கும் சாதனம் எது?", en: "Which device connects two dissimilar networks operating on different protocols?" }, opts: [{ ta: "நுழைவாயில் (Gateway)", en: "Gateway" }, { ta: "குவியம் (Hub)", en: "Hub" }, { ta: "வடம் (Cable)", en: "Cable" }, { ta: "சுட்டி (Mouse)", en: "Mouse" }], ans: 0, exp: { ta: "Gateway இரு வேறுபட்ட வலையமைப்பு கட்டமைப்புகளுக்கு இடையே மொழிபெயர்ப்பாளராகச் செயல்படும்.", en: "A Gateway acts as a protocol converter between dissimilar networks." } },
+            { id: 1415, ch: 14, q: { ta: "திறந்த மூல வலை சேவையக மென்பொருளுக்கு (Open Source Web Server) எடுத்துக்காட்டு எது?", en: "Which of the following is an open-source web server software?" }, opts: [{ ta: "Apache HTTP Server", en: "Apache HTTP Server" }, { ta: "MS Excel", en: "MS Excel" }, { ta: "CorelDRAW", en: "CorelDRAW" }, { ta: "WinRAR", en: "WinRAR" }], ans: 0, exp: { ta: "Apache உலகின் மிகப் பிரபலமான திறந்த மூல வலை சேவையகமாகும்.", en: "Apache is a leading open-source web server." } },
+
+            // --- CHAPTER 15 (15 Qns) ---
+            { id: 1501, ch: 15, q: { ta: "இணையம் வழியாகப் பொருட்கள் மற்றும் சேவைகளை வாங்குவதும் விற்பதும் ______ எனப்படும்.", en: "Buying and selling of goods and services over the Internet is called ______." }, opts: [{ ta: "மின்-வணிகம் (E-Commerce)", en: "E-Commerce" }, { ta: "மின்-அரசாண்மை (E-Governance)", en: "E-Governance" }, { ta: "பல்லூடகம் (Multimedia)", en: "Multimedia" }, { ta: "வலைவடமிடல் (Cabling)", en: "Cabling" }], ans: 0, exp: { ta: "E-Commerce என்பது இணையவழி வர்த்தகத்தைக் குறிக்கிறது.", en: "E-Commerce stands for Electronic Commerce." } },
+            { id: 1502, ch: 15, q: { ta: "அமேசான் (Amazon) மற்றும் பிளிப்கார்ட் (Flipkart) எந்த வகை மின்-வணிக மாதிரியைச் சார்ந்தவை?", en: "Amazon and Flipkart belong to which E-Commerce business model?" }, opts: [{ ta: "B2C (வணிகத்திலிருந்து நுகர்வோர்)", en: "B2C (Business to Consumer)" }, { ta: "B2B (வணிகத்திலிருந்து வணிகம்)", en: "B2B (Business to Business)" }, { ta: "C2C (நுகர்வோரிலிருந்து நுகர்வோர்)", en: "C2C (Consumer to Consumer)" }, { ta: "G2G (அரசிலிருந்து அரசு)", en: "G2G (Government to Government)" }], ans: 0, exp: { ta: "நிறுவனங்கள் நேரடியாக நுகர்வோருக்குப் பொருட்களை விற்பது B2C மாதிரியாகும்.", en: "B2C involves businesses selling directly to consumers." } },
+            { id: 1503, ch: 15, q: { ta: "OLX மற்றும் eBay போன்ற இணையதளங்கள் எந்த மின்-வணிக மாதிரிக்கு எடுத்துக்காட்டு?", en: "Websites like OLX and eBay are examples of which E-Commerce model?" }, opts: [{ ta: "C2C (நுகர்வோரிலிருந்து நுகர்வோர்)", en: "C2C (Consumer to Consumer)" }, { ta: "B2B", en: "B2B" }, { ta: "B2G", en: "B2G" }, { ta: "G2B", en: "G2B" }], ans: 0, exp: { ta: "ஒரு நுகர்வோர் மற்றொரு நுகர்வோருக்குப் பொருளை விற்பது C2C மாதிரியாகும்.", en: "C2C enables consumers to sell directly to other consumers." } },
+            { id: 1504, ch: 15, q: { ta: "EDI என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of EDI?" }, opts: [{ ta: "Electronic Data Interchange", en: "Electronic Data Interchange" }, { ta: "Electronic Digital Internet", en: "Electronic Digital Internet" }, { ta: "Electric Data Interface", en: "Electric Data Interface" }, { ta: "Electronic Document Index", en: "Electronic Document Index" }], ans: 0, exp: { ta: "EDI என்பது Electronic Data Interchange ஆகும்.", en: "EDI stands for Electronic Data Interchange." } },
+            { id: 1505, ch: 15, q: { ta: "நவீன ஆன்லைன் மின்-வணிகம் எந்த காலகட்டத்தில் தொடங்கியது?", en: "In which decade did modern online E-Commerce originate?" }, opts: [{ ta: "1990-களில் (1994)", en: "1990s (1994)" }, { ta: "1950-களில்", en: "1950s" }, { ta: "1960-களில்", en: "1960s" }, { ta: "2015-இல்", en: "2015" }], ans: 0, exp: { ta: "1994-இல் இணைய உலாவிகள் அறிமுகமான பிறகு பாதுகாப்பான ஆன்லைன் விற்பனை தொடங்கியது.", en: "Online retail transactions began in the 1990s." } },
+            { id: 1506, ch: 15, q: { ta: "ஒரு வணிக நிறுவனம் மற்றொரு வணிக நிறுவனத்திற்குப் பொருட்களை விற்பது எவ்வகை மாதிரி? (பொதுத்தேர்வு வினா)", en: "Commercial transactions between two business organizations belong to which model? (Public Exam)" }, opts: [{ ta: "B2B (Business to Business)", en: "B2B (Business to Business)" }, { ta: "B2C", en: "B2C" }, { ta: "C2C", en: "C2C" }, { ta: "C2G", en: "C2G" }], ans: 0, exp: { ta: "மொத்த விற்பனையாளர் மற்றும் உற்பத்தியாளர் இடையேயான வர்த்தகம் B2B ஆகும்.", en: "B2B involves transactions between businesses, such as manufacturer and wholesaler." } },
+            { id: 1507, ch: 15, q: { ta: "இணையவழியில் வரி செலுத்துதல், உரிமம் புதுப்பித்தல் போன்ற அரசு சேவைகள் எந்த மாதிரியில் வரும்?", en: "Online tax filing and government services to citizens fall under which model?" }, opts: [{ ta: "G2C / C2G (அரசு மற்றும் குடிமக்கள்)", en: "G2C / C2G" }, { ta: "B2B", en: "B2B" }, { ta: "C2C", en: "C2C" }, { ta: "B2C", en: "B2C" }], ans: 0, exp: { ta: "அரசு குடிமக்களுக்கு வழங்கும் மின்னணு சேவைகள் G2C/C2G ஆகும்.", en: "G2C/C2G covers electronic interactions between government and citizens." } },
+            { id: 1508, ch: 15, q: { ta: "மின்னணு புத்தகங்கள் (E-Books), மென்பொருள்கள், இசை போன்றவை எவ்வகைப் பொருட்கள்?", en: "E-Books, software, and digital music are examples of ______." }, opts: [{ ta: "டிஜிட்டல் பொருட்கள் (Digital Products)", en: "Digital Products" }, { ta: "பருப்பொருட்கள் (Physical Goods)", en: "Physical Goods" }, { ta: "கனரகப் பொருட்கள்", en: "Heavy Goods" }, { ta: "வேளாண் பொருட்கள்", en: "Agricultural Goods" }], ans: 0, exp: { ta: "இணையம் வழியாக உடனடியாகப் பதிவிறக்கம் செய்யக்கூடியவை டிஜிட்டல் பொருட்கள்.", en: "Digital products are delivered electronically over the internet." } },
+            { id: 1509, ch: 15, q: { ta: "மின்-வணிகத்தில் 24x7 என்பது எதைக் குறிக்கிறது?", en: "What does 24x7 availability mean in E-Commerce?" }, opts: [{ ta: "வாரத்தின் 7 நாட்களும் 24 மணி நேரமும் சேவை", en: "24 hours a day, 7 days a week service" }, { ta: "24 பொருட்கள் மட்டும்", en: "24 products only" }, { ta: "7 நாட்கள் தள்ளுபடி", en: "7 days discount" }, { ta: "24 கடைகள்", en: "24 stores" }], ans: 0, exp: { ta: "இணையக் கடைகள் நேரக் கட்டுப்பாடின்றி 24x7 செயல்படுகின்றன.", en: "Online stores operate round the clock (24 hours, 7 days)." } },
+            { id: 1510, ch: 15, q: { ta: "பொருளைப் பெற்றுக் கொண்ட பிறகு பணம் செலுத்தும் முறை எது?", en: "Which payment option allows customers to pay when the product is delivered?" }, opts: [{ ta: "COD (Cash on Delivery)", en: "COD (Cash on Delivery)" }, { ta: "EFT", en: "EFT" }, { ta: "RTGS", en: "RTGS" }, { ta: "ECS", en: "ECS" }], ans: 0, exp: { ta: "COD (பொருள் பெறும்போது பணம்) இந்தியாவில் மிகவும் பிரபலமானது.", en: "COD stands for Cash on Delivery." } },
+            { id: 1511, ch: 15, q: { ta: "சமூக வலைதளங்கள் (Facebook, Instagram) மூலம் பொருட்களை விற்பது எவ்வாறு அழைக்கப்படுகிறது?", en: "Buying and selling directly within social media platforms is called ______." }, opts: [{ ta: "சமூக வணிகம் (Social Commerce)", en: "Social Commerce" }, { ta: "மரபு வணிகம்", en: "Traditional Commerce" }, { ta: "மொத்த வணிகம்", en: "Wholesale Commerce" }, { ta: "அரசு வணிகம்", en: "Government Commerce" }], ans: 0, exp: { ta: "சமூக ஊடகங்களைப் பயன்படுத்தி நடக்கும் வணிகம் Social Commerce ஆகும்.", en: "Social Commerce integrates e-commerce with social media." } },
+            { id: 1512, ch: 15, q: { ta: "தொலைபேசி மற்றும் கைப்பேசி செயலிகள் வழியாக நடக்கும் வணிகம் எது?", en: "Commercial transactions conducted via smartphones and tablets are called ______." }, opts: [{ ta: "M-Commerce (Mobile Commerce)", en: "M-Commerce (Mobile Commerce)" }, { ta: "T-Commerce", en: "T-Commerce" }, { ta: "F-Commerce", en: "F-Commerce" }, { ta: "V-Commerce", en: "V-Commerce" }], ans: 0, exp: { ta: "M-Commerce என்பது மொபைல் வணிகத்தைக் குறிக்கிறது.", en: "M-Commerce stands for Mobile Commerce." } },
+            { id: 1513, ch: 15, q: { ta: "கீழ்க்கண்டவற்றுள் எது மின்-வணிகத்தின் வரம்பு (Limitation) ஆகும்? (உள் வினா)", en: "Which of the following is a limitation of E-Commerce? (Interior)" }, opts: [{ ta: "வாங்கும் முன் பொருளைத் தொட்டுப் பார்க்க முடியாது", en: "Inability to physically inspect/touch products before purchase" }, { ta: "24 மணி நேர சேவை", en: "24x7 availability" }, { ta: "உலகளாவிய சந்தை", en: "Global reach" }, { ta: "குறைந்த செலவு", en: "Lower operational cost" }], ans: 0, exp: { ta: "நேரடியாகப் பொருளைத் தொட்டு உணர முடியாதது ஆன்லைன் ஷாப்பிங்கின் முக்கியக் குறைபாடு.", en: "Customers cannot physically touch or try products before buying online." } },
+            { id: 1514, ch: 15, q: { ta: "காகிதமில்லா வணிக ஆவணங்களைக் கணினிகளுக்கிடையே பரிமாற உதவுவது எது?", en: "Computer-to-computer exchange of standardized business documents is called ______." }, opts: [{ ta: "EDI (Electronic Data Interchange)", en: "EDI" }, { ta: "PDF", en: "PDF" }, { ta: "JPEG", en: "JPEG" }, { ta: "MIDI", en: "MIDI" }], ans: 0, exp: { ta: "EDI நிறுவனங்களுக்கிடையே கொள்முதல் ஆணை மற்றும் பில்களை மின்னணு முறையில் மாற்றும்.", en: "EDI automates business-to-business document exchange." } },
+            { id: 1515, ch: 15, q: { ta: "ஒரு தனிநபர் தனது திறமை அல்லது சேவையை நிறுவனங்களுக்கு வழங்கும் மாதிரி எது?", en: "A model where individual freelancers offer services to businesses is called ______." }, opts: [{ ta: "C2B (Consumer to Business)", en: "C2B (Consumer to Business)" }, { ta: "B2C", en: "B2C" }, { ta: "G2G", en: "G2G" }, { ta: "B2G", en: "B2G" }], ans: 0, exp: { ta: "நுகர்வோர் நிறுவனங்களுக்கு மதிப்பு வழங்குவது C2B மாதிரியாகும்.", en: "In C2B, individuals create value or services consumed by businesses." } },
+
+            // --- CHAPTER 16 (15 Qns) ---
+            { id: 1601, ch: 16, q: { ta: "ECS என்பதன் விரிவாக்கம் என்ன?", en: "What does ECS stand for in Electronic Payment Systems?" }, opts: [{ ta: "Electronic Clearing Services", en: "Electronic Clearing Services" }, { ta: "Electronic Cash System", en: "Electronic Cash System" }, { ta: "Easy Card Service", en: "Easy Card Service" }, { ta: "Electronic Credit System", en: "Electronic Credit System" }], ans: 0, exp: { ta: "ECS என்பது வங்கிகளுக்கிடையே மின்னணு முறையில் பணம் செலுத்தும் முறையாகும்.", en: "ECS stands for Electronic Clearing Services." } },
+            { id: 1602, ch: 16, q: { ta: "கடன் அட்டையின் (Credit Card) பின்புறம் உள்ள 3 இலக்கப் பாதுகாப்பு எண் எவ்வாறு அழைக்கப்படுகிறது?", en: "What is the 3-digit security number printed on the back of a Credit/Debit card called?" }, opts: [{ ta: "CVV (Card Verification Value)", en: "CVV (Card Verification Value)" }, { ta: "PIN", en: "PIN" }, { ta: "OTP", en: "OTP" }, { ta: "IFSC", en: "IFSC" }], ans: 0, exp: { ta: "CVV (Card Verification Value) இணையவழி அட்டைப் பரிவர்த்தனைகளைப் பாதுகாக்கிறது.", en: "CVV stands for Card Verification Value." } },
+            { id: 1603, ch: 16, q: { ta: "UPI என்பதன் விரிவாக்கம் என்ன?", en: "What is the expansion of UPI?" }, opts: [{ ta: "Unified Payments Interface", en: "Unified Payments Interface" }, { ta: "Universal Payment Internet", en: "Universal Payment Internet" }, { ta: "United Public Interface", en: "United Public Interface" }, { ta: "Unique Pay Identification", en: "Unique Pay Identification" }], ans: 0, exp: { ta: "NPCI அமைப்பால் உருவாக்கப்பட்ட உடனடிப் பணப் பரிமாற்ற முறை UPI ஆகும்.", en: "UPI stands for Unified Payments Interface." } },
+            { id: 1604, ch: 16, q: { ta: "SET (Secure Electronic Transaction) நெறிமுறையை உருவாக்கிய நிறுவனங்கள் எவை?", en: "Which companies jointly developed the SET (Secure Electronic Transaction) protocol?" }, opts: [{ ta: "விசா மற்றும் மாஸ்டர்கார்டு (Visa & MasterCard)", en: "Visa and MasterCard" }, { ta: "கூகுள் மற்றும் யாஹூ", en: "Google and Yahoo" }, { ta: "ஆப்பிள் மற்றும் சாம்சங்", en: "Apple and Samsung" }, { ta: "இன்டெல் மற்றும் AMD", en: "Intel and AMD" }], ans: 0, exp: { ta: "1996-இல் Visa மற்றும் MasterCard இணைந்து SET பாதுகாப்பு நெறிமுறையை உருவாக்கின.", en: "Visa and MasterCard jointly developed SET in 1996." } },
+            { id: 1605, ch: 16, q: { ta: "3D Secure நெறிமுறையின் 3 தளங்கள் (Domains) யாவை?", en: "What are the 3 domains in the 3D Secure payment protocol?" }, opts: [{ ta: "Acquirer, Issuer, Interoperability Domain", en: "Acquirer, Issuer, Interoperability Domain" }, { ta: "Client, Server, Router", en: "Client, Server, Router" }, { ta: "Input, Process, Output", en: "Input, Process, Output" }, { ta: "HTML, CSS, PHP", en: "HTML, CSS, PHP" }], ans: 0, exp: { ta: "Acquirer, Issuer, மற்றும் Interoperability Domain ஆகியவை 3D Secure-இன் 3 தளங்களாகும்.", en: "3D Secure consists of Acquirer, Issuer, and Interoperability domains." } },
+            { id: 1606, ch: 16, q: { ta: "அட்டைதாரரின் வங்கிக் கணக்கிலிருந்து உடனடியாகப் பணத்தைக் கழித்துக் கொள்ளும் அட்டை எது? (பொதுத்தேர்வு வினா)", en: "Which card deducts money directly and immediately from the user's bank account? (Public Exam)" }, opts: [{ ta: "பற்று அட்டை (Debit Card)", en: "Debit Card" }, { ta: "கடன் அட்டை (Credit Card)", en: "Credit Card" }, { ta: "பரிசு அட்டை (Gift Card)", en: "Gift Card" }, { ta: "அடையாள அட்டை", en: "ID Card" }], ans: 0, exp: { ta: "Debit Card நேரடியாக வங்கிக் கணக்கிலிருந்து பணத்தை எடுக்கும்; Credit Card கடனாக வழங்கும்.", en: "A Debit Card immediately deducts funds from a checking/savings account." } },
+            { id: 1607, ch: 16, q: { ta: "மிகச் சிறிய தொகைகளை (Micro-transactions - எ.கா: ₹10 முதல் ₹500 வரை) செலுத்தப் பயன்படும் முறை எது?", en: "Which payment system is designed for very small value online transactions?" }, opts: [{ ta: "நுண் செலுத்தல் (Micro Electronic Payment)", en: "Micro Electronic Payment" }, { ta: "பெரும் செலுத்தல் (Macro Payment)", en: "Macro Electronic Payment" }, { ta: "RTGS", en: "RTGS" }, { ta: "காசோலை (Cheque)", en: "Cheque" }], ans: 0, exp: { ta: "குறைந்த மதிப்புள்ள பரிவர்த்தனைகளுக்கு Micro Payment முறை பயன்படுகிறது.", en: "Micro payments handle small online financial transactions efficiently." } },
+            { id: 1608, ch: 16, q: { ta: "கடன் அட்டை எண்ணின் முதல் இலக்கம் எதைக் குறிக்கிறது?", en: "What does the first digit of a credit card number represent?" }, opts: [{ ta: "MII (Major Industry Identifier)", en: "MII (Major Industry Identifier)" }, { ta: "CVV எண்", en: "CVV Number" }, { ta: "காலாவதி ஆண்டு", en: "Expiry Year" }, { ta: "PIN எண்", en: "PIN Number" }], ans: 0, exp: { ta: "முதல் இலக்கம் MII (எ.கா: 4 - Visa, 5 - MasterCard) ஆகும்.", en: "The first digit is the Major Industry Identifier (e.g., 4 for Visa)." } },
+            { id: 1609, ch: 16, q: { ta: "கடன் அட்டை எண் பொதுவாக எத்தனை இலக்கங்களைக் கொண்டிருக்கும்?", en: "How many digits does a standard Credit/Debit card number usually have?" }, opts: [{ ta: "16 இலக்கங்கள்", en: "16 digits" }, { ta: "8 இலக்கங்கள்", en: "8 digits" }, { ta: "10 இலக்கங்கள்", en: "10 digits" }, { ta: "24 இலக்கங்கள்", en: "24 digits" }], ans: 0, exp: { ta: "பெரும்பாலான Visa/MasterCard/RuPay அட்டைகள் 16 இலக்கங்களைக் கொண்டவை.", en: "Most standard payment cards contain a 16-digit card number." } },
+            { id: 1610, ch: 16, q: { ta: "மின்-பணப்பைக்கு (E-Wallet) சிறந்த எடுத்துக்காட்டு எது?", en: "Which of the following is an example of a Mobile/E-Wallet?" }, opts: [{ ta: "Paytm / Google Pay / PhonePe", en: "Paytm / Google Pay / PhonePe" }, { ta: "MS Paint", en: "MS Paint" }, { ta: "VLC Media Player", en: "VLC Media Player" }, { ta: "Adobe Reader", en: "Adobe Reader" }], ans: 0, exp: { ta: "E-Wallet பயனரின் பணம் மற்றும் அட்டை விவரங்களைப் பாதுகாப்பாகச் சேமித்துப் பணம் செலுத்த உதவும்.", en: "Paytm, Google Pay, and PhonePe are popular digital wallets." } },
+            { id: 1611, ch: 16, q: { ta: "மின்னணு பணப்பரிமாற்றத்தின் (EFT) விரிவாக்கம் என்ன?", en: "What does EFT stand for?" }, opts: [{ ta: "Electronic Funds Transfer", en: "Electronic Funds Transfer" }, { ta: "Easy Fund Transfer", en: "Easy Fund Transfer" }, { ta: "Electronic File Transfer", en: "Electronic File Transfer" }, { ta: "Electric Finance Transfer", en: "Electric Finance Transfer" }], ans: 0, exp: { ta: "EFT என்பது வங்கிக் கணக்குகளுக்கிடையே மின்னணு முறையில் பணம் அனுப்பும் முறையாகும்.", en: "EFT stands for Electronic Funds Transfer." } },
+            { id: 1612, ch: 16, q: { ta: "பரிவர்த்தனையை உறுதிப்படுத்தப் பயனரின் மொபைலுக்கு வரும் ஒருமுறை கடவுச்சொல் எது?", en: "Which temporary code is sent to the user's phone to authenticate a transaction?" }, opts: [{ ta: "OTP (One-Time Password)", en: "OTP (One-Time Password)" }, { ta: "CVV", en: "CVV" }, { ta: "URL", en: "URL" }, { ta: "MAC", en: "MAC" }], ans: 0, exp: { ta: "OTP இரு-காரணி அங்கீகாரத்திற்கு (2FA) பயன்படுகிறது.", en: "OTP stands for One-Time Password." } },
+            { id: 1613, ch: 16, q: { ta: "ஸ்மார்ட் அட்டைகளில் (Smart Cards) தரவுகளைச் சேமிக்க எது பதிக்கப்பட்டிருக்கும்? (உள் வினா)", en: "What is embedded inside a Smart Card to store and process data? (Interior)" }, opts: [{ ta: "நுண்செயலி சில்லு (EMV Microprocessor Chip)", en: "EMV Microprocessor Chip" }, { ta: "கண்ணாடி இழை", en: "Fiber optic strand" }, { ta: "காந்த நாடா மட்டும்", en: "Magnetic stripe only" }, { ta: "சிறிய பேட்டரி", en: "Mini battery" }], ans: 0, exp: { ta: "EMV Chip கொண்ட ஸ்மார்ட் அட்டைகள் சாதாரண காந்த அட்டைகளை விட மிகவும் பாதுகாப்பானவை.", en: "Smart cards contain an embedded EMV microprocessor chip." } },
+            { id: 1614, ch: 16, q: { ta: "SSL என்பதன் விரிவாக்கம் என்ன?", en: "What does SSL stand for in online payment security?" }, opts: [{ ta: "Secure Sockets Layer", en: "Secure Sockets Layer" }, { ta: "System Security Layer", en: "System Security Layer" }, { ta: "Safe Socket Link", en: "Safe Socket Link" }, { ta: "Secure Server Logic", en: "Secure Server Logic" }], ans: 0, exp: { ta: "SSL இணைய உலாவிக்கும் சேவையகத்திற்கும் இடையே தரவுகளைக் குறியாக்கம் செய்யும்.", en: "SSL stands for Secure Sockets Layer." } },
+            { id: 1615, ch: 16, q: { ta: "வணிகரின் இணையதளத்தையும் வங்கியையும் இணைத்துப் பணம் செலுத்துதலைச் செயல்படுத்துவது எது?", en: "Which service authorizes and processes online payments between a merchant and bank?" }, opts: [{ ta: "கட்டண நுழைவாயில் (Payment Gateway)", en: "Payment Gateway" }, { ta: "தேடுபொறி (Search Engine)", en: "Search Engine" }, { ta: "வலை உலாவி (Web Browser)", en: "Web Browser" }, { ta: "மின்னஞ்சல் சேவையகம்", en: "Mail Server" }], ans: 0, exp: { ta: "Payment Gateway (எ.கா: Razorpay, PayU) ஆன்லைன் கட்டணங்களைச் செயல்படுத்தும்.", en: "A Payment Gateway securely processes online card/UPI payments." } }
+        ];
+
+        // ============================================================
+        // 3. Bilingual UI Translations
+        // ============================================================
+        const i18n = {
+            ta: {
+                title: "12th கணினி பயன்பாடுகள் - கோட்டை போர்",
+                allChaptersOpt: "📚 அனைத்து 16 பாடங்கள் (240 வினாக்கள்)",
+                scoreLabel: "மதிப்பெண்:",
+                finishBtn: "📊 முடி & சரிபார்",
+                playerName: "🛡️ சைபர் வீரன்",
+                allBossName: "🏰 16 பாடங்கள் மகா கோட்டை",
+                chapterBossName: (ch) => `🏰 பாடம் ${ch} கோட்டை`,
+                skipBtn: "⏭️ மாற்று",
+                bookBackTag: "📘 புத்தகப் பின்பகுதி & பொதுத்தேர்வு வினா (1 மதிப்பெண் | -20 HP)",
+                hintBtnText: "விளக்கம் / குறிப்பு காட்டு (Concept Hint)",
+                chooseTitle: "⚡ சரியான விடையைத் தேர்ந்தெடுத்து கோட்டையைத் தாக்கு:",
+                nextBtn: "அடுத்த வினா ➡️",
+                hitTitle: "💥 நேரடித் தாக்குதல்! (+1 மதிப்பெண் | -20 HP)",
+                missTitle: "🛡️ தவறான விடை! எதிரி தாக்குதல் (-20 HP)",
+                correctPrefix: "சரியான விடை:",
+                loginTitle: "மாணவர் விவரம் பதிவு",
+                loginSub: "12-ஆம் வகுப்பு கணினி பயன்பாடுகள் (16 பாடங்கள்)",
+                nameLabel: "மாணவர் பெயர் (Student Name) *",
+                namePlaceholder: "உங்கள் பெயரை உள்ளிடவும்...",
+                emisLabel: "EMIS எண் (EMIS Number) *",
+                emisPlaceholder: "எ.கா: 1029384756",
+                startBattleBtn: "⚔️ போரைத் தொடங்கு",
+                loginErr: "⚠️ தயவுசெய்து மாணவர் பெயர் மற்றும் EMIS எண்ணை உள்ளிடவும்!",
+                winTitle: (name) => `வாழ்த்துகள் ${name}! கோட்டை தகர்க்கப்பட்டது!`,
+                winSub: (name, marks, total) => `${name}, நீ பெற்ற மதிப்பெண்கள்: ${marks} / ${total}. விடைகளைச் சரிபார்த்து அடுத்த கோட்டையைத் தாக்கு!`,
+                loseTitle: (name) => `கவசம் உடைந்துவிட்டது ${name}!`,
+                loseSub: (name, marks, total) => `${name}, நீ பெற்ற மதிப்பெண்கள்: ${marks} / ${total}. தவறான விடைகளைக் கீழே சரிபார்த்து மீண்டும் முயற்சி செய்!`,
+                summaryTitle: (name) => `${name} - 16 பாடங்கள் மதிப்பெண் அறிக்கை`,
+                summarySub: (name, marks, total) => `மாணவர் ${name} பெற்ற மொத்த மதிப்பெண்கள்: ${marks} / ${total}`,
+                playAgainBtn: "மீண்டும் விளையாடு 🔄",
+                newStudentBtn: "👤 புதிய மாணவர்",
+                statMarks: "பெற்ற மதிப்பெண்",
+                statAnswered: "பதிலளித்தவை",
+                statCorrect: "சரியானவை",
+                statWrong: "தவறானவை",
+                statAcc: "துல்லியம்",
+                reviewHeading: "📋 விடைகள் சரிபார்ப்பு (Answer Review)",
+                revAll: "அனைத்தும்",
+                revCorrect: "✅ சரி",
+                revWrong: "❌ தவறு",
+                yourAnsLabel: "உன் விடை:",
+                rightAnsLabel: "சரியான விடை:",
+                noHistoryMsg: "இதுவரை எந்த வினாவிற்கும் பதிலளிக்கவில்லை."
+            },
+            en: {
+                title: "12th Computer Applications - Fortress Battle",
+                allChaptersOpt: "📚 All 16 Chapters (240 Qns - Shuffled)",
+                scoreLabel: "Marks:",
+                finishBtn: "📊 Finish & Review",
+                playerName: "🛡️ Cyber Hero",
+                allBossName: "🏰 16-Chapter Mega Fortress",
+                chapterBossName: (ch) => `🏰 Chapter ${ch} Fortress`,
+                skipBtn: "⏭️ Skip",
+                bookBackTag: "📘 Book-Back & Public Exam 1-Mark Question (-20 HP)",
+                hintBtnText: "Show Concept Hint",
+                chooseTitle: "⚡ Select the Correct Answer to Attack:",
+                nextBtn: "Next Question ➡️",
+                hitTitle: "💥 Direct Hit! (+1 Mark | -20 HP)",
+                missTitle: "🛡️ Wrong Answer! Counter-Attack (-20 HP)",
+                correctPrefix: "Correct Answer:",
+                loginTitle: "Student Registration",
+                loginSub: "12th Computer Applications (All 16 Chapters)",
+                nameLabel: "Student Name *",
+                namePlaceholder: "Enter your full name...",
+                emisLabel: "EMIS Number *",
+                emisPlaceholder: "e.g., 1029384756",
+                startBattleBtn: "⚔️ Start Battle",
+                loginErr: "⚠️ Please enter both Student Name and EMIS Number!",
+                winTitle: (name) => `Congratulations ${name}! Fortress Conquered!`,
+                winSub: (name, marks, total) => `Great job ${name}! Marks Earned: ${marks} / ${total}. Review your answers below!`,
+                loseTitle: (name) => `Shield Shattered, ${name}!`,
+                loseSub: (name, marks, total) => `${name}, you earned ${marks} / ${total} Marks. Review your answers below and retry!`,
+                summaryTitle: (name) => `${name} - 16-Chapter Scorecard & Review`,
+                summarySub: (name, marks, total) => `Student ${name} scored ${marks} out of ${total} Marks.`,
+                playAgainBtn: "Play Again 🔄",
+                newStudentBtn: "👤 New Student",
+                statMarks: "Marks Earned",
+                statAnswered: "Answered",
+                statCorrect: "Correct",
+                statWrong: "Wrong",
+                statAcc: "Accuracy",
+                reviewHeading: "📋 Answer Review",
+                revAll: "All",
+                revCorrect: "✅ Correct",
+                revWrong: "❌ Wrong",
+                yourAnsLabel: "Your Answer:",
+                rightAnsLabel: "Correct Answer:",
+                noHistoryMsg: "No questions answered yet."
+            }
+        };
+
+        // ============================================================
+        // 4. Game State & Sound Effects
+        // ============================================================
+        let uiLang = 'ta';
+        let selectedChapter = 'ALL';
+        let studentProfile = { name: '', emis: '' };
+        let playerHp = 100;
+        let bossHp = 100;
+        let earnedMarks = 0;
+        let possibleMarks = 0;
+        let combo = 0;
+        let usedIds = [];
+        let attemptHistory = [];
+        let reviewFilter = 'all';
+        let currentQ = null;
+        let currentShuffledOpts = [];
+        let currentCorrectShuffledIdx = 0;
+        let isAnswered = false;
+        let lastAnswerCorrect = false;
+        let soundEnabled = true;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.2);
+                    gain.gain.setValueAtTime(0.14, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                } else if (type === 'error') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.26);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                } else {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(620, now);
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                }
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.28);
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        // ============================================================
+        // 5. Chapter Dropdown, Bilingual Toggle & Student Login
+        // ============================================================
+        function populateChapterDropdown() {
+            const select = document.getElementById('chapterSelect');
+            const prevVal = select.value || 'ALL';
+            select.innerHTML = `<option value="ALL">${i18n[uiLang].allChaptersOpt}</option>`;
+            chaptersList.forEach(c => {
+                const count = questionBank.filter(q => q.ch === c.num).length;
+                const opt = document.createElement('option');
+                opt.value = String(c.num);
+                opt.textContent = `${c[uiLang]} (${count})`;
+                select.appendChild(opt);
+            });
+            select.value = prevVal;
+        }
+
+        function changeChapterFilter() {
+            selectedChapter = document.getElementById('chapterSelect').value;
+            usedIds = [];
+            bossHp = 100;
+            playerHp = 100;
+            updateBars();
+            applyTranslations();
+            loadNextQuestion();
+        }
+
+        function setUiLang(lang) {
+            uiLang = lang;
+            const activeCls = 'px-2.5 py-1 rounded-md bg-cyan-500 text-slate-950 transition cursor-pointer';
+            const idleCls = 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer';
+
+            document.getElementById('langBtn-ta').className = lang === 'ta' ? activeCls : idleCls;
+            document.getElementById('langBtn-en').className = lang === 'en' ? activeCls : idleCls;
+            document.getElementById('modalLangBtn-ta').className = lang === 'ta' ? activeCls : idleCls;
+            document.getElementById('modalLangBtn-en').className = lang === 'en' ? activeCls : idleCls;
+
+            populateChapterDropdown();
+            applyTranslations();
+        }
+
+        function applyTranslations() {
+            const t = i18n[uiLang];
+            document.getElementById('ui-title').textContent = t.title;
+            document.getElementById('ui-scoreLabel').textContent = t.scoreLabel;
+            document.getElementById('ui-finishBtn').textContent = t.finishBtn;
+            document.getElementById('ui-playerName').textContent = studentProfile.name ? `🛡️ ${studentProfile.name}` : t.playerName;
+            document.getElementById('ui-bossName').textContent = selectedChapter === 'ALL'
+                ? t.allBossName
+                : t.chapterBossName(selectedChapter);
+            document.getElementById('ui-skipBtn').textContent = t.skipBtn;
+            document.getElementById('ui-bookBackTag').textContent = t.bookBackTag;
+            document.getElementById('ui-hintBtnText').textContent = t.hintBtnText;
+            document.getElementById('ui-chooseTitle').textContent = t.chooseTitle;
+            document.getElementById('ui-nextBtn').textContent = t.nextBtn;
+
+            // Login modal
+            document.getElementById('ui-loginTitle').textContent = t.loginTitle;
+            document.getElementById('ui-loginSub').textContent = t.loginSub;
+            document.getElementById('ui-nameLabel').textContent = t.nameLabel;
+            document.getElementById('studentNameInput').placeholder = t.namePlaceholder;
+            document.getElementById('ui-emisLabel').textContent = t.emisLabel;
+            document.getElementById('studentEmisInput').placeholder = t.emisPlaceholder;
+            document.getElementById('ui-startBattleBtn').textContent = t.startBattleBtn;
+
+            // End modal
+            document.getElementById('stat-marksLabel').textContent = t.statMarks;
+            document.getElementById('stat-answeredLabel').textContent = t.statAnswered;
+            document.getElementById('stat-correctLabel').textContent = t.statCorrect;
+            document.getElementById('stat-wrongLabel').textContent = t.statWrong;
+            document.getElementById('stat-accLabel').textContent = t.statAcc;
+            document.getElementById('ui-reviewHeading').textContent = t.reviewHeading;
+            document.getElementById('revFilter-all').textContent = t.revAll;
+            document.getElementById('revFilter-correct').textContent = t.revCorrect;
+            document.getElementById('revFilter-wrong').textContent = t.revWrong;
+            document.getElementById('ui-newStudentBtn').textContent = t.newStudentBtn;
+
+            if (currentQ) {
+                renderQuestion(currentQ);
+                if (isAnswered) updateFeedbackBanner();
+            }
+            if (!document.getElementById('endModal').classList.contains('hidden')) {
+                renderReviewList();
+            }
+        }
+
+        function openStudentModal(prefill = false) {
+            if (prefill && studentProfile.name) {
+                document.getElementById('studentNameInput').value = studentProfile.name;
+                document.getElementById('studentEmisInput').value = studentProfile.emis;
+            }
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+            document.getElementById('studentModal').classList.remove('hidden');
+        }
+
+        function submitStudentForm(e) {
+            e.preventDefault();
+            const nameVal = document.getElementById('studentNameInput').value.trim();
+            const emisVal = document.getElementById('studentEmisInput').value.trim();
+            const errEl = document.getElementById('loginErrorMsg');
+
+            if (!nameVal || !emisVal) {
+                errEl.textContent = i18n[uiLang].loginErr;
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const isNew = studentProfile.name !== nameVal || studentProfile.emis !== emisVal;
+            studentProfile = { name: nameVal, emis: emisVal };
+            document.getElementById('headerStudentText').textContent = `${nameVal} (${emisVal})`;
+            document.getElementById('studentHeaderPill').classList.remove('hidden');
+            document.getElementById('studentModal').classList.add('hidden');
+            playTone('click');
+
+            if (isNew) resetGame();
+            else applyTranslations();
+        }
+
+        function switchToNewStudent() {
+            document.getElementById('endModal').classList.add('hidden');
+            document.getElementById('studentNameInput').value = '';
+            document.getElementById('studentEmisInput').value = '';
+            openStudentModal(false);
+        }
+
+        // ============================================================
+        // 6. Question Rendering & Combat Resolution
+        // ============================================================
+        function getActivePool() {
+            return selectedChapter === 'ALL'
+                ? questionBank
+                : questionBank.filter(q => String(q.ch) === selectedChapter);
+        }
+
+        function loadNextQuestion() {
+            isAnswered = false;
+            document.getElementById('inlineFeedback').classList.add('hidden');
+            document.getElementById('hintBox').classList.add('hidden');
+
+            const pool = getActivePool();
+            let candidates = pool.filter(q => !usedIds.includes(q.id));
+            if (candidates.length === 0) {
+                usedIds = [];
+                candidates = [...pool];
+            }
+
+            currentQ = candidates[Math.floor(Math.random() * candidates.length)];
+            currentQ._shuffledMap = null;
+            usedIds.push(currentQ.id);
+
+            document.getElementById('qProgressTag').textContent = `${usedIds.length} / ${pool.length}`;
+            renderQuestion(currentQ);
+        }
+
+        function skipQuestion() {
+            if (isAnswered) return;
+            playTone('click');
+            loadNextQuestion();
+        }
+
+        function renderQuestion(q) {
+            const chObj = chaptersList.find(c => c.num === q.ch);
+            document.getElementById('chapterBadge').textContent = chObj ? chObj[uiLang] : `Ch ${q.ch}`;
+            document.getElementById('questionText').textContent = q.q[uiLang];
+            document.getElementById('hintText').textContent = q.exp[uiLang];
+
+            if (!q._shuffledMap || q._lastId !== q.id) {
+                const indices = [0, 1, 2, 3];
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+                q._shuffledMap = indices;
+                q._lastId = q.id;
+            }
+
+            currentShuffledOpts = q._shuffledMap.map(origIdx => q.opts[origIdx]);
+            currentCorrectShuffledIdx = q._shuffledMap.indexOf(q.ans);
+
+            const list = document.getElementById('optionsList');
+            list.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            currentShuffledOpts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'opt-btn w-full text-left bg-slate-950 hover:bg-slate-800 border-2 border-slate-700 hover:border-cyan-400 rounded-xl p-3.5 sm:p-4 transition flex items-center gap-3.5 cursor-pointer group';
+                btn.onclick = () => checkAnswer(idx);
+                btn.innerHTML = `
+                    <span class="w-8 h-8 rounded-lg bg-slate-800 group-hover:bg-cyan-500 group-hover:text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center shrink-0 transition">${letters[idx]}</span>
+                    <span class="text-sm sm:text-base lg:text-lg font-semibold text-slate-100 leading-snug">${escapeHtml(opt[uiLang])}</span>
+                `;
+                list.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIdx) {
+            if (isAnswered) return;
+            isAnswered = true;
+            const correct = selectedIdx === currentCorrectShuffledIdx;
+            lastAnswerCorrect = correct;
+            possibleMarks += 1;
+
+            document.querySelectorAll('.opt-btn').forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-800', 'hover:border-cyan-400');
+                if (i === currentCorrectShuffledIdx) {
+                    btn.classList.add('bg-emerald-950', 'border-emerald-400');
+                } else if (i === selectedIdx && !correct) {
+                    btn.classList.add('bg-rose-950', 'border-rose-500');
+                }
+            });
+
+            const origSelectedIdx = currentQ._shuffledMap[selectedIdx];
+            attemptHistory.push({
+                question: currentQ,
+                userIdx: origSelectedIdx,
+                isCorrect: correct
+            });
+
+            const strip = document.getElementById('battleStrip');
+            strip.classList.remove('shake-hit');
+            void strip.offsetWidth;
+            strip.classList.add('shake-hit');
+
+            if (correct) {
+                combo++;
+                earnedMarks += 1;
+                bossHp = Math.max(0, bossHp - 20);
+                playTone('hit');
+                fireLaser(true);
+                spawnDmgPopup('bossDmgAnchor', '-20', 'text-amber-300');
+            } else {
+                combo = 0;
+                playerHp = Math.max(0, playerHp - 20);
+                playTone('error');
+                fireLaser(false);
+                spawnDmgPopup('playerDmgAnchor', '-20', 'text-rose-400');
+            }
+
+            updateBars();
+            updateFeedbackBanner();
+
+            if (bossHp <= 0) {
+                setTimeout(() => openEndModal('win'), 750);
+            } else if (playerHp <= 0) {
+                setTimeout(() => openEndModal('lose'), 750);
+            }
+        }
+
+        function updateFeedbackBanner() {
+            const t = i18n[uiLang];
+            const fb = document.getElementById('inlineFeedback');
+            const title = document.getElementById('feedbackTitle');
+            const detail = document.getElementById('feedbackDetail');
+
+            if (lastAnswerCorrect) {
+                fb.className = 'mt-2 rounded-xl p-3 border border-emerald-400/60 bg-emerald-950/60 flex items-center justify-between gap-3 shrink-0';
+                title.textContent = t.hitTitle;
+                title.className = 'text-xs sm:text-sm font-extrabold text-emerald-300';
+                detail.textContent = currentQ.exp[uiLang];
+            } else {
+                const rightAns = currentQ.opts[currentQ.ans][uiLang];
+                fb.className = 'mt-2 rounded-xl p-3 border border-rose-500/60 bg-rose-950/60 flex items-center justify-between gap-3 shrink-0';
+                title.textContent = t.missTitle;
+                title.className = 'text-xs sm:text-sm font-extrabold text-rose-300';
+                detail.innerHTML = `<span class="text-amber-300 font-bold">${t.correctPrefix}</span> <span class="text-emerald-300 font-bold">${escapeHtml(rightAns)}</span> — ${escapeHtml(currentQ.exp[uiLang])}`;
+            }
+            fb.classList.remove('hidden');
+        }
+
+        function fireLaser(toBoss) {
+            const lane = document.getElementById('projectileLane');
+            const beam = document.createElement('div');
+            beam.className = toBoss
+                ? 'h-2 w-12 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee] transition-all duration-300'
+                : 'h-2 w-12 rounded-full bg-rose-500 shadow-[0_0_12px_#f43f5e] transition-all duration-300';
+            beam.style.transform = toBoss ? 'translateX(-25px)' : 'translateX(25px)';
+            lane.appendChild(beam);
+            requestAnimationFrame(() => {
+                beam.style.transform = toBoss ? 'translateX(25px)' : 'translateX(-25px)';
+            });
+            setTimeout(() => beam.remove(), 300);
+        }
+
+        function spawnDmgPopup(anchorId, txt, colorClass) {
+            const anchor = document.getElementById(anchorId);
+            const el = document.createElement('div');
+            el.className = `dmg-float font-extrabold text-sm sm:text-base ${colorClass}`;
+            el.textContent = txt;
+            anchor.appendChild(el);
+            setTimeout(() => el.remove(), 950);
+        }
+
+        function updateBars() {
+            document.getElementById('playerHpText').textContent = `${playerHp}/100`;
+            document.getElementById('playerHpBar').style.width = `${playerHp}%`;
+            document.getElementById('bossHpText').textContent = `${bossHp}/100`;
+            document.getElementById('bossHpBar').style.width = `${bossHp}%`;
+            document.getElementById('scoreDisplay').textContent = `${earnedMarks}/${possibleMarks}`;
+            document.getElementById('comboDisplay').textContent = `${combo}x🔥`;
+        }
+
+        function toggleHint() {
+            document.getElementById('hintBox').classList.toggle('hidden');
+            playTone('click');
+        }
+
+        // ============================================================
+        // 7. Full-Screen Scorecard & Answer Review Modal
+        // ============================================================
+        function openEndModal(type) {
+            const t = i18n[uiLang];
+            const sName = studentProfile.name || (uiLang === 'ta' ? 'மாணவர்' : 'Student');
+            const sEmis = studentProfile.emis || '-';
+
+            document.getElementById('modalStudentBadge').textContent = `👤 ${sName}  |  EMIS: ${sEmis}`;
+
+            const totalAnswered = attemptHistory.length;
+            const correctCount = attemptHistory.filter(a => a.isCorrect).length;
+            const wrongCount = totalAnswered - correctCount;
+            const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+
+            document.getElementById('stat-marksVal').textContent = `${earnedMarks} / ${possibleMarks}`;
+            document.getElementById('stat-answeredVal').textContent = totalAnswered;
+            document.getElementById('stat-correctVal').textContent = correctCount;
+            document.getElementById('stat-wrongVal').textContent = wrongCount;
+            document.getElementById('stat-accVal').textContent = `${accuracy}%`;
+
+            const emoji = document.getElementById('modalEmoji');
+            const title = document.getElementById('modalTitle');
+            const sub = document.getElementById('modalSubtitle');
+            document.getElementById('modalActionBtn').textContent = t.playAgainBtn;
+
+            if (type === 'win') {
+                if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                emoji.textContent = '🏰💥';
+                title.textContent = t.winTitle(sName);
+                sub.textContent = t.winSub(sName, earnedMarks, possibleMarks);
+            } else if (type === 'lose') {
+                emoji.textContent = '🛡️💔';
+                title.textContent = t.loseTitle(sName);
+                sub.textContent = t.loseSub(sName, earnedMarks, possibleMarks);
+            } else {
+                emoji.textContent = '📊🎓';
+                title.textContent = t.summaryTitle(sName);
+                sub.textContent = t.summarySub(sName, earnedMarks, possibleMarks);
+            }
+
+            setReviewFilter('all');
+            document.getElementById('endModal').classList.remove('hidden');
+        }
+
+        function setReviewFilter(filter) {
+            reviewFilter = filter;
+            ['all', 'correct', 'wrong'].forEach(f => {
+                const b = document.getElementById(`revFilter-${f}`);
+                if (f === filter) {
+                    b.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white cursor-pointer';
+                } else {
+                    const col = f === 'correct' ? 'text-emerald-300' : (f === 'wrong' ? 'text-rose-300' : 'text-slate-300');
+                    b.className = `px-3 py-1.5 rounded-lg bg-slate-800 ${col} cursor-pointer`;
+                }
+            });
+            renderReviewList();
+        }
+
+        function renderReviewList() {
+            const t = i18n[uiLang];
+            const container = document.getElementById('reviewHistoryList');
+            const items = attemptHistory.filter(item => {
+                if (reviewFilter === 'correct') return item.isCorrect;
+                if (reviewFilter === 'wrong') return !item.isCorrect;
+                return true;
+            });
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center text-sm text-slate-500 py-10">${t.noHistoryMsg}</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map((item, idx) => {
+                const q = item.question;
+                const chObj = chaptersList.find(c => c.num === q.ch);
+                const userAns = q.opts[item.userIdx][uiLang];
+                const rightAns = q.opts[q.ans][uiLang];
+
+                return `
+                    <div class="bg-slate-950/90 border ${item.isCorrect ? 'border-emerald-500/35' : 'border-rose-500/35'} rounded-xl p-3.5 text-left flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-2 text-xs">
+                                <span class="px-2 py-0.5 rounded bg-slate-800 text-cyan-300 font-bold">#${idx + 1} | ${chObj ? chObj[uiLang] : ''}</span>
+                                <span class="px-2 py-0.5 rounded font-extrabold ${item.isCorrect ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                                    ${item.isCorrect ? '✅ +1M' : '❌ 0M'}
+                                </span>
+                            </div>
+                            <p class="text-sm sm:text-base font-bold text-white mb-2.5">${escapeHtml(q.q[uiLang])}</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm mb-2">
+                                <div class="bg-slate-900 border border-slate-800 rounded-lg p-2">
+                                    <div class="text-xs font-bold ${item.isCorrect ? 'text-emerald-400' : 'text-rose-400'}">${t.yourAnsLabel}</div>
+                                    <div class="text-slate-200 font-semibold mt-0.5">${escapeHtml(userAns)}</div>
+                                </div>
+                                <div class="bg-slate-900 border border-emerald-500/30 rounded-lg p-2">
+                                    <div class="text-xs font-bold text-emerald-400">${t.rightAnsLabel}</div>
+                                    <div class="text-emerald-300 font-semibold mt-0.5">${escapeHtml(rightAns)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-amber-200/90 pt-1.5 border-t border-slate-800/80">💡 ${escapeHtml(q.exp[uiLang])}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleModalAction() {
+            document.getElementById('endModal').classList.add('hidden');
+            bossHp = 100;
+            playerHp = 100;
+            updateBars();
+            loadNextQuestion();
+        }
+
+        function resetGame() {
+            document.getElementById('endModal').classList.add('hidden');
+            earnedMarks = 0;
+            possibleMarks = 0;
+            combo = 0;
+            playerHp = 100;
+            bossHp = 100;
+            usedIds = [];
+            attemptHistory = [];
+            updateBars();
+            applyTranslations();
+            loadNextQuestion();
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        window.onload = function () {
+            populateChapterDropdown();
+            applyTranslations();
+            loadNextQuestion();
+            openStudentModal(false);
+        };
+    </script>
+</body>
+</html>
