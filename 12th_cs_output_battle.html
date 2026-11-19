@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>கோட்டை தகர்ப்பு போர் - Code Fortress Battle</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Noto Sans Tamil, Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+            background: #060b19;
+            color: #f1f5f9;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .arena-strip {
+            background: 
+                linear-gradient(90deg, rgba(14, 165, 233, 0.08) 0%, rgba(15, 23, 42, 0.95) 50%, rgba(244, 63, 94, 0.08) 100%),
+                repeating-linear-gradient(90deg, rgba(56, 189, 248, 0.05) 0px, rgba(56, 189, 248, 0.05) 1px, transparent 1px, transparent 28px);
+        }
+        @keyframes arena-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+        .shake-hit {
+            animation: arena-shake 0.38s ease-in-out;
+        }
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0) scale(0.9); }
+            100% { opacity: 0; transform: translateY(-34px) scale(1.15); }
+        }
+        .dmg-float {
+            animation: float-up 1s ease-out forwards;
+        }
+        /* Compact Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.5); border-radius: 4px; }
+    </style>
+</head>
+<body class="lg:h-screen lg:overflow-hidden flex flex-col p-1.5 sm:p-2.5 gap-2 select-none">
+
+    <!-- 1. FULL-WIDTH TOP NAVBAR -->
+    <header class="w-full bg-slate-900/95 border border-slate-800 rounded-xl px-3 sm:px-5 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 shadow-lg">
+        <!-- Title & Student Pill -->
+        <div class="flex items-center gap-2.5 min-w-0">
+            <span class="text-xl sm:text-2xl shrink-0">🏰</span>
+            <h1 id="ui-title" class="text-sm sm:text-lg font-extrabold bg-gradient-to-r from-cyan-300 to-amber-300 bg-clip-text text-transparent shrink-0">
+                கோட்டை தகர்ப்பு போர்
+            </h1>
+            <span id="ui-stagePill" class="px-2.5 py-0.5 rounded-md bg-amber-500/15 border border-amber-400/40 text-amber-300 text-xs font-bold shrink-0">
+                நிலை 1/3
+            </span>
+            <button onclick="openStudentModal(true)" id="studentHeaderPill" class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-md bg-cyan-950/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-xs text-cyan-200 truncate max-w-[260px] transition cursor-pointer" title="மாணவர் விவரம் மாற்று">
+                <span>👤</span>
+                <span id="headerStudentText" class="font-bold truncate">மாணவர்</span>
+            </button>
+        </div>
+
+        <!-- Center Controls: Code Filter & UI Bilingual Toggle -->
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- Code Language Filter -->
+            <div class="bg-slate-950 p-0.5 rounded-lg border border-slate-800 flex text-xs sm:text-sm font-semibold">
+                <button onclick="setCodeFilter('ALL')" id="filter-ALL" class="px-3 py-1 rounded-md bg-indigo-600 text-white transition cursor-pointer">All</button>
+                <button onclick="setCodeFilter('Python')" id="filter-Python" class="px-3 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer">🐍 Python</button>
+                <button onclick="setCodeFilter('C++')" id="filter-C++" class="px-3 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer">⚙️ C++</button>
+            </div>
+
+            <!-- Bilingual Toggle (தமிழ் / EN) -->
+            <div class="bg-slate-950 p-0.5 rounded-lg border border-cyan-500/40 flex text-xs sm:text-sm font-bold">
+                <button onclick="setUiLang('ta')" id="langBtn-ta" class="px-3 py-1 rounded-md bg-cyan-500 text-slate-950 transition cursor-pointer">தமிழ்</button>
+                <button onclick="setUiLang('en')" id="langBtn-en" class="px-3 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer">EN</button>
+            </div>
+        </div>
+
+        <!-- Right Stats & Utilities -->
+        <div class="flex items-center gap-2 text-xs sm:text-sm">
+            <div class="bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                <span class="text-slate-400" id="ui-scoreLabel">மதிப்பெண்:</span>
+                <span id="scoreDisplay" class="font-extrabold text-amber-400 text-sm sm:text-base">0</span>
+                <span class="text-slate-700">|</span>
+                <span id="comboDisplay" class="font-bold text-cyan-400">0x🔥</span>
+            </div>
+
+            <button onclick="openEndModal('summary')" id="ui-finishBtn" class="px-3 py-1.5 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-400/50 text-emerald-200 font-bold transition cursor-pointer">
+                📊 முடி & சரிபார்
+            </button>
+
+            <button onclick="toggleSound()" id="soundBtn" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition cursor-pointer" title="Sound">🔊</button>
+            <button onclick="resetGame()" id="ui-resetBtn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-950 border border-slate-700 hover:border-rose-500/50 text-slate-300 hover:text-rose-300 font-semibold transition cursor-pointer">
+                ↺ மீட்டமை
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. FULL-WIDTH BATTLE STRIP (Player vs Fortress) -->
+    <section id="battleStrip" class="w-full arena-strip border border-slate-800 rounded-xl px-4 sm:px-6 py-2 shrink-0 relative overflow-hidden">
+        <div class="grid grid-cols-12 items-center gap-3">
+            
+            <!-- Player Hero (5 cols) -->
+            <div class="col-span-5 flex items-center gap-3 relative">
+                <!-- Mini Cyber Tank SVG -->
+                <svg class="w-12 h-9 sm:w-14 sm:h-10 shrink-0 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" viewBox="0 0 120 80" fill="none">
+                    <rect x="15" y="54" width="75" height="18" rx="9" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+                    <path d="M22 54 L30 36 H75 L84 54 Z" fill="#0284c7" stroke="#7dd3fc" stroke-width="2.5"/>
+                    <rect x="38" y="22" width="30" height="14" rx="5" fill="#0369a1" stroke="#bae6fd" stroke-width="2.5"/>
+                    <rect x="68" y="26" width="42" height="7" rx="3" fill="#38bdf8"/>
+                </svg>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span id="ui-playerName" class="text-cyan-300 truncate">🛡️ சைபர் வீரன்</span>
+                        <span id="playerHpText" class="font-mono text-emerald-400">100/100</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                        <div id="playerHpBar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 transition-all duration-300" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div id="playerDmgAnchor" class="absolute right-0 -top-2 pointer-events-none"></div>
+            </div>
+
+            <!-- Center Projectile Lane (2 cols) -->
+            <div class="col-span-2 flex flex-col items-center justify-center relative h-10">
+                <span class="text-xs font-extrabold text-slate-500 tracking-widest">VS</span>
+                <div id="projectileLane" class="absolute inset-0 flex items-center justify-center pointer-events-none"></div>
+            </div>
+
+            <!-- Enemy Fortress (5 cols) -->
+            <div class="col-span-5 flex items-center justify-end gap-3 relative">
+                <div id="bossDmgAnchor" class="absolute left-0 -top-2 pointer-events-none"></div>
+                <div class="flex-1 min-w-0 text-right">
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span id="bossHpText" class="font-mono text-rose-400">100/100</span>
+                        <span id="ui-bossName" class="text-amber-300 truncate">🏰 Python கோட்டை</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-700">
+                        <div id="bossHpBar" class="h-full bg-gradient-to-l from-rose-600 to-amber-500 transition-all duration-300 ml-auto" style="width: 100%"></div>
+                    </div>
+                </div>
+                <!-- Mini Fortress SVG -->
+                <svg class="w-12 h-10 sm:w-14 sm:h-11 shrink-0 drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]" viewBox="0 0 120 95" fill="none">
+                    <path d="M22 86 L28 32 H92 L98 86 Z" fill="#1e1b4b" stroke="#f43f5e" stroke-width="3"/>
+                    <rect x="24" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <rect x="44" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <rect x="64" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <rect x="84" y="18" width="12" height="14" rx="2" fill="#be123c"/>
+                    <circle cx="60" cy="54" r="10" fill="#090d16" stroke="#fbbf24" stroke-width="2.5"/>
+                    <circle cx="60" cy="54" r="4" fill="#f43f5e"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. FULL-SCREEN SPLIT WORKSPACE (Code Left | Answer Arena Right) -->
+    <main class="w-full flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+        
+        <!-- LEFT PANEL: Code & Debugger (6 cols) -->
+        <div class="lg:col-span-6 bg-slate-900/95 border border-slate-800 rounded-xl p-3.5 sm:p-4 flex flex-col min-h-0 shadow-lg">
+            <!-- Header Row -->
+            <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-800 shrink-0">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span id="langBadge" class="px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 shrink-0">🐍 Python</span>
+                    <span id="marksBadge" class="px-2.5 py-0.5 rounded text-xs sm:text-sm font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 shrink-0">3M (-20 HP)</span>
+                    <span id="chapterTag" class="text-xs sm:text-sm text-slate-300 font-semibold truncate">பாடம் 5</span>
+                </div>
+                <button onclick="skipQuestion()" id="ui-skipBtn" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs sm:text-sm font-semibold text-slate-300 shrink-0 transition cursor-pointer">
+                    ⏭️ மாற்று
+                </button>
+            </div>
+
+            <!-- Prompt -->
+            <p id="ui-prompt" class="text-sm sm:text-base font-bold text-slate-200 mt-2.5 mb-2 shrink-0">
+                கீழ்க்காணும் நிரலின் வெளியீட்டைக் கண்டறிக:
+            </p>
+
+            <!-- Code Container -->
+            <div class="flex-1 min-h-[160px] bg-black/85 border border-slate-800 rounded-xl p-4 overflow-y-auto flex flex-col justify-center">
+                <pre id="codeBlock" class="code-font text-sm sm:text-base lg:text-lg text-emerald-300 leading-relaxed whitespace-pre-wrap"></pre>
+            </div>
+
+            <!-- Compact Debugger Toggle -->
+            <div class="mt-2.5 shrink-0">
+                <button onclick="toggleDebugger()" class="w-full py-2 px-3.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/60 border border-indigo-500/30 text-indigo-300 text-xs sm:text-sm font-bold flex items-center justify-between transition cursor-pointer">
+                    <span>🐞 <span id="ui-debugBtnText">விளக்கம் காட்டு (Debugger Hint)</span></span>
+                    <span>▼</span>
+                </button>
+                <div id="debuggerBox" class="hidden mt-1.5 bg-indigo-950/40 border border-indigo-500/30 rounded-lg p-3 text-xs sm:text-sm text-indigo-100 leading-relaxed">
+                    <p id="debuggerText"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Answer Controls & Inline Feedback (6 cols) -->
+        <div class="lg:col-span-6 bg-slate-900/95 border border-slate-800 rounded-xl p-3.5 sm:p-4 flex flex-col min-h-0 shadow-lg">
+            
+            <!-- MODE A: 3-Mark Multiple Choice -->
+            <div id="mcqContainer" class="flex-1 min-h-0 flex flex-col justify-between">
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-800 shrink-0">
+                    <h2 id="ui-mcqTitle" class="text-sm sm:text-base font-extrabold text-cyan-300">⚡ சரியான வெளியீட்டைத் தேர்ந்தெடு:</h2>
+                    <span id="ui-mcqSub" class="text-xs font-bold text-blue-300 bg-blue-500/15 px-2.5 py-0.5 rounded">3 மதிப்பெண் | -20 HP</span>
+                </div>
+                <div id="mcqOptionsList" class="my-auto py-2.5 space-y-2.5 overflow-y-auto">
+                    <!-- Options injected via JS -->
+                </div>
+            </div>
+
+            <!-- MODE B: 5-Mark Line-by-Line Output Builder -->
+            <div id="builderContainer" class="hidden flex-1 min-h-0 flex flex-col justify-between">
+                <div class="flex items-center justify-between pb-2.5 border-b border-slate-800 shrink-0">
+                    <h2 id="ui-builderTitle" class="text-sm sm:text-base font-extrabold text-amber-300">🧱 வெளியீட்டு வரிகளை வரிசைப்படுத்து:</h2>
+                    <div class="flex gap-2">
+                        <button onclick="undoBuilderLine()" id="ui-undoBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 cursor-pointer">↩️ நீக்கு</button>
+                        <button onclick="clearBuilderLines()" id="ui-clearBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-rose-950 text-xs font-semibold text-rose-300 cursor-pointer">🗑️ அழி</button>
+                    </div>
+                </div>
+
+                <!-- Assembled Console -->
+                <div class="my-2.5 flex-1 min-h-[120px] bg-black/85 border border-amber-500/30 rounded-xl p-3 overflow-y-auto">
+                    <div id="assembledConsole" class="code-font text-xs sm:text-sm space-y-1.5"></div>
+                </div>
+
+                <!-- Shuffled Chips -->
+                <div class="shrink-0">
+                    <p id="ui-builderSub" class="text-xs text-slate-400 mb-2">முதல் வரி முதல் கடைசி வரி வரை சரியான வரிசையில் கிளிக் செய்யவும்:</p>
+                    <div id="builderChipsPool" class="flex flex-wrap gap-2 mb-3"></div>
+                    <button id="fireBuilderBtn" onclick="submitBuilderAnswer()" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-extrabold text-sm sm:text-base shadow-lg transition active:scale-95 cursor-pointer">
+                        🚀 தாக்கு! வெளியீட்டைச் சரிபார் (-40 HP)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Compact Inline Feedback Banner -->
+            <div id="inlineFeedback" class="hidden mt-2.5 rounded-xl p-3 border flex items-center justify-between gap-3 shrink-0">
+                <div class="min-w-0">
+                    <div id="feedbackTitle" class="text-sm sm:text-base font-extrabold"></div>
+                    <p id="feedbackDetail" class="text-xs sm:text-sm text-slate-200 mt-0.5 leading-snug"></p>
+                </div>
+                <button onclick="loadNextQuestion()" id="ui-nextBtn" class="px-4 py-2.5 rounded-lg bg-white text-slate-950 hover:bg-slate-200 font-extrabold text-xs sm:text-sm shrink-0 shadow transition cursor-pointer">
+                    அடுத்து ➡️
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- STUDENT LOGIN / REGISTRATION MODAL -->
+    <div id="studentModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border-2 border-cyan-500/60 rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🎓</span>
+                    <div>
+                        <h2 id="ui-loginTitle" class="text-base sm:text-lg font-extrabold text-cyan-300">மாணவர் விவரம்</h2>
+                        <p id="ui-loginSub" class="text-[11px] text-slate-400">12-ஆம் வகுப்பு கணினி அறிவியல் போர்</p>
+                    </div>
+                </div>
+                <!-- Modal Bilingual Switcher -->
+                <div class="bg-slate-950 p-0.5 rounded-lg border border-cyan-500/40 flex text-xs font-bold">
+                    <button type="button" onclick="setUiLang('ta')" id="modalLangBtn-ta" class="px-2.5 py-1 rounded-md bg-cyan-500 text-slate-950 transition cursor-pointer">தமிழ்</button>
+                    <button type="button" onclick="setUiLang('en')" id="modalLangBtn-en" class="px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer">EN</button>
+                </div>
+            </div>
+
+            <form id="studentForm" onsubmit="submitStudentForm(event)" class="space-y-4">
+                <div>
+                    <label id="ui-nameLabel" for="studentNameInput" class="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5">
+                        மாணவர் பெயர் (Student Name) *
+                    </label>
+                    <input type="text" id="studentNameInput" required placeholder="உங்கள் பெயரை உள்ளிடவும்..." class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none">
+                </div>
+
+                <div>
+                    <label id="ui-emisLabel" for="studentEmisInput" class="block text-xs sm:text-sm font-bold text-slate-300 mb-1.5">
+                        EMIS எண் (EMIS Number) *
+                    </label>
+                    <input type="text" id="studentEmisInput" required inputmode="numeric" placeholder="எ.கா: 1029384756" class="w-full bg-slate-950 border border-slate-700 focus:border-cyan-400 rounded-xl px-3.5 py-2.5 text-sm font-mono text-white focus:outline-none">
+                </div>
+
+                <div id="loginErrorMsg" class="hidden text-xs text-rose-400 font-semibold bg-rose-950/60 border border-rose-500/40 rounded-lg p-2.5"></div>
+
+                <button type="submit" id="ui-startBattleBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-lg transition active:scale-95 cursor-pointer">
+                    ⚔️ போரைத் தொடங்கு
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FULL-SCREEN PERSONALIZED VICTORY / SCORECARD & ANSWER REVIEW MODAL -->
+    <div id="endModal" class="hidden fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col p-2 sm:p-4">
+        <div class="bg-slate-900 border-2 border-cyan-400/80 rounded-2xl p-4 sm:p-6 w-full h-full flex flex-col shadow-2xl">
+            <!-- Modal Header: Personalized Greeting -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-3 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div id="modalEmoji" class="text-3xl sm:text-4xl">🏰💥</div>
+                    <div>
+                        <h2 id="modalTitle" class="text-lg sm:text-2xl font-extrabold text-amber-300">வாழ்த்துகள் மாணவர்!</h2>
+                        <p id="modalSubtitle" class="text-xs sm:text-sm text-slate-300 mt-0.5"></p>
+                    </div>
+                </div>
+                <div class="inline-flex items-center gap-2 self-start md:self-center px-3.5 py-1.5 rounded-xl bg-cyan-950 border border-cyan-500/50 text-xs sm:text-sm text-cyan-200 font-mono font-bold">
+                    <span id="modalStudentBadge">👤 மாணவர் | EMIS: -</span>
+                </div>
+            </div>
+
+            <!-- 5-Card Performance Summary Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 my-3 shrink-0 text-center">
+                <div class="bg-amber-950/50 border border-amber-500/40 rounded-xl p-2.5">
+                    <div id="stat-marksLabel" class="text-xs text-amber-300 font-bold">பெற்ற மதிப்பெண்</div>
+                    <div id="stat-marksVal" class="text-lg sm:text-2xl font-extrabold text-amber-400">0 / 0</div>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5">
+                    <div id="stat-answeredLabel" class="text-xs text-slate-400 font-bold">பதிலளித்தவை</div>
+                    <div id="stat-answeredVal" class="text-lg sm:text-2xl font-extrabold text-white">0</div>
+                </div>
+                <div class="bg-emerald-950/40 border border-emerald-500/40 rounded-xl p-2.5">
+                    <div id="stat-correctLabel" class="text-xs text-emerald-300 font-bold">சரியானவை</div>
+                    <div id="stat-correctVal" class="text-lg sm:text-2xl font-extrabold text-emerald-400">0</div>
+                </div>
+                <div class="bg-rose-950/40 border border-rose-500/40 rounded-xl p-2.5">
+                    <div id="stat-wrongLabel" class="text-xs text-rose-300 font-bold">தவறானவை</div>
+                    <div id="stat-wrongVal" class="text-lg sm:text-2xl font-extrabold text-rose-400">0</div>
+                </div>
+                <div class="col-span-2 sm:col-span-1 bg-cyan-950/40 border border-cyan-500/40 rounded-xl p-2.5">
+                    <div id="stat-accLabel" class="text-xs text-cyan-300 font-bold">துல்லியம்</div>
+                    <div id="stat-accVal" class="text-lg sm:text-2xl font-extrabold text-cyan-300">0%</div>
+                </div>
+            </div>
+
+            <!-- Answer Review Filter Tabs -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5 shrink-0">
+                <h3 id="ui-reviewHeading" class="text-sm sm:text-base font-extrabold text-slate-200">📋 விடைகள் சரிபார்ப்பு (Answer Review)</h3>
+                <div class="flex gap-2 text-xs sm:text-sm font-bold">
+                    <button onclick="setReviewFilter('all')" id="revFilter-all" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white cursor-pointer">அனைத்தும்</button>
+                    <button onclick="setReviewFilter('correct')" id="revFilter-correct" class="px-3 py-1.5 rounded-lg bg-slate-800 text-emerald-300 cursor-pointer">✅ சரி</button>
+                    <button onclick="setReviewFilter('wrong')" id="revFilter-wrong" class="px-3 py-1.5 rounded-lg bg-slate-800 text-rose-300 cursor-pointer">❌ தவறு</button>
+                </div>
+            </div>
+
+            <!-- Expanded 2-Column Scrollable Answer Review List -->
+            <div id="reviewHistoryList" class="flex-1 min-h-0 overflow-y-auto grid grid-cols-1 lg:grid-cols-2 gap-3 pr-1 mb-3 content-start">
+                <!-- Attempted Q&A items rendered dynamically -->
+            </div>
+
+            <!-- Bottom Modal Action Buttons -->
+            <div class="flex flex-wrap items-center justify-end gap-3 pt-2.5 border-t border-slate-800 shrink-0">
+                <button onclick="switchToNewStudent()" id="ui-newStudentBtn" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-bold text-xs sm:text-sm transition cursor-pointer">
+                    👤 புதிய மாணவர்
+                </button>
+                <button id="modalActionBtn" onclick="handleModalAction()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 hover:from-cyan-400 hover:to-indigo-400 text-white font-extrabold text-xs sm:text-sm shadow-lg transition cursor-pointer">
+                    மீண்டும் விளையாடு 🔄
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. Bilingual UI Dictionary (தமிழ் & English)
+        // ============================================================
+        const i18n = {
+            ta: {
+                title: 'கோட்டை தகர்ப்பு போர்',
+                stage: (lvl, total) => `நிலை ${lvl}/${total}`,
+                scoreLabel: 'மதிப்பெண்:',
+                finishBtn: '📊 முடி & சரிபார்',
+                resetBtn: '↺ மீட்டமை',
+                playerName: '🛡️ சைபர் வீரன்',
+                dmgRule: '3M: -20 HP | 5M: -40 HP',
+                skipBtn: '⏭️ மாற்று',
+                prompt: 'கீழ்க்காணும் நிரலின் வெளியீட்டைக் கண்டறிக:',
+                debugBtn: 'விளக்கம் காட்டு (Debugger Hint)',
+                mcqTitle: '⚡ சரியான வெளியீட்டைத் தேர்ந்தெடு:',
+                mcqSub: '3 மதிப்பெண் | -20 HP',
+                builderTitle: '🧱 வெளியீட்டு வரிகளை வரிசைப்படுத்து:',
+                builderSub: 'முதல் வரி முதல் கடைசி வரி வரை சரியான வரிசையில் கிளிக் செய்யவும்:',
+                builderPlaceholder: 'கீழே உள்ள வரிகளைக் கிளிக் செய்து இங்கே அடுக்கவும்...',
+                undoBtn: '↩️ நீக்கு',
+                clearBtn: '🗑️ அழி',
+                fireBtn: '🚀 தாக்கு! வெளியீட்டைச் சரிபார் (-40 HP)',
+                nextBtn: 'அடுத்து ➡️',
+                linePrefix: (n) => `வரி ${n}:`,
+                hitTitle: (pts) => `💥 நேரடித் தாக்குதல்! (+${pts} மதிப்பெண்கள்)`,
+                missTitle: '🛡️ தவறான வெளியீடு! (-20 HP)',
+                correctAnsPrefix: 'சரியான வெளியீடு:',
+                selectFirstWarning: '⚠️ முதலில் வெளியீட்டு வரிகளைத் தேர்ந்தெடுக்கவும்!',
+                loginTitle: 'மாணவர் விவரம் பதிவு',
+                loginSub: '12-ஆம் வகுப்பு கணினி அறிவியல் - கோட்டை தகர்ப்பு போர்',
+                nameLabel: 'மாணவர் பெயர் (Student Name) *',
+                namePlaceholder: 'உங்கள் பெயரை உள்ளிடவும்...',
+                emisLabel: 'EMIS எண் (EMIS Number) *',
+                emisPlaceholder: 'எ.கா: 1029384756',
+                startBattleBtn: '⚔️ போரைத் தொடங்கு',
+                loginValidationErr: '⚠️ தயவுசெய்து மாணவர் பெயர் மற்றும் சரியான EMIS எண்ணை உள்ளிடவும்!',
+                levelClearTitle: (name, lvl) => `வாழ்த்துகள் ${name}! நிலை ${lvl} கோட்டை தகர்க்கப்பட்டது!`,
+                levelClearSub: (name, marks, totalMarks) => `${name}, இதுவரை நீ பெற்ற மதிப்பெண்கள்: ${marks} / ${totalMarks}. அடுத்த கோட்டையைத் தாக்கத் தயாரா?`,
+                nextFortressBtn: 'அடுத்த கோட்டைக்குச் செல் 🚀',
+                allClearTitle: (name) => `மிகச் சிறப்பு ${name}! அனைத்துக் கோட்டைகளும் வெற்றி!`,
+                allClearSub: (name, marks, totalMarks) => `${name}, 12-ஆம் வகுப்பு Python & C++ போரில் நீ பெற்ற மொத்த மதிப்பெண்கள்: ${marks} / ${totalMarks}!`,
+                summaryTitle: (name) => `${name} - தேர்வு & போர் மதிப்பெண் அறிக்கை`,
+                summarySub: (name, marks, totalMarks) => `மாணவர் ${name} பெற்ற மொத்த மதிப்பெண்கள்: ${marks} / ${totalMarks}`,
+                playAgainBtn: 'மீண்டும் விளையாடு 🔄',
+                gameOverTitle: (name) => `கவசம் உடைந்துவிட்டது ${name}!`,
+                gameOverSub: (name, marks, totalMarks) => `${name}, நீ பெற்ற மதிப்பெண்கள்: ${marks} / ${totalMarks}. கீழே உள்ள தவறான விடைகளைச் சரிபார்த்து மீண்டும் முயற்சி செய்!`,
+                retryBtn: 'மீண்டும் தாக்கு ⚔️',
+                newStudentBtn: '👤 புதிய மாணவர்',
+                statMarks: 'பெற்ற மதிப்பெண்',
+                statAnswered: 'பதிலளித்தவை',
+                statCorrect: 'சரியானவை',
+                statWrong: 'தவறானவை',
+                statAcc: 'துல்லியம்',
+                reviewHeading: '📋 விடைகள் சரிபார்ப்பு (Answer Review)',
+                revAll: 'அனைத்தும்',
+                revCorrect: '✅ சரி',
+                revWrong: '❌ தவறு',
+                yourAnsLabel: 'உன் விடை:',
+                rightAnsLabel: 'சரியான விடை:',
+                noHistoryMsg: 'இதுவரை எந்த வினாவிற்கும் பதிலளிக்கவில்லை.',
+                bossNames: ['🏰 Python கோட்டை', '🏯 தரவுக் கோட்டை', '⛩️ C++ மகா கோட்டை']
+            },
+            en: {
+                title: 'Code Fortress Battle',
+                stage: (lvl, total) => `Stage ${lvl}/${total}`,
+                scoreLabel: 'Marks:',
+                finishBtn: '📊 Finish & Review',
+                resetBtn: '↺ Reset',
+                playerName: '🛡️ Cyber Hero',
+                dmgRule: '3M: -20 HP | 5M: -40 HP',
+                skipBtn: '⏭️ Skip',
+                prompt: 'Predict the exact output of the following code:',
+                debugBtn: 'Show Explanation (Debugger Hint)',
+                mcqTitle: '⚡ Choose the Correct Output:',
+                mcqSub: '3 Marks | -20 HP DMG',
+                builderTitle: '🧱 Assemble Output Line-by-Line:',
+                builderSub: 'Click the output chips below in exact order from first line to last:',
+                builderPlaceholder: 'Click output chips below to assemble lines here...',
+                undoBtn: '↩️ Undo',
+                clearBtn: '🗑️ Clear',
+                fireBtn: '🚀 Fire Mega Attack! Check Output (-40 HP)',
+                nextBtn: 'Next ➡️',
+                linePrefix: (n) => `Line ${n}:`,
+                hitTitle: (pts) => `💥 Direct Hit! (+${pts} Marks)`,
+                missTitle: '🛡️ Wrong Output! Counter-Attack (-20 HP)',
+                correctAnsPrefix: 'Correct Output:',
+                selectFirstWarning: '⚠️ Select output lines first!',
+                loginTitle: 'Student Registration',
+                loginSub: '12th Standard Computer Science - Code Fortress Battle',
+                nameLabel: 'Student Name *',
+                namePlaceholder: 'Enter your full name...',
+                emisLabel: 'EMIS Number *',
+                emisPlaceholder: 'e.g., 1029384756',
+                startBattleBtn: '⚔️ Start Battle',
+                loginValidationErr: '⚠️ Please enter both Student Name and a valid EMIS Number!',
+                levelClearTitle: (name, lvl) => `Congratulations ${name}! Stage ${lvl} Destroyed!`,
+                levelClearSub: (name, marks, totalMarks) => `Great job ${name}! Marks Earned so far: ${marks} / ${totalMarks}. Ready for the next fortress?`,
+                nextFortressBtn: 'Next Fortress 🚀',
+                allClearTitle: (name) => `Outstanding ${name}! All Fortresses Conquered!`,
+                allClearSub: (name, marks, totalMarks) => `${name}, you conquered 12th CS Python & C++ Outputs with ${marks} / ${totalMarks} Marks!`,
+                summaryTitle: (name) => `${name} - Battle Scorecard & Review`,
+                summarySub: (name, marks, totalMarks) => `Student ${name} scored ${marks} out of ${totalMarks} Marks.`,
+                playAgainBtn: 'Play Again 🔄',
+                gameOverTitle: (name) => `Shield Shattered, ${name}!`,
+                gameOverSub: (name, marks, totalMarks) => `${name}, you earned ${marks} / ${totalMarks} Marks. Review your answers below and retry!`,
+                retryBtn: 'Retry Stage ⚔️',
+                newStudentBtn: '👤 New Student',
+                statMarks: 'Marks Earned',
+                statAnswered: 'Answered',
+                statCorrect: 'Correct',
+                statWrong: 'Wrong',
+                statAcc: 'Accuracy',
+                reviewHeading: '📋 Answer Review',
+                revAll: 'All',
+                revCorrect: '✅ Correct',
+                revWrong: '❌ Wrong',
+                yourAnsLabel: 'Your Answer:',
+                rightAnsLabel: 'Correct Answer:',
+                noHistoryMsg: 'No questions answered yet.',
+                bossNames: ['🏰 Python Fortress', '🏯 Data Citadel', '⛩️ C++ Titan Bastion']
+            }
+        };
+
+        // ============================================================
+        // 2. Bilingual 12th Standard CS Question Bank (Python & C++)
+        // ============================================================
+        const questionBank = [
+            // --- 3-MARK MCQ QUESTIONS (Python) ---
+            {
+                id: 1,
+                lang: 'Python',
+                marks: 3,
+                mode: 'mcq',
+                chapter: { ta: 'பாடம் 8: சரங்கள் (Strings)', en: 'Ch 8: Strings & Slicing' },
+                code: `str1 = "COMPUTER"\nprint(str1[::2])\nprint(str1[::-3])`,
+                options: [
+                    "CMUE\nRTU",
+                    "CMUE\nRTM",
+                    "OPTR\nRTM",
+                    "CMUE\nEUMC"
+                ],
+                correctIndex: 1,
+                explanation: {
+                    ta: 'str1[::2] என்பது 0-வது சுட்டெண்ணிலிருந்து 2 படிகளாக (C, M, U, E) எடுக்கும். str1[::-3] என்பது பின்னோக்கி 3 படிகளாக (R, T, M) எடுக்கும்.',
+                    en: 'str1[::2] steps forward by 2 starting at index 0 -> "CMUE". str1[::-3] steps backward by 3 from the end -> "RTM".'
+                }
+            },
+            {
+                id: 2,
+                lang: 'Python',
+                marks: 3,
+                mode: 'mcq',
+                chapter: { ta: 'பாடம் 7: பைத்தான் செயற்கூறுகள்', en: 'Ch 7: Python Functions & Scope' },
+                code: `x = 10\ndef change():\n    global x\n    x = x + 5\n    print(x, end=" ")\nchange()\nprint(x)`,
+                options: [
+                    "15 10",
+                    "10 15",
+                    "15 15",
+                    "Error"
+                ],
+                correctIndex: 2,
+                explanation: {
+                    ta: 'global x கூற்று முழுதளாவிய மாறி x-ஐ 15 ஆக மாற்றுகிறது. எனவே செயற்கூறுக்கு உள்ளேயும் வெளியேயும் 15 அச்சிடப்படும்.',
+                    en: 'The "global x" keyword modifies the global variable x to 15, so both print statements output 15.'
+                }
+            },
+            {
+                id: 3,
+                lang: 'Python',
+                marks: 3,
+                mode: 'mcq',
+                chapter: { ta: 'பாடம் 6: கட்டுப்பாட்டு கட்டமைப்புகள்', en: 'Ch 6: Control Structures' },
+                code: `for word in "Jump Statement":\n    if word == "e":\n        continue\n    print(word, end="")`,
+                options: [
+                    "Jump Statmnt",
+                    "Jump Stat",
+                    "Jump Statement",
+                    "Jump Sttmnt"
+                ],
+                correctIndex: 0,
+                explanation: {
+                    ta: 'continue கூற்று "e" எழுத்து வரும்போது மட்டும் அச்சிடுவதைத் தவிர்க்கும். மற்ற அனைத்து எழுத்துகளும் அச்சிடப்படும் -> "Jump Statmnt".',
+                    en: 'The continue statement skips printing whenever the character is "e", outputting "Jump Statmnt".'
+                }
+            },
+            {
+                id: 4,
+                lang: 'Python',
+                marks: 3,
+                mode: 'mcq',
+                chapter: { ta: 'பாடம் 9: Lists & Sets', en: 'Ch 9: Lists & Sets' },
+                code: `nums = [x**2 for x in range(1, 5)]\nprint(nums)\nA = {1, 2, 3, 4}\nB = {3, 4, 5, 6}\nprint(A ^ B)`,
+                options: [
+                    "[1, 4, 9, 16, 25]\n{3, 4}",
+                    "[1, 4, 9, 16]\n{1, 2, 5, 6}",
+                    "[1, 4, 9, 16]\n{3, 4}",
+                    "[2, 4, 6, 8]\n{1, 2, 5, 6}"
+                ],
+                correctIndex: 1,
+                explanation: {
+                    ta: 'range(1, 5) என்பது 1, 2, 3, 4 ஆகியவற்றின் வர்க்கங்களை [1, 4, 9, 16] தரும். A ^ B (Symmetric Difference) பொதுவற்ற உறுப்புகளான {1, 2, 5, 6}-ஐ தரும்.',
+                    en: 'range(1, 5) produces squares [1, 4, 9, 16]. A ^ B computes symmetric difference -> {1, 2, 5, 6}.'
+                }
+            },
+
+            // --- 3-MARK MCQ QUESTIONS (C++) ---
+            {
+                id: 5,
+                lang: 'C++',
+                marks: 3,
+                mode: 'mcq',
+                chapter: { ta: 'C++ மறுபார்வை: சுட்டிகள்', en: 'C++ Review: Pointers' },
+                code: `#include <iostream>\nusing namespace std;\nint main() {\n    int arr[] = {10, 20, 30, 40};\n    int *ptr = arr;\n    cout << *(ptr + 2) << " ";\n    ptr++;\n    cout << *ptr;\n    return 0;\n}`,
+                options: [
+                    "30 20",
+                    "20 30",
+                    "30 40",
+                    "12 20"
+                ],
+                correctIndex: 0,
+                explanation: {
+                    ta: '*(ptr + 2) என்பது 3-வது உறுப்பான 30-ஐக் குறிக்கும். பின்னர் ptr++ அடுத்த உறுப்புக்கு நகர்வதால் *ptr மதிப்பு 20 ஆகும்.',
+                    en: '*(ptr + 2) accesses index 2 (30). After ptr++, ptr points to index 1 (20).'
+                }
+            },
+            {
+                id: 6,
+                lang: 'C++',
+                marks: 3,
+                mode: 'mcq',
+                chapter: { ta: 'C++ செயற்கூறு பணிமிகுப்பு', en: 'C++ Function Overloading' },
+                code: `#include <iostream>\nusing namespace std;\nint calc(int a, int b = 5) { return a + b; }\ndouble calc(double a) { return a * 2; }\nint main() {\n    cout << calc(10) << " " << calc(4.5);\n    return 0;\n}`,
+                options: [
+                    "10 9",
+                    "15 9",
+                    "15 9.0",
+                    "Error"
+                ],
+                correctIndex: 1,
+                explanation: {
+                    ta: 'calc(10) முதல் செயற்கூறை அழைத்து default அளபுரு b=5 உடன் 15 தரும். calc(4.5) double செயற்கூறை அழைத்து 9 தரும்.',
+                    en: 'calc(10) uses default b=5 -> 15. calc(4.5) calls double overload -> 9.'
+                }
+            },
+
+            // --- 5-MARK LINE-BY-LINE BUILDER QUESTIONS (Python) ---
+            {
+                id: 7,
+                lang: 'Python',
+                marks: 5,
+                mode: 'builder',
+                chapter: { ta: 'பாடம் 6: பின்னலான மடக்கு', en: 'Ch 6: Nested Loops' },
+                code: `for i in range(1, 5):\n    for j in range(1, i + 1):\n        print(j, end=" ")\n    print()`,
+                correctLines: [
+                    "1",
+                    "1 2",
+                    "1 2 3",
+                    "1 2 3 4"
+                ],
+                distractors: [
+                    "1 2 3 4 5",
+                    "4 3 2 1"
+                ],
+                explanation: {
+                    ta: 'வெளி மடக்கு i = 1 முதல் 4 வரை இயங்கும். ஒவ்வொரு வரியிலும் உள் மடக்கு 1 முதல் i வரை எண்களை அச்சிடும்.',
+                    en: 'Outer loop runs i from 1 to 4; inner loop prints numbers from 1 up to i on each row.'
+                }
+            },
+            {
+                id: 8,
+                lang: 'Python',
+                marks: 5,
+                mode: 'builder',
+                chapter: { ta: 'பாடம் 8: சர அமைப்பு (String Pattern)', en: 'Ch 8: String Pattern' },
+                code: `s = "TAMIL"\nfor i in range(len(s), 0, -1):\n    print(s[:i])`,
+                correctLines: [
+                    "TAMIL",
+                    "TAMI",
+                    "TAM",
+                    "TA",
+                    "T"
+                ],
+                distractors: [
+                    "LIMAT",
+                    "AMIL"
+                ],
+                explanation: {
+                    ta: 'i மதிப்பு 5 முதல் 1 வரை குறையும். ஒவ்வொரு சுற்றிலும் s[:i] முதல் i எழுத்துக்களை மட்டும் வெட்டி அச்சிடும்.',
+                    en: 'i decrements from 5 down to 1, slicing s[:i] from full word "TAMIL" down to "T".'
+                }
+            },
+            {
+                id: 9,
+                lang: 'Python',
+                marks: 5,
+                mode: 'builder',
+                chapter: { ta: 'பாடம் 10: இனக்குழு & பொருள்கள்', en: 'Ch 10: Classes & Objects' },
+                code: `class Student:\n    def __init__(self, name, m1, m2):\n        self.name = name\n        self.total = m1 + m2\n    def show(self):\n        print(f"{self.name}:{self.total}")\n\ns1 = Student("Arun", 45, 50)\ns2 = Student("Priya", 48, 49)\ns1.show()\ns2.show()`,
+                correctLines: [
+                    "Arun:95",
+                    "Priya:97"
+                ],
+                distractors: [
+                    "Arun:4550",
+                    "Priya:95"
+                ],
+                explanation: {
+                    ta: '__init__ ஆக்கி இரு மதிப்பெண்களையும் கூட்டி self.total-ல் சேமிக்கும். s1 -> Arun:95, s2 -> Priya:97.',
+                    en: '__init__ sums m1 and m2 into self.total. s1 outputs "Arun:95" and s2 outputs "Priya:97".'
+                }
+            },
+
+            // --- 5-MARK LINE-BY-LINE BUILDER QUESTIONS (C++) ---
+            {
+                id: 10,
+                lang: 'C++',
+                marks: 5,
+                mode: 'builder',
+                chapter: { ta: 'C++ ஆக்கிகள் & அழிப்பிகள்', en: 'C++ Constructors & Destructors' },
+                code: `#include <iostream>\nusing namespace std;\nclass Box {\npublic:\n    Box() { cout << "Created" << endl; }\n    ~Box() { cout << "Destroyed" << endl; }\n};\nint main() {\n    Box b1;\n    cout << "Inside Main" << endl;\n    return 0;\n}`,
+                correctLines: [
+                    "Created",
+                    "Inside Main",
+                    "Destroyed"
+                ],
+                distractors: [
+                    "Destroyed",
+                    "Box Error"
+                ],
+                explanation: {
+                    ta: 'b1 பொருள் உருவாகும்போது Box() ஆக்கி ("Created"), பின்னர் "Inside Main", இறுதியில் main() முடியும்போது ~Box() அழிப்பி ("Destroyed") இயங்கும்.',
+                    en: 'Object creation triggers Box() ("Created"), then "Inside Main", and scope exit triggers ~Box() ("Destroyed").'
+                }
+            },
+            {
+                id: 11,
+                lang: 'C++',
+                marks: 5,
+                mode: 'builder',
+                chapter: { ta: 'C++ மரபுரிமம் (Inheritance)', en: 'C++ Inheritance' },
+                code: `#include <iostream>\nusing namespace std;\nclass Base {\npublic:\n    Base() { cout << "Base Init" << endl; }\n};\nclass Derived : public Base {\npublic:\n    Derived() { cout << "Derived Init" << endl; }\n};\nint main() {\n    Derived d;\n    return 0;\n}`,
+                correctLines: [
+                    "Base Init",
+                    "Derived Init"
+                ],
+                distractors: [
+                    "Derived Init",
+                    "Base Init"
+                ],
+                explanation: {
+                    ta: 'மரபுரிமத்தில் முதலில் அடிப்படை இனக்குழுவின் (Base) ஆக்கியும், அதன் பின்னரே தருவிக்கப்பட்ட இனக்குழுவின் (Derived) ஆக்கியும் இயங்கும்.',
+                    en: 'In inheritance, Base class constructor always executes first, followed by Derived class constructor.'
+                }
+            }
+        ];
+
+        // ============================================================
+        // 3. Game State & Student Profile
+        // ============================================================
+        const stageMaxHps = [100, 120, 140];
+        let uiLang = 'ta';
+        let codeFilter = 'ALL';
+        let stageIndex = 0;
+        let playerHp = 100;
+        let bossHp = 100;
+        let earnedMarks = 0;
+        let possibleMarks = 0;
+        let combo = 0;
+        let usedIds = [];
+        let attemptHistory = [];
+        let reviewFilter = 'all';
+        let currentQ = null;
+        let isAnswered = false;
+        let lastAnswerCorrect = false;
+        let lastEarnedPts = 0;
+        let soundEnabled = true;
+
+        // Student Details
+        let studentProfile = { name: '', emis: '' };
+
+        // Builder state
+        let builderChips = [];
+        let builderOrder = [];
+        let modalMode = 'next';
+
+        // ============================================================
+        // 4. Web Audio API Sound Effects
+        // ============================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                if (type === 'hit') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(520, now);
+                    osc.frequency.exponentialRampToValueAtTime(140, now + 0.22);
+                    gain.gain.setValueAtTime(0.14, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+                } else if (type === 'mega') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(660, now);
+                    osc.frequency.exponentialRampToValueAtTime(90, now + 0.35);
+                    gain.gain.setValueAtTime(0.16, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+                } else if (type === 'error') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(110, now + 0.28);
+                    gain.gain.setValueAtTime(0.16, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                } else {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(640, now);
+                    gain.gain.setValueAtTime(0.07, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                }
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.36);
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+        }
+
+        // ============================================================
+        // 5. Bilingual Switcher & Student Profile Management
+        // ============================================================
+        function setUiLang(lang) {
+            uiLang = lang;
+            const activeCls = 'px-2.5 py-1 rounded-md bg-cyan-500 text-slate-950 transition cursor-pointer';
+            const idleCls = 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer';
+
+            document.getElementById('langBtn-ta').className = lang === 'ta' ? activeCls : idleCls;
+            document.getElementById('langBtn-en').className = lang === 'en' ? activeCls : idleCls;
+            document.getElementById('modalLangBtn-ta').className = lang === 'ta' ? activeCls : idleCls;
+            document.getElementById('modalLangBtn-en').className = lang === 'en' ? activeCls : idleCls;
+
+            applyTranslations();
+        }
+
+        function applyTranslations() {
+            const t = i18n[uiLang];
+            document.getElementById('ui-title').textContent = t.title;
+            document.getElementById('ui-stagePill').textContent = t.stage(stageIndex + 1, stageMaxHps.length);
+            document.getElementById('ui-scoreLabel').textContent = t.scoreLabel;
+            document.getElementById('ui-finishBtn').textContent = t.finishBtn;
+            document.getElementById('ui-resetBtn').textContent = t.resetBtn;
+            document.getElementById('ui-playerName').textContent = studentProfile.name
+                ? `🛡️ ${studentProfile.name}`
+                : t.playerName;
+            document.getElementById('ui-bossName').textContent = t.bossNames[stageIndex] || t.bossNames[0];
+            document.getElementById('ui-skipBtn').textContent = t.skipBtn;
+            document.getElementById('ui-prompt').textContent = t.prompt;
+            document.getElementById('ui-debugBtnText').textContent = t.debugBtn;
+            document.getElementById('ui-mcqTitle').textContent = t.mcqTitle;
+            document.getElementById('ui-mcqSub').textContent = t.mcqSub;
+            document.getElementById('ui-builderTitle').textContent = t.builderTitle;
+            document.getElementById('ui-builderSub').textContent = t.builderSub;
+            document.getElementById('ui-undoBtn').textContent = t.undoBtn;
+            document.getElementById('ui-clearBtn').textContent = t.clearBtn;
+            document.getElementById('fireBuilderBtn').textContent = t.fireBtn;
+            document.getElementById('ui-nextBtn').textContent = t.nextBtn;
+
+            // Student Login Modal texts
+            document.getElementById('ui-loginTitle').textContent = t.loginTitle;
+            document.getElementById('ui-loginSub').textContent = t.loginSub;
+            document.getElementById('ui-nameLabel').textContent = t.nameLabel;
+            document.getElementById('studentNameInput').placeholder = t.namePlaceholder;
+            document.getElementById('ui-emisLabel').textContent = t.emisLabel;
+            document.getElementById('studentEmisInput').placeholder = t.emisPlaceholder;
+            document.getElementById('ui-startBattleBtn').textContent = t.startBattleBtn;
+
+            // Scorecard Modal texts
+            document.getElementById('stat-marksLabel').textContent = t.statMarks;
+            document.getElementById('stat-answeredLabel').textContent = t.statAnswered;
+            document.getElementById('stat-correctLabel').textContent = t.statCorrect;
+            document.getElementById('stat-wrongLabel').textContent = t.statWrong;
+            document.getElementById('stat-accLabel').textContent = t.statAcc;
+            document.getElementById('ui-reviewHeading').textContent = t.reviewHeading;
+            document.getElementById('revFilter-all').textContent = t.revAll;
+            document.getElementById('revFilter-correct').textContent = t.revCorrect;
+            document.getElementById('revFilter-wrong').textContent = t.revWrong;
+            document.getElementById('ui-newStudentBtn').textContent = t.newStudentBtn;
+
+            if (currentQ) {
+                document.getElementById('chapterTag').textContent = currentQ.chapter[uiLang];
+                document.getElementById('debuggerText').textContent = currentQ.explanation[uiLang];
+                if (currentQ.mode === 'builder') {
+                    renderBuilderUI();
+                }
+                if (isAnswered) {
+                    updateFeedbackBanner();
+                }
+            }
+            if (!document.getElementById('endModal').classList.contains('hidden')) {
+                renderReviewList();
+            }
+        }
+
+        function openStudentModal(prefill = false) {
+            if (prefill && studentProfile.name) {
+                document.getElementById('studentNameInput').value = studentProfile.name;
+                document.getElementById('studentEmisInput').value = studentProfile.emis;
+            }
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+            document.getElementById('studentModal').classList.remove('hidden');
+        }
+
+        function submitStudentForm(e) {
+            e.preventDefault();
+            const nameVal = document.getElementById('studentNameInput').value.trim();
+            const emisVal = document.getElementById('studentEmisInput').value.trim();
+            const errEl = document.getElementById('loginErrorMsg');
+
+            if (!nameVal || !emisVal) {
+                errEl.textContent = i18n[uiLang].loginValidationErr;
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const isNewStudent = (studentProfile.name !== nameVal || studentProfile.emis !== emisVal);
+            studentProfile = { name: nameVal, emis: emisVal };
+
+            document.getElementById('headerStudentText').textContent = `${nameVal} (${emisVal})`;
+            document.getElementById('studentHeaderPill').classList.remove('hidden');
+            document.getElementById('studentModal').classList.add('hidden');
+            playTone('click');
+
+            if (isNewStudent) {
+                resetGame();
+            } else {
+                applyTranslations();
+            }
+        }
+
+        function switchToNewStudent() {
+            document.getElementById('endModal').classList.add('hidden');
+            document.getElementById('studentForm').reset();
+            openStudentModal(false);
+        }
+
+        // ============================================================
+        // 6. Core Game Flow & Question Rendering
+        // ============================================================
+        function setCodeFilter(filter) {
+            codeFilter = filter;
+            ['ALL', 'Python', 'C++'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                btn.className = (f === filter)
+                    ? 'px-2.5 py-1 rounded-md bg-indigo-600 text-white transition cursor-pointer'
+                    : 'px-2.5 py-1 rounded-md text-slate-400 hover:text-white transition cursor-pointer';
+            });
+            usedIds = [];
+            loadNextQuestion();
+        }
+
+        function setupStage(idx) {
+            stageIndex = idx;
+            bossHp = stageMaxHps[idx];
+            playerHp = 100;
+            updateBars();
+            applyTranslations();
+        }
+
+        function loadNextQuestion() {
+            isAnswered = false;
+            document.getElementById('inlineFeedback').classList.add('hidden');
+            document.getElementById('debuggerBox').classList.add('hidden');
+
+            const pool = codeFilter === 'ALL'
+                ? questionBank
+                : questionBank.filter(q => q.lang === codeFilter);
+
+            let candidates = pool.filter(q => !usedIds.includes(q.id));
+            if (candidates.length === 0) {
+                usedIds = [];
+                candidates = [...pool];
+            }
+
+            currentQ = candidates[Math.floor(Math.random() * candidates.length)];
+            usedIds.push(currentQ.id);
+
+            renderQuestion(currentQ);
+        }
+
+        function skipQuestion() {
+            if (isAnswered) return;
+            playTone('click');
+            loadNextQuestion();
+        }
+
+        function renderQuestion(q) {
+            const langBadge = document.getElementById('langBadge');
+            langBadge.textContent = q.lang === 'Python' ? '🐍 Python' : '⚙️ C++';
+            langBadge.className = q.lang === 'Python'
+                ? 'px-2 py-0.5 rounded text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 shrink-0'
+                : 'px-2 py-0.5 rounded text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 shrink-0';
+
+            const marksBadge = document.getElementById('marksBadge');
+            marksBadge.textContent = q.marks === 3 ? '3M (-20 HP)' : '5M (-40 HP)';
+            marksBadge.className = q.marks === 3
+                ? 'px-2 py-0.5 rounded text-xs font-bold bg-blue-500/20 text-blue-300 border border-blue-400/30 shrink-0'
+                : 'px-2 py-0.5 rounded text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30 shrink-0';
+
+            document.getElementById('chapterTag').textContent = q.chapter[uiLang];
+            document.getElementById('debuggerText').textContent = q.explanation[uiLang];
+
+            // Render syntax lines
+            const lines = q.code.split('\n');
+            document.getElementById('codeBlock').innerHTML = lines.map((line, i) =>
+                `<div class="flex"><span class="text-slate-600 select-none mr-2.5">${String(i + 1).padStart(2, '0')}</span><span>${escapeHtml(line)}</span></div>`
+            ).join('');
+
+            const mcqBox = document.getElementById('mcqContainer');
+            const builderBox = document.getElementById('builderContainer');
+
+            if (q.mode === 'mcq') {
+                mcqBox.classList.remove('hidden');
+                mcqBox.classList.add('flex');
+                builderBox.classList.add('hidden');
+                builderBox.classList.remove('flex');
+                renderMcq(q);
+            } else {
+                mcqBox.classList.add('hidden');
+                mcqBox.classList.remove('flex');
+                builderBox.classList.remove('hidden');
+                builderBox.classList.add('flex');
+                initBuilder(q);
+            }
+        }
+
+        // ============================================================
+        // 7. Mode A: 3-Mark MCQ
+        // ============================================================
+        function renderMcq(q) {
+            const list = document.getElementById('mcqOptionsList');
+            list.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'mcq-btn w-full text-left bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-cyan-400 rounded-xl p-3 sm:p-3.5 transition flex items-start gap-3 cursor-pointer group';
+                btn.onclick = () => checkMcq(idx);
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-lg bg-slate-800 group-hover:bg-cyan-500 group-hover:text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 mt-0.5 transition">${letters[idx]}</span>
+                    <pre class="code-font text-sm sm:text-base text-slate-200 whitespace-pre-wrap leading-snug">${escapeHtml(opt)}</pre>
+                `;
+                list.appendChild(btn);
+            });
+        }
+
+        function checkMcq(selectedIdx) {
+            if (isAnswered) return;
+            isAnswered = true;
+            const correct = selectedIdx === currentQ.correctIndex;
+
+            document.querySelectorAll('.mcq-btn').forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-800', 'hover:border-cyan-400');
+                if (i === currentQ.correctIndex) {
+                    btn.classList.add('bg-emerald-950', 'border-emerald-400', 'ring-1', 'ring-emerald-400');
+                } else if (i === selectedIdx && !correct) {
+                    btn.classList.add('bg-rose-950', 'border-rose-500');
+                }
+            });
+
+            const userAnsStr = currentQ.options[selectedIdx];
+            const rightAnsStr = currentQ.options[currentQ.correctIndex];
+            recordAttempt(currentQ, userAnsStr, rightAnsStr, correct);
+            resolveCombat(correct, 20);
+        }
+
+        // ============================================================
+        // 8. Mode B: 5-Mark Line-by-Line Output Builder
+        // ============================================================
+        function initBuilder(q) {
+            builderOrder = [];
+            const items = [
+                ...q.correctLines.map((txt, i) => ({ id: `c${i}`, text: txt, used: false })),
+                ...(q.distractors || []).map((txt, i) => ({ id: `d${i}`, text: txt, used: false }))
+            ];
+            for (let i = items.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [items[i], items[j]] = [items[j], items[i]];
+            }
+            builderChips = items;
+            renderBuilderUI();
+        }
+
+        function renderBuilderUI() {
+            const t = i18n[uiLang];
+            const consoleBox = document.getElementById('assembledConsole');
+            const poolBox = document.getElementById('builderChipsPool');
+
+            if (builderOrder.length === 0) {
+                consoleBox.innerHTML = `<div class="text-slate-600 italic text-[11px] py-6 text-center">${t.builderPlaceholder}</div>`;
+            } else {
+                consoleBox.innerHTML = builderOrder.map((chip, idx) => `
+                    <div class="flex items-center justify-between bg-slate-900 border border-cyan-500/40 rounded px-2 py-1 text-emerald-300">
+                        <div><span class="text-[10px] text-cyan-400 font-bold mr-1.5">${t.linePrefix(idx + 1)}</span><span>${escapeHtml(chip.text)}</span></div>
+                        <button onclick="removeLineAt(${idx})" class="text-slate-500 hover:text-rose-400 text-xs cursor-pointer">✕</button>
+                    </div>
+                `).join('');
+            }
+
+            poolBox.innerHTML = '';
+            builderChips.forEach(chip => {
+                const btn = document.createElement('button');
+                btn.disabled = chip.used || isAnswered;
+                btn.className = chip.used
+                    ? 'code-font text-xs px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-600 line-through cursor-not-allowed'
+                    : 'code-font text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-amber-500/20 border border-slate-600 hover:border-amber-400 text-white font-semibold transition active:scale-95 cursor-pointer';
+                btn.textContent = chip.text;
+                btn.onclick = () => {
+                    if (isAnswered || chip.used) return;
+                    playTone('click');
+                    chip.used = true;
+                    builderOrder.push(chip);
+                    renderBuilderUI();
+                };
+                poolBox.appendChild(btn);
+            });
+        }
+
+        function removeLineAt(idx) {
+            if (isAnswered) return;
+            const item = builderOrder.splice(idx, 1)[0];
+            if (item) {
+                item.used = false;
+                playTone('click');
+                renderBuilderUI();
+            }
+        }
+
+        function undoBuilderLine() {
+            if (!isAnswered && builderOrder.length > 0) removeLineAt(builderOrder.length - 1);
+        }
+
+        function clearBuilderLines() {
+            if (isAnswered) return;
+            builderOrder.forEach(c => c.used = false);
+            builderOrder = [];
+            playTone('click');
+            renderBuilderUI();
+        }
+
+        function submitBuilderAnswer() {
+            if (isAnswered) return;
+            if (builderOrder.length === 0) {
+                const fb = document.getElementById('inlineFeedback');
+                fb.className = 'mt-2.5 rounded-xl p-2.5 border border-amber-400/50 bg-amber-950/50 flex items-center justify-between gap-2 shrink-0';
+                document.getElementById('feedbackTitle').textContent = i18n[uiLang].selectFirstWarning;
+                document.getElementById('feedbackTitle').className = 'text-xs font-bold text-amber-300';
+                document.getElementById('feedbackDetail').textContent = '';
+                document.getElementById('ui-nextBtn').classList.add('hidden');
+                fb.classList.remove('hidden');
+                return;
+            }
+
+            isAnswered = true;
+            document.getElementById('ui-nextBtn').classList.remove('hidden');
+            const userLines = builderOrder.map(c => c.text.trim());
+            const expected = currentQ.correctLines.map(l => l.trim());
+            const correct = userLines.length === expected.length && userLines.every((v, i) => v === expected[i]);
+
+            renderBuilderUI();
+            recordAttempt(currentQ, userLines.join('\n'), expected.join('\n'), correct);
+            resolveCombat(correct, 40);
+        }
+
+        function recordAttempt(q, userAns, rightAns, isCorrect) {
+            attemptHistory.push({
+                question: q,
+                userAns,
+                rightAns,
+                isCorrect,
+                marksEarned: isCorrect ? q.marks : 0
+            });
+        }
+
+        // ============================================================
+        // 9. Combat Resolution & Animations
+        // ============================================================
+        function resolveCombat(isCorrect, dmg) {
+            lastAnswerCorrect = isCorrect;
+            possibleMarks += currentQ.marks;
+            const strip = document.getElementById('battleStrip');
+            strip.classList.remove('shake-hit');
+            void strip.offsetWidth;
+            strip.classList.add('shake-hit');
+
+            if (isCorrect) {
+                combo++;
+                lastEarnedPts = currentQ.marks;
+                earnedMarks += lastEarnedPts;
+                bossHp = Math.max(0, bossHp - dmg);
+
+                playTone(dmg >= 40 ? 'mega' : 'hit');
+                fireLaser(true, dmg >= 40);
+                spawnDmgPopup('bossDmgAnchor', `-${dmg}`, 'text-amber-300');
+            } else {
+                combo = 0;
+                lastEarnedPts = 0;
+                playerHp = Math.max(0, playerHp - 20);
+
+                playTone('error');
+                fireLaser(false, false);
+                spawnDmgPopup('playerDmgAnchor', `-20`, 'text-rose-400');
+            }
+
+            updateBars();
+            updateFeedbackBanner();
+
+            if (bossHp <= 0) {
+                setTimeout(() => openEndModal('win'), 750);
+            } else if (playerHp <= 0) {
+                setTimeout(() => openEndModal('lose'), 750);
+            }
+        }
+
+        function updateFeedbackBanner() {
+            const t = i18n[uiLang];
+            const fb = document.getElementById('inlineFeedback');
+            const title = document.getElementById('feedbackTitle');
+            const detail = document.getElementById('feedbackDetail');
+            document.getElementById('ui-nextBtn').classList.remove('hidden');
+
+            if (lastAnswerCorrect) {
+                fb.className = 'mt-2.5 rounded-xl p-2.5 border border-emerald-400/60 bg-emerald-950/60 flex items-center justify-between gap-2 shrink-0';
+                title.textContent = t.hitTitle(lastEarnedPts);
+                title.className = 'text-xs sm:text-sm font-extrabold text-emerald-300';
+                detail.textContent = currentQ.explanation[uiLang];
+            } else {
+                const ansText = currentQ.mode === 'mcq'
+                    ? currentQ.options[currentQ.correctIndex].replace(/\n/g, ' | ')
+                    : currentQ.correctLines.join(' -> ');
+                fb.className = 'mt-2.5 rounded-xl p-2.5 border border-rose-500/60 bg-rose-950/60 flex items-center justify-between gap-2 shrink-0';
+                title.textContent = t.missTitle;
+                title.className = 'text-xs sm:text-sm font-extrabold text-rose-300';
+                detail.innerHTML = `<span class="text-amber-300 font-bold">${t.correctAnsPrefix}</span> <code class="code-font bg-black/60 px-1 rounded text-emerald-300">${escapeHtml(ansText)}</code> — ${escapeHtml(currentQ.explanation[uiLang])}`;
+            }
+            fb.classList.remove('hidden');
+        }
+
+        function fireLaser(toBoss, isMega) {
+            const lane = document.getElementById('projectileLane');
+            const beam = document.createElement('div');
+            beam.className = toBoss
+                ? (isMega ? 'h-2.5 w-14 rounded-full bg-amber-300 shadow-[0_0_15px_#fbbf24] transition-all duration-300' : 'h-1.5 w-10 rounded-full bg-cyan-400 shadow-[0_0_12px_#22d3ee] transition-all duration-300')
+                : 'h-2 w-10 rounded-full bg-rose-500 shadow-[0_0_12px_#f43f5e] transition-all duration-300';
+            beam.style.transform = toBoss ? 'translateX(-25px)' : 'translateX(25px)';
+            lane.appendChild(beam);
+            requestAnimationFrame(() => {
+                beam.style.transform = toBoss ? 'translateX(25px)' : 'translateX(-25px)';
+            });
+            setTimeout(() => beam.remove(), 300);
+        }
+
+        function spawnDmgPopup(anchorId, txt, colorClass) {
+            const anchor = document.getElementById(anchorId);
+            const el = document.createElement('div');
+            el.className = `dmg-float font-extrabold text-sm sm:text-base ${colorClass}`;
+            el.textContent = txt;
+            anchor.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        function updateBars() {
+            const maxB = stageMaxHps[stageIndex];
+            document.getElementById('playerHpText').textContent = `${playerHp}/100`;
+            document.getElementById('playerHpBar').style.width = `${playerHp}%`;
+            document.getElementById('bossHpText').textContent = `${bossHp}/${maxB}`;
+            document.getElementById('bossHpBar').style.width = `${Math.max(0, Math.round((bossHp / maxB) * 100))}%`;
+            document.getElementById('scoreDisplay').textContent = `${earnedMarks}/${possibleMarks}`;
+            document.getElementById('comboDisplay').textContent = `${combo}x🔥`;
+        }
+
+        // ============================================================
+        // 10. Personalized Scorecard, Answer Review & Utilities
+        // ============================================================
+        function openEndModal(type) {
+            const t = i18n[uiLang];
+            const sName = studentProfile.name || (uiLang === 'ta' ? 'மாணவர்' : 'Student');
+            const sEmis = studentProfile.emis || '-';
+
+            const modal = document.getElementById('endModal');
+            const emoji = document.getElementById('modalEmoji');
+            const title = document.getElementById('modalTitle');
+            const sub = document.getElementById('modalSubtitle');
+            const btn = document.getElementById('modalActionBtn');
+
+            document.getElementById('modalStudentBadge').textContent = `👤 ${sName}  |  EMIS: ${sEmis}`;
+
+            // Calculate Scorecard Stats
+            const totalAnswered = attemptHistory.length;
+            const correctCount = attemptHistory.filter(a => a.isCorrect).length;
+            const wrongCount = totalAnswered - correctCount;
+            const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+
+            document.getElementById('stat-marksVal').textContent = `${earnedMarks} / ${possibleMarks}`;
+            document.getElementById('stat-answeredVal').textContent = totalAnswered;
+            document.getElementById('stat-correctVal').textContent = correctCount;
+            document.getElementById('stat-wrongVal').textContent = wrongCount;
+            document.getElementById('stat-accVal').textContent = `${accuracy}%`;
+
+            if (type === 'win') {
+                if (typeof confetti === 'function') confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
+                if (stageIndex < stageMaxHps.length - 1) {
+                    modalMode = 'next';
+                    emoji.textContent = '🏰💥';
+                    title.textContent = t.levelClearTitle(sName, stageIndex + 1);
+                    sub.textContent = t.levelClearSub(sName, earnedMarks, possibleMarks);
+                    btn.textContent = t.nextFortressBtn;
+                } else {
+                    modalMode = 'restart';
+                    emoji.textContent = '👑🏆';
+                    title.textContent = t.allClearTitle(sName);
+                    sub.textContent = t.allClearSub(sName, earnedMarks, possibleMarks);
+                    btn.textContent = t.playAgainBtn;
+                }
+            } else if (type === 'lose') {
+                modalMode = 'retry';
+                emoji.textContent = '🛡️💔';
+                title.textContent = t.gameOverTitle(sName);
+                sub.textContent = t.gameOverSub(sName, earnedMarks, possibleMarks);
+                btn.textContent = t.retryBtn;
+            } else {
+                modalMode = 'restart';
+                emoji.textContent = '📊🎓';
+                title.textContent = t.summaryTitle(sName);
+                sub.textContent = t.summarySub(sName, earnedMarks, possibleMarks);
+                btn.textContent = t.playAgainBtn;
+            }
+
+            setReviewFilter('all');
+            modal.classList.remove('hidden');
+        }
+
+        function setReviewFilter(filter) {
+            reviewFilter = filter;
+            ['all', 'correct', 'wrong'].forEach(f => {
+                const b = document.getElementById(`revFilter-${f}`);
+                if (f === filter) {
+                    b.className = 'px-3 py-1.5 rounded-lg bg-indigo-600 text-white cursor-pointer';
+                } else {
+                    const color = f === 'correct' ? 'text-emerald-300' : (f === 'wrong' ? 'text-rose-300' : 'text-slate-300');
+                    b.className = `px-3 py-1.5 rounded-lg bg-slate-800 ${color} cursor-pointer`;
+                }
+            });
+            renderReviewList();
+        }
+
+        function renderReviewList() {
+            const t = i18n[uiLang];
+            const container = document.getElementById('reviewHistoryList');
+            const items = attemptHistory.filter(item => {
+                if (reviewFilter === 'correct') return item.isCorrect;
+                if (reviewFilter === 'wrong') return !item.isCorrect;
+                return true;
+            });
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center text-sm text-slate-500 py-10">${t.noHistoryMsg}</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map((item, idx) => {
+                const q = item.question;
+                const badgeCls = item.isCorrect
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                    : 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+                const statusIcon = item.isCorrect ? `✅ +${q.marks}M` : `❌ 0/${q.marks}M`;
+
+                return `
+                    <div class="bg-slate-950/90 border ${item.isCorrect ? 'border-emerald-500/35' : 'border-rose-500/35'} rounded-xl p-3.5 text-left flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <div class="flex items-center gap-2 text-xs sm:text-sm">
+                                    <span class="font-bold text-slate-400">#${idx + 1}</span>
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-cyan-300 font-bold">${q.lang} (${q.marks}M)</span>
+                                    <span class="text-slate-300 font-medium">${escapeHtml(q.chapter[uiLang])}</span>
+                                </div>
+                                <span class="px-2.5 py-0.5 rounded border text-xs sm:text-sm font-extrabold ${badgeCls}">${statusIcon}</span>
+                            </div>
+                            <pre class="code-font text-xs sm:text-sm bg-black/80 border border-slate-800 rounded-lg p-2.5 text-slate-200 overflow-x-auto mb-2.5">${escapeHtml(q.code)}</pre>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm mb-2">
+                                <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5">
+                                    <div class="text-xs font-bold ${item.isCorrect ? 'text-emerald-400' : 'text-rose-400'} mb-1">${t.yourAnsLabel}</div>
+                                    <pre class="code-font text-slate-200 whitespace-pre-wrap">${escapeHtml(item.userAns)}</pre>
+                                </div>
+                                <div class="bg-slate-900 border border-emerald-500/30 rounded-lg p-2.5">
+                                    <div class="text-xs font-bold text-emerald-400 mb-1">${t.rightAnsLabel}</div>
+                                    <pre class="code-font text-emerald-300 whitespace-pre-wrap">${escapeHtml(item.rightAns)}</pre>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs sm:text-sm text-amber-200/90 leading-relaxed pt-1 border-t border-slate-800/80">💡 ${escapeHtml(q.explanation[uiLang])}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleModalAction() {
+            document.getElementById('endModal').classList.add('hidden');
+            if (modalMode === 'next') {
+                setupStage(stageIndex + 1);
+                loadNextQuestion();
+            } else if (modalMode === 'retry') {
+                setupStage(stageIndex);
+                loadNextQuestion();
+            } else {
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            document.getElementById('endModal').classList.add('hidden');
+            earnedMarks = 0;
+            possibleMarks = 0;
+            combo = 0;
+            usedIds = [];
+            attemptHistory = [];
+            setupStage(0);
+            loadNextQuestion();
+        }
+
+        function toggleDebugger() {
+            document.getElementById('debuggerBox').classList.toggle('hidden');
+            playTone('click');
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        window.onload = function () {
+            setupStage(0);
+            loadNextQuestion();
+            openStudentModal(false);
+        };
+    </script>
+</body>
+</html>
