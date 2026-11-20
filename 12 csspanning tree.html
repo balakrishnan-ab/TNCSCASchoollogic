@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th CS - Collaborative Master Mind Map & Digital Notebook</title>
+    <!-- கையெழுத்துப் பிரதி எழுத்துருக்கள் -->
+    <link href="https://fonts.googleapis.com/css2?family=Kavivanar&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <!-- Supabase Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #0f9d58;
+            --accent: #f4b400;
+            --ai-purple: #673ab7;
+            --ink-blue: #153e90;
+            --ink-red: #c5221f;
+            --border-color: #dadce0;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #fff; color: #202124; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Header */
+        header { background: var(--primary); color: white; padding: 8px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; z-index: 10; }
+        .title-area { display: flex; align-items: center; gap: 10px; }
+        header h1 { margin: 0; font-size: 1.05rem; }
+        .status-badge { padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: bold; background: #ffffff; color: #0f9d58; }
+        .status-badge.offline { background: #fce8e6; color: #c5221f; }
+
+        .header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .header-controls input { padding: 5px 8px; border-radius: 4px; border: none; font-size: 0.85rem; width: 125px; }
+        .btn-save { padding: 5px 10px; background: var(--accent); color: #202124; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+        .btn-lang { padding: 5px 12px; background: #fff; color: var(--primary); border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 0.85rem; }
+
+        /* AI & Master Sync Bar */
+        .ai-bar { background: #f1f3f4; padding: 5px 18px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border-color); }
+        .ai-bar input { padding: 3px 8px; border: 1px solid #ccc; border-radius: 4px; width: 210px; font-size: 0.8rem; }
+        .btn-sync-master { background: #e8f0fe; color: var(--primary); border: 1px solid #c6dafc; padding: 3px 9px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+
+        /* Main Split Layout */
+        .container { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Left Panel - Q&A & Notebook */
+        .qa-panel { width: 52%; padding: 16px 22px; overflow-y: auto; border-right: 2px solid var(--border-color); background: #fff; }
+        .top-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .chapter-badge { display: inline-block; background: #e8f0fe; color: var(--primary); padding: 4px 12px; border-radius: 12px; font-size: 0.82rem; font-weight: bold; }
+        .master-badge { font-size: 0.8rem; color: #0f9d58; font-weight: bold; }
+        
+        .question-box { font-size: 1.15rem; font-weight: 600; margin-bottom: 12px; line-height: 1.6; color: #1a237e; }
+        
+        /* Auto-Linked Keywords (From Global Master) */
+        .keyword-link { color: var(--ink-blue); background: rgba(26, 115, 232, 0.14); padding: 1px 6px; border-radius: 4px; cursor: pointer; border-bottom: 2px dashed var(--primary); font-weight: bold; transition: 0.2s; }
+        .keyword-link:hover { background: var(--primary); color: white; border-bottom: none; }
+
+        /* Active Master Keywords Bar */
+        .keyword-cloud { margin-bottom: 10px; font-size: 0.8rem; color: #5f6368; }
+        .kw-pill { display: inline-block; background: #f1f3f4; color: #1a73e8; padding: 2px 8px; margin: 2px; border-radius: 10px; cursor: pointer; border: 1px solid #dadce0; font-weight: 600; }
+        .kw-pill:hover { background: #1a73e8; color: #fff; }
+
+        textarea { width: 100%; height: 90px; padding: 10px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 0.98rem; resize: vertical; margin-bottom: 10px; }
+        
+        .btn-group { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+        button.action-btn { padding: 7px 12px; border: none; border-radius: 6px; font-size: 0.84rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .btn-mic { background: #fce8e6; color: #c5221f; }
+        .btn-mic.recording { background: #c5221f; color: white; animation: pulse 1.2s infinite; }
+        .btn-tip { background: #fef7e0; color: #b06000; }
+        .btn-compare { background: var(--secondary); color: white; }
+        .btn-select-ai { background: var(--ai-purple); color: white; }
+        .btn-new-tree { background: #00838f; color: white; }
+
+        .tips-container { display: none; background: #fffdf5; border-left: 4px solid var(--accent); padding: 8px 12px; margin-bottom: 12px; border-radius: 4px; }
+        .tip-chip { display: inline-block; background: #feefc3; padding: 3px 9px; margin: 3px; border-radius: 14px; font-size: 0.85rem; font-weight: 600; }
+
+        /* Handwritten Notebook UI */
+        .notebook-wrapper { display: none; margin-top: 12px; background: #fffef9; border: 1px solid #d0d7de; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); overflow: hidden; }
+        .notebook-toolbar { background: #e8eef5; padding: 6px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e57373; }
+        .notebook-toolbar h3 { margin: 0; font-size: 0.92rem; color: #1a237e; }
+        .btn-edit { background: #fff; border: 1px solid var(--primary); color: var(--primary); padding: 3px 9px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-save-edit { background: var(--secondary); border: none; color: white; padding: 3px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: none; }
+
+        .notebook-page {
+            font-family: 'Kavivanar', 'Patrick Hand', cursive, sans-serif;
+            font-size: 1.18rem; color: var(--ink-blue); line-height: 2rem;
+            padding: 14px 20px 20px 44px; position: relative;
+            background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 31px, #cfd8dc 32px);
+            background-position: 0 10px;
+        }
+        .notebook-page::before { content: ''; position: absolute; top: 0; bottom: 0; left: 32px; width: 2px; background: #ef9a9a; }
+        .notebook-page[contenteditable="true"] { outline: 2px dashed var(--accent); background-color: #fffff0; }
+
+        .nb-def-box { border: 2px solid #1a73e8; background: rgba(232, 240, 254, 0.6); padding: 6px 12px; border-radius: 6px; margin: 6px 0; }
+        .nb-underline { text-decoration: underline; text-decoration-color: var(--ink-red); text-decoration-thickness: 2px; font-weight: bold; color: #b71c1c; }
+        .nb-example-box { border: 2px dashed #0f9d58; background: rgba(232, 245, 233, 0.7); padding: 6px 12px; border-radius: 6px; margin: 8px 0; font-family: 'Courier New', monospace; font-size: 0.95rem; color: #1b5e20; }
+        .score-feedback { padding: 8px 14px; background: #f1f8f4; border-top: 1px solid #ceead6; font-weight: bold; color: var(--secondary); font-size: 0.88rem; }
+
+        /* Right Panel - Interactive Pan/Zoom Tree */
+        .tree-panel { width: 48%; display: flex; flex-direction: column; background: #f4f6f9; position: relative; overflow: hidden; }
+        .tree-toolbar {
+            background: #ffffff; padding: 8px 14px; border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; z-index: 5;
+        }
+        .tree-toolbar h2 { margin: 0; font-size: 0.95rem; color: #3c4043; }
+        .zoom-controls { display: flex; gap: 5px; }
+        .zoom-btn { background: #e8f0fe; color: var(--primary); border: 1px solid #c6dafc; border-radius: 4px; padding: 4px 9px; font-weight: bold; cursor: pointer; font-size: 0.82rem; }
+        .zoom-btn:hover { background: var(--primary); color: white; }
+
+        .canvas-viewport {
+            flex: 1; width: 100%; height: 100%; overflow: hidden; cursor: grab; position: relative;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .canvas-viewport:active { cursor: grabbing; }
+        
+        svg#treeSvg { width: 100%; height: 100%; }
+        .tree-edge { fill: none; stroke: #64748b; stroke-width: 2.2px; }
+        .node-group { cursor: pointer; }
+        .node-ellipse { fill: #ffffff; stroke: #1a73e8; stroke-width: 2.5px; filter: drop-shadow(0px 3px 5px rgba(0,0,0,0.12)); transition: 0.2s; }
+        .node-group:hover .node-ellipse { fill: #e8f0fe; stroke: #0d47a1; stroke-width: 3px; }
+        .node-group.active .node-ellipse { fill: #1a73e8; stroke: #0d47a1; }
+        .node-group.root-node .node-ellipse { stroke: #0f9d58; stroke-width: 3px; }
+        .node-group.root-node.active .node-ellipse { fill: #0f9d58; }
+        
+        .node-text { font-size: 13px; font-weight: bold; fill: #1e293b; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+        .node-group.active .node-text { fill: #ffffff; }
+        .root-badge { font-size: 10px; font-weight: bold; fill: #0f9d58; text-anchor: middle; }
+
+        /* Floating Hover Tooltip */
+        .hover-tooltip {
+            position: fixed; display: none; background: #1e293b; color: #ffffff;
+            padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; max-width: 300px;
+            line-height: 1.5; box-shadow: 0 8px 20px rgba(0,0,0,0.25); z-index: 1000;
+            pointer-events: none; border-left: 4px solid var(--accent);
+        }
+        .hover-tooltip .tt-chapter { font-size: 0.75rem; color: #93c5fd; display: block; margin-bottom: 3px; }
+        .hover-tooltip .tt-hint { font-size: 0.75rem; color: #fde047; display: block; margin-top: 5px; }
+
+        /* Student Create / Fact-Check Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-box { background: #fff; padding: 22px; border-radius: 10px; width: 92%; max-width: 520px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-box h3 { margin-top: 0; color: var(--primary); }
+        .modal-box input, .modal-box textarea { width: 100%; padding: 8px; margin: 6px 0 12px 0; border: 1px solid #ccc; border-radius: 6px; font-family: inherit; }
+        .loader { display: none; color: var(--ai-purple); font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="title-area">
+        <h1 id="appTitle">🌳 12th CS - கூட்டுக் கற்றல் மைண்ட் மேப் & நோட்டு</h1>
+        <span id="netStatus" class="status-badge">🟢 Cloud Connected</span>
+    </div>
+    <div class="header-controls">
+        <button class="btn-lang" id="langToggleBtn" onclick="toggleLanguage()">🌐 English</button>
+        <input type="text" id="emisNo" placeholder="EMIS எண் (10 இலக்கம்)">
+        <input type="text" id="studentName" placeholder="மாணவர் பெயர்">
+        <button class="btn-save" onclick="syncEmisCloud()">🔄 EMIS இணை / சேமி</button>
+    </div>
+</header>
+
+<div class="ai-bar">
+    <div>
+        <button class="btn-sync-master" onclick="syncMasterFromSupabase(true)">🔄 மாஸ்டர் வினாக்களைப் புதுப்பி (Sync Master)</button>
+        <span id="masterSyncMsg" style="margin-left: 8px; color: #5f6368;">அனைத்து மாணவர்களின் வினாக்களும் இணைக்கப்பட்டுள்ளன</span>
+    </div>
+    <div>
+        <input type="password" id="geminiKey" placeholder="புதிய AI வினாவிற்கு Gemini API Key">
+        <button onclick="saveGeminiKey()" style="padding: 3px 8px; cursor: pointer; font-weight: bold;">Save AI Key</button>
+    </div>
+</div>
+
+<div id="nodeTooltip" class="hover-tooltip"></div>
+
+<div class="container">
+    <!-- இடது பக்கம்: வினா-விடை மற்றும் கையெழுத்து நோட்டு -->
+    <div class="qa-panel">
+        <div class="top-meta">
+            <div class="chapter-badge" id="chapterLabel"></div>
+            <span class="master-badge" id="masterCountBadge">மாஸ்டர் வினாக்கள்: 5 | திறவுச்சொற்கள்: 18</span>
+        </div>
+        
+        <div class="question-box" id="questionText"></div>
+        <div class="loader" id="aiLoader">⏳ பாடத்திட்டச் சரிபார்ப்பு & வினா-விடை மாஸ்டரில் சேமிப்பு நடைபெறுகிறது...</div>
+
+        <!-- மாஸ்டரில் உள்ள தொடர்புடைய திறவுச்சொற்கள் (Quick Jump Keywords) -->
+        <div class="keyword-cloud" id="relatedKeywordsBar"></div>
+
+        <textarea id="studentAnswer" placeholder="உங்கள் விடையை இங்கே தட்டச்சு செய்யவும் அல்லது மைக் பொத்தானை அழுத்திப் பேசவும்..."></textarea>
+
+        <div class="btn-group">
+            <button class="action-btn btn-mic" id="micBtn" onclick="toggleSpeech()">🎤 குரல் பதில்</button>
+            <button class="action-btn btn-tip" onclick="showNextTip()">💡 குறிப்பு</button>
+            <button class="action-btn btn-compare" onclick="compareAnswer()">📖 நோட்டு விடை</button>
+            <button class="action-btn btn-select-ai" onclick="handleSelectedWordBranch()">🔍 தேர்வு செய்த சொல்லில் வினா</button>
+            <button class="action-btn btn-new-tree" onclick="startNewTree()">🌱 புதிய மரம்</button>
+        </div>
+
+        <div class="tips-container" id="tipsBox">
+            <strong>நினைவூட்டும் குறிப்புகள்:</strong>
+            <div id="tipsList"></div>
+        </div>
+
+        <div class="notebook-wrapper" id="notebookWrapper">
+            <div class="notebook-toolbar">
+                <h3>📓 மாணவர் குறிப்பு நோட்டு (முழு மதிப்பெண் வடிவம்)</h3>
+                <div>
+                    <button class="btn-edit" id="editAnsBtn" onclick="enableAnswerEdit()">✏️ திருத்து</button>
+                    <button class="btn-save-edit" id="saveAnsBtn" onclick="verifyAndSaveEditedAnswer()">💾 சரிபார்த்து மாஸ்டரில் சேமி</button>
+                </div>
+            </div>
+            <div class="notebook-page" id="modelAnswerText" contenteditable="false"></div>
+            <div class="score-feedback" id="recallScore"></div>
+        </div>
+    </div>
+
+    <!-- வலது பக்கம்: நகர்த்தக்கூடிய மரக்கிளை வரைபடம் -->
+    <div class="tree-panel">
+        <div class="tree-toolbar">
+            <h2>🌳 கற்றல் மரங்கள் (இழுத்து நகர்த்தவும் / Zoom)</h2>
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomCanvas(1.2)" title="பெரிதாக்கு">➕</button>
+                <button class="zoom-btn" onclick="zoomCanvas(0.8)" title="சிறிதாக்கு">➖</button>
+                <button class="zoom-btn" onclick="resetCanvasView()" title="மையப்படுத்து">🎯 மையம்</button>
+            </div>
+        </div>
+        <div class="canvas-viewport" id="canvasViewport">
+            <svg id="treeSvg">
+                <g id="viewportGroup" transform="translate(40, 50) scale(1)">
+                    <g id="edgesLayer"></g>
+                    <g id="nodesLayer"></g>
+                </g>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- மாணவர் சொந்தமாக வினா-விடை உருவாக்கும் பெட்டி -->
+<div class="modal-overlay" id="createModal">
+    <div class="modal-box">
+        <h3>✍️ புதிய வினா-விடை உருவாக்கம் (Master Repository)</h3>
+        <p id="modalGuideText" style="font-size: 0.88rem; color: #5f6368;"></p>
+        <label><strong>முதன்மைத் திறவுச்சொல் (Primary Keyword):</strong></label>
+        <input type="text" id="newKwInput">
+        <label><strong>தொடர்புடைய கூடுதல் திறவுச்சொற்கள் (கமா இட்டுப் பிரிக்கவும்):</strong></label>
+        <input type="text" id="extraKwInput" placeholder="எ.கா: செயற்கூறு, Python, Function, அளபுரு">
+        <label><strong>உங்கள் வினா (Question):</strong></label>
+        <input type="text" id="newQInput" placeholder="பாடப்பகுதி சார்ந்த வினாவைத் தட்டச்சு செய்யவும்...">
+        <label><strong>உங்கள் விடை (Answer):</strong></label>
+        <textarea id="newAInput" style="height: 85px;" placeholder="விடையை தட்டச்சு செய்யவும் (அல்லது கீழே உள்ள AI உதவி பொத்தானை அழுத்தவும்)..."></textarea>
+        <div style="display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap;">
+            <button class="action-btn btn-select-ai" onclick="fillAnswerWithAI()">✨ AI விடை உதவி</button>
+            <button class="action-btn btn-compare" onclick="verifyAndSaveStudentQA()">✅ சரிபார்த்து மாஸ்டரில் சேமி</button>
+            <button class="action-btn" style="background:#eee;" onclick="closeCreateModal()">ரத்து</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://rqpihrdmmoimkjqfyknf.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_kXwQjgHsHk-7RktNBUM0LA_xEq0alXu";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentLang = 'ta';
+
+    const defaultQuestions = [
+        {
+            id: "q1",
+            tags: ["செயற்கூறு", "அளபுருக்கள்", "செயலுருபுகள்", "தற்சுழற்சி", "Function", "Parameters", "Arguments"],
+            ta: {
+                chapter: "அத்தியாயம் 1: செயற்கூறு (Functions)",
+                question: "செயற்கூறு வரையறுத்தல் என்றால் என்ன? அளபுருக்கள் மற்றும் செயலுருபுகள் பற்றி எழுதுக.",
+                tips: ["குறிப்பிட்ட செயலைச் செய்யும் குறிமுறை", "அளபுருக்கள் - மாறிகள்", "செயலுருபுகள் - மதிப்புகள்"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">வரையறை:</span> ஒரு குறிப்பிட்ட செயலைச் செய்வதற்காக மீண்டும் மீண்டும் பயன்படுத்தப்படும் குறிமுறையின் ஒரு சிறிய பகுதியே <b>செயற்கூறு</b> எனப்படும்.</div>
+                         <p><b>1. <span class="nb-underline">அளபுருக்கள்:</span></b> செயற்கூறு வரையறையில் பயன்படுத்தப்படும் மாறிகள்.</p>
+                         <p><b>2. <span class="nb-underline">செயலுருபுகள்:</span></b> செயற்கூறுவை அழைக்கும்போது அனுப்பப்படும் மதிப்புகள். (இது தற்சுழற்சி முறையிலும் பயன்படும்).</p>`,
+                matchWords: ["குறிப்பிட்ட செயல்", "மாறிகள்", "மதிப்புகள்"]
+            },
+            en: {
+                chapter: "Chapter 1: Functions",
+                question: "What is a Function definition? Explain Parameters and Arguments.",
+                tips: ["Specific task code unit", "Parameters - Variables", "Arguments - Values"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">Definition:</span> A <b>Function</b> is a unit of code that performs a specific task.</div>
+                         <p><b>1. <span class="nb-underline">Parameters:</span></b> Variables in function definition.</p>
+                         <p><b>2. <span class="nb-underline">Arguments:</span></b> Values passed when calling a function.</p>`,
+                matchWords: ["unit of code", "variables", "values"]
+            }
+        },
+        {
+            id: "q2",
+            tags: ["தற்சுழற்சி", "நெறிமுறை", "செயற்கூறு", "அடிப்படை நிபந்தனை", "Recursion", "Algorithm", "Base Condition"],
+            ta: {
+                chapter: "அத்தியாயம் 1: செயற்கூறு (Functions)",
+                question: "தற்சுழற்சி (Recursion) செயற்கூறு என்றால் என்ன? எடுத்துக்காட்டுடன் விளக்குக.",
+                tips: ["தன்னைத்தானே அழைக்கும் செயற்கூறு", "அடிப்படை நிபந்தனை (Base Condition)"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">வரையறை:</span> ஒரு செயற்கூறு தன்னைத்தானே மீண்டும் மீண்டும் அழைத்துக் கொண்டால் அது <b>தற்சுழற்சி செயற்கூறு</b> எனப்படும்.</div>
+                         <div class="nb-example-box">let rec fact n := if n=0 then 1 else n * fact (n-1)</div>`,
+                matchWords: ["தன்னைத்தானே", "அடிப்படை நிபந்தனை"]
+            },
+            en: {
+                chapter: "Chapter 1: Functions",
+                question: "What is a Recursion Function? Explain with an example.",
+                tips: ["Function calling itself", "Base Condition"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">Definition:</span> A function calling itself repeatedly is a <b>Recursive Function</b>.</div>`,
+                matchWords: ["calls itself", "base condition"]
+            }
+        },
+        {
+            id: "q3",
+            tags: ["நெறிமுறை", "தரவு", "உள்ளீடு", "வெளியீடு", "Algorithm", "Data"],
+            ta: {
+                chapter: "அத்தியாயம் 4: நெறிமுறையின் யுக்திகள்",
+                question: "நெறிமுறை (Algorithm) என்றால் என்ன? அதன் பண்புகள் யாவை?",
+                tips: ["படிப்படியான செய்முறை", "உள்ளீடு மற்றும் வெளியீடு", "வரையறுக்கப்பட்ட தன்மை"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">வரையறை:</span> சிக்கலைத் தீர்ப்பதற்கான படிப்படியான செய்முறையே <b>நெறிமுறை</b> ஆகும்.</div>
+                         <p>பண்புகள்: உள்ளீடு, வெளியீடு, வரையறுக்கப்பட்ட தன்மை, தரவு கையாளுதல்.</p>`,
+                matchWords: ["படிப்படியான", "உள்ளீடு", "வெளியீடு"]
+            },
+            en: {
+                chapter: "Chapter 4: Algorithmic Strategies",
+                question: "What is an Algorithm? List its characteristics.",
+                tips: ["Step-by-step procedure", "Input & Output"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">Definition:</span> Step-by-step procedure to solve a problem.</div>`,
+                matchWords: ["step-by-step", "input", "output"]
+            }
+        },
+        {
+            id: "q4",
+            tags: ["தரவு", "List", "Tuple", "Mutable", "Immutable", "Python", "Data"],
+            ta: {
+                chapter: "அத்தியாயம் 9: பைத்தான் தொகுப்பு தரவினங்கள்",
+                question: "பைத்தானில் உள்ள List மற்றும் Tuple ஆகியவற்றை வேறுபடுத்துக.",
+                tips: ["List [ ] - மாற்றக்கூடியது", "Tuple ( ) - மாற்ற முடியாதது"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">வேறுபாடு:</span> <b>List</b> மதிப்புகளை மாற்ற முடியும் (Mutable). <b>Tuple</b> மதிப்புகளை மாற்ற முடியாது (Immutable).</div>`,
+                matchWords: ["மாற்ற முடியும்", "மாற்ற முடியாது"]
+            },
+            en: {
+                chapter: "Chapter 9: Python Collections",
+                question: "Differentiate between List and Tuple in Python.",
+                tips: ["List is Mutable", "Tuple is Immutable"],
+                answer: `<div class="nb-def-box"><b>List</b> is Mutable <code>[ ]</code>, whereas <b>Tuple</b> is Immutable <code>( )</code>.</div>`,
+                matchWords: ["mutable", "immutable"]
+            }
+        },
+        {
+            id: "q5",
+            tags: ["தரவுத்தளம்", "SQL", "DBMS", "Database", "தரவு"],
+            ta: {
+                chapter: "அத்தியாயம் 11: தரவுத்தள கருத்துருக்கள்",
+                question: "DBMS என்றால் என்ன? அதன் நன்மைகள் யாவை?",
+                tips: ["தரவுத்தள மேலாண்மை அமைப்பு", "தரவு மிகைமை குறைப்பு", "தரவு பாதுகாப்பு"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">வரையறை:</span> தரவுத்தளத்தை உருவாக்க, மீட்டெடுக்க மற்றும் நிர்வகிக்க உதவும் மென்பொருளே <b>DBMS</b> ஆகும்.</div>
+                         <p>நன்மைகள்: தரவு நகல்களைக் குறைத்தல், தரவு பாதுகாப்பு மற்றும் SQL மூலம் எளிதாகத் தரவுகளைப் பெறுதல்.</p>`,
+                matchWords: ["மென்பொருள்", "பாதுகாப்பு"]
+            },
+            en: {
+                chapter: "Chapter 11: Database Concepts",
+                question: "What is DBMS? List its advantages.",
+                tips: ["Database Management System", "Reduces Data Redundancy"],
+                answer: `<div class="nb-def-box"><span class="nb-underline">Definition:</span> Software that allows users to define, create and maintain a database is <b>DBMS</b>.</div>`,
+                matchWords: ["software", "database"]
+            }
+        }
+    ];
+
+    let qaMaster = JSON.parse(localStorage.getItem("cs_qa_master_v3")) || defaultQuestions;
+    let forestNodes = [
+        { nodeId: "n1", qId: "q1", labelTa: "செயற்கூறு", labelEn: "Function", parentNodeId: null, treeIndex: 0 }
+    ];
+    let activeNodeId = "n1";
+    let currentQIndex = 0;
+    let tipIndex = 0;
+    let treeCounter = 0;
+
+    let panX = 40, panY = 50, scale = 1;
+    let isDragging = false, startX = 0, startY = 0;
+
+    // =========================================================================
+    // 1. தொடக்கம் & Master Repository Sync (அனைத்து மாணவர்களுக்கும் பொதுவானது)
+    // =========================================================================
+    async function initApp() {
+        if (localStorage.getItem("cs_gemini_key")) {
+            document.getElementById("geminiKey").value = localStorage.getItem("cs_gemini_key");
+        }
+        updateNetBadge();
+        updateMasterStats();
+        renderQuestion("q1");
+
+        if (navigator.onLine) {
+            await syncMasterFromSupabase(false);
+        }
+    }
+
+    function updateNetBadge() {
+        const badge = document.getElementById("netStatus");
+        if (navigator.onLine) {
+            badge.innerText = "🟢 Cloud Connected";
+            badge.classList.remove("offline");
+        } else {
+            badge.innerText = "🟠 Offline Mode";
+            badge.classList.add("offline");
+        }
+    }
+    window.addEventListener("online", () => { updateNetBadge(); syncMasterFromSupabase(false); });
+    window.addEventListener("offline", updateNetBadge);
+
+    function saveGeminiKey() {
+        const k = document.getElementById("geminiKey").value.trim();
+        if (k) {
+            localStorage.setItem("cs_gemini_key", k);
+            alert("Gemini API Key சேமிக்கப்பட்டது!");
+        }
+    }
+
+    // Supabase qa_master அட்டவணையிலிருந்து புதிய வினாக்கள் & திறவுச்சொற்களைப் பதிவிறக்குதல்
+    async function syncMasterFromSupabase(showAlert = false) {
+        if (!navigator.onLine) {
+            if (showAlert) alert("இணைய இணைப்பு இல்லை. ஆஃப்லைன் மாஸ்டர் வினாக்கள் இயங்குகின்றன.");
+            return;
+        }
+        try {
+            const { data, error } = await supabaseClient.from('qa_master').select('*');
+            if (data && data.length > 0) {
+                let newCount = 0;
+                data.forEach(row => {
+                    const idx = qaMaster.findIndex(q => q.id === row.id);
+                    const obj = { id: row.id, tags: row.tags || [], ta: row.ta_data, en: row.en_data };
+                    if (idx > -1) {
+                        qaMaster[idx] = obj;
+                    } else {
+                        qaMaster.push(obj);
+                        newCount++;
+                    }
+                });
+                localStorage.setItem("cs_qa_master_v3", JSON.stringify(qaMaster));
+                updateMasterStats();
+                renderQuestion(qaMaster[currentQIndex].id);
+                if (showAlert) alert(`✅ மாஸ்டர் புதுப்பிக்கப்பட்டது! மொத்த வினாக்கள்: ${qaMaster.length} (புதிதாக இணைந்தவை: ${newCount})`);
+            } else if (showAlert) {
+                alert(`✅ மாஸ்டர் தரவுத்தளம் புதுப்பிக்கப்பட்டது. மொத்த வினாக்கள்: ${qaMaster.length}`);
+            }
+        } catch (e) { console.log("Sync info:", e); }
+    }
+
+    function updateMasterStats() {
+        let uniqueKeywords = new Set();
+        qaMaster.forEach(q => { if (q.tags) q.tags.forEach(t => uniqueKeywords.add(t)); });
+        document.getElementById("masterCountBadge").innerText = `மாஸ்டர் வினாக்கள்: ${qaMaster.length} | திறவுச்சொற்கள்: ${uniqueKeywords.size}`;
+    }
+
+    // =========================================================================
+    // 2. வினா & விடை காட்சிப்படுத்தல் + தானியங்கி வார்த்தை இணைப்புகள்
+    // =========================================================================
+    function renderQuestion(qId) {
+        const qObj = qaMaster.find(q => q.id === qId) || qaMaster[0];
+        currentQIndex = qaMaster.indexOf(qObj);
+        const langData = qObj[currentLang];
+
+        document.getElementById("chapterLabel").innerText = langData.chapter;
+        
+        // வினாவில் உள்ள அனைத்து மாஸ்டர் திறவுச்சொற்களுக்கும் தானியங்கி இணைப்பு
+        document.getElementById("questionText").innerHTML = applyAutoKeywordLinks(langData.question, qObj.id);
+        
+        // இந்த வினாவோடு தொடர்புடைய பிற மாஸ்டர் திறவுச்சொற்களைக் கீழே காட்டுதல்
+        renderRelatedKeywordsBar(qObj);
+
+        document.getElementById("studentAnswer").value = "";
+        document.getElementById("tipsBox").style.display = "none";
+        document.getElementById("tipsList").innerHTML = "";
+        document.getElementById("notebookWrapper").style.display = "none";
+        
+        document.getElementById("modelAnswerText").contentEditable = "false";
+        document.getElementById("editAnsBtn").style.display = "inline-block";
+        document.getElementById("saveAnsBtn").style.display = "none";
+        tipIndex = 0;
+
+        renderVisualTrees();
+    }
+
+    // மாஸ்டரில் உள்ள தொடர்புடைய பிற வினாக்களின் திறவுச்சொற்களைக் காட்டுதல்
+    function renderRelatedKeywordsBar(currentQ) {
+        const bar = document.getElementById("relatedKeywordsBar");
+        let relatedTags = new Set();
+        qaMaster.forEach(q => {
+            if (q.id !== currentQ.id && q.tags) {
+                q.tags.forEach(t => relatedTags.add(t));
+            }
+        });
+        const tagsArr = Array.from(relatedTags).slice(0, 10);
+        if (tagsArr.length > 0) {
+            bar.innerHTML = `🔗 <b>மாஸ்டர் இணைப்புச் சொற்கள்:</b> ` + tagsArr.map(t => `<span class="kw-pill" onclick="branchToKeyword('${t}', '${currentQ.id}')">${t}</span>`).join("");
+        } else {
+            bar.innerHTML = "";
+        }
+    }
+
+    // வினா மற்றும் விடை இரண்டிலும் மாஸ்டர் திறவுச்சொற்களைக் கண்டறிந்து தொடுப்பு வழங்குதல்
+    function applyAutoKeywordLinks(htmlContent, currentQId) {
+        let allKeywords = new Set();
+        qaMaster.forEach(q => {
+            if (q.tags) q.tags.forEach(t => { if (t && t.trim().length > 1) allKeywords.add(t.trim()); });
+        });
+
+        // நீளமான வார்த்தைகளுக்கு முன்னுரிமை அளித்து வரிசைப்படுத்துதல்
+        const sortedKeywords = Array.from(allKeywords).sort((a, b) => b.length - a.length);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = htmlContent;
+
+        function walk(node) {
+            if (node.nodeType === 3) {
+                let text = node.nodeValue;
+                let replaced = false;
+                sortedKeywords.forEach(kw => {
+                    const targetQ = qaMaster.find(q => q.id !== currentQId && q.tags && q.tags.some(t => t.toLowerCase() === kw.toLowerCase()));
+                    if (targetQ) {
+                        const escapedKw = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        const regex = new RegExp(`(${escapedKw})`, 'gi');
+                        if (regex.test(text)) {
+                            text = text.replace(regex, `<span class="keyword-link" title="கிளிக் செய்தால் '${kw}' தொடர்பான வினாவிற்குச் செல்லும்" onclick="branchToKeyword('${kw}', '${currentQId}')">$1</span>`);
+                            replaced = true;
+                        }
+                    }
+                });
+                if (replaced) {
+                    const span = document.createElement("span");
+                    span.innerHTML = text;
+                    node.parentNode.replaceChild(span, node);
+                }
+            } else if (node.nodeType === 1 && !node.classList.contains("keyword-link")) {
+                Array.from(node.childNodes).forEach(walk);
+            }
+        }
+        walk(tempDiv);
+        return tempDiv.innerHTML;
+    }
+
+    function branchToKeyword(keyword, currentQId) {
+        const relatedQs = qaMaster.filter(q => q.id !== currentQId && q.tags && q.tags.some(t => t.toLowerCase() === keyword.toLowerCase()));
+        if (relatedQs.length === 0) return;
+
+        const targetQ = relatedQs[Math.floor(Math.random() * relatedQs.length)];
+        const currentNode = forestNodes.find(n => n.nodeId === activeNodeId);
+        const newNodeId = "n_" + Date.now();
+        
+        forestNodes.push({
+            nodeId: newNodeId,
+            qId: targetQ.id,
+            labelTa: keyword,
+            labelEn: keyword,
+            parentNodeId: activeNodeId,
+            treeIndex: currentNode ? currentNode.treeIndex : 0
+        });
+        activeNodeId = newNodeId;
+        syncEmisCloud(true);
+        renderQuestion(targetQ.id);
+    }
+
+    // =========================================================================
+    // 3. தேர்வு செய்த வார்த்தையில் AI வினா உருவாக்கம் & மாஸ்டரில் சேமிப்பு
+    // =========================================================================
+    async function handleSelectedWordBranch() {
+        const selected = window.getSelection().toString().trim();
+        if (!selected) {
+            alert("வினா அல்லது விடைப் பகுதியில் உள்ள ஏதேனும் ஒரு வார்த்தையை முதலில் சுட்டியால் தேர்வு (Select) செய்யவும்.");
+            return;
+        }
+        const currentQId = qaMaster[currentQIndex].id;
+        
+        // ஏற்கனவே மாஸ்டரில் இருந்தால் உடனே கிளை பிரித்தல்
+        const existingQ = qaMaster.find(q => q.id !== currentQId && q.tags && q.tags.some(t => t.toLowerCase() === selected.toLowerCase()));
+        if (existingQ) {
+            branchToKeyword(selected, currentQId);
+            return;
+        }
+
+        const apiKey = localStorage.getItem("cs_gemini_key");
+        if (!navigator.onLine || !apiKey) {
+            openCreateModal(selected, `"${selected}" என்ற சொல்லிற்கு நீங்களே வினா-விடை உருவாக்கலாம் (அல்லது ஆன்லைனில் Gemini API Key உள்ளிடவும்).`);
+            return;
+        }
+
+        document.getElementById("aiLoader").style.display = "block";
+        const prompt = `You are a Tamil Nadu 12th Standard Computer Science (Samacheer Kalvi) syllabus expert.
+        The student selected the word: "${selected}".
+        Step 1: Check if "${selected}" is a valid Computer Science concept/keyword from TN 12th CS syllabus.
+        Step 2: If NOT valid (e.g., general connectors like 'என்றால்', 'what', 'is'), return JSON: {"valid": false, "reason": "கனிவான விளக்கம் மற்றும் மாற்றுச் சொற்கள்"}.
+        Step 3: If VALID, generate a 3-mark or 5-mark public exam question and handwritten-style notebook answer in BOTH Tamil and English.
+        CRITICAL: Include 6 to 8 rich bilingual keywords (both Tamil and English terms appearing in the question/answer) in the "tags" array so other students can link to this question from anywhere!
+        Return strictly valid JSON:
+        {
+            "valid": true,
+            "tags": ["${selected}", "தமிழ்_சொல்1", "தமிழ்_சொல்2", "English_Term1", "English_Term2"],
+            "ta": { "chapter": "அத்தியாயம் ...", "question": "...", "tips": ["...", "..."], "answer": "<div class='nb-def-box'><span class='nb-underline'>வரையறை:</span> ...</div><div class='nb-example-box'>எடுத்துக்காட்டு: ...</div>", "matchWords": ["..."] },
+            "en": { "chapter": "Chapter ...", "question": "...", "tips": ["...", "..."], "answer": "<div class='nb-def-box'><span class='nb-underline'>Definition:</span> ...</div><div class='nb-example-box'>Example: ...</div>", "matchWords": ["..."] }
+        }`;
+
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } })
+            });
+            const data = await res.json();
+            const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+
+            if (!parsed.valid) {
+                openCreateModal(selected, `💡 ${parsed.reason} — இருப்பினும் நீங்கள் விரும்பினால் இச்சொல்லில் சொந்தமாக வினா-விடை உருவாக்கலாம்:`);
+            } else {
+                const newId = "ai_q_" + Date.now();
+                // தேர்ந்தெடுத்த வார்த்தை கண்டிப்பாக tags-இல் இருப்பதை உறுதி செய்தல்
+                const combinedTags = Array.from(new Set([selected, ...(parsed.tags || [])]));
+                const newQObj = { id: newId, tags: combinedTags, ta: parsed.ta, en: parsed.en };
+                
+                await saveQuestionToMaster(newQObj);
+                branchToKeyword(selected, currentQId);
+            }
+        } catch (err) {
+            openCreateModal(selected, `"${selected}" என்ற சொல்லிற்கு நீங்களே வினா-விடை உருவாக்கலாம்:`);
+        } finally {
+            document.getElementById("aiLoader").style.display = "none";
+        }
+    }
+
+    function openCreateModal(kw, msg) {
+        document.getElementById("newKwInput").value = kw;
+        document.getElementById("extraKwInput").value = "";
+        document.getElementById("newQInput").value = "";
+        document.getElementById("newAInput").value = "";
+        document.getElementById("modalGuideText").innerText = msg;
+        document.getElementById("createModal").style.display = "flex";
+    }
+    function closeCreateModal() { document.getElementById("createModal").style.display = "none"; }
+
+    async function fillAnswerWithAI() {
+        const kw = document.getElementById("newKwInput").value.trim();
+        const qText = document.getElementById("newQInput").value.trim();
+        const apiKey = localStorage.getItem("cs_gemini_key");
+        if (!apiKey) return alert("Gemini API Key உள்ளிடவும்.");
+        if (!qText && !kw) return alert("வினா அல்லது திறவுச்சொல்லை உள்ளிடவும்.");
+
+        document.getElementById("newAInput").value = "⏳ AI விடை உருவாக்கப்படுகிறது...";
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Provide a concise, accurate 12th Standard Computer Science public exam answer in Tamil for: ${qText || kw}` }] }] })
+        });
+        const data = await res.json();
+        document.getElementById("newAInput").value = data.candidates[0].content.parts[0].text;
+    }
+
+    async function verifyAndSaveStudentQA() {
+        const kw = document.getElementById("newKwInput").value.trim();
+        const extraKws = document.getElementById("extraKwInput").value.split(",").map(s => s.trim()).filter(Boolean);
+        const qText = document.getElementById("newQInput").value.trim();
+        const aText = document.getElementById("newAInput").value.trim();
+        if (!kw || !qText || !aText) return alert("அனைத்து விவரங்களையும் நிரப்பவும்.");
+
+        const apiKey = localStorage.getItem("cs_gemini_key");
+        if (navigator.onLine && apiKey) {
+            const checkRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Fact-check this 12th CS Q&A for syllabus accuracy. Question: "${qText}" Answer: "${aText}". Also extract 4 important Tamil/English keywords from it. Return JSON: {"accurate": true/false, "warning": "reason if false", "extracted_tags": ["tag1", "tag2"]}` }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                })
+            });
+            const checkData = await checkRes.json();
+            const verdict = JSON.parse(checkData.candidates[0].content.parts[0].text);
+            if (!verdict.accurate) {
+                alert(`⚠️ எச்சரிக்கை: நீங்கள் உள்ளிட்ட தகவலில் பிழை உள்ளது அல்லது பாடப்பகுதிக்குப் புறம்பானது!\nகாரணம்: ${verdict.warning}`);
+                return;
+            }
+            if (verdict.extracted_tags) extraKws.push(...verdict.extracted_tags);
+        }
+
+        const newId = "stu_q_" + Date.now();
+        const allTags = Array.from(new Set([kw, ...extraKws]));
+        const formattedAns = `<div class="nb-def-box">${aText}</div>`;
+        const newQObj = {
+            id: newId,
+            tags: allTags,
+            ta: { chapter: "மாணவர் பங்களிப்பு வினா", question: qText, tips: allTags, answer: formattedAns, matchWords: allTags },
+            en: { chapter: "Student Contributed Q&A", question: qText, tips: allTags, answer: formattedAns, matchWords: allTags }
+        };
+        await saveQuestionToMaster(newQObj);
+        closeCreateModal();
+        branchToKeyword(kw, qaMaster[currentQIndex].id);
+        alert(`✅ சரிபார்க்கப்பட்டு வினா-விடை மாஸ்டரில் சேமிக்கப்பட்டது! (${allTags.length} திறவுச்சொற்கள் இணைக்கப்பட்டுள்ளன)`);
+    }
+
+    async function saveQuestionToMaster(qObj) {
+        qaMaster.push(qObj);
+        localStorage.setItem("cs_qa_master_v3", JSON.stringify(qaMaster));
+        updateMasterStats();
+        if (navigator.onLine) {
+            const emis = document.getElementById("emisNo").value.trim() || "Student";
+            await supabaseClient.from('qa_master').upsert({
+                id: qObj.id,
+                tags: qObj.tags,
+                ta_data: qObj.ta,
+                en_data: qObj.en,
+                created_by_emis: emis,
+                updated_at: new Date().toISOString()
+            });
+        }
+    }
+
+    // =========================================================================
+    // 4. நோட்டு விடையைக் காட்டுதல், திருத்துதல் & புதிய திறவுச்சொற்களுடன் சேமித்தல்
+    // =========================================================================
+    function compareAnswer() {
+        const qObj = qaMaster[currentQIndex];
+        const langData = qObj[currentLang];
+        const studentText = document.getElementById("studentAnswer").value.trim().toLowerCase();
+        
+        // விடைப் பகுதியிலும் அனைத்து மாஸ்டர் திறவுச்சொற்களுக்கும் தொடுப்பு வழங்குதல்
+        document.getElementById("modelAnswerText").innerHTML = applyAutoKeywordLinks(langData.answer, qObj.id);
+        document.getElementById("notebookWrapper").style.display = "block";
+
+        if (studentText.length > 0 && langData.matchWords) {
+            let matched = 0;
+            langData.matchWords.forEach(w => { if (studentText.includes(w.toLowerCase())) matched++; });
+            const pct = Math.round((matched / langData.matchWords.length) * 100);
+            document.getElementById("recallScore").innerText = `நினைவாற்றல் ஒப்பீடு: ${pct}% (${matched}/${langData.matchWords.length}) முக்கியக் கருத்துக்கள் பொருந்தியுள்ளன.`;
+        } else {
+            document.getElementById("recallScore").innerText = "குறிப்பு: விடைக்குள் உள்ள நீல நிறச் சொற்களை கிளிக் செய்தால் தொடர்புடைய வினாவிற்குத் தாவலாம்.";
+        }
+    }
+
+    function enableAnswerEdit() {
+        const qObj = qaMaster[currentQIndex];
+        const ansDiv = document.getElementById("modelAnswerText");
+        ansDiv.innerHTML = qObj[currentLang].answer;
+        ansDiv.contentEditable = "true";
+        ansDiv.focus();
+        document.getElementById("editAnsBtn").style.display = "none";
+        document.getElementById("saveAnsBtn").style.display = "inline-block";
+    }
+
+    async function verifyAndSaveEditedAnswer() {
+        const qObj = qaMaster[currentQIndex];
+        const ansDiv = document.getElementById("modelAnswerText");
+        const editedHTML = ansDiv.innerHTML;
+        const plainText = ansDiv.innerText.trim();
+        const apiKey = localStorage.getItem("cs_gemini_key");
+
+        if (navigator.onLine && apiKey) {
+            document.getElementById("aiLoader").style.display = "block";
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Verify if this edited answer is factually correct for the 12th CS question "${qObj[currentLang].question}". Edited Answer: "${plainText}". Also extract any new CS keywords added. Return JSON: {"valid": true/false, "reason": "...", "new_keywords": ["kw1", "kw2"]}` }] }],
+                        generationConfig: { responseMimeType: "application/json" }
+                    })
+                });
+                const data = await res.json();
+                const verdict = JSON.parse(data.candidates[0].content.parts[0].text);
+                if (!verdict.valid) {
+                    alert(`⚠️ தவறான தகவல் எச்சரிக்கை: நீங்கள் செய்த திருத்தம் வினாவிற்குப் பொருந்தவில்லை!\nவிளக்கம்: ${verdict.reason}`);
+                    document.getElementById("aiLoader").style.display = "none";
+                    return;
+                }
+                if (verdict.new_keywords && verdict.new_keywords.length > 0) {
+                    qObj.tags = Array.from(new Set([...(qObj.tags || []), ...verdict.new_keywords]));
+                }
+            } catch (e) { console.log(e); }
+            document.getElementById("aiLoader").style.display = "none";
+        }
+
+        qObj[currentLang].answer = editedHTML;
+        ansDiv.contentEditable = "false";
+        document.getElementById("editAnsBtn").style.display = "inline-block";
+        document.getElementById("saveAnsBtn").style.display = "none";
+        
+        localStorage.setItem("cs_qa_master_v3", JSON.stringify(qaMaster));
+        updateMasterStats();
+        ansDiv.innerHTML = applyAutoKeywordLinks(editedHTML, qObj.id);
+
+        if (navigator.onLine) {
+            const emis = document.getElementById("emisNo").value.trim() || "Edited";
+            await supabaseClient.from('qa_master').upsert({
+                id: qObj.id, tags: qObj.tags, ta_data: qObj.ta, en_data: qObj.en, created_by_emis: emis, updated_at: new Date().toISOString()
+            });
+            alert("✅ திருத்தம் சரிபார்க்கப்பட்டு வினா-விடை மாஸ்டரில் சேமிக்கப்பட்டது!");
+        }
+    }
+
+    // =========================================================================
+    // 5. காட்சி மரக்கிளை வரைபடம் (SVG Visual Forest + Pan/Zoom + Hover Tips)
+    // =========================================================================
+    function startNewTree() {
+        const nextIdx = (currentQIndex + 1) % qaMaster.length;
+        const nextQ = qaMaster[nextIdx];
+        treeCounter++;
+        const newRootId = "root_" + Date.now();
+        const rootLabel = nextQ.tags[0] || "புதிய தலைப்பு";
+
+        forestNodes.push({
+            nodeId: newRootId, qId: nextQ.id, labelTa: rootLabel, labelEn: rootLabel, parentNodeId: null, treeIndex: treeCounter
+        });
+        activeNodeId = newRootId;
+        syncEmisCloud(true);
+        renderQuestion(nextQ.id);
+    }
+
+    function renderVisualTrees() {
+        const edgesLayer = document.getElementById("edgesLayer");
+        const nodesLayer = document.getElementById("nodesLayer");
+        edgesLayer.innerHTML = "";
+        nodesLayer.innerHTML = "";
+
+        const roots = forestNodes.filter(n => n.parentNodeId === null);
+        let currentXOffset = 100;
+
+        roots.forEach(root => {
+            const layout = calculateTreeLayout(root, currentXOffset, 60);
+            currentXOffset += layout.totalWidth + 130;
+
+            layout.nodes.forEach(item => {
+                if (item.parentPos) {
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", item.parentPos.x);
+                    line.setAttribute("y1", item.parentPos.y + 22);
+                    line.setAttribute("x2", item.x);
+                    line.setAttribute("y2", item.y - 22);
+                    line.setAttribute("class", "tree-edge");
+                    edgesLayer.appendChild(line);
+                }
+            });
+
+            layout.nodes.forEach(item => {
+                const node = item.data;
+                const qObj = qaMaster.find(q => q.id === node.qId) || qaMaster[0];
+                const isRoot = (node.parentNodeId === null);
+                const isActive = (node.nodeId === activeNodeId);
+
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                g.setAttribute("transform", `translate(${item.x}, ${item.y})`);
+                g.setAttribute("class", `node-group ${isRoot ? 'root-node' : ''} ${isActive ? 'active' : ''}`);
+
+                if (isRoot) {
+                    const rootLbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    rootLbl.setAttribute("y", "-30");
+                    rootLbl.setAttribute("class", "root-badge");
+                    rootLbl.textContent = "▼ Root";
+                    g.appendChild(rootLbl);
+                }
+
+                const labelText = (currentLang === 'ta') ? node.labelTa : node.labelEn;
+                const rx = Math.max(52, labelText.length * 6.5);
+                const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                ellipse.setAttribute("rx", rx);
+                ellipse.setAttribute("ry", "22");
+                ellipse.setAttribute("class", "node-ellipse");
+                g.appendChild(ellipse);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("class", "node-text");
+                text.textContent = labelText;
+                g.appendChild(text);
+
+                g.addEventListener("mouseenter", (e) => showNodeTooltip(e, qObj));
+                g.addEventListener("mousemove", (e) => moveNodeTooltip(e));
+                g.addEventListener("mouseleave", hideNodeTooltip);
+                g.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    activeNodeId = node.nodeId;
+                    renderQuestion(node.qId);
+                });
+
+                nodesLayer.appendChild(g);
+            });
+        });
+    }
+
+    function calculateTreeLayout(rootNode, startX, startY) {
+        const levelHeight = 105, siblingGap = 145;
+        let positionedNodes = [];
+
+        function getSubtreeWidth(node) {
+            const children = forestNodes.filter(n => n.parentNodeId === node.nodeId);
+            if (children.length === 0) return siblingGap;
+            return children.reduce((sum, child) => sum + getSubtreeWidth(child), 0);
+        }
+
+        function assignPositions(node, xCenter, y, parentPos) {
+            const currentPos = { x: xCenter, y: y };
+            positionedNodes.push({ data: node, x: xCenter, y: y, parentPos: parentPos });
+            const children = forestNodes.filter(n => n.parentNodeId === node.nodeId);
+            if (children.length > 0) {
+                const totalW = getSubtreeWidth(node);
+                let childStartX = xCenter - totalW / 2;
+                children.forEach(child => {
+                    const childW = getSubtreeWidth(child);
+                    assignPositions(child, childStartX + childW / 2, y + levelHeight, currentPos);
+                    childStartX += childW;
+                });
+            }
+        }
+        const totalWidth = getSubtreeWidth(rootNode);
+        assignPositions(rootNode, startX + totalWidth / 2, startY, null);
+        return { nodes: positionedNodes, totalWidth: totalWidth };
+    }
+
+    function showNodeTooltip(event, qObj) {
+        const tooltip = document.getElementById("nodeTooltip");
+        const langData = qObj[currentLang];
+        tooltip.innerHTML = `<span class="tt-chapter">${langData.chapter}</span><strong>${langData.question}</strong><span class="tt-hint">👆 கிளிக் செய்தால் விடையளிக்கத் திறக்கும்</span>`;
+        tooltip.style.display = "block";
+        moveNodeTooltip(event);
+    }
+    function moveNodeTooltip(event) {
+        const tooltip = document.getElementById("nodeTooltip");
+        tooltip.style.left = (event.clientX + 15) + "px";
+        tooltip.style.top = (event.clientY + 15) + "px";
+    }
+    function hideNodeTooltip() { document.getElementById("nodeTooltip").style.display = "none"; }
+
+    const viewport = document.getElementById("canvasViewport");
+    const viewportGroup = document.getElementById("viewportGroup");
+    function updateTransform() { viewportGroup.setAttribute("transform", `translate(${panX}, ${panY}) scale(${scale})`); }
+    viewport.addEventListener("mousedown", (e) => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; });
+    window.addEventListener("mousemove", (e) => { if (isDragging) { panX = e.clientX - startX; panY = e.clientY - startY; updateTransform(); } });
+    window.addEventListener("mouseup", () => { isDragging = false; });
+    viewport.addEventListener("wheel", (e) => { e.preventDefault(); zoomCanvas(e.deltaY < 0 ? 1.1 : 0.9); });
+    function zoomCanvas(factor) { scale = Math.min(Math.max(0.4, scale * factor), 2.5); updateTransform(); }
+    function resetCanvasView() { panX = 40; panY = 50; scale = 1; updateTransform(); }
+
+    // =========================================================================
+    // 6. EMIS எண் கிளவுட் ஒத்திசைவு
+    // =========================================================================
+    async function syncEmisCloud(silent = false) {
+        const emis = document.getElementById("emisNo").value.trim();
+        const name = document.getElementById("studentName").value.trim();
+        if (!emis) {
+            if (!silent) alert("தயவுசெய்து மாணவரின் EMIS எண்ணை உள்ளிடவும்.");
+            return;
+        }
+        localStorage.setItem(`emis_forest_${emis}`, JSON.stringify(forestNodes));
+
+        if (navigator.onLine) {
+            try {
+                const { data } = await supabaseClient.from('student_mindmaps').select('*').eq('emis_no', emis).single();
+                if (data && !silent && data.tree_data && data.tree_data.length > forestNodes.length) {
+                    forestNodes = data.tree_data;
+                    renderVisualTrees();
+                    alert(`✅ EMIS: ${emis} (${data.student_name}) அவர்களின் முந்தைய கற்றல் மரங்கள் மீட்டெடுக்கப்பட்டன!`);
+                } else {
+                    await supabaseClient.from('student_mindmaps').upsert({
+                        emis_no: emis,
+                        student_name: name || "Student",
+                        tree_data: forestNodes,
+                        updated_at: new Date().toISOString()
+                    });
+                    if (!silent) alert(`✅ EMIS: ${emis} கற்றல் மரங்கள் கிளவுடில் சேமிக்கப்பட்டன!`);
+                }
+            } catch (e) { console.log(e); }
+        }
+    }
+
+    function showNextTip() {
+        const tips = qaMaster[currentQIndex][currentLang].tips;
+        document.getElementById("tipsBox").style.display = "block";
+        if (tipIndex < tips.length) {
+            const span = document.createElement("span");
+            span.className = "tip-chip";
+            span.innerText = tips[tipIndex++];
+            document.getElementById("tipsList").appendChild(span);
+        }
+    }
+
+    function toggleLanguage() {
+        currentLang = (currentLang === 'ta') ? 'en' : 'ta';
+        document.getElementById("langToggleBtn").innerText = (currentLang === 'ta') ? "🌐 English" : "🌐 தமிழ்";
+        renderQuestion(qaMaster[currentQIndex].id);
+    }
+
+    let recognition, isRecording = false;
+    function toggleSpeech() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return alert("Chrome உலாவியைப் பயன்படுத்தவும்.");
+        const micBtn = document.getElementById("micBtn");
+        if (!isRecording) {
+            recognition = new SpeechRecognition();
+            recognition.lang = (currentLang === 'ta') ? 'ta-IN' : 'en-IN';
+            recognition.continuous = true;
+            recognition.onresult = (e) => { document.getElementById("studentAnswer").value += " " + e.results[e.results.length - 1][0].transcript; };
+            recognition.start();
+            isRecording = true;
+            micBtn.classList.add("recording");
+            micBtn.innerText = "🛑 நிறுத்து";
+        } else {
+            recognition.stop();
+            isRecording = false;
+            micBtn.classList.remove("recording");
+            micBtn.innerText = "🎤 குரல் பதில்";
+        }
+    }
+
+    initApp();
+</script>
+</body>
+</html>
