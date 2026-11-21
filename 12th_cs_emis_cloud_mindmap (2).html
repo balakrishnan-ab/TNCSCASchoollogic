@@ -367,6 +367,14 @@
                         <option value="ALL">🎯 அனைத்து வினாக்கள்</option>
                         <option value="2">2 மதிப்பெண்</option>
                         <option value="3">3 மதிப்பெண்</option>
+                        <option value="5">5 மதிப்பெண்</option>
+                        <option value="PUB">🏛️ பொதுத்தேர்வு வினாக்கள்</option>
+                    </select>
+                </div>
+                <span id="masterCountBadge" class="text-xs font-extrabold text-blue-950">மாஸ்டர் வினாக்கள்: 5</span>
+            </div>
+        </div>
+
         <!-- Main Workspace: Default (Left: Q&Input, Right: Answer, Bottom: Tree) | Recall Mode (Left: Tree, Right: Q&A) -->
         <main id="workspaceGrid" class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
             <!-- Question & Student Input Column -->
@@ -424,6 +432,10 @@
                     <div class="bg-slate-200 px-4 py-2.5 border-b-2 border-rose-400 flex flex-wrap items-center justify-between gap-2">
                         <h3 class="font-extrabold text-slate-950 text-sm sm:text-base">📓 மாணவர் குறிப்பு நோட்டு (முழு மதிப்பெண் வடிவம்)</h3>
                         <div class="flex items-center gap-2">
+                            <button onclick="reportAnswerToAdmin()" id="reportAnsBtn"
+                                class="px-2.5 py-1 bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 rounded-lg text-xs font-extrabold cursor-pointer">
+                                🚩 அட்மினுக்குத் தெரிவி
+                            </button>
                             <button onclick="enableNotebookEdit()" id="editAnsBtn"
                                 class="px-2.5 py-1 bg-white text-blue-900 border-2 border-blue-400 rounded-lg text-xs font-extrabold cursor-pointer">
                                 ✏️ திருத்து
@@ -472,50 +484,30 @@
     </div>
 
     <!-- =====================================================================
-         4. ADMIN ONLY: PDF CLEAN EXTRACT MODAL
+         4. ADMIN ONLY: AUTO-CLEAN PDF UPLOAD MODAL (Zero-Config)
          ===================================================================== -->
     <div id="pdfModal" class="hidden fixed inset-0 bg-slate-900/75 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border-2 border-slate-300 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border-2 border-slate-300 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b-2 border-slate-200 pb-3 mb-3">
-                <h3 class="text-lg font-extrabold text-blue-950">📥 PDF வினா-விடைகளை சுத்திகரித்து மாஸ்டரில் சேமித்தல்</h3>
-                <button onclick="closePdfModal()" class="text-slate-700 font-extrabold text-lg">✕</button>
+                <h3 class="text-lg font-extrabold text-blue-950">📥 PDF வினா-விடை பதிவேற்றம் (தானியங்கி சுத்திகரிப்பு)</h3>
+                <button onclick="closePdfModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-800 font-extrabold cursor-pointer">✕</button>
             </div>
             <p class="text-xs font-bold text-slate-700 mb-3">
-                ஆசிரியர் பெயர் (A. Prabhakar / அ. பிரபாகர்), பக்க எண்கள் (..1..), மற்றும் மேல் தலைப்புகள் தானாக நீக்கப்பட்டு, <b>அடுத்த பக்கத்திற்குத் தொடரும் விடைகள் ஒன்றாக இணைக்கப்பட்டு</b> பாடம்வாரியாகப் பிரிக்கப்படும்.
+                PDF கோப்பைத் தேர்ந்தெடுத்தால் போதும்; முன்னுரை, பொருளடக்கம், ஆசிரியர் பெயர், பக்க எண் மற்றும் பதிப்பக விவரங்களைச் செயலியே தானாகக் கண்டறிந்து நீக்கிவிட்டு வினா-விடைகளை மட்டும் பிரித்தெடுக்கும்.
             </p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-900 mb-1">PDF மொழி (Medium):</label>
-                    <select id="pdfLangSelect" class="w-full p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
-                        <option value="ta">தமிழ் வழி (12CS_TM_2025.pdf)</option>
-                        <option value="en">ஆங்கில வழி (12CS_EM_2025.pdf)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-900 mb-1">பக்க வரம்பு (Start - End Page):</label>
-                    <div class="flex gap-2">
-                        <input type="number" id="startPageInput" value="6" min="1" class="w-1/2 p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
-                        <input type="number" id="endPageInput" value="185" min="1" class="w-1/2 p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
-                    </div>
-                </div>
-            </div>
             <div class="mb-3">
                 <label class="block text-xs font-extrabold text-slate-900 mb-1">PDF கோப்பைத் தேர்ந்தெடுக்கவும் (.pdf):</label>
-                <input type="file" id="pdfFileInput" accept=".pdf" onchange="processFullGuidePdf(event)" class="w-full p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
-            </div>
-            <div class="mb-3">
-                <label class="block text-xs font-extrabold text-slate-900 mb-1">✍️ நூலாசிரியர் / பதிப்பகத்தார் பெயர் (தானாக கண்டறியப்படும் அல்லது திருத்தலாம்):</label>
-                <input type="text" id="pdfAuthorCreditInput" placeholder="எ.கா: அ. பிரபாகர் (Vijay Publications)" class="w-full p-2 border-2 border-emerald-400 bg-emerald-50 rounded-lg font-extrabold text-sm text-slate-950">
+                <input type="file" id="pdfFileInput" accept=".pdf" onchange="processFullGuidePdf(event)" class="w-full p-2.5 border-2 border-blue-400 bg-blue-50/40 rounded-xl font-bold text-sm cursor-pointer">
             </div>
             <div id="pdfStatusBox" class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs font-extrabold text-blue-950 mb-3">
                 PDF கோப்பைத் தேர்ந்தெடுத்தவுடன் தானியங்கி சுத்திகரிப்பு தொடங்கும்...
             </div>
-            <textarea id="pdfPreviewArea" rows="6" readonly class="w-full p-2.5 border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-900 mb-3" placeholder="முன்னோட்டம் இங்கே தோன்றும்..."></textarea>
+            <textarea id="pdfPreviewArea" rows="6" readonly class="w-full p-2.5 border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-900 mb-3" placeholder="பிரித்தெடுக்கப்பட்ட வினா-விடை முன்னோட்டம் இங்கே தோன்றும்..."></textarea>
             <div class="flex justify-end gap-2">
-                <button id="savePdfMasterBtn" onclick="uploadExtractedToSupabase()" disabled class="px-4 py-2 bg-emerald-700 disabled:bg-slate-400 text-white font-extrabold text-sm rounded-xl cursor-pointer">
+                <button id="savePdfMasterBtn" onclick="uploadExtractedToSupabase()" disabled class="px-5 py-2.5 bg-emerald-700 disabled:bg-slate-400 text-white font-extrabold text-sm rounded-xl cursor-pointer shadow">
                     ☁️ அனைத்தையும் Supabase மாஸ்டரில் சேமி
                 </button>
-                <button onclick="closePdfModal()" class="px-4 py-2 bg-slate-200 text-slate-950 font-extrabold text-sm rounded-xl cursor-pointer">மூடு</button>
+                <button onclick="closePdfModal()" class="px-4 py-2.5 bg-slate-200 text-slate-950 font-extrabold text-sm rounded-xl cursor-pointer">மூடு</button>
             </div>
         </div>
     </div>
@@ -733,12 +725,91 @@
         let spanningTree = [{ qId: "q1", kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
 
         // =====================================================================
-        // 1. PORTAL LOGIN & FIRST-TIME REGISTRATION LOGIC
+        // 5. ADMIN PDF AUTO-CLEAN EXTRACTOR (ZERO USER PROMPTS)
         // =====================================================================
-        function showLoginError(msg) {
-            const box = document.getElementById("loginErrorBox");
-            box.innerText = msg;
-            box.classList.remove("hidden");
+        function openPdfModal() {
+            if (!activeUser || activeUser.role !== 'admin') return;
+            document.getElementById("pdfModal").classList.remove("hidden");
+        }
+        function closePdfModal() {
+            document.getElementById("pdfModal").classList.add("hidden");
+        }
+
+        function cleanPageNoise(pageText) {
+            let cleaned = pageText;
+            const noisePatterns = [
+                /TECH\s*EASY\s*XII\s*[-–]\s*COMPUTER\s*SCIENCE/gi,
+                /TECH\s*EASY\s*XII\s*[-–]\s*கணினி\s*அறிவியல்/gi,
+                /TECH\s*EASY\s*XII\s*[-–]\s*\d*/gi,
+                /A\.?\s*PRABHAKAR\s*[-–]?\s*\d{0,10}/gi,
+                /அ\.?\s*பிரபாகர்\s*[-–]?\s*\d{0,10}/gi,
+                /VIJAY\s*PUBLICATIONS[®]?\s*RASIPURAM\s*\d*/gi,
+                /விஜய்\s*பப்ளிகேஷன்ஸ்\s*இராசிபுரம்\s*\d*/gi,
+                /\.\.\s*\d+\s*\.\./g,
+                /\bPage\s*\d+\b/gi,
+                /\b\d+\.\s*(FUNCTION|DATA ABSTRACTION|SCOPING|ALGORITHMIC STRATEGIES|VARIABLES AND OPERATORS|CONTROL STRUCTURES|PYTHON FUNCTIONS|STRINGS AND STRING MANIPULATION|LISTS, TUPLES, SETS AND DICTIONARY|PYTHON CLASSES AND OBJECTS|DATABASE CONCEPTS|STRUCTURED QUERY LANGUAGE|PYTHON AND CSV FILES|IMPORTING C\+\+ PROGRAMS IN PYTHON|DATA MANIPULATION THROUGH SQL|DATA VISUALIZATION USING PYTHON)\b/gi,
+                /\b\d+\.\s*(செயற்கூறு|தரவு அருவமாக்கம்|வரையெல்லை|நெறிமுறையின் யுக்திகள்|பைத்தான் அறிமுகம்|கட்டுப்பாட்டு கட்டமைப்புகள்|பைத்தான் செயற்கூறுகள்|சரங்கள் மற்றும் சரங்களை கையாளுதல்|List, Tuples, Set.*Dictionary|இனக்குழுக்கள் மற்றும் பொருள்கள்|தரவுதள கருத்துருக்கள்|வினவல் அமைப்பு மொழி|பைத்தான் மற்றும் CSV|பைத்தானில் C\+\+ நிரல்கள்|SQL மூலம் தரவு கையாளுதல்|தரவு காட்சிப்படுத்தல்)\b/gi
+            ];
+            noisePatterns.forEach(r => { cleaned = cleaned.replace(r, " "); });
+            return cleaned.replace(/\s+/g, " ").trim();
+        }
+
+        let detectedPdfAuthor = "";
+
+        async function processFullGuidePdf(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const statusBox = document.getElementById("pdfStatusBox");
+
+            statusBox.innerText = "⏳ PDF வாசிக்கப்படுகிறது... முன்னுரை, ஆசிரியர் பெயர் & பக்க எண்கள் தானாக நீக்கப்படுகின்றன...";
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+            // Auto-detect Tamil vs English medium and author name from first 5 pages
+            let frontPagesText = "";
+            for (let i = 1; i <= Math.min(5, pdf.numPages); i++) {
+                const p = await pdf.getPage(i);
+                const c = await p.getTextContent();
+                frontPagesText += " " + c.items.map(item => item.str).join(" ");
+            }
+            const tamilChars = (frontPagesText.match(/[\u0B80-\u0BFF]/g) || []).length;
+            const lang = tamilChars > 80 ? 'ta' : 'en';
+
+            const authorMatch = frontPagesText.match(/(?:Author|Prepared by|With Best Wishes|வாழ்த்துகளுடன்|ஆசிரியர்)[:\s-]*([A-Za-z.\s\u0B80-\u0BFF]{4,40})/i);
+            detectedPdfAuthor = authorMatch ? authorMatch[1].trim() : file.name.replace(/\.pdf$/i, "");
+
+            // Automatically skip front matter (Preface/Contents) and Annexure Practicals/Question Paper
+            let stitchedStream = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const rawPage = content.items.map(item => item.str).join(" ");
+                // Skip cover, preface, table of contents, and practical exercises pages automatically
+                if (i <= 5 && /(PREFACE|CONTENTS|முன்னுரை|பொருளடக்கம்|VIJAY PUBLICATIONS)/i.test(rawPage)) continue;
+                if (/(PRACTICAL EXERCISES|செய்முறை பயிற்சிகள்|MARCH - 2025\s*PART)/i.test(rawPage)) break;
+                stitchedStream += " " + cleanPageNoise(rawPage);
+            }
+
+            extractedBatchItems = parseStitchedTextIntoQA(stitchedStream, lang);
+            statusBox.innerText = `✅ மொத்தம் ${extractedBatchItems.length} சுத்திகரிக்கப்பட்ட வினா-விடைகள் (${lang === 'ta' ? 'தமிழ்' : 'English'}) பிரித்தெடுக்கப்பட்டுள்ளன!`;
+            document.getElementById("pdfPreviewArea").value = extractedBatchItems.slice(0, 6).map((item, idx) =>
+                `[${idx + 1}] (${item.chapterKey} | ${item.marks} Marks)\nQ: ${item[lang].question}\nA: ${item[lang].plainAnswer.substring(0, 110)}...\n`
+            ).join("\n");
+            document.getElementById("savePdfMasterBtn").disabled = extractedBatchItems.length === 0;
+        }
+
+        function reportAnswerToAdmin() {
+            const qObj = questionBank.find(q => q.id === currentQuestionId);
+            if (!qObj) return;
+            const reports = JSON.parse(localStorage.getItem("tn_cs_admin_reports")) || [];
+            reports.push({
+                qId: qObj.id,
+                question: (qObj[currentLang] || qObj.ta).question,
+                reportedBy: activeUser ? `${activeUser.name} (${activeUser.emis})` : "Student",
+                time: new Date().toLocaleString('ta-IN')
+            });
+            localStorage.setItem("tn_cs_admin_reports", JSON.stringify(reports));
+            showToast("🚩 இந்த விடையைச் சரிபார்க்குமாறு அட்மினுக்குத் தகவல் அனுப்பப்பட்டது!");
         }
 
         async function handlePortalLogin() {
@@ -1514,9 +1585,8 @@
             const statusBox = document.getElementById("pdfStatusBox");
             statusBox.innerText = "⏳ Supabase மாஸ்டரில் சேமிக்கப்படுகிறது...";
 
-            // Automatically add PDF Author to About & Credits list
-            const authorCredit = document.getElementById("pdfAuthorCreditInput").value.trim();
-            registerNewAuthorCredit(authorCredit);
+            // Automatically add detected PDF Author to About & Credits list
+            registerNewAuthorCredit(detectedPdfAuthor);
 
             extractedBatchItems.forEach(item => {
                 if (!item.ta) item.ta = item.en;
