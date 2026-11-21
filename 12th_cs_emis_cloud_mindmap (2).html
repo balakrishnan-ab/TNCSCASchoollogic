@@ -144,6 +144,56 @@
             line-height: 1.5rem;
             color: #2e1065;
         }
+        /* Runtime Flowchart & Nested Boxes Styling */
+        .runtime-diagram {
+            margin: 0.75rem 0;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.75rem;
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+        }
+        .runtime-diagram-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+        .flow-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .flow-node {
+            background: #ffffff;
+            border: 2px solid #1d4ed8;
+            border-radius: 9999px;
+            padding: 0.35rem 0.85rem;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #020617;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .flow-arrow {
+            font-weight: 900;
+            color: #1d4ed8;
+            font-size: 1rem;
+        }
+        .nested-box-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .nested-box {
+            border: 2px solid #0f766e;
+            background: #f0fdfa;
+            padding: 0.45rem 0.85rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #134e4a;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-950 flex flex-col min-h-screen">
@@ -381,8 +431,12 @@
             <section id="questionInputCol" class="lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col justify-between order-1">
                 <div>
                     <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <span id="chapterBadge" class="px-3 py-1 bg-blue-100 text-blue-950 text-xs sm:text-sm font-extrabold rounded-full border border-blue-300"></span>
-                        <span id="marksBadge" class="px-3 py-1 bg-amber-100 text-amber-950 text-xs font-extrabold rounded-full border border-amber-300"></span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span id="unitBadge" class="hidden px-2.5 py-1 bg-slate-200 text-slate-900 text-xs font-extrabold rounded-full"></span>
+                            <span id="chapterBadge" class="px-3 py-1 bg-blue-100 text-blue-950 text-xs sm:text-sm font-extrabold rounded-full border border-blue-300"></span>
+                            <span id="marksBadge" class="px-3 py-1 bg-amber-100 text-amber-950 text-xs font-extrabold rounded-full border border-amber-300"></span>
+                        </div>
+                        <span id="examTagBadge" class="hidden px-3 py-1 bg-purple-100 text-purple-950 text-xs font-extrabold rounded-full border border-purple-300"></span>
                     </div>
 
                     <div id="questionDisplay" class="text-lg sm:text-xl font-extrabold text-slate-950 leading-relaxed mb-4 p-4 bg-slate-100 rounded-xl border-2 border-slate-300"></div>
@@ -496,11 +550,11 @@
                 PDF கோப்பைத் தேர்ந்தெடுத்தால் போதும்; முன்னுரை, பொருளடக்கம், ஆசிரியர் பெயர், பக்க எண் மற்றும் பதிப்பக விவரங்களைச் செயலியே தானாகக் கண்டறிந்து நீக்கிவிட்டு வினா-விடைகளை மட்டும் பிரித்தெடுக்கும்.
             </p>
             <div class="mb-3">
-                <label class="block text-xs font-extrabold text-slate-900 mb-1">PDF கோப்பைத் தேர்ந்தெடுக்கவும் (.pdf):</label>
-                <input type="file" id="pdfFileInput" accept=".pdf" onchange="processFullGuidePdf(event)" class="w-full p-2.5 border-2 border-blue-400 bg-blue-50/40 rounded-xl font-bold text-sm cursor-pointer">
+                <label class="block text-xs font-extrabold text-slate-900 mb-1">PDF கோப்புகளைத் தேர்ந்தெடுக்கவும் (தமிழ் & ஆங்கிலம் - பல கோப்புகள் தேர்வு செய்யலாம்):</label>
+                <input type="file" id="pdfFileInput" accept=".pdf" multiple onchange="processFullGuidePdf(event)" class="w-full p-2.5 border-2 border-blue-400 bg-blue-50/40 rounded-xl font-bold text-sm cursor-pointer">
             </div>
             <div id="pdfStatusBox" class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs font-extrabold text-blue-950 mb-3">
-                PDF கோப்பைத் தேர்ந்தெடுத்தவுடன் தானியங்கி சுத்திகரிப்பு தொடங்கும்...
+                PDF கோப்புகளைத் தேர்ந்தெடுத்தவுடன் தானியங்கி சுத்திகரிப்பு தொடங்கும்...
             </div>
             <textarea id="pdfPreviewArea" rows="6" readonly class="w-full p-2.5 border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-900 mb-3" placeholder="பிரித்தெடுக்கப்பட்ட வினா-விடை முன்னோட்டம் இங்கே தோன்றும்..."></textarea>
             <div class="flex justify-end gap-2">
@@ -590,6 +644,7 @@
         let recognition = null;
         let isRecording = false;
         let extractedBatchItems = [];
+        let detectedPdfAuthors = [];
         let allAdminRecords = [];
 
         // Default & Dynamically Discovered PDF Authors List
@@ -601,215 +656,242 @@
 
         const defaultQuestions = [
             {
-                id: "q1", chapterKey: "Chapter 1", marks: "2",
-                tags: ["செயற்கூறு", "அளபுருக்கள்", "தற்சுழற்சி", "Function", "Parameters"],
+                id: "cs12_ch01_2m_01",
+                class_level: "12th",
+                subject: "Computer Science",
+                unit: "Unit 1: Problem Solving Techniques",
+                chapterKey: "Chapter 1",
+                marks: "2",
+                tags: ["Subroutine", "Function", "துணைநிரல்", "செயற்கூறு"],
                 ta: {
-                    chapter: "Chapter 1: செயற்கூறு (Functions)",
-                    question: "செயற்கூறு வரையறுத்தல் என்றால் என்ன? அளபுருக்கள் மற்றும் செயலுருபுகள் பற்றி எழுதுக.",
-                    keywords: ["செயற்கூறு", "அளபுருக்கள்"],
-                    tips: ["குறிப்பிட்ட செயலைச் செய்யும் குறிமுறைத் தொகுதி", "அளபுருக்கள் - மாறிகள்", "செயலுருபுகள் - மதிப்புகள்"],
-                    answer: `<div class="nb-box"><span class="nb-underline">வரையறை:</span> ஒரு குறிப்பிட்ட செயலைச் செய்வதற்காக மீண்டும் மீண்டும் பயன்படுத்தப்படும் குறிமுறையின் ஒரு சிறிய பகுதியே <b>செயற்கூறு (Function)</b> எனப்படும்.</div>
-                             <p><b>1. <span class="nb-underline">அளபுருக்கள்:</span></b> செயற்கூறு வரையறையில் பயன்படுத்தப்படும் மாறிகள்.</p>
-                             <p><b>2. <span class="nb-underline">செயலுருபுகள்:</span></b> செயற்கூறுவை அழைக்கும்போது அனுப்பப்படும் மதிப்புகள். (இது தற்சுழற்சி முறையிலும் பயன்படும்).</p>`,
-                    matchWords: ["குறிப்பிட்ட செயல்", "மாறிகள்", "மதிப்புகள்"]
+                    unit: "Unit 1: Problem Solving Techniques",
+                    chapter: "Chapter 1: Functions (செயற்கூறு)",
+                    examTag: "PTA-1",
+                    question: "துணைநிரல் என்றால் என்ன?",
+                    tips: ["குறிப்பிட்ட செயலை மீண்டும் மீண்டும் செய்யும் சிறிய நிரல் தொகுதி"],
+                    answer: "துணை நிரல்கள் என்பன ஒரு குறிப்பிட்ட செயலை மீண்டும் மீண்டும் செய்யப் பயன்படும் சிறிய நிரல் தொகுதியாகும். நிரலாக்க மொழிகளில் இத்துணை நிரல்கள் செயற்கூறுகள் என்று அழைக்கப்படுகின்றன. மேலும் இவை கணினி மொழிகளின் அடிப்படைக் கட்டுமான தொகுதியாக விளங்குகின்றன.",
+                    render_type: "definition_box",
+                    blocks: [],
+                    matchWords: ["சிறிய நிரல்", "செயற்கூறுகள்", "கட்டுமான தொகுதி"]
                 },
                 en: {
+                    unit: "Unit 1: Problem Solving Techniques",
                     chapter: "Chapter 1: Functions",
-                    question: "What is a Function definition? Explain Parameters and Arguments.",
-                    keywords: ["Function", "Parameters"],
-                    tips: ["Unit of code doing a specific task", "Parameters - Variables", "Arguments - Values"],
-                    answer: `<div class="nb-box"><span class="nb-underline">Definition:</span> A <b>Function</b> is a unit of code defined within a greater structure to perform a specific task.</div>`,
-                    matchWords: ["unit of code", "variables", "values"]
+                    examTag: "PTA-1",
+                    question: "What is a subroutine?",
+                    tips: ["Small sections of code used repeatedly for a specific task"],
+                    answer: "Subroutines are small sections of code that are used to perform a particular task that can be used repeatedly. In programming languages these subroutines are called as functions.",
+                    render_type: "definition_box",
+                    blocks: [],
+                    matchWords: ["small sections", "particular task", "repeatedly"]
                 }
             },
             {
-                id: "q2", chapterKey: "Chapter 1", marks: "3",
-                tags: ["தற்சுழற்சி", "செயற்கூறு", "Recursion", "Function"],
+                id: "cs12_ch01_2m_04",
+                class_level: "12th",
+                subject: "Computer Science",
+                unit: "Unit 1: Problem Solving Techniques",
+                chapterKey: "Chapter 1",
+                marks: "2",
+                tags: ["Interface", "Implementation", "இடைமுகம்", "செயல்படுத்துதல்"],
                 ta: {
-                    chapter: "Chapter 1: செயற்கூறு (Functions)",
-                    question: "தற்சுழற்சி (Recursion) செயற்கூறு என்றால் என்ன? எடுத்துக்காட்டுடன் விளக்குக.",
-                    keywords: ["தற்சுழற்சி", "செயற்கூறு"],
-                    tips: ["தன்னைத்தானே அழைக்கும் செயற்கூறு", "அடிப்படை நிபந்தனை (Base Condition)"],
-                    answer: `<div class="nb-box"><span class="nb-underline">வரையறை:</span> ஒரு செயற்கூறு தன்னைத்தானே மீண்டும் மீண்டும் அழைத்துக் கொண்டால் அது <b>தற்சுழற்சி செயற்கூறு</b> எனப்படும்.</div>
-                             <div class="nb-code">let rec fact n := if n=0 then 1 else n * fact (n-1)</div>`,
-                    matchWords: ["தன்னைத்தானே", "அடிப்படை நிபந்தனை"]
+                    unit: "Unit 1: Problem Solving Techniques",
+                    chapter: "Chapter 1: Functions (செயற்கூறு)",
+                    examTag: "Jun 2023, PTA-3",
+                    question: "இடைமுகத்தையும், செயல்படுத்துதலையும் வேறுபடுத்துக.",
+                    tips: ["இடைமுகம்: என்ன செய்ய வேண்டும்", "செயல்படுத்துதல்: கட்டளைகளை நிறைவேற்றுவது"],
+                    answer: "",
+                    render_type: "table",
+                    blocks: [
+                        {
+                            type: "comparison_table",
+                            headers: ["இடைமுகம் (Interface)", "செயல்படுத்துதல் (Implementation)"],
+                            rows: [
+                                ["ஒரு பொருள் செய்யக்கூடிய நடவடிக்கையை வரையறுக்கிறது, ஆனால் அவற்றை உண்மையில் செய்யக் கூடியது இல்லை.", "இடைமுகத்தில் வரையறுக்கப்பட்டுள்ள கட்டளைகளை நிறைவேற்றுகிறது."]
+                            ]
+                        }
+                    ],
+                    matchWords: ["நடவடிக்கையை வரையறுக்கிறது", "நிறைவேற்றுகிறது"]
                 },
                 en: {
+                    unit: "Unit 1: Problem Solving Techniques",
                     chapter: "Chapter 1: Functions",
-                    question: "What is a Recursion Function? Explain with an example.",
-                    keywords: ["Recursion", "Function"],
-                    tips: ["Function calling itself", "Base Condition"],
-                    answer: `<div class="nb-box"><span class="nb-underline">Definition:</span> A function calling itself repeatedly is a <b>Recursive Function</b>.</div>`,
-                    matchWords: ["calls itself", "base condition"]
+                    examTag: "Jun 2023, PTA-3",
+                    question: "Differentiate interface and implementation.",
+                    tips: ["Interface defines what an object can do", "Implementation carries out instructions"],
+                    answer: "",
+                    render_type: "table",
+                    blocks: [
+                        {
+                            type: "comparison_table",
+                            headers: ["Interface", "Implementation"],
+                            rows: [
+                                ["Interface just defines what an object can do, but won't actually do it.", "Implementation carries out the instructions defined in the interface."]
+                            ]
+                        }
+                    ],
+                    matchWords: ["defines", "carries out"]
                 }
             },
             {
-                id: "q3", chapterKey: "Chapter 9", marks: "3",
-                tags: ["List", "Tuple", "தரவு", "Data", "வேறுபடுத்துக"],
+                id: "cs12_ch01_5m_04",
+                class_level: "12th",
+                subject: "Computer Science",
+                unit: "Unit 1: Problem Solving Techniques",
+                chapterKey: "Chapter 1",
+                marks: "5",
+                tags: ["Interface", "Implementation", "Engine", "Accelerator", "இடைமுகம்"],
                 ta: {
-                    chapter: "Chapter 9: பைத்தான் தொகுப்பு தரவினங்கள்",
-                    question: "பைத்தானில் உள்ள List மற்றும் Tuple ஆகியவற்றை வேறுபடுத்துக.",
-                    keywords: ["List", "Tuple"],
-                    tips: ["List [ ] - Mutable", "Tuple ( ) - Immutable", "வேகம் (Iteration)"],
-                    answer: `<table class="nb-table">
-                                <thead><tr><th>List</th><th>Tuple</th></tr></thead>
-                                <tbody>
-                                    <tr><td>List-ன் உறுப்புகளை மாற்றலாம் (<b>Mutable</b>).</td><td>Tuple-ன் உறுப்புகளை மாற்ற முடியாது (<b>Immutable</b>).</td></tr>
-                                    <tr><td>உறுப்புகள் சதுர அடைப்புக் குறிக்குள் <code>[ ]</code> அடைக்கப்பட்டிருக்கும்.</td><td>உறுப்புகள் வளைவு அடைப்புக்குறிக்குள் <code>( )</code> அடைக்கப்பட்டிருக்கும்.</td></tr>
-                                    <tr><td>மடக்குச் செயல் மெதுவானது.</td><td>மடக்குச் செயல் List-ஐ காட்டிலும் விரைவானது.</td></tr>
-                                </tbody>
-                             </table>`,
-                    matchWords: ["மாற்றலாம்", "மாற்ற முடியாது", "சதுர", "வளைவு"]
+                    unit: "Unit 1: Problem Solving Techniques",
+                    chapter: "Chapter 1: Functions (செயற்கூறு)",
+                    examTag: "",
+                    question: "இடைமுகம் மற்றும் செயல்படுத்துதலை எடுத்துக்காட்டுடன் விளக்குக.",
+                    tips: ["துரிதப்படுத்தி = Interface", "இயந்திர உள்வேலை = Implementation"],
+                    answer: "",
+                    render_type: "points_diagram",
+                    blocks: [
+                        { type: "point", text: "இடைமுகம்: ஒரு பொருள் செய்யக்கூடிய செயல்களின் தொகுப்பு இடைமுகம் ஆகும்; ஆனால் அவற்றை உண்மையில் செய்யக்கூடியது இல்லை." },
+                        { type: "point", text: "செயல்படுத்துதல்: இடைமுகத்தில் வரையறுக்கப்பட்டுள்ள கட்டளைகளை நிறைவேற்றுகிறது." },
+                        { type: "point", text: "எடுத்துக்காட்டு (காரின் வேகத்தை அதிகரித்தல்): ஓட்டுநர் துரிதப்படுத்தியை (Accelerator) அழுத்துவது இடைமுகம்; எரிபொருள், காற்று, மின்சாரம் மூலம் வாகனம் நகர்வது செயல்படுத்துதல்." },
+                        {
+                            type: "runtime_flowchart",
+                            title: "Interface vs Implementation (இயக்க நேரப் பாய்வுப்படம்)",
+                            steps: ["Driver (ஓட்டுநர்)", "Accelerator (Interface)", "Engine (Implementation)", "getSpeed ➔ Required? ➔ Yes: Return | No: Pull Fuel"]
+                        }
+                    ],
+                    matchWords: ["துரிதப்படுத்தி", "இயந்திரம்", "இடைமுகம்"]
                 },
                 en: {
-                    chapter: "Chapter 9: Lists, Tuples, Sets and Dictionary",
-                    question: "Differentiate between List and Tuple in Python.",
-                    keywords: ["List", "Tuple"],
-                    tips: ["List is Mutable", "Tuple is Immutable"],
-                    answer: `<table class="nb-table">
-                                <thead><tr><th>List</th><th>Tuple</th></tr></thead>
-                                <tbody>
-                                    <tr><td>The elements of a list are changeable (<b>mutable</b>).</td><td>The elements of a tuple are unchangeable (<b>immutable</b>).</td></tr>
-                                    <tr><td>Enclosed within square brackets <code>[ ]</code>.</td><td>Enclosed by parentheses <code>( )</code>.</td></tr>
-                                    <tr><td>Iteration is slow.</td><td>Iteration is faster.</td></tr>
-                                </tbody>
-                             </table>`,
-                    matchWords: ["mutable", "immutable", "square", "parentheses"]
+                    unit: "Unit 1: Problem Solving Techniques",
+                    chapter: "Chapter 1: Functions",
+                    examTag: "",
+                    question: "Explain with an example interface and implementation.",
+                    tips: ["Accelerator = Interface", "Engine = Implementation"],
+                    answer: "",
+                    render_type: "points_diagram",
+                    blocks: [
+                        { type: "point", text: "Interface: A set of actions that an object can do; defines what an object can do without actually doing it." },
+                        { type: "point", text: "Implementation: Carries out the instructions defined in the interface." },
+                        { type: "point", text: "Example: Pressing the accelerator is the interface between driver and engine; internal fuel/power generation is implementation." },
+                        {
+                            type: "runtime_flowchart",
+                            title: "Interface vs Implementation Flow",
+                            steps: ["Driver (Caller)", "Accelerator (Interface)", "Engine (Implementation)", "getSpeed ➔ Required? ➔ Yes: Return | No: Pull Fuel"]
+                        }
+                    ],
+                    matchWords: ["accelerator", "engine", "interface"]
                 }
             },
             {
-                id: "q4", chapterKey: "Chapter 3", marks: "5",
-                tags: ["LEGB", "Scope", "வரையெல்லை", "Local", "Global"],
+                id: "cs12_ch03_5m_01",
+                class_level: "12th",
+                subject: "Computer Science",
+                unit: "Unit 1: Problem Solving Techniques",
+                chapterKey: "Chapter 3",
+                marks: "5",
+                tags: ["LEGB", "Local", "Enclosed", "Global", "Built-in", "வரையெல்லை"],
                 ta: {
-                    chapter: "Chapter 3: வரையெல்லை (Scoping)",
-                    question: "LEGB விதியை எடுத்துக்காட்டுடன் விளக்குக.",
-                    keywords: ["LEGB", "வரையெல்லை"],
+                    unit: "Unit 1: Problem Solving Techniques",
+                    chapter: "Chapter 3: Scoping (வரையெல்லை)",
+                    examTag: "Sep 2020, Sep 2021, May 2022, Mar 2024, PTA-1",
+                    question: "மாறியின் வரையெல்லைகளின் வகைகளை விளக்குக (அல்லது) LEGB விதியை எடுத்துக்காட்டுடன் விளக்குக.",
                     tips: ["Local (உள்ளமை)", "Enclosed (அடைக்கப்பட்ட)", "Global (முழுதளாவிய)", "Built-in (உள்ளிணைந்த)"],
-                    answer: `<div class="nb-box"><span class="nb-underline">LEGB விதி:</span> மாறியின் வரையெல்லை தேடப்பட வேண்டிய வரிசையைத் தீர்மானிக்க <b>LEGB விதி</b> பயன்படுகிறது (Local → Enclosed → Global → Built-in).</div>
-                             <div class="nb-syntax-box"><b>பொதுவடிவம் / வரிசை:</b><br>Local (L) ➔ Enclosed (E) ➔ Global (G) ➔ Built-in (B)</div>`,
+                    answer: "",
+                    render_type: "points_diagram",
+                    blocks: [
+                        { type: "point", text: "LEGB விதி: வரையெல்லை தேடப்பட வேண்டிய வரிசையைத் தீர்மானிக்கப் பயன்படுகிறது (Local → Enclosed → Global → Built-in)." },
+                        { type: "point", text: "உள்ளமை வரையெல்லை (Local): நடப்புச் செயற்கூறில் வரையறுக்கப்பட்ட மாறிகள்." },
+                        { type: "point", text: "அடைக்கப்பட்ட வரையெல்லை (Enclosed): பின்னலான செயற்கூறுகளில் வெளிச் செயற்கூறு மாறிகளை உள்செயற்கூறு அணுகுவது." },
+                        { type: "point", text: "முழுதளாவிய வரையெல்லை (Global): நிரலின் அனைத்துச் செயற்கூறுகளுக்கும் வெளியே அறிவிக்கப்படும் மாறிகள்." },
+                        { type: "point", text: "உள்ளிணைந்த வரையெல்லை (Built-in): நிரல்பெயர்ப்பி/தொகுப்பான் தொடங்கும்போதே நிரல் வரையெல்லையில் ஏற்றப்படும் நூலகப் பெயர்கள்." },
+                        {
+                            type: "nested_boxes",
+                            title: "LEGB வரையெல்லைப் படிநிலை (Runtime Boxes)",
+                            boxes: ["BUILT-IN (உள்ளிணைந்த)", "GLOBAL (முழுதளாவிய)", "ENCLOSED (அடைக்கப்பட்ட)", "LOCAL (உள்ளமை)"]
+                        }
+                    ],
                     matchWords: ["உள்ளமை", "முழுதளாவிய", "LEGB"]
                 },
                 en: {
+                    unit: "Unit 1: Problem Solving Techniques",
                     chapter: "Chapter 3: Scoping",
-                    question: "Explain LEGB rule with an example.",
-                    keywords: ["LEGB", "Scope"],
+                    examTag: "Sep 2020, Sep 2021, May 2022, Mar 2024, PTA-1",
+                    question: "Explain the types of scopes for variable or LEGB rule with example.",
                     tips: ["Local", "Enclosed", "Global", "Built-in"],
-                    answer: `<div class="nb-box"><span class="nb-underline">LEGB Rule:</span> Determines the order in which scopes are searched: Local → Enclosed → Global → Built-in.</div>`,
+                    answer: "",
+                    render_type: "points_diagram",
+                    blocks: [
+                        { type: "point", text: "LEGB rule decides the order in which scopes are searched for scope resolution: Local -> Enclosed -> Global -> Built-in." },
+                        { type: "point", text: "Local scope: Variables defined in the current function." },
+                        { type: "point", text: "Enclosed scope: Variables in an outer enclosing function accessed by a nested inner function." },
+                        { type: "point", text: "Global scope: Variables declared outside all functions in a program." },
+                        { type: "point", text: "Built-in scope: Names pre-loaded into program scope when compiler/interpreter starts." },
+                        {
+                            type: "nested_boxes",
+                            title: "LEGB Scope Hierarchy",
+                            boxes: ["BUILT-IN", "GLOBAL", "ENCLOSED", "LOCAL"]
+                        }
+                    ],
                     matchWords: ["local", "global", "built-in"]
                 }
             },
             {
-                id: "q5", chapterKey: "Chapter 11", marks: "3",
-                tags: ["DBMS", "RDBMS", "தரவுத்தளம்", "Database"],
+                id: "cs12_ch06_5m_04",
+                class_level: "12th",
+                subject: "Computer Science",
+                unit: "Unit 2: Core Python",
+                chapterKey: "Chapter 6",
+                marks: "5",
+                tags: ["while loop", "Flowchart", "பாய்வுப்படம்", "மடக்கு"],
                 ta: {
-                    chapter: "Chapter 11: தரவுத்தள கருத்துருக்கள்",
-                    question: "DBMS என்றால் என்ன? அதன் நன்மைகள் யாவை?",
-                    keywords: ["DBMS", "தரவுத்தளம்"],
-                    tips: ["தரவுத்தள மேலாண்மை அமைப்பு", "தரவு மிகைமை குறைப்பு", "தரவு பாதுகாப்பு"],
-                    answer: `<div class="nb-box"><span class="nb-underline">வரையறை:</span> தரவுத்தளத்தை உருவாக்க, மீட்டெடுக்க மற்றும் நிர்வகிக்க உதவும் மென்பொருளே <b>DBMS</b> ஆகும்.</div>`,
-                    matchWords: ["மென்பொருள்", "பாதுகாப்பு"]
+                    unit: "Unit 2: Core Python",
+                    chapter: "Chapter 6: Control Structures (கட்டுப்பாட்டுக் கட்டமைப்புகள்)",
+                    examTag: "PTA-2, Mar 2025, PTA-4",
+                    question: "while மடக்கை விளக்கும் பாய்வுப்படம் மற்றும் எடுத்துக்காட்டுடன் விவரி.",
+                    tips: ["நுழைவுச் சோதிப்பு மடக்கு", "நிபந்தனை சரி எனில் மடக்குத் தொகுதி இயங்கும்"],
+                    answer: "",
+                    render_type: "points_diagram",
+                    blocks: [
+                        { type: "point", text: "while மடக்கு ஒரு நுழைவுச் சோதிப்பு மடக்கு (Entry check loop); நிபந்தனை சரி எனில் மட்டுமே உள்ளே நுழையும்." },
+                        { type: "code", text: "i = 10\nwhile (i <= 15):\n    print(i, end='\\t')\n    i = i + 1" },
+                        {
+                            type: "runtime_flowchart",
+                            title: "while மடக்கு பாய்வுப்படம் (Runtime Flowchart)",
+                            steps: ["தொடக்கம் (Start)", "நிபந்தனை (Condition)", "சரி (True) ➔ மடக்குத் தொகுதி ➔ நிபந்தனை", "தவறு (False) ➔ முடிவு (Stop)"]
+                        }
+                    ],
+                    matchWords: ["நுழைவு", "நிபந்தனை", "while"]
                 },
                 en: {
-                    chapter: "Chapter 11: Database Concepts",
-                    question: "What is DBMS? List its advantages.",
-                    keywords: ["DBMS", "Database"],
-                    tips: ["Database Management System", "Reduces Redundancy"],
-                    answer: `<div class="nb-box"><span class="nb-underline">Definition:</span> Software that allows users to define, create and maintain a database is <b>DBMS</b>.</div>`,
-                    matchWords: ["software", "database"]
+                    unit: "Unit 2: Core Python",
+                    chapter: "Chapter 6: Control Structures",
+                    examTag: "PTA-2, Mar 2025, PTA-4",
+                    question: "Explain while loop with example and flowchart.",
+                    tips: ["Entry-check loop", "Executes while condition is True"],
+                    answer: "",
+                    render_type: "points_diagram",
+                    blocks: [
+                        { type: "point", text: "while loop is an entry-check loop; statements execute only while the condition evaluates to True." },
+                        { type: "code", text: "i = 10\nwhile (i <= 15):\n    print(i, end='\\t')\n    i = i + 1" },
+                        {
+                            type: "runtime_flowchart",
+                            title: "while Loop Flowchart",
+                            steps: ["Start", "Condition", "True ➔ Looping Statements ➔ Condition", "False ➔ Stop"]
+                        }
+                    ],
+                    matchWords: ["entry", "condition", "while"]
                 }
             }
         ];
 
         let questionBank = JSON.parse(localStorage.getItem("tn_cs_questions_cache")) || [...defaultQuestions];
         let filteredBank = [...questionBank];
-        let spanningTree = [{ qId: "q1", kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
+        let spanningTree = [{ qId: questionBank[0].id, kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
 
-        // =====================================================================
-        // 5. ADMIN PDF AUTO-CLEAN EXTRACTOR (ZERO USER PROMPTS)
-        // =====================================================================
-        function openPdfModal() {
-            if (!activeUser || activeUser.role !== 'admin') return;
-            document.getElementById("pdfModal").classList.remove("hidden");
-        }
-        function closePdfModal() {
-            document.getElementById("pdfModal").classList.add("hidden");
-        }
-
-        function cleanPageNoise(pageText) {
-            let cleaned = pageText;
-            const noisePatterns = [
-                /TECH\s*EASY\s*XII\s*[-–]\s*COMPUTER\s*SCIENCE/gi,
-                /TECH\s*EASY\s*XII\s*[-–]\s*கணினி\s*அறிவியல்/gi,
-                /TECH\s*EASY\s*XII\s*[-–]\s*\d*/gi,
-                /A\.?\s*PRABHAKAR\s*[-–]?\s*\d{0,10}/gi,
-                /அ\.?\s*பிரபாகர்\s*[-–]?\s*\d{0,10}/gi,
-                /VIJAY\s*PUBLICATIONS[®]?\s*RASIPURAM\s*\d*/gi,
-                /விஜய்\s*பப்ளிகேஷன்ஸ்\s*இராசிபுரம்\s*\d*/gi,
-                /\.\.\s*\d+\s*\.\./g,
-                /\bPage\s*\d+\b/gi,
-                /\b\d+\.\s*(FUNCTION|DATA ABSTRACTION|SCOPING|ALGORITHMIC STRATEGIES|VARIABLES AND OPERATORS|CONTROL STRUCTURES|PYTHON FUNCTIONS|STRINGS AND STRING MANIPULATION|LISTS, TUPLES, SETS AND DICTIONARY|PYTHON CLASSES AND OBJECTS|DATABASE CONCEPTS|STRUCTURED QUERY LANGUAGE|PYTHON AND CSV FILES|IMPORTING C\+\+ PROGRAMS IN PYTHON|DATA MANIPULATION THROUGH SQL|DATA VISUALIZATION USING PYTHON)\b/gi,
-                /\b\d+\.\s*(செயற்கூறு|தரவு அருவமாக்கம்|வரையெல்லை|நெறிமுறையின் யுக்திகள்|பைத்தான் அறிமுகம்|கட்டுப்பாட்டு கட்டமைப்புகள்|பைத்தான் செயற்கூறுகள்|சரங்கள் மற்றும் சரங்களை கையாளுதல்|List, Tuples, Set.*Dictionary|இனக்குழுக்கள் மற்றும் பொருள்கள்|தரவுதள கருத்துருக்கள்|வினவல் அமைப்பு மொழி|பைத்தான் மற்றும் CSV|பைத்தானில் C\+\+ நிரல்கள்|SQL மூலம் தரவு கையாளுதல்|தரவு காட்சிப்படுத்தல்)\b/gi
-            ];
-            noisePatterns.forEach(r => { cleaned = cleaned.replace(r, " "); });
-            return cleaned.replace(/\s+/g, " ").trim();
-        }
-
-        let detectedPdfAuthor = "";
-
-        async function processFullGuidePdf(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const statusBox = document.getElementById("pdfStatusBox");
-
-            statusBox.innerText = "⏳ PDF வாசிக்கப்படுகிறது... முன்னுரை, ஆசிரியர் பெயர் & பக்க எண்கள் தானாக நீக்கப்படுகின்றன...";
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-            // Auto-detect Tamil vs English medium and author name from first 5 pages
-            let frontPagesText = "";
-            for (let i = 1; i <= Math.min(5, pdf.numPages); i++) {
-                const p = await pdf.getPage(i);
-                const c = await p.getTextContent();
-                frontPagesText += " " + c.items.map(item => item.str).join(" ");
-            }
-            const tamilChars = (frontPagesText.match(/[\u0B80-\u0BFF]/g) || []).length;
-            const lang = tamilChars > 80 ? 'ta' : 'en';
-
-            const authorMatch = frontPagesText.match(/(?:Author|Prepared by|With Best Wishes|வாழ்த்துகளுடன்|ஆசிரியர்)[:\s-]*([A-Za-z.\s\u0B80-\u0BFF]{4,40})/i);
-            detectedPdfAuthor = authorMatch ? authorMatch[1].trim() : file.name.replace(/\.pdf$/i, "");
-
-            // Automatically skip front matter (Preface/Contents) and Annexure Practicals/Question Paper
-            let stitchedStream = "";
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const content = await page.getTextContent();
-                const rawPage = content.items.map(item => item.str).join(" ");
-                // Skip cover, preface, table of contents, and practical exercises pages automatically
-                if (i <= 5 && /(PREFACE|CONTENTS|முன்னுரை|பொருளடக்கம்|VIJAY PUBLICATIONS)/i.test(rawPage)) continue;
-                if (/(PRACTICAL EXERCISES|செய்முறை பயிற்சிகள்|MARCH - 2025\s*PART)/i.test(rawPage)) break;
-                stitchedStream += " " + cleanPageNoise(rawPage);
-            }
-
-            extractedBatchItems = parseStitchedTextIntoQA(stitchedStream, lang);
-            statusBox.innerText = `✅ மொத்தம் ${extractedBatchItems.length} சுத்திகரிக்கப்பட்ட வினா-விடைகள் (${lang === 'ta' ? 'தமிழ்' : 'English'}) பிரித்தெடுக்கப்பட்டுள்ளன!`;
-            document.getElementById("pdfPreviewArea").value = extractedBatchItems.slice(0, 6).map((item, idx) =>
-                `[${idx + 1}] (${item.chapterKey} | ${item.marks} Marks)\nQ: ${item[lang].question}\nA: ${item[lang].plainAnswer.substring(0, 110)}...\n`
-            ).join("\n");
-            document.getElementById("savePdfMasterBtn").disabled = extractedBatchItems.length === 0;
-        }
-
-        function reportAnswerToAdmin() {
-            const qObj = questionBank.find(q => q.id === currentQuestionId);
-            if (!qObj) return;
-            const reports = JSON.parse(localStorage.getItem("tn_cs_admin_reports")) || [];
-            reports.push({
-                qId: qObj.id,
-                question: (qObj[currentLang] || qObj.ta).question,
-                reportedBy: activeUser ? `${activeUser.name} (${activeUser.emis})` : "Student",
-                time: new Date().toLocaleString('ta-IN')
-            });
-            localStorage.setItem("tn_cs_admin_reports", JSON.stringify(reports));
-            showToast("🚩 இந்த விடையைச் சரிபார்க்குமாறு அட்மினுக்குத் தகவல் அனுப்பப்பட்டது!");
+        function showLoginError(msg) {
+            const errBox = document.getElementById("loginErrorBox");
+            errBox.innerText = msg;
+            errBox.classList.remove("hidden");
         }
 
         async function handlePortalLogin() {
@@ -822,10 +904,10 @@
                 return;
             }
 
-            // 1. Check Admin Login (10098604 / 1004)
+            // 1. Check Admin Login
             if (userId === ADMIN_ID) {
                 if (pass === ADMIN_PASS) {
-                    activeUser = { role: 'admin', emis: ADMIN_ID, name: 'Admin', school: 'All Schools' };
+                    activeUser = { role: 'admin', emis: ADMIN_ID, name: 'Admin', school: 'State Admin' };
                     document.getElementById("loginScreen").classList.add("hidden");
                     document.getElementById("adminDashboard").classList.remove("hidden");
                     await loadAdminAnalytics();
@@ -882,11 +964,15 @@
                 document.getElementById("firstTimeSetupBox").classList.remove("hidden");
             }
         }
-
-        function backToLoginStep1() {
-            document.getElementById("firstTimeSetupBox").classList.add("hidden");
-            document.getElementById("loginStep1").classList.remove("hidden");
-            document.getElementById("loginErrorBox").classList.add("hidden");
+        function completeFirstTimeRegistration() {
+            const sName = document.getElementById("newStudentName").value.trim();
+            const schName = document.getElementById("newSchoolName").value.trim();
+            if (!sName || !schName) {
+                showLoginError("⚠️ தயவுசெய்து உங்கள் பெயர் மற்றும் பள்ளியின் பெயர் இரண்டையும் உள்ளிடவும்.");
+                return;
+            }
+            const initialTree = [{ qId: questionBank[0].id, kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
+            enterStudentWorkspace(pendingNewEmis, sName, schName, initialTree, true);
         }
 
         async function completeFirstTimeRegistration() {
@@ -927,7 +1013,7 @@
         // =====================================================================
         function startGuestDemoMode() {
             activeUser = { role: 'guest', emis: 'GUEST', name: 'Guest Student', school: 'Demo Mode' };
-            spanningTree = [{ qId: "q1", kwTa: "தொடக்கம் (Demo)", kwEn: "Start (Demo)", parentId: null, completed: false }];
+            spanningTree = [{ qId: questionBank[0].id, kwTa: "தொடக்கம் (Demo)", kwEn: "Start (Demo)", parentId: null, completed: false }];
             filteredBank = questionBank.slice(0, 5); // Restrict to 5 sample questions
 
             document.getElementById("studentHeaderBadge").innerText = "🎯 Guest / Demo Mode (5 வினாக்கள்)";
@@ -1068,9 +1154,14 @@
                 if (data && data.length > 0) {
                     data.forEach(row => {
                         const idx = questionBank.findIndex(q => q.id === row.id);
+                        const rawChap = row.ta_data?.chapterKey || row.ta_data?.chapter || row.en_data?.chapter || "Chapter 1";
+                        const chapMatch = rawChap.match(/Chapter\s*\d+/i);
                         const obj = {
                             id: row.id,
-                            chapterKey: row.ta_data?.chapterKey || row.en_data?.chapterKey || "Chapter 1",
+                            class_level: row.ta_data?.class_level || "12th",
+                            subject: row.ta_data?.subject || "Computer Science",
+                            unit: row.ta_data?.unit || "",
+                            chapterKey: chapMatch ? chapMatch[0] : "Chapter 1",
                             marks: row.ta_data?.marks || row.en_data?.marks || "2",
                             tags: row.tags || [],
                             ta: row.ta_data || row.en_data,
@@ -1148,9 +1239,27 @@
             currentTipStep = 0;
 
             const langData = qObj[currentLang] || qObj.ta || qObj.en;
+            const unitEl = document.getElementById("unitBadge");
+            if (langData.unit) {
+                unitEl.innerText = langData.unit;
+                unitEl.classList.remove("hidden");
+            } else {
+                unitEl.classList.add("hidden");
+            }
             document.getElementById("chapterBadge").innerText = langData.chapter;
             document.getElementById("marksBadge").innerText = qObj.marks === "PUB" ? "🏛️ பொதுத்தேர்வு வினா" : `🎯 ${qObj.marks || "2"} மதிப்பெண்`;
             document.getElementById("masterCountBadge").innerText = `மாஸ்டர் வினாக்கள்: ${questionBank.length}`;
+
+            // வினாவிற்கு அருகில் தேர்வுக் குறிப்பைக் (Exam Tag: Mar 2020, PTA-1 etc.) காட்டுதல்
+            const examBadge = document.getElementById("examTagBadge");
+            const examTagStr = Array.isArray(langData.exam_tags) ? langData.exam_tags.join(", ") : (langData.examTag || "");
+            if (examTagStr && examTagStr.trim().length > 0) {
+                examBadge.innerText = `🏷️ ${examTagStr}`;
+                examBadge.classList.remove("hidden");
+            } else {
+                examBadge.innerText = "";
+                examBadge.classList.add("hidden");
+            }
 
             document.getElementById("questionDisplay").innerHTML = injectMasterKeywordLinks(langData.question, qObj.id);
             document.getElementById("studentAnswerInput").value = "";
@@ -1310,16 +1419,13 @@
             treeAside.className = "lg:col-span-4 bg-white rounded-2xl shadow-sm border-2 border-indigo-400 p-4 sm:p-5 flex flex-col order-1 lg:row-span-2";
             qCol.className = "lg:col-span-8 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col justify-between order-2";
             ansCol.className = "lg:col-span-8 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col order-3";
-            document.getElementById("spanningTreeContainer").classList.remove("max-h-[340px]");
-
-            renderQuestion(spanningTree[0].qId);
+            showToast("🧠 நினைவு கூர்தல் முறை இயக்கப்பட்டது.");
         }
 
         function exitRecallMode() {
             isRecallMode = false;
             document.getElementById("recallBanner").classList.add("hidden");
 
-            // Restore Default Layout: Left (Q&Input), Right (Answer), Bottom (Tree)
             const treeAside = document.getElementById("treeAsideCol");
             const qCol = document.getElementById("questionInputCol");
             const ansCol = document.getElementById("modelAnswerCol");
@@ -1327,20 +1433,64 @@
             qCol.className = "lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col justify-between order-1";
             ansCol.className = "lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col order-2";
             treeAside.className = "lg:col-span-12 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-5 flex flex-col order-3";
-            document.getElementById("spanningTreeContainer").classList.add("max-h-[340px]");
         }
 
         function revealNextTip() {
-            const qObj = questionBank.find(q => q.id === currentQuestionId);
-            const tips = (qObj[currentLang] || qObj.ta).tips || [];
+            const qObj = questionBank.find(q => q.id === currentQuestionId) || questionBank[0];
+            const langData = qObj[currentLang] || qObj.ta;
+            const tips = langData.tips || [];
+            if (tips.length === 0) return showToast("இந்த வினாவிற்குக் குறிப்புகள் இல்லை.", "error");
+
             document.getElementById("tipsBox").classList.remove("hidden");
+            const container = document.getElementById("tipsChipsContainer");
             if (currentTipStep < tips.length) {
                 const chip = document.createElement("span");
-                chip.className = "px-3 py-1 bg-amber-300 text-slate-950 text-xs sm:text-sm font-extrabold rounded-full";
-                chip.innerText = `${currentTipStep + 1}. ${tips[currentTipStep]}`;
-                document.getElementById("tipsChipsContainer").appendChild(chip);
+                chip.className = "px-3 py-1 bg-amber-300 text-slate-950 text-xs font-extrabold rounded-full shadow-2xs";
+                chip.innerText = `💡 ${tips[currentTipStep]}`;
+                container.appendChild(chip);
                 currentTipStep++;
+            } else {
+                showToast("அனைத்துக் குறிப்புகளும் காட்டப்பட்டுவிட்டன.");
             }
+        }
+
+        async function reportAnswerToAdmin() {
+            const qObj = questionBank.find(q => q.id === currentQuestionId);
+            if (!qObj) return;
+            showToast("🚩 இந்த வினாவின் விடை குறித்த திருத்தக் கோரிக்கை அட்மினுக்கு அனுப்பப்பட்டது!");
+        }
+
+        function buildStructuredNotebookHTML(langData, qId) {
+            // If structured blocks exist (from SQL / JSON seed), render boxes, points, tables, and runtime diagrams dynamically
+            if (langData.render_type === "definition_box" && langData.answer) {
+                return `<div class="nb-box"><span class="nb-underline">விடை:</span> ${injectMasterKeywordLinks(langData.answer, qId)}</div>`;
+            }
+            if (Array.isArray(langData.blocks) && langData.blocks.length > 0) {
+                return langData.blocks.map(blk => {
+                    if (blk.type === "point") {
+                        return `<p class="my-1.5">• ${injectMasterKeywordLinks(blk.text, qId)}</p>`;
+                    } else if (blk.type === "code") {
+                        return `<div class="nb-code">${blk.text.replace(/\n/g, "<br>")}</div>`;
+                    } else if (blk.type === "comparison_table") {
+                        const ths = blk.headers.map(h => `<th>${h}</th>`).join("");
+                        const trs = blk.rows.map(r => `<tr>${r.map(c => `<td>${injectMasterKeywordLinks(c, qId)}</td>`).join("")}</tr>`).join("");
+                        return `<table class="nb-table"><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+                    } else if (blk.type === "runtime_flowchart") {
+                        const nodes = blk.steps.map((st, idx) => {
+                            const arrow = idx < blk.steps.length - 1 ? `<span class="flow-arrow">➔</span>` : "";
+                            return `<span class="flow-node">${st}</span>${arrow}`;
+                        }).join("");
+                        return `<div class="runtime-diagram"><div class="runtime-diagram-title">📊 ${blk.title}</div><div class="flow-row">${nodes}</div></div>`;
+                    } else if (blk.type === "nested_boxes") {
+                        const boxes = blk.boxes.map((b, idx) => `<div class="nested-box" style="margin-left:${idx * 16}px">${b}</div>`).join("");
+                        return `<div class="runtime-diagram"><div class="runtime-diagram-title">📦 ${blk.title}</div><div class="nested-box-wrap">${boxes}</div></div>`;
+                    } else if (blk.type === "image" && blk.url) {
+                        return `<div class="my-2"><img src="${blk.url}" alt="${blk.caption || 'Diagram'}" class="max-w-full rounded-xl border-2 border-slate-300"></div>`;
+                    }
+                    return "";
+                }).join("");
+            }
+            return injectMasterKeywordLinks(langData.answer || "", qId);
         }
 
         function compareAndShowAnswer() {
@@ -1349,7 +1499,7 @@
             const userText = document.getElementById("studentAnswerInput").value.trim().toLowerCase();
 
             document.getElementById("answerPlaceholderCard").classList.add("hidden");
-            document.getElementById("modelAnswerContent").innerHTML = injectMasterKeywordLinks(langData.answer, qObj.id);
+            document.getElementById("modelAnswerContent").innerHTML = buildStructuredNotebookHTML(langData, qObj.id);
             document.getElementById("modelAnswerBox").classList.remove("hidden");
 
             const feedbackBox = document.getElementById("recallFeedbackBox");
@@ -1440,8 +1590,20 @@
         // =====================================================================
         // 5. ADMIN PDF CLEAN EXTRACTOR & CROSS-PAGE STITCHER
         // =====================================================================
-        function openPdfModal() { document.getElementById("pdfModal").classList.remove("hidden"); }
-        function closePdfModal() { document.getElementById("pdfModal").classList.add("hidden"); }
+        // 5. ADMIN PDF CLEAN EXTRACTOR & CROSS-PAGE STITCHER (MULTI-FILE)
+        // =====================================================================
+        function openPdfModal() {
+            if (!activeUser || activeUser.role !== 'admin') return;
+            extractedBatchItems = [];
+            detectedPdfAuthors = [];
+            document.getElementById("pdfPreviewArea").value = "";
+            document.getElementById("savePdfMasterBtn").disabled = true;
+            document.getElementById("pdfStatusBox").innerText = "PDF கோப்புகளைத் தேர்ந்தெடுத்தவுடன் தானியங்கி சுத்திகரிப்பு தொடங்கும்...";
+            document.getElementById("pdfModal").classList.remove("hidden");
+        }
+        function closePdfModal() {
+            document.getElementById("pdfModal").classList.add("hidden");
+        }
 
         function cleanPageNoise(pageText) {
             let cleaned = pageText;
@@ -1449,9 +1611,12 @@
                 /TECH\s*EASY\s*XII\s*[-–]\s*COMPUTER\s*SCIENCE/gi,
                 /TECH\s*EASY\s*XII\s*[-–]\s*கணினி\s*அறிவியல்/gi,
                 /TECH\s*EASY\s*XII\s*[-–]\s*\d*/gi,
-                /A\.?\s*PRABHAKAR\s*[-–]?\s*9442979144/gi,
-                /அ\.?\s*பிரபாகர்\s*[-–]?\s*9442979144/gi,
+                /A\.?\s*PRABHAKAR\s*[-–]?\s*\d{0,10}/gi,
+                /அ\.?\s*பிரபாகர்\s*[-–]?\s*\d{0,10}/gi,
+                /VIJAY\s*PUBLICATIONS[®]?\s*RASIPURAM\s*\d*/gi,
+                /விஜய்\s*பப்ளிகேஷன்ஸ்\s*இராசிபுரம்\s*\d*/gi,
                 /\.\.\s*\d+\s*\.\./g,
+                /\bPage\s*\d+\b/gi,
                 /\b\d+\.\s*(FUNCTION|DATA ABSTRACTION|SCOPING|ALGORITHMIC STRATEGIES|VARIABLES AND OPERATORS|CONTROL STRUCTURES|PYTHON FUNCTIONS|STRINGS AND STRING MANIPULATION|LISTS, TUPLES, SETS AND DICTIONARY|PYTHON CLASSES AND OBJECTS|DATABASE CONCEPTS|STRUCTURED QUERY LANGUAGE|PYTHON AND CSV FILES|IMPORTING C\+\+ PROGRAMS IN PYTHON|DATA MANIPULATION THROUGH SQL|DATA VISUALIZATION USING PYTHON)\b/gi,
                 /\b\d+\.\s*(செயற்கூறு|தரவு அருவமாக்கம்|வரையெல்லை|நெறிமுறையின் யுக்திகள்|பைத்தான் அறிமுகம்|கட்டுப்பாட்டு கட்டமைப்புகள்|பைத்தான் செயற்கூறுகள்|சரங்கள் மற்றும் சரங்களை கையாளுதல்|List, Tuples, Set.*Dictionary|இனக்குழுக்கள் மற்றும் பொருள்கள்|தரவுதள கருத்துருக்கள்|வினவல் அமைப்பு மொழி|பைத்தான் மற்றும் CSV|பைத்தானில் C\+\+ நிரல்கள்|SQL மூலம் தரவு கையாளுதல்|தரவு காட்சிப்படுத்தல்)\b/gi
             ];
@@ -1460,42 +1625,74 @@
         }
 
         async function processFullGuidePdf(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const lang = document.getElementById("pdfLangSelect").value;
-            const startP = parseInt(document.getElementById("startPageInput").value) || 6;
-            const endP = parseInt(document.getElementById("endPageInput").value) || 185;
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
             const statusBox = document.getElementById("pdfStatusBox");
+            const saveBtn = document.getElementById("savePdfMasterBtn");
 
-            statusBox.innerText = "⏳ PDF வாசிக்கப்படுகிறது மற்றும் ஆசிரியர் பெயர்/பக்க எண்கள் நீக்கப்படுகின்றன...";
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            const maxPage = Math.min(endP, pdf.numPages);
+            extractedBatchItems = [];
+            detectedPdfAuthors = [];
+            saveBtn.disabled = true;
 
-            let stitchedStream = "";
-            let frontPagesText = "";
-            for (let i = 1; i <= Math.min(3, pdf.numPages); i++) {
-                const p = await pdf.getPage(i);
-                const c = await p.getTextContent();
-                frontPagesText += " " + c.items.map(item => item.str).join(" ");
+            try {
+                for (let fIdx = 0; fIdx < files.length; fIdx++) {
+                    const file = files[fIdx];
+                    statusBox.innerText = `⏳ கோப்பு ${fIdx + 1}/${files.length} ("${file.name}") வாசிக்கப்படுகிறது...`;
+
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+                    let frontPagesText = "";
+                    for (let i = 1; i <= Math.min(5, pdf.numPages); i++) {
+                        const p = await pdf.getPage(i);
+                        const c = await p.getTextContent();
+                        frontPagesText += " " + c.items.map(item => item.str).join(" ");
+                    }
+
+                    const tamilChars = (frontPagesText.match(/[\u0B80-\u0BFF]/g) || []).length;
+                    const lang = tamilChars > 80 ? 'ta' : 'en';
+
+                    const authorMatch = frontPagesText.match(/(?:Author|Prepared by|With Best Wishes|வாழ்த்துகளுடன்|ஆசிரியர்)[:\s-]*([A-Za-z.\s\u0B80-\u0BFF]{4,40})/i);
+                    const authorName = authorMatch ? authorMatch[1].trim() : file.name.replace(/\.pdf$/i, "");
+                    if (!detectedPdfAuthors.includes(authorName)) {
+                        detectedPdfAuthors.push(authorName);
+                    }
+
+                    let stitchedStream = "";
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const content = await page.getTextContent();
+                        const rawPage = content.items.map(item => item.str).join(" ");
+                        if (i <= 5 && /(PREFACE|CONTENTS|முன்னுரை|பொருளடக்கம்|VIJAY PUBLICATIONS)/i.test(rawPage)) continue;
+                        if (/(PRACTICAL EXERCISES|செய்முறை பயிற்சிகள்|MARCH - 2025\s*PART)/i.test(rawPage)) break;
+                        stitchedStream += " " + cleanPageNoise(rawPage);
+                    }
+
+                    const itemsFromFile = parseStitchedTextIntoQA(stitchedStream, lang);
+                    extractedBatchItems.push(...itemsFromFile);
+                }
+
+                statusBox.innerText = `✅ ${files.length} PDF கோப்புகளிலிருந்து மொத்தம் ${extractedBatchItems.length} சுத்திகரிக்கப்பட்ட வினா-விடைகள் பிரித்தெடுக்கப்பட்டுள்ளன!`;
+                document.getElementById("pdfPreviewArea").value = extractedBatchItems.slice(0, 8).map((item, idx) => {
+                    const d = item.ta || item.en;
+                    const tagPart = d.examTag ? ` [${d.examTag}]` : "";
+                    return `[${idx + 1}] (${item.chapterKey} | ${item.marks} Marks)${tagPart}\nQ: ${d.question}\nA: ${(d.plainAnswer || "").substring(0, 110)}...\n`;
+                }).join("\n");
+                saveBtn.disabled = extractedBatchItems.length === 0;
+            } catch (err) {
+                console.error("PDF Parse Error:", err);
+                statusBox.innerText = "⚠️ PDF கோப்பைப் படிப்பதில் சிக்கல் ஏற்பட்டது. கோப்பில் தேர்ந்தெடுக்கக்கூடிய உரை (Text) உள்ளதா எனச் சரிபார்க்கவும்.";
             }
-            // Auto-detect author/publisher from front pages for automatic credit
-            const authorMatch = frontPagesText.match(/(?:Author|Prepared by|With Best Wishes|வாழ்த்துகளுடன்|ஆசிரியர்)[:\s-]*([A-Za-z.\s\u0B80-\u0BFF]{4,40})/i);
-            const detectedAuthor = authorMatch ? authorMatch[1].trim() : file.name.replace(/\.pdf$/i, "");
-            document.getElementById("pdfAuthorCreditInput").value = detectedAuthor;
+        }
 
-            for (let i = startP; i <= maxPage; i++) {
-                const page = await pdf.getPage(i);
-                const content = await page.getTextContent();
-                stitchedStream += " " + cleanPageNoise(content.items.map(item => item.str).join(" "));
-            }
-
-            extractedBatchItems = parseStitchedTextIntoQA(stitchedStream, lang);
-            statusBox.innerText = `✅ மொத்தம் ${extractedBatchItems.length} சுத்திகரிக்கப்பட்ட வினா-விடைகள் பிரித்தெடுக்கப்பட்டுள்ளன!`;
-            document.getElementById("pdfPreviewArea").value = extractedBatchItems.slice(0, 6).map((item, idx) =>
-                `[${idx + 1}] (${item.chapterKey} | ${item.marks} Marks)\nQ: ${item[lang].question}\nA: ${item[lang].plainAnswer.substring(0, 110)}...\n`
-            ).join("\n");
-            document.getElementById("savePdfMasterBtn").disabled = extractedBatchItems.length === 0;
+        // தேர்வுக் குறிப்புகளை (Sep 2021, PTA-1, Mar 2025 போன்றவை) பிரித்தெடுக்கும் உதவிச் செயற்கூறு
+        function extractExamTag(text) {
+            const tagRegex = /\((?:[^()]*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|PTA|MQP|மார்ச்|செப்டம்பர்|மே|ஜூலை|ஜூன்|பிப்ரவரி)[^()]*)\)/gi;
+            const matches = text.match(tagRegex) || [];
+            const cleanedTags = matches.map(m => m.replace(/^\(|\)$/g, "").trim()).filter(Boolean);
+            const stripRegex = new RegExp(tagRegex.source, "gi");
+            const strippedText = text.replace(stripRegex, " ").replace(/\s+/g, " ").trim();
+            return { examTag: cleanedTags.join(", "), cleanText: strippedText };
         }
 
         function parseStitchedTextIntoQA(fullText, lang) {
@@ -1526,7 +1723,7 @@
                 { key: "Chapter 13", pat: /\b13\s+(PYTHON AND CSV|பைத்தான் மற்றும் CSV)\b/i },
                 { key: "Chapter 14", pat: /\b14\s+(IMPORTING C\+\+|பைத்தானில் C\+\+)\b/i },
                 { key: "Chapter 15", pat: /\b15\s+(DATA MANIPULATION|SQL மூலம் தரவுகளை)\b/i },
-                { key: "Chapter 16", pat: /\b16\s+(DATA VISUALIZATION|தரவுக் காட்சிப்படுத்துதல்)\b/i }
+                { key: "Chapter 16", pat: /\b16\s+(DATA VISUALIZATION|தரவுக் காட்சிப்படுத்தல்)\b/i }
             ];
             chapterMap.forEach(ch => { markedText = markedText.replace(ch.pat, ` ###CHAP_${ch.key}### `); });
 
@@ -1538,14 +1735,43 @@
                     const qBlocks = token.split(/(?=\b\d{1,2}\.\s+[A-Zஅ-ஔ])/g);
                     qBlocks.forEach(blk => {
                         const cleanBlk = blk.trim();
-                        const qEndMatch = cleanBlk.match(/^(\d{1,2}\.\s+.*?(?:\?|\(PTA-\d\)|\(Mar \d+\)|\(Sep \d+\)|\(Jul \d+\)|\(Jun \d+\)|\(May \d+\)|எழுதுக\.|விளக்குக\.|விவரி\.|வேறுபடுத்துக\.|தருக\.|வரைக\.|Explain\.|Define\.|Differentiate\.|Write.*?\.)\s*)(.*)$/is);
-                        if (qEndMatch && qEndMatch[2].trim().length > 15) {
-                            const questionStr = qEndMatch[1].replace(/^\d{1,2}\.\s+/, "").trim();
-                            const answerStr = qEndMatch[2].trim();
+                        const qEndMatch = cleanBlk.match(/^(\d{1,2}\.\s+.*?(?:\?|எழுதுக\.|விளக்குக\.|விவரி\.|வேறுபடுத்துக\.|தருக\.|வரைக\.|Explain\.|Define\.|Differentiate\.|Write.*?\.)(?:\s*(?:Give an example\.|எடுத்துக்காட்டு தருக\.))?)\s*(.*)$/is);
+                        if (qEndMatch && qEndMatch[2].trim().length > 10) {
+                            let rawQuestion = qEndMatch[1].replace(/^\d{1,2}\.\s+/, "").trim();
+                            let rawAnswer = qEndMatch[2].trim();
+
+                            // வினா மற்றும் விடையில் உள்ள தேர்வுக் குறிப்புகளைப் பிரித்தல்
+                            const qExtracted = extractExamTag(rawQuestion);
+                            const aExtracted = extractExamTag(rawAnswer);
+
+                            // "Give an example." விடையின் தொடக்கத்தில் இருந்தால் வினாவின் இறுதியில் இணைத்தல்
+                            let questionStr = qExtracted.cleanText;
+                            let answerStr = aExtracted.cleanText;
+                            const examplePromptMatch = answerStr.match(/^(Give an example\.|எடுத்துக்காட்டு தருக\.?)\s*/i);
+                            if (examplePromptMatch) {
+                                if (!questionStr.toLowerCase().includes(examplePromptMatch[1].toLowerCase())) {
+                                    questionStr = `${questionStr} ${examplePromptMatch[1].trim()}`;
+                                }
+                                answerStr = answerStr.replace(examplePromptMatch[0], "").trim();
+                            }
+
+                            const combinedExamTag = Array.from(new Set([...qExtracted.examTag.split(","), ...aExtracted.examTag.split(",")]))
+                                .map(s => s.trim()).filter(Boolean).join(", ");
+
                             const keywords = questionStr.replace(/[?.,()]/g, "").split(/\s+/).filter(w => w.length > 4).slice(0, 6);
-                            const id = `guide_${lang}_${currentChapter.replace(/\s+/g, '')}_${currentMarks}_${Date.now()}_${results.length}`;
+                            const id = `guide_${lang}_${currentChapter.replace(/\s+/g, '')}_${currentMarks}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
                             const formattedHTML = formatPdfAnswerLikeGuide(answerStr);
-                            const payload = { chapter: currentChapter, chapterKey: currentChapter, marks: currentMarks, question: questionStr, tips: keywords, answer: formattedHTML, plainAnswer: answerStr, matchWords: keywords };
+                            const payload = {
+                                chapter: currentChapter,
+                                chapterKey: currentChapter,
+                                marks: currentMarks,
+                                examTag: combinedExamTag,
+                                question: questionStr,
+                                tips: keywords,
+                                answer: formattedHTML,
+                                plainAnswer: answerStr,
+                                matchWords: keywords
+                            };
                             results.push({ id, chapterKey: currentChapter, marks: currentMarks, tags: keywords, ta: lang === 'ta' ? payload : null, en: lang === 'en' ? payload : null });
                         }
                     });
@@ -1554,14 +1780,12 @@
             return results;
         }
 
-        // Format PDF answer with Differentiate tables, Syntax boxes, and Examples just like the guide
         function formatPdfAnswerLikeGuide(rawAns) {
             let formatted = rawAns
                 .replace(/(Syntax:|தொடரியல்:|பொதுவடிவம்:)/gi, `<div class="nb-syntax-box"><span class="nb-underline">$1</span>`)
                 .replace(/(Example:|எடுத்துக்காட்டு:|எ\.கா:|Output:|வெளியீடு:)/gi, `</div><div class="nb-code"><span class="nb-underline">$1</span>`)
                 .replace(/(➤|✓|❖|►|•)/g, `<br>$1 `);
 
-            // If it contains pipe-delimited table rows from PDF (e.g., | List | Tuple |), convert to HTML table
             if (formatted.includes("|")) {
                 const parts = formatted.split("|").map(s => s.trim()).filter(Boolean);
                 if (parts.length >= 4) {
@@ -1585,8 +1809,7 @@
             const statusBox = document.getElementById("pdfStatusBox");
             statusBox.innerText = "⏳ Supabase மாஸ்டரில் சேமிக்கப்படுகிறது...";
 
-            // Automatically add detected PDF Author to About & Credits list
-            registerNewAuthorCredit(detectedPdfAuthor);
+            detectedPdfAuthors.forEach(author => registerNewAuthorCredit(author));
 
             extractedBatchItems.forEach(item => {
                 if (!item.ta) item.ta = item.en;
