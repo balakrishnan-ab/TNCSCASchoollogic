@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12th CS - EMIS Student & Admin Mind Map Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Kavivanar&family=Noto+Sans+Tamil:wght@500;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+            color: #020617;
+            -webkit-font-smoothing: antialiased;
+        }
+        .tree-ul {
+            list-style-type: none;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .tree-ul::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0.55rem;
+            border-left: 2.5px solid #64748b;
+            height: 100%;
+        }
+        .tree-li {
+            margin: 0.85rem 0;
+            position: relative;
+        }
+        .tree-li::before {
+            content: '';
+            position: absolute;
+            top: 1.15rem;
+            left: -0.95rem;
+            border-top: 2.5px solid #64748b;
+            width: 0.95rem;
+        }
+        .keyword-chip {
+            color: #020617;
+            background-color: #bfdbfe;
+            padding: 2px 7px;
+            border-radius: 6px;
+            cursor: pointer;
+            border-bottom: 2.5px solid #1d4ed8;
+            font-weight: 800;
+            transition: all 0.2s ease;
+            display: inline;
+        }
+        .keyword-chip:hover {
+            background-color: #1d4ed8;
+            color: #ffffff;
+        }
+        .notebook-paper {
+            font-family: 'Kavivanar', 'Patrick Hand', 'Noto Sans Tamil', cursive;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #020617;
+            line-height: 2.2rem;
+            padding: 1.25rem 1.5rem 1.5rem 3.25rem;
+            position: relative;
+            background-color: #fffef9;
+            background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 35px, #94a3b8 36px);
+            background-position: 0 12px;
+        }
+        .notebook-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 2.35rem;
+            width: 2.5px;
+            background-color: #ef4444;
+        }
+        .notebook-paper[contenteditable="true"] {
+            outline: 2.5px dashed #d97706;
+            background-color: #fefce8;
+        }
+        .nb-box {
+            border: 2px solid #1d4ed8;
+            background-color: rgba(219, 234, 254, 0.85);
+            padding: 0.55rem 0.9rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            color: #020617;
+            font-weight: 700;
+        }
+        .nb-underline {
+            text-decoration: underline;
+            text-decoration-color: #b91c1c;
+            text-decoration-thickness: 2.5px;
+            font-weight: 800;
+            color: #7f1d1d;
+        }
+        .nb-code {
+            border: 2px dashed #047857;
+            background-color: rgba(209, 250, 229, 0.9);
+            padding: 0.55rem 0.9rem;
+            border-radius: 0.5rem;
+            margin: 0.65rem 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.98rem;
+            font-weight: 700;
+            line-height: 1.55rem;
+            color: #022c22;
+        }
+        /* PDF Differentiate Table & Syntax Styling */
+        .nb-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+            font-size: 0.92rem;
+            background: #ffffff;
+        }
+        .nb-table th {
+            background-color: #1e3a8a;
+            color: #ffffff;
+            padding: 8px 10px;
+            border: 1.5px solid #1e3a8a;
+            text-align: left;
+            font-weight: 800;
+        }
+        .nb-table td {
+            padding: 8px 10px;
+            border: 1.5px solid #94a3b8;
+            vertical-align: top;
+            color: #020617;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        .nb-syntax-box {
+            border-left: 4px solid #7c3aed;
+            background-color: #f5f3ff;
+            padding: 0.5rem 0.85rem;
+            margin: 0.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.94rem;
+            font-weight: 700;
+            line-height: 1.5rem;
+            color: #2e1065;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-950 flex flex-col min-h-screen">
+
+    <!-- =====================================================================
+         1. உள்நுழைவுத் திரை (LOGIN PORTAL - Student EMIS & Admin)
+         ===================================================================== -->
+    <div id="loginScreen" class="fixed inset-0 bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border-2 border-blue-200">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-100 text-blue-800 text-2xl font-extrabold mb-3 shadow-xs">
+                    🌳
+                </div>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-950">12-ஆம் வகுப்பு கணினி அறிவியல்</h1>
+                <p class="text-xs sm:text-sm font-bold text-slate-600 mt-1">மைண்ட் மேப் & நினைவாற்றல் கற்றல் தளம்</p>
+            </div>
+
+            <!-- Login Alert Message -->
+            <div id="loginErrorBox" class="hidden mb-4 p-3 rounded-xl bg-rose-100 border-2 border-rose-400 text-rose-950 text-xs font-extrabold"></div>
+
+            <!-- Step 1: EMIS & Password Form -->
+            <div id="loginStep1" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">பயனர் எண் (மாணவர் EMIS எண்):</label>
+                    <input type="text" id="loginUserId" maxlength="15" placeholder="உங்கள் EMIS எண்ணை உள்ளிடவும்"
+                        class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-blue-700 focus:outline-none text-base font-extrabold text-slate-950">
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">கடவுச்சொல் (Password):</label>
+                    <input type="password" id="loginPassword" maxlength="10" placeholder="EMIS முதல் 2 + கடைசி 2 இலக்கங்கள்"
+                        class="w-full px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-blue-700 focus:outline-none text-base font-extrabold text-slate-950">
+                    <p class="text-[11px] font-bold text-slate-500 mt-1">
+                        💡 குறிப்பு: EMIS எண் <b>20</b>145678<b>90</b> எனில் கடவுச்சொல் <b>2090</b> ஆகும்.
+                    </p>
+                </div>
+                <button onclick="handlePortalLogin()" id="loginSubmitBtn"
+                    class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-base rounded-xl shadow-lg transition cursor-pointer">
+                    🔐 உள்நுழை (Login)
+                </button>
+                <div class="text-center pt-2">
+                    <button onclick="startGuestDemoMode()"
+                        class="text-xs font-extrabold text-blue-700 hover:text-blue-900 underline cursor-pointer bg-transparent border-0">
+                        🎯 மாதிரிப் பயிற்சி (Guest Mode - 5 வினாக்கள்)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: First-Time Student Registration (Name & School Name) -->
+            <div id="firstTimeSetupBox" class="hidden space-y-4">
+                <div class="p-3 bg-emerald-50 border-2 border-emerald-300 rounded-xl text-xs font-extrabold text-emerald-950">
+                    🎉 முதல்முறை உள்நுழைகிறீர்கள்! கீழே உங்கள் பெயர் மற்றும் பள்ளியின் பெயரை ஒருமுறை பதிவு செய்யவும்.
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">மாணவர் பெயர் (Student Name):</label>
+                    <input type="text" id="newStudentName" placeholder="உங்கள் முழுப் பெயரை உள்ளிடவும்"
+                        class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:outline-none text-sm font-extrabold text-slate-950">
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">பள்ளியின் பெயர் (School Name):</label>
+                    <input type="text" id="newSchoolName" placeholder="எ.கா: அரசு மேல்நிலைப் பள்ளி, ஈரோடு"
+                        class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-300 focus:border-emerald-600 focus:outline-none text-sm font-extrabold text-slate-950">
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="completeFirstTimeRegistration()"
+                        class="flex-1 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-sm rounded-xl shadow cursor-pointer">
+                        ✅ பதிவு செய்து தொடங்கு
+                    </button>
+                    <button onclick="backToLoginStep1()"
+                        class="px-4 py-3 bg-slate-200 hover:bg-slate-300 text-slate-900 font-extrabold text-sm rounded-xl cursor-pointer">
+                        பின்செல்
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         2. அட்மின் கட்டுப்பாட்டு அறை (ADMIN DASHBOARD - ID: 10098604)
+         ===================================================================== -->
+    <div id="adminDashboard" class="hidden min-h-screen bg-slate-100 flex flex-col">
+        <header class="bg-slate-900 text-white px-6 py-4 shadow-md flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <span class="px-3 py-1 bg-amber-400 text-slate-950 font-extrabold rounded-lg text-xs">ADMIN PANEL</span>
+                <h1 class="text-lg font-extrabold">12th CS - நிர்வாகி கட்டுப்பாட்டு அறை & பள்ளி வாரியான அறிக்கை</h1>
+            </div>
+            <div class="flex items-center gap-2.5">
+                <button onclick="openPdfModal()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm rounded-xl shadow cursor-pointer">
+                    📥 PDF பதிவேற்று (Master DB)
+                </button>
+                <button onclick="exportSchoolReportCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm rounded-xl shadow cursor-pointer">
+                    📊 Excel/CSV பதிவிறக்கு
+                </button>
+                <button onclick="logoutPortal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-extrabold text-sm rounded-xl cursor-pointer">
+                    🚪 வெளியேறு
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
+                    <div class="text-xs font-extrabold text-slate-500">மொத்தப் பள்ளிகள்</div>
+                    <div id="admTotalSchools" class="text-2xl font-extrabold text-blue-800 mt-1">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
+                    <div class="text-xs font-extrabold text-slate-500">மொத்த மாணவர்கள்</div>
+                    <div id="admTotalStudents" class="text-2xl font-extrabold text-emerald-700 mt-1">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
+                    <div class="text-xs font-extrabold text-slate-500">மாஸ்டர் வினா-விடைகள்</div>
+                    <div id="admTotalMasterQ" class="text-2xl font-extrabold text-purple-700 mt-1">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-xs">
+                    <div class="text-xs font-extrabold text-slate-500">பள்ளி வடிகட்டி (School Filter)</div>
+                    <select id="adminSchoolFilter" onchange="renderAdminTables()" class="mt-1 w-full px-2.5 py-1.5 border-2 border-slate-300 rounded-lg font-extrabold text-xs text-slate-950">
+                        <option value="ALL">அனைத்துப் பள்ளிகள் (All Schools)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- School-Wise Student Usage Report Table -->
+            <div class="bg-white rounded-2xl border-2 border-slate-300 shadow-sm overflow-hidden">
+                <div class="bg-slate-200 px-5 py-3 border-b-2 border-slate-300 flex justify-between items-center">
+                    <h2 class="font-extrabold text-slate-950 text-base">🏫 பள்ளி வாரியான மாணவர் கற்றல் விவரங்கள் (School-wise Student Progress)</h2>
+                    <button onclick="loadAdminAnalytics()" class="px-3 py-1 bg-blue-700 text-white rounded-lg text-xs font-extrabold cursor-pointer">🔄 புதுப்பி</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 border-b-2 border-slate-300 text-xs font-extrabold text-slate-900 uppercase">
+                                <th class="p-3">வ.எண்</th>
+                                <th class="p-3">பள்ளியின் பெயர் (School Name)</th>
+                                <th class="p-3">EMIS எண்</th>
+                                <th class="p-3">மாணவர் பெயர்</th>
+                                <th class="p-3">படித்த வினாக்கள்</th>
+                                <th class="p-3">நினைவாற்றல் தேர்ச்சி (✅)</th>
+                                <th class="p-3">கடைசியாகப் படித்த நேரம்</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminStudentTableBody" class="divide-y divide-slate-200 text-sm font-bold text-slate-900">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- =====================================================================
+         3. மாணவர் கற்றல் தளம் (STUDENT WORKSPACE)
+         ===================================================================== -->
+    <div id="studentWorkspace" class="hidden flex-col min-h-screen">
+        <header class="bg-gradient-to-r from-blue-800 via-indigo-800 to-blue-900 text-white shadow-md sticky top-0 z-30">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/15 p-2 rounded-xl text-xl">🌳</div>
+                    <div>
+                        <h1 id="appTitle" class="text-base sm:text-lg font-extrabold leading-tight">12-ஆம் வகுப்பு கணினி அறிவியல்</h1>
+                        <div class="flex flex-wrap items-center gap-2 text-xs text-blue-100 font-bold">
+                            <span id="studentHeaderBadge" class="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold"></span>
+                            <span id="schoolHeaderBadge" class="text-blue-200"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="openAboutModal()" title="எங்களைப் பற்றி & நன்றி"
+                        class="px-2.5 py-1 bg-amber-300 hover:bg-amber-400 text-slate-950 font-extrabold text-xs rounded-lg shadow cursor-pointer">
+                        ℹ️ நன்றி
+                    </button>
+                    <button onclick="toggleLanguage()" id="langBtn"
+                        class="px-3 py-1.5 bg-white/15 hover:bg-white/25 text-white font-extrabold text-sm rounded-lg border border-white/40 cursor-pointer">
+                        🌐 English
+                    </button>
+                    <button onclick="logoutPortal()"
+                        class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-sm rounded-lg shadow cursor-pointer">
+                        🚪 வெளியேறு
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Guest Demo Mode Banner -->
+        <div id="guestDemoBanner" class="hidden bg-amber-100 border-b-2 border-amber-400 px-4 py-2 text-xs sm:text-sm font-extrabold text-amber-950">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+                <span>🎯 <b>Guest / Demo Mode:</b> நீங்கள் 5 மாதிரி வினாக்களைப் பயிற்சி செய்து பார்க்கிறீர்கள். முழு பாடத்திட்டம் மற்றும் EMIS சேமிப்பிற்கு உள்நுழையவும்.</span>
+                <button onclick="logoutPortal()" class="px-3 py-1 bg-blue-800 text-white rounded-lg text-xs font-extrabold cursor-pointer">🔐 EMIS உள்நுழைவு</button>
+            </div>
+        </div>
+
+        <!-- Toast Banner -->
+        <div id="toastBanner" class="hidden max-w-4xl mx-auto mt-3 px-4 py-2.5 rounded-xl text-sm font-extrabold shadow-lg flex items-center justify-between z-40">
+            <span id="toastMessage"></span>
+            <button onclick="hideToast()" class="ml-4 font-extrabold">✕</button>
+        </div>
+
+        <!-- Chapter & Marks Filter Bar -->
+        <div class="bg-slate-200 border-b-2 border-slate-300 px-4 py-2">
+            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap gap-2">
+                    <select id="chapterFilter" onchange="applyStudentFilters()" class="px-3 py-1.5 rounded-lg border-2 border-slate-400 font-extrabold text-xs sm:text-sm text-slate-950 bg-white">
+                        <option value="ALL">📚 அனைத்துப் பாடங்கள் (All Chapters)</option>
+                        <option value="Chapter 1">பாடம் 1: செயற்கூறு (Functions)</option>
+                        <option value="Chapter 2">பாடம் 2: தரவு அருவமாக்கம்</option>
+                        <option value="Chapter 3">பாடம் 3: வரையெல்லை</option>
+                        <option value="Chapter 4">பாடம் 4: நெறிமுறையின் யுக்திகள்</option>
+                        <option value="Chapter 5">பாடம் 5: பைத்தான் அறிமுகம்</option>
+                        <option value="Chapter 6">பாடம் 6: கட்டுப்பாட்டு கட்டமைப்புகள்</option>
+                        <option value="Chapter 7">பாடம் 7: பைத்தான் செயற்கூறுகள்</option>
+                        <option value="Chapter 8">பாடம் 8: சரங்கள்</option>
+                        <option value="Chapter 9">பாடம் 9: List, Tuples, Set, Dictionary</option>
+                        <option value="Chapter 10">பாடம் 10: இனக்குழுக்கள்</option>
+                        <option value="Chapter 11">பாடம் 11: தரவுத்தள கருத்துருக்கள்</option>
+                        <option value="Chapter 12">பாடம் 12: வினவல் அமைப்பு மொழி (SQL)</option>
+                        <option value="Chapter 13">பாடம் 13: பைத்தான் மற்றும் CSV</option>
+                        <option value="Chapter 14">பாடம் 14: பைத்தானில் C++ நிரல்கள்</option>
+                        <option value="Chapter 15">பாடம் 15: SQL மூலம் தரவு கையாளுதல்</option>
+                        <option value="Chapter 16">பாடம் 16: தரவு காட்சிப்படுத்தல்</option>
+                    </select>
+                    <select id="marksFilter" onchange="applyStudentFilters()" class="px-3 py-1.5 rounded-lg border-2 border-slate-400 font-extrabold text-xs sm:text-sm text-slate-950 bg-white">
+                        <option value="ALL">🎯 அனைத்து வினாக்கள்</option>
+                        <option value="2">2 மதிப்பெண்</option>
+                        <option value="3">3 மதிப்பெண்</option>
+        <!-- Main Workspace: Default (Left: Q&Input, Right: Answer, Bottom: Tree) | Recall Mode (Left: Tree, Right: Q&A) -->
+        <main id="workspaceGrid" class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <!-- Question & Student Input Column -->
+            <section id="questionInputCol" class="lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col justify-between order-1">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <span id="chapterBadge" class="px-3 py-1 bg-blue-100 text-blue-950 text-xs sm:text-sm font-extrabold rounded-full border border-blue-300"></span>
+                        <span id="marksBadge" class="px-3 py-1 bg-amber-100 text-amber-950 text-xs font-extrabold rounded-full border border-amber-300"></span>
+                    </div>
+
+                    <div id="questionDisplay" class="text-lg sm:text-xl font-extrabold text-slate-950 leading-relaxed mb-4 p-4 bg-slate-100 rounded-xl border-2 border-slate-300"></div>
+
+                    <div class="mb-4">
+                        <label id="answerLabel" class="block text-xs font-extrabold text-slate-950 uppercase mb-1.5">உங்கள் விடை (தட்டச்சு அல்லது குரல் வழி):</label>
+                        <textarea id="studentAnswerInput" rows="4"
+                            class="w-full p-3.5 rounded-xl border-2 border-slate-400 focus:border-blue-700 text-base font-bold text-slate-950 resize-y"
+                            placeholder="உங்கள் விடையை இங்கே தட்டச்சு செய்யவும் அல்லது மைக் பொத்தானை அழுத்திப் பேசவும்..."></textarea>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button onclick="toggleVoiceInput()" id="micBtn"
+                            class="px-3 py-2 bg-rose-100 hover:bg-rose-200 text-rose-950 border-2 border-rose-300 rounded-xl font-extrabold text-xs sm:text-sm cursor-pointer">
+                            🎤 குரல் பதில்
+                        </button>
+                        <button onclick="revealNextTip()" id="tipBtn"
+                            class="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-300 rounded-xl font-extrabold text-xs sm:text-sm cursor-pointer">
+                            💡 குறிப்பு
+                        </button>
+                        <button onclick="compareAndShowAnswer()" id="compareBtn"
+                            class="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-extrabold text-xs sm:text-sm shadow-sm cursor-pointer">
+                            ✅ ஒப்பிடு / விடை காட்டு
+                        </button>
+                        <button onclick="goToNextQuestion()" id="nextBtn"
+                            class="px-3 py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-extrabold text-xs sm:text-sm shadow-sm cursor-pointer ml-auto">
+                            ➡️ அடுத்து
+                        </button>
+                    </div>
+
+                    <div id="tipsBox" class="hidden p-3 bg-amber-100/90 border-l-4 border-amber-500 rounded-r-xl">
+                        <div class="text-xs font-extrabold text-amber-950 uppercase mb-1.5">நினைவூட்டும் திறவுச்சொற்கள்:</div>
+                        <div id="tipsChipsContainer" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Notebook Model Answer Area -->
+            <section id="modelAnswerCol" class="lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col order-2">
+                <div id="answerPlaceholderCard" class="flex-1 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50">
+                    <span class="text-3xl mb-2">📓</span>
+                    <h3 class="text-base font-extrabold text-slate-900">நோட்டுப் புத்தக விடைப் பகுதி</h3>
+                    <p class="text-xs font-bold text-slate-600 mt-1">உங்கள் விடையை எழுதிய பின் <b>"✅ ஒப்பிடு / விடை காட்டு"</b> பொத்தானை அழுத்தினால் முழு மதிப்பெண் விடை இங்கே வலதுபுறம் தோன்றும்.</p>
+                </div>
+
+                <div id="modelAnswerBox" class="hidden flex-1 flex flex-col rounded-2xl border-2 border-slate-400 shadow-sm overflow-hidden">
+                    <div class="bg-slate-200 px-4 py-2.5 border-b-2 border-rose-400 flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="font-extrabold text-slate-950 text-sm sm:text-base">📓 மாணவர் குறிப்பு நோட்டு (முழு மதிப்பெண் வடிவம்)</h3>
+                        <div class="flex items-center gap-2">
+                            <button onclick="enableNotebookEdit()" id="editAnsBtn"
+                                class="px-2.5 py-1 bg-white text-blue-900 border-2 border-blue-400 rounded-lg text-xs font-extrabold cursor-pointer">
+                                ✏️ திருத்து
+                            </button>
+                            <button onclick="saveEditedAnswer()" id="saveAnsBtn"
+                                class="hidden px-2.5 py-1 bg-emerald-700 text-white rounded-lg text-xs font-extrabold cursor-pointer">
+                                💾 மாஸ்டரில் சேமி
+                            </button>
+                        </div>
+                    </div>
+                    <div id="modelAnswerContent" contenteditable="false" class="notebook-paper flex-1"></div>
+                    <div id="recallFeedbackBox" class="p-3 bg-emerald-100 border-t-2 border-emerald-300 text-xs sm:text-sm font-extrabold text-emerald-950"></div>
+                </div>
+            </section>
+
+            <!-- Bottom (Normal) OR Left Sidebar (Recall Mode): Spanning Tree -->
+            <aside id="treeAsideCol" class="lg:col-span-12 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-5 flex flex-col order-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-slate-300 pb-3 mb-3">
+                    <div>
+                        <h2 class="font-extrabold text-slate-950 text-base sm:text-lg">🌳 கற்றல் மரம் (Spanning Tree)</h2>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5">கிளையைத் தொடவும் அல்லது ✕ அழுத்தி நீக்கவும்</p>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="resetEntireTree()" class="px-2.5 py-1.5 bg-rose-100 text-rose-900 border border-rose-400 rounded-xl text-xs font-extrabold cursor-pointer">
+                            🗑️ மீட்டமை
+                        </button>
+                        <button onclick="activateRecallMode()" id="recallToggleBtn" class="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl text-xs font-extrabold cursor-pointer shadow-xs">
+                            🔄 நினைவு கூர் (இடதுபுறம் மரம்)
+                        </button>
+                    </div>
+                </div>
+
+                <div id="recallBanner" class="hidden mb-3 p-3 bg-indigo-100 border-2 border-indigo-300 rounded-xl text-xs text-indigo-950 flex items-center justify-between font-bold">
+                    <span>🧠 நினைவு கூர்தல் முறை: இடது ஓர மரத்தின் ஒவ்வொரு கிளையையும் தொட்டு விடையைச் சரிபார்க்கவும்!</span>
+                    <button onclick="exitRecallMode()" class="px-2.5 py-1 bg-indigo-800 text-white rounded-lg font-extrabold ml-2 cursor-pointer">சாதாரண நிலை</button>
+                </div>
+
+                <div id="spanningTreeContainer" class="flex-1 overflow-y-auto pr-1 max-h-[340px]"></div>
+
+                <div class="mt-4 pt-3 border-t-2 border-slate-200 flex items-center justify-between text-xs text-slate-800 font-extrabold">
+                    <span id="totalNodesCount">படித்த வினாக்கள்: 1</span>
+                    <span class="text-emerald-800">● EMIS Cloud Synced</span>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- =====================================================================
+         4. ADMIN ONLY: PDF CLEAN EXTRACT MODAL
+         ===================================================================== -->
+    <div id="pdfModal" class="hidden fixed inset-0 bg-slate-900/75 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border-2 border-slate-300 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b-2 border-slate-200 pb-3 mb-3">
+                <h3 class="text-lg font-extrabold text-blue-950">📥 PDF வினா-விடைகளை சுத்திகரித்து மாஸ்டரில் சேமித்தல்</h3>
+                <button onclick="closePdfModal()" class="text-slate-700 font-extrabold text-lg">✕</button>
+            </div>
+            <p class="text-xs font-bold text-slate-700 mb-3">
+                ஆசிரியர் பெயர் (A. Prabhakar / அ. பிரபாகர்), பக்க எண்கள் (..1..), மற்றும் மேல் தலைப்புகள் தானாக நீக்கப்பட்டு, <b>அடுத்த பக்கத்திற்குத் தொடரும் விடைகள் ஒன்றாக இணைக்கப்பட்டு</b> பாடம்வாரியாகப் பிரிக்கப்படும்.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-900 mb-1">PDF மொழி (Medium):</label>
+                    <select id="pdfLangSelect" class="w-full p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
+                        <option value="ta">தமிழ் வழி (12CS_TM_2025.pdf)</option>
+                        <option value="en">ஆங்கில வழி (12CS_EM_2025.pdf)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-900 mb-1">பக்க வரம்பு (Start - End Page):</label>
+                    <div class="flex gap-2">
+                        <input type="number" id="startPageInput" value="6" min="1" class="w-1/2 p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
+                        <input type="number" id="endPageInput" value="185" min="1" class="w-1/2 p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-extrabold text-slate-900 mb-1">PDF கோப்பைத் தேர்ந்தெடுக்கவும் (.pdf):</label>
+                <input type="file" id="pdfFileInput" accept=".pdf" onchange="processFullGuidePdf(event)" class="w-full p-2 border-2 border-slate-300 rounded-lg font-bold text-sm">
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-extrabold text-slate-900 mb-1">✍️ நூலாசிரியர் / பதிப்பகத்தார் பெயர் (தானாக கண்டறியப்படும் அல்லது திருத்தலாம்):</label>
+                <input type="text" id="pdfAuthorCreditInput" placeholder="எ.கா: அ. பிரபாகர் (Vijay Publications)" class="w-full p-2 border-2 border-emerald-400 bg-emerald-50 rounded-lg font-extrabold text-sm text-slate-950">
+            </div>
+            <div id="pdfStatusBox" class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs font-extrabold text-blue-950 mb-3">
+                PDF கோப்பைத் தேர்ந்தெடுத்தவுடன் தானியங்கி சுத்திகரிப்பு தொடங்கும்...
+            </div>
+            <textarea id="pdfPreviewArea" rows="6" readonly class="w-full p-2.5 border-2 border-slate-300 rounded-xl text-xs font-bold text-slate-900 mb-3" placeholder="முன்னோட்டம் இங்கே தோன்றும்..."></textarea>
+            <div class="flex justify-end gap-2">
+                <button id="savePdfMasterBtn" onclick="uploadExtractedToSupabase()" disabled class="px-4 py-2 bg-emerald-700 disabled:bg-slate-400 text-white font-extrabold text-sm rounded-xl cursor-pointer">
+                    ☁️ அனைத்தையும் Supabase மாஸ்டரில் சேமி
+                </button>
+                <button onclick="closePdfModal()" class="px-4 py-2 bg-slate-200 text-slate-950 font-extrabold text-sm rounded-xl cursor-pointer">மூடு</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         5. ABOUT ME & AUTO-CREDITS MODAL (எங்களைப் பற்றி & நூலாசிரியர் நன்றி)
+         ===================================================================== -->
+    <div id="aboutModal" class="hidden fixed inset-0 bg-slate-900/75 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border-2 border-blue-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b-2 border-slate-200 pb-3 mb-4">
+                <h3 class="text-lg sm:text-xl font-extrabold text-blue-950">ℹ️ எங்களைப் பற்றி & நன்றி நவிலல் (About & Credits)</h3>
+                <button onclick="closeAboutModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-800 hover:text-rose-700 font-extrabold cursor-pointer">✕</button>
+            </div>
+
+            <div class="space-y-4 text-sm font-bold text-slate-800">
+                <!-- Creator / Developer Details -->
+                <div class="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+                    <div class="text-xs font-extrabold text-blue-800 uppercase mb-1">👨‍🏫 உருவாக்கம் & வடிவமைப்பு (Created & Developed By)</div>
+                    <h4 class="text-base font-extrabold text-slate-950">கணினி அறிவியல் ஆசிரியர் குழு (TNCSCA - SchoolLogic)</h4>
+                    <p class="text-xs text-slate-700 mt-1 leading-relaxed">
+                        12-ஆம் வகுப்பு கணினி அறிவியல் மாணவர்களின் நினைவாற்றல் (Active Recall), கருத்துருக்களை இணைத்துப் படிக்கும் திறன் (Spanning Tree Mind Mapping) மற்றும் அரசுப் பொதுத்தேர்வில் முழு மதிப்பெண் பெறுவதை நோக்கமாகக் கொண்டு இத்தளம் உருவாக்கப்பட்டுள்ளது.
+                    </p>
+                </div>
+
+                <!-- Dynamic Authors & Publishers Credits -->
+                <div class="p-4 rounded-2xl bg-amber-50 border-2 border-amber-300">
+                    <div class="text-xs font-extrabold text-amber-900 uppercase mb-2">🙏 சிறப்பு நன்றி - பாடநூல் & வழிகாட்டி நூலாசிரியர்கள்</div>
+                    <p class="text-xs text-slate-700 mb-2">
+                        மாணவர்களின் நலனுக்காகத் தங்களது மதிப்புமிக்க வினா-விடைத் தொகுப்புகளையும் வழிகாட்டி நூல்களையும் வழங்கிய கீழ்க்காணும் ஆசிரியப் பெருமக்களுக்கும் பதிப்பகத்தாருக்கும் மனமார்ந்த நன்றிகள்:
+                    </p>
+                    <ul id="authorsCreditList" class="space-y-1.5 text-xs font-extrabold text-slate-950 list-disc pl-5">
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-5 flex justify-end">
+                <button onclick="closeAboutModal()" class="px-5 py-2.5 bg-blue-800 hover:bg-blue-900 text-white font-extrabold text-sm rounded-xl cursor-pointer">
+                    நன்றி, மூடு
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         6. KEYWORD MULTI-QUESTION PICKER MODAL (ஒரு வார்த்தையில் பல வினாக்கள்)
+         ===================================================================== -->
+    <div id="keywordPickerModal" class="hidden fixed inset-0 bg-slate-900/75 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-2 border-blue-300 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b-2 border-slate-200 pb-3 mb-3">
+                <div>
+                    <span class="text-xs font-extrabold text-blue-700 uppercase">🔗 திறவுச்சொல் தொடர்புடைய வினாக்கள்</span>
+                    <h3 id="kwPickerTitle" class="text-lg font-extrabold text-slate-950 mt-0.5"></h3>
+                </div>
+                <button onclick="closeKeywordPicker()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 text-slate-800 hover:text-rose-700 font-extrabold cursor-pointer">✕</button>
+            </div>
+            <p class="text-xs font-bold text-slate-600 mb-3">கீழே உள்ள வினாக்களில் நீங்கள் விடையளிக்க விரும்பும் வினாவைத் தேர்ந்தெடுக்கவும் (தேர்ந்தெடுக்கும் வினா மட்டுமே மரத்தில் சேர்க்கப்படும்):</p>
+            <div id="kwPickerList" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+        </div>
+    </div>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Supabase Configuration
+        const SUPABASE_URL = "https://rqpihrdmmoimkjqfyknf.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_kXwQjgHsHk-7RktNBUM0LA_xEq0alXu";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Admin Credentials
+        const ADMIN_ID = "10098604";
+        const ADMIN_PASS = "1004";
+
+        // Active Session State
+        let activeUser = null; // { role: 'student' | 'admin', emis, name, school }
+        let pendingNewEmis = "";
+        let currentLang = 'ta';
+        let currentQuestionId = 'q1';
+        let currentTipStep = 0;
+        let isRecallMode = false;
+        let recognition = null;
+        let isRecording = false;
+        let extractedBatchItems = [];
+        let allAdminRecords = [];
+
+        // Default & Dynamically Discovered PDF Authors List
+        const defaultAuthors = [
+            "தமிழ்நாடு அரசு பாடநூல் மற்றும் கல்வியியல் பணிகள் கழகம் (SCERT)",
+            "திரு. அ. பிரபாகர் (A. Prabhakar) - TECH EASY Guide & Vijay Publications, இராசிபுரம்"
+        ];
+        let creditedAuthors = JSON.parse(localStorage.getItem("tn_cs_credited_authors")) || [...defaultAuthors];
+
+        const defaultQuestions = [
+            {
+                id: "q1", chapterKey: "Chapter 1", marks: "2",
+                tags: ["செயற்கூறு", "அளபுருக்கள்", "தற்சுழற்சி", "Function", "Parameters"],
+                ta: {
+                    chapter: "Chapter 1: செயற்கூறு (Functions)",
+                    question: "செயற்கூறு வரையறுத்தல் என்றால் என்ன? அளபுருக்கள் மற்றும் செயலுருபுகள் பற்றி எழுதுக.",
+                    keywords: ["செயற்கூறு", "அளபுருக்கள்"],
+                    tips: ["குறிப்பிட்ட செயலைச் செய்யும் குறிமுறைத் தொகுதி", "அளபுருக்கள் - மாறிகள்", "செயலுருபுகள் - மதிப்புகள்"],
+                    answer: `<div class="nb-box"><span class="nb-underline">வரையறை:</span> ஒரு குறிப்பிட்ட செயலைச் செய்வதற்காக மீண்டும் மீண்டும் பயன்படுத்தப்படும் குறிமுறையின் ஒரு சிறிய பகுதியே <b>செயற்கூறு (Function)</b> எனப்படும்.</div>
+                             <p><b>1. <span class="nb-underline">அளபுருக்கள்:</span></b> செயற்கூறு வரையறையில் பயன்படுத்தப்படும் மாறிகள்.</p>
+                             <p><b>2. <span class="nb-underline">செயலுருபுகள்:</span></b> செயற்கூறுவை அழைக்கும்போது அனுப்பப்படும் மதிப்புகள். (இது தற்சுழற்சி முறையிலும் பயன்படும்).</p>`,
+                    matchWords: ["குறிப்பிட்ட செயல்", "மாறிகள்", "மதிப்புகள்"]
+                },
+                en: {
+                    chapter: "Chapter 1: Functions",
+                    question: "What is a Function definition? Explain Parameters and Arguments.",
+                    keywords: ["Function", "Parameters"],
+                    tips: ["Unit of code doing a specific task", "Parameters - Variables", "Arguments - Values"],
+                    answer: `<div class="nb-box"><span class="nb-underline">Definition:</span> A <b>Function</b> is a unit of code defined within a greater structure to perform a specific task.</div>`,
+                    matchWords: ["unit of code", "variables", "values"]
+                }
+            },
+            {
+                id: "q2", chapterKey: "Chapter 1", marks: "3",
+                tags: ["தற்சுழற்சி", "செயற்கூறு", "Recursion", "Function"],
+                ta: {
+                    chapter: "Chapter 1: செயற்கூறு (Functions)",
+                    question: "தற்சுழற்சி (Recursion) செயற்கூறு என்றால் என்ன? எடுத்துக்காட்டுடன் விளக்குக.",
+                    keywords: ["தற்சுழற்சி", "செயற்கூறு"],
+                    tips: ["தன்னைத்தானே அழைக்கும் செயற்கூறு", "அடிப்படை நிபந்தனை (Base Condition)"],
+                    answer: `<div class="nb-box"><span class="nb-underline">வரையறை:</span> ஒரு செயற்கூறு தன்னைத்தானே மீண்டும் மீண்டும் அழைத்துக் கொண்டால் அது <b>தற்சுழற்சி செயற்கூறு</b> எனப்படும்.</div>
+                             <div class="nb-code">let rec fact n := if n=0 then 1 else n * fact (n-1)</div>`,
+                    matchWords: ["தன்னைத்தானே", "அடிப்படை நிபந்தனை"]
+                },
+                en: {
+                    chapter: "Chapter 1: Functions",
+                    question: "What is a Recursion Function? Explain with an example.",
+                    keywords: ["Recursion", "Function"],
+                    tips: ["Function calling itself", "Base Condition"],
+                    answer: `<div class="nb-box"><span class="nb-underline">Definition:</span> A function calling itself repeatedly is a <b>Recursive Function</b>.</div>`,
+                    matchWords: ["calls itself", "base condition"]
+                }
+            },
+            {
+                id: "q3", chapterKey: "Chapter 9", marks: "3",
+                tags: ["List", "Tuple", "தரவு", "Data", "வேறுபடுத்துக"],
+                ta: {
+                    chapter: "Chapter 9: பைத்தான் தொகுப்பு தரவினங்கள்",
+                    question: "பைத்தானில் உள்ள List மற்றும் Tuple ஆகியவற்றை வேறுபடுத்துக.",
+                    keywords: ["List", "Tuple"],
+                    tips: ["List [ ] - Mutable", "Tuple ( ) - Immutable", "வேகம் (Iteration)"],
+                    answer: `<table class="nb-table">
+                                <thead><tr><th>List</th><th>Tuple</th></tr></thead>
+                                <tbody>
+                                    <tr><td>List-ன் உறுப்புகளை மாற்றலாம் (<b>Mutable</b>).</td><td>Tuple-ன் உறுப்புகளை மாற்ற முடியாது (<b>Immutable</b>).</td></tr>
+                                    <tr><td>உறுப்புகள் சதுர அடைப்புக் குறிக்குள் <code>[ ]</code> அடைக்கப்பட்டிருக்கும்.</td><td>உறுப்புகள் வளைவு அடைப்புக்குறிக்குள் <code>( )</code> அடைக்கப்பட்டிருக்கும்.</td></tr>
+                                    <tr><td>மடக்குச் செயல் மெதுவானது.</td><td>மடக்குச் செயல் List-ஐ காட்டிலும் விரைவானது.</td></tr>
+                                </tbody>
+                             </table>`,
+                    matchWords: ["மாற்றலாம்", "மாற்ற முடியாது", "சதுர", "வளைவு"]
+                },
+                en: {
+                    chapter: "Chapter 9: Lists, Tuples, Sets and Dictionary",
+                    question: "Differentiate between List and Tuple in Python.",
+                    keywords: ["List", "Tuple"],
+                    tips: ["List is Mutable", "Tuple is Immutable"],
+                    answer: `<table class="nb-table">
+                                <thead><tr><th>List</th><th>Tuple</th></tr></thead>
+                                <tbody>
+                                    <tr><td>The elements of a list are changeable (<b>mutable</b>).</td><td>The elements of a tuple are unchangeable (<b>immutable</b>).</td></tr>
+                                    <tr><td>Enclosed within square brackets <code>[ ]</code>.</td><td>Enclosed by parentheses <code>( )</code>.</td></tr>
+                                    <tr><td>Iteration is slow.</td><td>Iteration is faster.</td></tr>
+                                </tbody>
+                             </table>`,
+                    matchWords: ["mutable", "immutable", "square", "parentheses"]
+                }
+            },
+            {
+                id: "q4", chapterKey: "Chapter 3", marks: "5",
+                tags: ["LEGB", "Scope", "வரையெல்லை", "Local", "Global"],
+                ta: {
+                    chapter: "Chapter 3: வரையெல்லை (Scoping)",
+                    question: "LEGB விதியை எடுத்துக்காட்டுடன் விளக்குக.",
+                    keywords: ["LEGB", "வரையெல்லை"],
+                    tips: ["Local (உள்ளமை)", "Enclosed (அடைக்கப்பட்ட)", "Global (முழுதளாவிய)", "Built-in (உள்ளிணைந்த)"],
+                    answer: `<div class="nb-box"><span class="nb-underline">LEGB விதி:</span> மாறியின் வரையெல்லை தேடப்பட வேண்டிய வரிசையைத் தீர்மானிக்க <b>LEGB விதி</b> பயன்படுகிறது (Local → Enclosed → Global → Built-in).</div>
+                             <div class="nb-syntax-box"><b>பொதுவடிவம் / வரிசை:</b><br>Local (L) ➔ Enclosed (E) ➔ Global (G) ➔ Built-in (B)</div>`,
+                    matchWords: ["உள்ளமை", "முழுதளாவிய", "LEGB"]
+                },
+                en: {
+                    chapter: "Chapter 3: Scoping",
+                    question: "Explain LEGB rule with an example.",
+                    keywords: ["LEGB", "Scope"],
+                    tips: ["Local", "Enclosed", "Global", "Built-in"],
+                    answer: `<div class="nb-box"><span class="nb-underline">LEGB Rule:</span> Determines the order in which scopes are searched: Local → Enclosed → Global → Built-in.</div>`,
+                    matchWords: ["local", "global", "built-in"]
+                }
+            },
+            {
+                id: "q5", chapterKey: "Chapter 11", marks: "3",
+                tags: ["DBMS", "RDBMS", "தரவுத்தளம்", "Database"],
+                ta: {
+                    chapter: "Chapter 11: தரவுத்தள கருத்துருக்கள்",
+                    question: "DBMS என்றால் என்ன? அதன் நன்மைகள் யாவை?",
+                    keywords: ["DBMS", "தரவுத்தளம்"],
+                    tips: ["தரவுத்தள மேலாண்மை அமைப்பு", "தரவு மிகைமை குறைப்பு", "தரவு பாதுகாப்பு"],
+                    answer: `<div class="nb-box"><span class="nb-underline">வரையறை:</span> தரவுத்தளத்தை உருவாக்க, மீட்டெடுக்க மற்றும் நிர்வகிக்க உதவும் மென்பொருளே <b>DBMS</b> ஆகும்.</div>`,
+                    matchWords: ["மென்பொருள்", "பாதுகாப்பு"]
+                },
+                en: {
+                    chapter: "Chapter 11: Database Concepts",
+                    question: "What is DBMS? List its advantages.",
+                    keywords: ["DBMS", "Database"],
+                    tips: ["Database Management System", "Reduces Redundancy"],
+                    answer: `<div class="nb-box"><span class="nb-underline">Definition:</span> Software that allows users to define, create and maintain a database is <b>DBMS</b>.</div>`,
+                    matchWords: ["software", "database"]
+                }
+            }
+        ];
+
+        let questionBank = JSON.parse(localStorage.getItem("tn_cs_questions_cache")) || [...defaultQuestions];
+        let filteredBank = [...questionBank];
+        let spanningTree = [{ qId: "q1", kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
+
+        // =====================================================================
+        // 1. PORTAL LOGIN & FIRST-TIME REGISTRATION LOGIC
+        // =====================================================================
+        function showLoginError(msg) {
+            const box = document.getElementById("loginErrorBox");
+            box.innerText = msg;
+            box.classList.remove("hidden");
+        }
+
+        async function handlePortalLogin() {
+            const userId = document.getElementById("loginUserId").value.trim();
+            const pass = document.getElementById("loginPassword").value.trim();
+            document.getElementById("loginErrorBox").classList.add("hidden");
+
+            if (!userId || !pass) {
+                showLoginError("⚠️ பயனர் எண் மற்றும் கடவுச்சொல் இரண்டையும் உள்ளிடவும்.");
+                return;
+            }
+
+            // 1. Check Admin Login (10098604 / 1004)
+            if (userId === ADMIN_ID) {
+                if (pass === ADMIN_PASS) {
+                    activeUser = { role: 'admin', emis: ADMIN_ID, name: 'Admin', school: 'All Schools' };
+                    document.getElementById("loginScreen").classList.add("hidden");
+                    document.getElementById("adminDashboard").classList.remove("hidden");
+                    await loadAdminAnalytics();
+                    return;
+                } else {
+                    showLoginError("❌ அட்மின் கடவுச்சொல் தவறானது!");
+                    return;
+                }
+            }
+
+            // 2. Validate Student EMIS Password (First 2 digits + Last 2 digits)
+            if (userId.length < 4 || !/^\d+$/.test(userId)) {
+                showLoginError("⚠️ சரியான EMIS எண்ணை (எண்களில்) உள்ளிடவும்.");
+                return;
+            }
+            const expectedPass = userId.slice(0, 2) + userId.slice(-2);
+            if (pass !== expectedPass) {
+                showLoginError(`❌ கடவுச்சொல் தவறானது! உங்கள் EMIS எண்ணின் முதல் 2 இலக்கங்கள் (${userId.slice(0, 2)}) மற்றும் கடைசி 2 இலக்கங்கள் (${userId.slice(-2)}) சேர்த்து உள்ளிடவும்.`);
+                return;
+            }
+
+            // 3. Check if student already exists in Supabase or LocalStorage
+            const btn = document.getElementById("loginSubmitBtn");
+            btn.innerText = "⏳ சரிபார்க்கப்படுகிறது...";
+            btn.disabled = true;
+
+            let existingStudent = null;
+            if (navigator.onLine) {
+                try {
+                    const { data } = await supabaseClient.from('student_mindmaps').select('*').eq('emis_no', userId).single();
+                    if (data) existingStudent = data;
+                } catch (e) { console.log("New student check:", e); }
+            }
+            if (!existingStudent) {
+                const localRaw = localStorage.getItem(`tn_cs_emis_${userId}`);
+                if (localRaw) existingStudent = JSON.parse(localRaw);
+            }
+
+            btn.innerText = "🔐 உள்நுழை (Login)";
+            btn.disabled = false;
+
+            if (existingStudent && existingStudent.student_name) {
+                // Returning Student -> Open directly with saved name, school & tree
+                enterStudentWorkspace(
+                    userId,
+                    existingStudent.student_name,
+                    existingStudent.school_name || "அரசு மேல்நிலைப் பள்ளி",
+                    existingStudent.tree_data
+                );
+            } else {
+                // First-time Student -> Ask Name & School Name
+                pendingNewEmis = userId;
+                document.getElementById("loginStep1").classList.add("hidden");
+                document.getElementById("firstTimeSetupBox").classList.remove("hidden");
+            }
+        }
+
+        function backToLoginStep1() {
+            document.getElementById("firstTimeSetupBox").classList.add("hidden");
+            document.getElementById("loginStep1").classList.remove("hidden");
+            document.getElementById("loginErrorBox").classList.add("hidden");
+        }
+
+        async function completeFirstTimeRegistration() {
+            const sName = document.getElementById("newStudentName").value.trim();
+            const schName = document.getElementById("newSchoolName").value.trim();
+            if (!sName || !schName) {
+                showLoginError("⚠️ தயவுசெய்து உங்கள் பெயர் மற்றும் பள்ளியின் பெயர் இரண்டையும் உள்ளிடவும்.");
+                return;
+            }
+            const initialTree = [{ qId: "q1", kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
+            await enterStudentWorkspace(pendingNewEmis, sName, schName, initialTree, true);
+        }
+
+        async function enterStudentWorkspace(emis, name, school, savedTree, isFirstSave = false) {
+            activeUser = { role: 'student', emis, name, school };
+            if (savedTree && savedTree.length > 0) {
+                spanningTree = savedTree;
+            }
+
+            document.getElementById("studentHeaderBadge").innerText = `👤 ${name} (EMIS: ${emis})`;
+            document.getElementById("schoolHeaderBadge").innerText = `🏫 ${school}`;
+            document.getElementById("guestDemoBanner").classList.add("hidden");
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("studentWorkspace").classList.remove("hidden");
+            document.getElementById("studentWorkspace").classList.add("flex");
+
+            await syncGlobalMasterQuestions();
+            if (isFirstSave) {
+                await persistStudentData();
+            }
+            filteredBank = [...questionBank];
+            renderQuestion(spanningTree[spanningTree.length - 1].qId);
+            showToast(`வணக்கம் ${name}! உங்கள் கற்றல் மரம் தயாராக உள்ளது.`);
+        }
+
+        // =====================================================================
+        // GUEST / DEMO MODE (5 Sample Questions Exploration)
+        // =====================================================================
+        function startGuestDemoMode() {
+            activeUser = { role: 'guest', emis: 'GUEST', name: 'Guest Student', school: 'Demo Mode' };
+            spanningTree = [{ qId: "q1", kwTa: "தொடக்கம் (Demo)", kwEn: "Start (Demo)", parentId: null, completed: false }];
+            filteredBank = questionBank.slice(0, 5); // Restrict to 5 sample questions
+
+            document.getElementById("studentHeaderBadge").innerText = "🎯 Guest / Demo Mode (5 வினாக்கள்)";
+            document.getElementById("schoolHeaderBadge").innerText = "மாதிரிப் பயிற்சி";
+            document.getElementById("guestDemoBanner").classList.remove("hidden");
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("studentWorkspace").classList.remove("hidden");
+            document.getElementById("studentWorkspace").classList.add("flex");
+
+            renderQuestion(filteredBank[0].id);
+            showToast("🎯 Guest Mode: 5 மாதிரி வினாக்களைப் பயிற்சி செய்து பார்க்கலாம்!");
+        }
+
+        function logoutPortal() {
+            activeUser = null;
+            document.getElementById("studentWorkspace").classList.add("hidden");
+            document.getElementById("adminDashboard").classList.add("hidden");
+            document.getElementById("guestDemoBanner").classList.add("hidden");
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("loginPassword").value = "";
+            backToLoginStep1();
+        }
+
+        // =====================================================================
+        // ABOUT ME & AUTO-AUTHOR CREDITS MODAL
+        // =====================================================================
+        function openAboutModal() {
+            const listEl = document.getElementById("authorsCreditList");
+            listEl.innerHTML = creditedAuthors.map(author => `<li>${author}</li>`).join("");
+            document.getElementById("aboutModal").classList.remove("hidden");
+        }
+        function closeAboutModal() {
+            document.getElementById("aboutModal").classList.add("hidden");
+        }
+        function registerNewAuthorCredit(authorName) {
+            if (!authorName || authorName.trim().length < 3) return;
+            const cleanAuthor = authorName.trim();
+            if (!creditedAuthors.some(a => a.toLowerCase().includes(cleanAuthor.toLowerCase()))) {
+                creditedAuthors.push(`${cleanAuthor} (PDF பங்களிப்பு)`);
+                localStorage.setItem("tn_cs_credited_authors", JSON.stringify(creditedAuthors));
+            }
+        }
+
+        // =====================================================================
+        // 2. ADMIN ANALYTICS (SCHOOL-WISE REPORT & PDF UPLOAD)
+        // =====================================================================
+        async function loadAdminAnalytics() {
+            await syncGlobalMasterQuestions();
+            document.getElementById("admTotalMasterQ").innerText = questionBank.length;
+
+            if (navigator.onLine) {
+                const { data } = await supabaseClient.from('student_mindmaps').select('*').order('updated_at', { ascending: false });
+                if (data) {
+                    allAdminRecords = data;
+                }
+            }
+
+            // Populate School Filter Dropdown
+            const schools = new Set(allAdminRecords.map(r => r.school_name || "குறிப்பிடப்படாத பள்ளி"));
+            const filterSel = document.getElementById("adminSchoolFilter");
+            filterSel.innerHTML = `<option value="ALL">அனைத்துப் பள்ளிகள் (${schools.size})</option>`;
+            schools.forEach(sc => {
+                filterSel.innerHTML += `<option value="${sc}">${sc}</option>`;
+            });
+
+            document.getElementById("admTotalSchools").innerText = schools.size;
+            document.getElementById("admTotalStudents").innerText = allAdminRecords.length;
+            renderAdminTables();
+        }
+
+        function renderAdminTables() {
+            const selectedSchool = document.getElementById("adminSchoolFilter").value;
+            const tbody = document.getElementById("adminStudentTableBody");
+            const filtered = selectedSchool === "ALL"
+                ? allAdminRecords
+                : allAdminRecords.filter(r => (r.school_name || "குறிப்பிடப்படாத பள்ளி") === selectedSchool);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">இதுவரை மாணவர் பதிவுகள் இல்லை.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((row, idx) => {
+                const treeArr = Array.isArray(row.tree_data) ? row.tree_data : [];
+                const completedCount = treeArr.filter(n => n.completed).length;
+                const lastDate = row.updated_at ? new Date(row.updated_at).toLocaleString('ta-IN') : "-";
+                return `<tr class="hover:bg-slate-50">
+                    <td class="p-3">${idx + 1}</td>
+                    <td class="p-3 font-extrabold text-blue-900">${row.school_name || "அரசு மேல்நிலைப் பள்ளி"}</td>
+                    <td class="p-3 font-mono">${row.emis_no}</td>
+                    <td class="p-3">${row.student_name || "-"}</td>
+                    <td class="p-3"><span class="px-2.5 py-0.5 bg-blue-100 text-blue-900 rounded-full text-xs font-extrabold">${treeArr.length} வினாக்கள்</span></td>
+                    <td class="p-3"><span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 rounded-full text-xs font-extrabold">${completedCount} தேர்ச்சி</span></td>
+                    <td class="p-3 text-xs text-slate-600">${lastDate}</td>
+                </tr>`;
+            }).join("");
+        }
+
+        function exportSchoolReportCSV() {
+            if (allAdminRecords.length === 0) return;
+            let csv = "S.No,School Name,EMIS No,Student Name,Questions Studied,Completed Count,Last Updated\n";
+            allAdminRecords.forEach((r, i) => {
+                const treeArr = Array.isArray(r.tree_data) ? r.tree_data : [];
+                const comp = treeArr.filter(n => n.completed).length;
+                csv += `${i + 1},"${r.school_name || ''}","${r.emis_no}","${r.student_name || ''}",${treeArr.length},${comp},"${r.updated_at || ''}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `12th_CS_School_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+        }
+
+        // =====================================================================
+        // 3. STUDENT DATA PERSISTENCE & MASTER SYNC
+        // =====================================================================
+        async function persistStudentData() {
+            if (!activeUser || activeUser.role !== 'student') return;
+            const payload = {
+                emis_no: activeUser.emis,
+                student_name: activeUser.name,
+                school_name: activeUser.school,
+                tree_data: spanningTree,
+                updated_at: new Date().toISOString()
+            };
+            localStorage.setItem(`tn_cs_emis_${activeUser.emis}`, JSON.stringify(payload));
+            if (navigator.onLine) {
+                try {
+                    await supabaseClient.from('student_mindmaps').upsert(payload);
+                } catch (e) { console.warn(e); }
+            }
+        }
+
+        async function syncGlobalMasterQuestions() {
+            if (!navigator.onLine) return;
+            try {
+                const { data } = await supabaseClient.from('qa_master').select('*');
+                if (data && data.length > 0) {
+                    data.forEach(row => {
+                        const idx = questionBank.findIndex(q => q.id === row.id);
+                        const obj = {
+                            id: row.id,
+                            chapterKey: row.ta_data?.chapterKey || row.en_data?.chapterKey || "Chapter 1",
+                            marks: row.ta_data?.marks || row.en_data?.marks || "2",
+                            tags: row.tags || [],
+                            ta: row.ta_data || row.en_data,
+                            en: row.en_data || row.ta_data
+                        };
+                        if (idx > -1) questionBank[idx] = obj;
+                        else questionBank.push(obj);
+                    });
+                    localStorage.setItem("tn_cs_questions_cache", JSON.stringify(questionBank));
+                    filteredBank = [...questionBank];
+                }
+            } catch (e) { console.warn(e); }
+        }
+
+        function applyStudentFilters() {
+            if (activeUser && activeUser.role === 'guest') {
+                showToast("🔒 Guest Mode-இல் 5 மாதிரி வினாக்கள் மட்டுமே அனுமதிக்கப்படும். முழுப் பாடத்திற்கும் EMIS மூலம் உள்நுழையவும்.", "error");
+                return;
+            }
+            const chap = document.getElementById("chapterFilter").value;
+            const mark = document.getElementById("marksFilter").value;
+            filteredBank = questionBank.filter(q => {
+                const cMatch = (chap === "ALL") || (q.chapterKey === chap) || (q.ta?.chapter && q.ta.chapter.includes(chap));
+                const mMatch = (mark === "ALL") || (String(q.marks) === mark);
+                return cMatch && mMatch;
+            });
+            document.getElementById("masterCountBadge").innerText = `மாஸ்டர் வினாக்கள்: ${questionBank.length} | வடிகட்டியவை: ${filteredBank.length}`;
+            if (filteredBank.length > 0) renderQuestion(filteredBank[0].id);
+            else showToast("⚠️ இந்தப் பிரிவில் வினாக்கள் இல்லை.", "error");
+        }
+
+        // =====================================================================
+        // 4. Q&A RENDERING, AUTO-LINKING & SPANNING TREE
+        // =====================================================================
+        function injectMasterKeywordLinks(htmlContent, excludeQId) {
+            const keywordSet = new Set();
+            questionBank.forEach(q => {
+                if (q.tags) q.tags.forEach(t => { if (t && t.trim().length > 2) keywordSet.add(t.trim()); });
+            });
+            const sortedKeywords = Array.from(keywordSet).sort((a, b) => b.length - a.length).slice(0, 120);
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = htmlContent;
+
+            function processNode(node) {
+                if (node.nodeType === 3) {
+                    let text = node.nodeValue;
+                    let modified = false;
+                    sortedKeywords.forEach(kw => {
+                        const targetExists = questionBank.some(q => q.id !== excludeQId && q.tags && q.tags.some(t => t.toLowerCase() === kw.toLowerCase()));
+                        if (targetExists) {
+                            const escaped = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            const regex = new RegExp(`(${escaped})`, 'gi');
+                            if (regex.test(text)) {
+                                text = text.replace(regex, `<span class="keyword-chip" onclick="jumpByKeyword('${kw.replace(/'/g, "\\'")}', '${excludeQId}')">$1</span>`);
+                                modified = true;
+                            }
+                        }
+                    });
+                    if (modified) {
+                        const span = document.createElement("span");
+                        span.innerHTML = text;
+                        node.parentNode.replaceChild(span, node);
+                    }
+                } else if (node.nodeType === 1 && !node.classList.contains("keyword-chip")) {
+                    Array.from(node.childNodes).forEach(processNode);
+                }
+            }
+            processNode(wrapper);
+            return wrapper.innerHTML;
+        }
+
+        function renderQuestion(qId) {
+            const qObj = questionBank.find(q => q.id === qId) || questionBank[0];
+            currentQuestionId = qObj.id;
+            currentTipStep = 0;
+
+            const langData = qObj[currentLang] || qObj.ta || qObj.en;
+            document.getElementById("chapterBadge").innerText = langData.chapter;
+            document.getElementById("marksBadge").innerText = qObj.marks === "PUB" ? "🏛️ பொதுத்தேர்வு வினா" : `🎯 ${qObj.marks || "2"} மதிப்பெண்`;
+            document.getElementById("masterCountBadge").innerText = `மாஸ்டர் வினாக்கள்: ${questionBank.length}`;
+
+            document.getElementById("questionDisplay").innerHTML = injectMasterKeywordLinks(langData.question, qObj.id);
+            document.getElementById("studentAnswerInput").value = "";
+            document.getElementById("tipsBox").classList.add("hidden");
+            document.getElementById("tipsChipsContainer").innerHTML = "";
+            document.getElementById("modelAnswerBox").classList.add("hidden");
+            document.getElementById("answerPlaceholderCard").classList.remove("hidden");
+
+            renderSpanningTree();
+        }
+
+        let pendingBranchKeyword = "";
+        let pendingBranchFromQId = "";
+
+        function jumpByKeyword(keyword, fromQId) {
+            const pool = (activeUser && activeUser.role === 'guest') ? filteredBank : questionBank;
+            const matches = pool.filter(q => q.id !== fromQId && (
+                (q.tags && q.tags.some(t => t.toLowerCase().includes(keyword.toLowerCase()))) ||
+                (q.ta?.question && q.ta.question.toLowerCase().includes(keyword.toLowerCase())) ||
+                (q.en?.question && q.en.question.toLowerCase().includes(keyword.toLowerCase()))
+            ));
+
+            if (matches.length === 0) {
+                if (activeUser && activeUser.role === 'guest') {
+                    showToast("🔒 Guest Mode-இல் 5 மாதிரி வினாக்கள் மட்டுமே உள்ளன. மேலும் தொடர EMIS எண்ணுடன் உள்நுழையவும்.", "error");
+                }
+                return;
+            }
+
+            // Show all matching questions in a picker so the student chooses which one to study & add to the tree
+            pendingBranchKeyword = keyword;
+            pendingBranchFromQId = fromQId;
+            document.getElementById("kwPickerTitle").innerText = `"${keyword}" (${matches.length} வினாக்கள்)`;
+            const listEl = document.getElementById("kwPickerList");
+            listEl.innerHTML = matches.map((q, idx) => {
+                const lData = q[currentLang] || q.ta || q.en;
+                const mBadge = q.marks === "PUB" ? "பொதுத்தேர்வு" : `${q.marks || "2"} மதிப்பெண்`;
+                return `<div onclick="selectQuestionFromPicker('${q.id}')"
+                    class="p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-600 hover:bg-blue-50 cursor-pointer transition">
+                    <div class="flex items-center justify-between gap-2 mb-1">
+                        <span class="text-[11px] font-extrabold text-blue-800 bg-blue-100 px-2 py-0.5 rounded-md">${lData.chapter}</span>
+                        <span class="text-[11px] font-extrabold text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md">${mBadge}</span>
+                    </div>
+                    <div class="text-sm font-extrabold text-slate-950">${idx + 1}. ${lData.question}</div>
+                </div>`;
+            }).join("");
+            document.getElementById("keywordPickerModal").classList.remove("hidden");
+        }
+
+        function selectQuestionFromPicker(selectedQId) {
+            closeKeywordPicker();
+            addTreeNode(selectedQId, pendingBranchKeyword, pendingBranchKeyword, pendingBranchFromQId);
+            renderQuestion(selectedQId);
+        }
+
+        function closeKeywordPicker() {
+            document.getElementById("keywordPickerModal").classList.add("hidden");
+        }
+
+        function goToNextQuestion() {
+            const list = (activeUser && activeUser.role === 'guest') ? filteredBank : (filteredBank.length > 0 ? filteredBank : questionBank);
+            const idx = list.findIndex(q => q.id === currentQuestionId);
+            if (activeUser && activeUser.role === 'guest' && idx === list.length - 1) {
+                showToast("🎯 5 மாதிரி வினாக்கள் நிறைவடைந்தன! அனைத்து வினாக்களையும் படிக்க EMIS எண்ணுடன் உள்நுழையவும்.");
+            }
+            const nextObj = list[(idx + 1) % list.length];
+            addTreeNode(nextObj.id, "அடுத்து", "Next", currentQuestionId);
+            renderQuestion(nextObj.id);
+        }
+
+        function addTreeNode(newQId, kwTa, kwEn, parentQId) {
+            const exists = spanningTree.some(n => n.qId === newQId && n.parentId === parentQId);
+            if (!exists && newQId !== parentQId) {
+                spanningTree.push({ qId: newQId, kwTa, kwEn, parentId: parentQId, completed: false });
+                persistStudentData();
+            }
+        }
+
+        function deleteTreeBranch(event, targetQId) {
+            event.stopPropagation();
+            if (spanningTree.length <= 1) return showToast("அடிப்படை வேர் (Root) கிளையை நீக்க முடியாது.", "error");
+            const idsToRemove = new Set([targetQId]);
+            let added = true;
+            while (added) {
+                added = false;
+                spanningTree.forEach(node => {
+                    if (node.parentId && idsToRemove.has(node.parentId) && !idsToRemove.has(node.qId)) {
+                        idsToRemove.add(node.qId);
+                        added = true;
+                    }
+                });
+            }
+            spanningTree = spanningTree.filter(node => !idsToRemove.has(node.qId));
+            renderQuestion(spanningTree[spanningTree.length - 1].qId);
+            persistStudentData();
+            showToast(`🗑️ தேர்ந்தெடுத்த கிளை நீக்கப்பட்டது.`);
+        }
+
+        function resetEntireTree() {
+            const firstQ = questionBank.find(q => q.id === currentQuestionId) || questionBank[0];
+            spanningTree = [{ qId: firstQ.id, kwTa: "தொடக்கம்", kwEn: "Start", parentId: null, completed: false }];
+            renderSpanningTree();
+            persistStudentData();
+            showToast("🌳 கற்றல் மரம் மீட்டமைக்கப்பட்டது.");
+        }
+
+        function renderSpanningTree() {
+            document.getElementById("spanningTreeContainer").innerHTML = buildTreeMarkup(null);
+            document.getElementById("totalNodesCount").innerText = `படித்த வினாக்கள்: ${spanningTree.length}`;
+        }
+
+        function buildTreeMarkup(parentId) {
+            const children = spanningTree.filter(node => node.parentId === parentId);
+            if (children.length === 0) return "";
+            let html = `<ul class="tree-ul">`;
+            children.forEach(node => {
+                const qObj = questionBank.find(q => q.id === node.qId) || questionBank[0];
+                const isActive = node.qId === currentQuestionId;
+                const isRoot = node.parentId === null;
+                const kwText = currentLang === 'ta' ? node.kwTa : node.kwEn;
+                const qTitle = (qObj[currentLang] || qObj.ta).question;
+                const shortTitle = qTitle.length > 34 ? qTitle.substring(0, 34) + "..." : qTitle;
+
+                const nodeStyle = isActive
+                    ? "bg-blue-800 text-white border-blue-950 font-extrabold shadow-md"
+                    : node.completed
+                        ? "bg-emerald-50 text-slate-950 border-emerald-500 font-extrabold"
+                        : "bg-white text-slate-950 border-slate-400 font-extrabold hover:bg-blue-50";
+
+                const delBtn = !isRoot
+                    ? `<button onclick="deleteTreeBranch(event, '${node.qId}')" class="ml-1.5 px-1.5 py-0.5 rounded-md text-xs font-extrabold bg-rose-100 hover:bg-rose-600 text-rose-800 hover:text-white cursor-pointer">✕</button>`
+                    : "";
+
+                html += `<li class="tree-li">
+                    <div onclick="renderQuestion('${node.qId}')" class="inline-flex flex-wrap items-center gap-1.5 px-3 py-2 rounded-xl border-2 text-xs sm:text-sm cursor-pointer ${nodeStyle}">
+                        <span class="px-2 py-0.5 rounded-md text-[11px] font-extrabold bg-amber-300 text-slate-950">${kwText}</span>
+                        <span>${shortTitle}</span>
+                        ${node.completed ? '<span>✅</span>' : ''}
+                        ${delBtn}
+                    </div>
+                    ${buildTreeMarkup(node.qId)}
+                </li>`;
+            });
+            return html + `</ul>`;
+        }
+
+        function activateRecallMode() {
+            if (spanningTree.length < 2) return showToast("குறைந்தது 2 வினாக்களாவது மரத்தில் இருக்க வேண்டும்.", "error");
+            isRecallMode = true;
+            document.getElementById("recallBanner").classList.remove("hidden");
+
+            // Move Tree to Left Sidebar (col-span-4, order-1) and Q&A to Right (col-span-8, order-2 & order-3)
+            const treeAside = document.getElementById("treeAsideCol");
+            const qCol = document.getElementById("questionInputCol");
+            const ansCol = document.getElementById("modelAnswerCol");
+
+            treeAside.className = "lg:col-span-4 bg-white rounded-2xl shadow-sm border-2 border-indigo-400 p-4 sm:p-5 flex flex-col order-1 lg:row-span-2";
+            qCol.className = "lg:col-span-8 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col justify-between order-2";
+            ansCol.className = "lg:col-span-8 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col order-3";
+            document.getElementById("spanningTreeContainer").classList.remove("max-h-[340px]");
+
+            renderQuestion(spanningTree[0].qId);
+        }
+
+        function exitRecallMode() {
+            isRecallMode = false;
+            document.getElementById("recallBanner").classList.add("hidden");
+
+            // Restore Default Layout: Left (Q&Input), Right (Answer), Bottom (Tree)
+            const treeAside = document.getElementById("treeAsideCol");
+            const qCol = document.getElementById("questionInputCol");
+            const ansCol = document.getElementById("modelAnswerCol");
+
+            qCol.className = "lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col justify-between order-1";
+            ansCol.className = "lg:col-span-6 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-6 flex flex-col order-2";
+            treeAside.className = "lg:col-span-12 bg-white rounded-2xl shadow-sm border-2 border-slate-300 p-4 sm:p-5 flex flex-col order-3";
+            document.getElementById("spanningTreeContainer").classList.add("max-h-[340px]");
+        }
+
+        function revealNextTip() {
+            const qObj = questionBank.find(q => q.id === currentQuestionId);
+            const tips = (qObj[currentLang] || qObj.ta).tips || [];
+            document.getElementById("tipsBox").classList.remove("hidden");
+            if (currentTipStep < tips.length) {
+                const chip = document.createElement("span");
+                chip.className = "px-3 py-1 bg-amber-300 text-slate-950 text-xs sm:text-sm font-extrabold rounded-full";
+                chip.innerText = `${currentTipStep + 1}. ${tips[currentTipStep]}`;
+                document.getElementById("tipsChipsContainer").appendChild(chip);
+                currentTipStep++;
+            }
+        }
+
+        function compareAndShowAnswer() {
+            const qObj = questionBank.find(q => q.id === currentQuestionId);
+            const langData = qObj[currentLang] || qObj.ta;
+            const userText = document.getElementById("studentAnswerInput").value.trim().toLowerCase();
+
+            document.getElementById("answerPlaceholderCard").classList.add("hidden");
+            document.getElementById("modelAnswerContent").innerHTML = injectMasterKeywordLinks(langData.answer, qObj.id);
+            document.getElementById("modelAnswerBox").classList.remove("hidden");
+
+            const feedbackBox = document.getElementById("recallFeedbackBox");
+            const matchList = langData.matchWords || langData.tips || [];
+            if (userText.length > 0 && matchList.length > 0) {
+                let matched = 0;
+                matchList.forEach(w => { if (userText.includes(w.toLowerCase())) matched++; });
+                const pct = Math.round((matched / matchList.length) * 100);
+                feedbackBox.innerText = `நினைவாற்றல் ஒப்பீடு: ${pct}% (${matched}/${matchList.length}) முக்கியக் கருத்துக்கள் பொருந்தியுள்ளன.`;
+                if (pct >= 40) {
+                    const node = spanningTree.find(n => n.qId === currentQuestionId);
+                    if (node && !node.completed) {
+                        node.completed = true;
+                        renderSpanningTree();
+                        persistStudentData();
+                    }
+                }
+            } else {
+                feedbackBox.innerText = "குறிப்பு: நோட்டில் உள்ள கட்டம் மற்றும் அடிக்கோடிட்ட பகுதிகளைக் கவனமாகப் படிக்கவும்.";
+            }
+        }
+
+        function enableNotebookEdit() {
+            const qObj = questionBank.find(q => q.id === currentQuestionId);
+            const contentEl = document.getElementById("modelAnswerContent");
+            contentEl.innerHTML = (qObj[currentLang] || qObj.ta).answer;
+            contentEl.contentEditable = "true";
+            contentEl.focus();
+            document.getElementById("editAnsBtn").classList.add("hidden");
+            document.getElementById("saveAnsBtn").classList.remove("hidden");
+        }
+
+        async function saveEditedAnswer() {
+            const qObj = questionBank.find(q => q.id === currentQuestionId);
+            const contentEl = document.getElementById("modelAnswerContent");
+            if (qObj[currentLang]) qObj[currentLang].answer = contentEl.innerHTML;
+            contentEl.contentEditable = "false";
+            document.getElementById("editAnsBtn").classList.remove("hidden");
+            document.getElementById("saveAnsBtn").classList.add("hidden");
+            localStorage.setItem("tn_cs_questions_cache", JSON.stringify(questionBank));
+            contentEl.innerHTML = injectMasterKeywordLinks(contentEl.innerHTML, qObj.id);
+            if (navigator.onLine) {
+                await supabaseClient.from('qa_master').upsert({
+                    id: qObj.id, tags: qObj.tags, ta_data: qObj.ta, en_data: qObj.en, created_by_emis: activeUser?.emis || "Edited"
+                });
+            }
+            showToast("✅ திருத்தப்பட்ட விடை மாஸ்டரில் சேமிக்கப்பட்டது!");
+        }
+
+        function toggleVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return showToast("உங்கள் உலாவியில் குரல் வழி தட்டச்சு வசதி இல்லை.", "error");
+            if (!isRecording) {
+                recognition = new SpeechRecognition();
+                recognition.lang = currentLang === 'ta' ? 'ta-IN' : 'en-IN';
+                recognition.continuous = true;
+                recognition.onresult = (e) => {
+                    const txt = e.results[e.results.length - 1][0].transcript;
+                    document.getElementById("studentAnswerInput").value += " " + txt;
+                };
+                recognition.start();
+                isRecording = true;
+                document.getElementById("micBtn").innerText = "🛑 நிறுத்து";
+            } else {
+                recognition.stop();
+                isRecording = false;
+                document.getElementById("micBtn").innerText = "🎤 குரல் வழி பதில்";
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ta' ? 'en' : 'ta';
+            document.getElementById("langBtn").innerText = currentLang === 'ta' ? "🌐 English" : "🌐 தமிழ்";
+            renderQuestion(currentQuestionId);
+        }
+
+        function showToast(msg, type = "success") {
+            const banner = document.getElementById("toastBanner");
+            document.getElementById("toastMessage").innerText = msg;
+            banner.className = `max-w-4xl mx-auto mt-3 px-4 py-2.5 rounded-xl text-sm font-extrabold shadow-lg flex items-center justify-between ${
+                type === "error" ? "bg-rose-100 text-rose-950 border-2 border-rose-400" : "bg-emerald-100 text-emerald-950 border-2 border-emerald-400"
+            }`;
+            banner.classList.remove("hidden");
+            setTimeout(hideToast, 4500);
+        }
+        function hideToast() { document.getElementById("toastBanner").classList.add("hidden"); }
+
+        // =====================================================================
+        // 5. ADMIN PDF CLEAN EXTRACTOR & CROSS-PAGE STITCHER
+        // =====================================================================
+        function openPdfModal() { document.getElementById("pdfModal").classList.remove("hidden"); }
+        function closePdfModal() { document.getElementById("pdfModal").classList.add("hidden"); }
+
+        function cleanPageNoise(pageText) {
+            let cleaned = pageText;
+            const noisePatterns = [
+                /TECH\s*EASY\s*XII\s*[-–]\s*COMPUTER\s*SCIENCE/gi,
+                /TECH\s*EASY\s*XII\s*[-–]\s*கணினி\s*அறிவியல்/gi,
+                /TECH\s*EASY\s*XII\s*[-–]\s*\d*/gi,
+                /A\.?\s*PRABHAKAR\s*[-–]?\s*9442979144/gi,
+                /அ\.?\s*பிரபாகர்\s*[-–]?\s*9442979144/gi,
+                /\.\.\s*\d+\s*\.\./g,
+                /\b\d+\.\s*(FUNCTION|DATA ABSTRACTION|SCOPING|ALGORITHMIC STRATEGIES|VARIABLES AND OPERATORS|CONTROL STRUCTURES|PYTHON FUNCTIONS|STRINGS AND STRING MANIPULATION|LISTS, TUPLES, SETS AND DICTIONARY|PYTHON CLASSES AND OBJECTS|DATABASE CONCEPTS|STRUCTURED QUERY LANGUAGE|PYTHON AND CSV FILES|IMPORTING C\+\+ PROGRAMS IN PYTHON|DATA MANIPULATION THROUGH SQL|DATA VISUALIZATION USING PYTHON)\b/gi,
+                /\b\d+\.\s*(செயற்கூறு|தரவு அருவமாக்கம்|வரையெல்லை|நெறிமுறையின் யுக்திகள்|பைத்தான் அறிமுகம்|கட்டுப்பாட்டு கட்டமைப்புகள்|பைத்தான் செயற்கூறுகள்|சரங்கள் மற்றும் சரங்களை கையாளுதல்|List, Tuples, Set.*Dictionary|இனக்குழுக்கள் மற்றும் பொருள்கள்|தரவுதள கருத்துருக்கள்|வினவல் அமைப்பு மொழி|பைத்தான் மற்றும் CSV|பைத்தானில் C\+\+ நிரல்கள்|SQL மூலம் தரவு கையாளுதல்|தரவு காட்சிப்படுத்தல்)\b/gi
+            ];
+            noisePatterns.forEach(r => { cleaned = cleaned.replace(r, " "); });
+            return cleaned.replace(/\s+/g, " ").trim();
+        }
+
+        async function processFullGuidePdf(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const lang = document.getElementById("pdfLangSelect").value;
+            const startP = parseInt(document.getElementById("startPageInput").value) || 6;
+            const endP = parseInt(document.getElementById("endPageInput").value) || 185;
+            const statusBox = document.getElementById("pdfStatusBox");
+
+            statusBox.innerText = "⏳ PDF வாசிக்கப்படுகிறது மற்றும் ஆசிரியர் பெயர்/பக்க எண்கள் நீக்கப்படுகின்றன...";
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const maxPage = Math.min(endP, pdf.numPages);
+
+            let stitchedStream = "";
+            let frontPagesText = "";
+            for (let i = 1; i <= Math.min(3, pdf.numPages); i++) {
+                const p = await pdf.getPage(i);
+                const c = await p.getTextContent();
+                frontPagesText += " " + c.items.map(item => item.str).join(" ");
+            }
+            // Auto-detect author/publisher from front pages for automatic credit
+            const authorMatch = frontPagesText.match(/(?:Author|Prepared by|With Best Wishes|வாழ்த்துகளுடன்|ஆசிரியர்)[:\s-]*([A-Za-z.\s\u0B80-\u0BFF]{4,40})/i);
+            const detectedAuthor = authorMatch ? authorMatch[1].trim() : file.name.replace(/\.pdf$/i, "");
+            document.getElementById("pdfAuthorCreditInput").value = detectedAuthor;
+
+            for (let i = startP; i <= maxPage; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                stitchedStream += " " + cleanPageNoise(content.items.map(item => item.str).join(" "));
+            }
+
+            extractedBatchItems = parseStitchedTextIntoQA(stitchedStream, lang);
+            statusBox.innerText = `✅ மொத்தம் ${extractedBatchItems.length} சுத்திகரிக்கப்பட்ட வினா-விடைகள் பிரித்தெடுக்கப்பட்டுள்ளன!`;
+            document.getElementById("pdfPreviewArea").value = extractedBatchItems.slice(0, 6).map((item, idx) =>
+                `[${idx + 1}] (${item.chapterKey} | ${item.marks} Marks)\nQ: ${item[lang].question}\nA: ${item[lang].plainAnswer.substring(0, 110)}...\n`
+            ).join("\n");
+            document.getElementById("savePdfMasterBtn").disabled = extractedBatchItems.length === 0;
+        }
+
+        function parseStitchedTextIntoQA(fullText, lang) {
+            let results = [];
+            let currentChapter = "Chapter 1";
+            let currentMarks = "2";
+
+            let markedText = fullText
+                .replace(/(Part\s*-\s*II|பகுதி\s*-\s*ஆ).*?2\s*(Marks|மதிப்பெண்)/gi, " ###MARK_2### ")
+                .replace(/(Part\s*-\s*III|பகுதி\s*-\s*இ).*?3\s*(Marks|மதிப்பெண்)/gi, " ###MARK_3### ")
+                .replace(/(Part\s*-\s*IV|பகுதி\s*-\s*ஈ).*?5\s*(Marks|மதிப்பெண்)/gi, " ###MARK_5### ")
+                .replace(/(PUBLIC QUESTIONS|ADDITIONAL QUESTIONS|பாடப்பகுதியின் உள்ளிருந்து|கூடுதல் வினாக்கள்)/gi, " ###MARK_PUB### ")
+                .replace(/(Part\s*-\s*I|பகுதி\s*-\s*அ).*?1\s*(Mark|மதிப்பெண்)/gi, " ###MARK_1### ");
+
+            const chapterMap = [
+                { key: "Chapter 1", pat: /\b1\s+(FUNCTION|செயற்கூறு)\b/i },
+                { key: "Chapter 2", pat: /\b2\s+(DATA ABSTRACTION|தரவு அருவமாக்கம்)\b/i },
+                { key: "Chapter 3", pat: /\b3\s+(SCOPING|வரையெல்லை)\b/i },
+                { key: "Chapter 4", pat: /\b4\s+(ALGORITHMIC STRATEGIES|நெறிமுறையின் யுக்திகள்)\b/i },
+                { key: "Chapter 5", pat: /\b5\s+(PYTHON - VARIABLES|பைத்தான் அறிமுகம்)\b/i },
+                { key: "Chapter 6", pat: /\b6\s+(CONTROL STRUCTURES|கட்டுப்பாட்டு கட்டமைப்புகள்)\b/i },
+                { key: "Chapter 7", pat: /\b7\s+(PYTHON FUNCTIONS|பைத்தான் செயற்கூறுகள்)\b/i },
+                { key: "Chapter 8", pat: /\b8\s+(STRINGS|சரங்கள்)\b/i },
+                { key: "Chapter 9", pat: /\b9\s+(LISTS, TUPLES|தொகுப்பு தரவினங்கள்)\b/i },
+                { key: "Chapter 10", pat: /\b10\s+(PYTHON CLASSES|பைத்தான் இனக்குழுக்கள்)\b/i },
+                { key: "Chapter 11", pat: /\b11\s+(DATABASE CONCEPTS|தரவுதள கருத்துருக்கள்)\b/i },
+                { key: "Chapter 12", pat: /\b12\s+(STRUCTURED QUERY LANGUAGE|வினவல் அமைப்பு மொழி)\b/i },
+                { key: "Chapter 13", pat: /\b13\s+(PYTHON AND CSV|பைத்தான் மற்றும் CSV)\b/i },
+                { key: "Chapter 14", pat: /\b14\s+(IMPORTING C\+\+|பைத்தானில் C\+\+)\b/i },
+                { key: "Chapter 15", pat: /\b15\s+(DATA MANIPULATION|SQL மூலம் தரவுகளை)\b/i },
+                { key: "Chapter 16", pat: /\b16\s+(DATA VISUALIZATION|தரவுக் காட்சிப்படுத்துதல்)\b/i }
+            ];
+            chapterMap.forEach(ch => { markedText = markedText.replace(ch.pat, ` ###CHAP_${ch.key}### `); });
+
+            const tokens = markedText.split(/(###CHAP_Chapter \d+###|###MARK_[1235PUB]+###)/g);
+            for (let token of tokens) {
+                if (token.startsWith("###CHAP_")) currentChapter = token.replace("###CHAP_", "").replace("###", "");
+                else if (token.startsWith("###MARK_")) currentMarks = token.replace("###MARK_", "").replace("###", "");
+                else if (currentMarks !== "1" && token.trim().length > 20) {
+                    const qBlocks = token.split(/(?=\b\d{1,2}\.\s+[A-Zஅ-ஔ])/g);
+                    qBlocks.forEach(blk => {
+                        const cleanBlk = blk.trim();
+                        const qEndMatch = cleanBlk.match(/^(\d{1,2}\.\s+.*?(?:\?|\(PTA-\d\)|\(Mar \d+\)|\(Sep \d+\)|\(Jul \d+\)|\(Jun \d+\)|\(May \d+\)|எழுதுக\.|விளக்குக\.|விவரி\.|வேறுபடுத்துக\.|தருக\.|வரைக\.|Explain\.|Define\.|Differentiate\.|Write.*?\.)\s*)(.*)$/is);
+                        if (qEndMatch && qEndMatch[2].trim().length > 15) {
+                            const questionStr = qEndMatch[1].replace(/^\d{1,2}\.\s+/, "").trim();
+                            const answerStr = qEndMatch[2].trim();
+                            const keywords = questionStr.replace(/[?.,()]/g, "").split(/\s+/).filter(w => w.length > 4).slice(0, 6);
+                            const id = `guide_${lang}_${currentChapter.replace(/\s+/g, '')}_${currentMarks}_${Date.now()}_${results.length}`;
+                            const formattedHTML = formatPdfAnswerLikeGuide(answerStr);
+                            const payload = { chapter: currentChapter, chapterKey: currentChapter, marks: currentMarks, question: questionStr, tips: keywords, answer: formattedHTML, plainAnswer: answerStr, matchWords: keywords };
+                            results.push({ id, chapterKey: currentChapter, marks: currentMarks, tags: keywords, ta: lang === 'ta' ? payload : null, en: lang === 'en' ? payload : null });
+                        }
+                    });
+                }
+            }
+            return results;
+        }
+
+        // Format PDF answer with Differentiate tables, Syntax boxes, and Examples just like the guide
+        function formatPdfAnswerLikeGuide(rawAns) {
+            let formatted = rawAns
+                .replace(/(Syntax:|தொடரியல்:|பொதுவடிவம்:)/gi, `<div class="nb-syntax-box"><span class="nb-underline">$1</span>`)
+                .replace(/(Example:|எடுத்துக்காட்டு:|எ\.கா:|Output:|வெளியீடு:)/gi, `</div><div class="nb-code"><span class="nb-underline">$1</span>`)
+                .replace(/(➤|✓|❖|►|•)/g, `<br>$1 `);
+
+            // If it contains pipe-delimited table rows from PDF (e.g., | List | Tuple |), convert to HTML table
+            if (formatted.includes("|")) {
+                const parts = formatted.split("|").map(s => s.trim()).filter(Boolean);
+                if (parts.length >= 4) {
+                    let tableHtml = `<table class="nb-table"><thead><tr><th>${parts[0]}</th><th>${parts[1]}</th></tr></thead><tbody>`;
+                    for (let i = 2; i < parts.length - 1; i += 2) {
+                        tableHtml += `<tr><td>${parts[i]}</td><td>${parts[i + 1] || ""}</td></tr>`;
+                    }
+                    tableHtml += `</tbody></table>`;
+                    return tableHtml;
+                }
+            }
+
+            if (formatted.includes("nb-syntax-box") || formatted.includes("nb-code")) {
+                formatted += `</div>`;
+            }
+            return `<div class="nb-box">${formatted}</div>`;
+        }
+
+        async function uploadExtractedToSupabase() {
+            if (extractedBatchItems.length === 0) return;
+            const statusBox = document.getElementById("pdfStatusBox");
+            statusBox.innerText = "⏳ Supabase மாஸ்டரில் சேமிக்கப்படுகிறது...";
+
+            // Automatically add PDF Author to About & Credits list
+            const authorCredit = document.getElementById("pdfAuthorCreditInput").value.trim();
+            registerNewAuthorCredit(authorCredit);
+
+            extractedBatchItems.forEach(item => {
+                if (!item.ta) item.ta = item.en;
+                if (!item.en) item.en = item.ta;
+                questionBank.push(item);
+            });
+            localStorage.setItem("tn_cs_questions_cache", JSON.stringify(questionBank));
+
+            if (navigator.onLine) {
+                const batchSize = 50;
+                for (let i = 0; i < extractedBatchItems.length; i += batchSize) {
+                    const chunk = extractedBatchItems.slice(i, i + batchSize).map(item => ({
+                        id: item.id, tags: item.tags, ta_data: item.ta, en_data: item.en, created_by_emis: ADMIN_ID
+                    }));
+                    await supabaseClient.from('qa_master').upsert(chunk);
+                    statusBox.innerText = `☁️ சேமிக்கப்படுகிறது: ${Math.min(i + batchSize, extractedBatchItems.length)} / ${extractedBatchItems.length}...`;
+                }
+            }
+            closePdfModal();
+            await loadAdminAnalytics();
+        }
+    </script>
+</body>
+</html>
